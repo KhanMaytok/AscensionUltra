@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AscensionUltraConfigurator", "AscensionUltraConfigurator.vcproj", "{5F7FE97C-3677-4FFE-80CF-F8D89B6EC460}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AscensionUltra", "AscensionUltra.vcproj", "{289C4462-1F37-46FF-AA15-2EDE4AEA5D56}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F7FE97C-3677-4FFE-80CF-F8D89B6EC460}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5F7FE97C-3677-4FFE-80CF-F8D89B6EC460}.Debug|Win32.Build.0 = Debug|Win32
+		{5F7FE97C-3677-4FFE-80CF-F8D89B6EC460}.Release|Win32.ActiveCfg = Release|Win32
+		{5F7FE97C-3677-4FFE-80CF-F8D89B6EC460}.Release|Win32.Build.0 = Release|Win32
+		{289C4462-1F37-46FF-AA15-2EDE4AEA5D56}.Debug|Win32.ActiveCfg = Debug|Win32
+		{289C4462-1F37-46FF-AA15-2EDE4AEA5D56}.Debug|Win32.Build.0 = Debug|Win32
+		{289C4462-1F37-46FF-AA15-2EDE4AEA5D56}.Release|Win32.ActiveCfg = Release|Win32
+		{289C4462-1F37-46FF-AA15-2EDE4AEA5D56}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
