@@ -1,3 +1,14 @@
+// ==============================================================
+//        ORBITER STARTUP MODULE: ASCENSIONULTRACONFIGURATOR
+//                  Part of Ascension Ultra
+//          Copyright (C) 2010 Friedrich Kastner-Masilko
+//                   All rights reserved
+//
+// AscensionUltraConfigurator.cpp
+// Implementation of Ascension Ultra startup module.
+// Contains launchpad items and autoloading tools.
+// ==============================================================
+
 #define STRICT
 #define ORBITER_MODULE
 #include "orbitersdk.h"
@@ -5,7 +16,6 @@
 #include <stdio.h>
 #include <io.h>
 
-//class VesselConfig;
 class AscensionConfig;
 class RootConfig;
 
