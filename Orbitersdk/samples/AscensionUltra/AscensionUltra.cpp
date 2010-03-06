@@ -76,16 +76,18 @@ AscensionUltra::~AscensionUltra ()
 // --------------------------------------------------------------
 void AscensionUltra::DefineAnimations ()
 {
-	// ***** Outer airlock animation *****
-	static UINT OLockGrp[2] = {GRP_OLock1,GRP_OLock2};
-	static MGROUP_ROTATE OLock (0, OLockGrp, 2,
-		_V(0,-0.080,9.851), _V(1,0,0), (float)(110*RAD));
-	static UINT VCOLockGrp[1] = {13};
-	static MGROUP_ROTATE VCOLock (1, VCOLockGrp, 1,
-		_V(0,-0.080,9.851), _V(1,0,0), (float)(110*RAD));
+	// ***** Hangar door animation *****
+	static UINT DoorGrp[4] = {7,8,6,9};
+	static MGROUP_ROTATE Door1 (0, DoorGrp, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD));
+	static MGROUP_ROTATE Door2 (0, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD));
+	static MGROUP_TRANSLATE Door3 (0, DoorGrp+2, 1, _V(0,6,0));
+	static MGROUP_TRANSLATE Door4 (0, DoorGrp+3, 1, _V(0,6,0));
+
 	anim_olock = CreateAnimation (0);
-	AddAnimationComponent (anim_olock, 0, 1, &OLock);
-	AddAnimationComponent (anim_olock, 0, 1, &VCOLock);
+	AddAnimationComponent (anim_olock, 0, 1, &Door1);
+	AddAnimationComponent (anim_olock, 0, 1, &Door2);
+	AddAnimationComponent (anim_olock, 0, 1, &Door3);
+	AddAnimationComponent (anim_olock, 0, 1, &Door4);
 }
 
 // --------------------------------------------------------------
@@ -237,7 +239,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (exmesh_tpl = oapiLoadMeshGlobal ("DG\\deltaglider_ns")), MESHVIS_EXTERNAL);
+	SetMeshVisibilityMode (AddMesh (exmesh_tpl = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1")), MESHVIS_EXTERNAL);
 	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
 
 	// **************** vessel-specific insignia ****************
