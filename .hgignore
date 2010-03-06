@@ -1,5 +1,4 @@
 glob:Scenarios
-glob:Meshes
 glob:Sound
 glob:Orbitersdk/samples/Dragonfly
 glob:Textures2
@@ -93,3 +92,12 @@ glob:Config/Vessels/Mir.cfg
 glob:Config/Vessels/dg-s.cfg
 glob:Config/Vessels/Module1.cfg
 glob:Config/Vessels/DeltagliderIV.cfg
+glob:Meshes/*.msh
+glob:Meshes/Atlantis
+glob:Meshes/DGIVPreludeII
+glob:Meshes/ShuttleA
+glob:Meshes/UCGOArrow
+glob:Meshes/UMmu
+glob:Meshes/UniversalCars
+glob:Meshes/dg
+glob:Meshes/dgIV
