@@ -15,7 +15,7 @@
 class Crane
 {
 public:
-	Crane(MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, int index);
+	Crane(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z);
 	~Crane();
 	void SetSpeed(VECTOR3 speed);
 	void SetCrawl(VECTOR3 speed);
@@ -31,13 +31,17 @@ public:
 	void DefineAnimations();
 
 private:
-	MGROUP_TRANSLATE *x;
-	MGROUP_TRANSLATE *y;
-	MGROUP_TRANSLATE *z;
-	int anim_x, anim_y, anim_z;
+	void Crane::SetAnimation (int animation, double &position);
+	VESSEL* owner;
+	MGROUP_TRANSLATE *mgroupX;
+	MGROUP_TRANSLATE *mgroupY;
+	MGROUP_TRANSLATE *mgroupZ;
+	int anim_x, anim_y, anim_z;	
 	VECTOR3 speed;
 	VECTOR3 crawl;
 	VECTOR3 margin;
+	VECTOR3 position;
+	VECTOR3 command;
 	double autoOverride;
 	std::vector<int> lists;
 	std::vector<int> waypoints;
