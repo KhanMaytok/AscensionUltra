@@ -217,6 +217,14 @@
 			Name="SDK"
 			>
 			<File
+				RelativePath="..\..\include\DlgCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\lib\DlgCtrl.lib"
+				>
+			</File>
+			<File
 				RelativePath="..\..\lib\orbiter.lib"
 				>
 			</File>
@@ -226,14 +234,6 @@
 			</File>
 			<File
 				RelativePath="..\..\lib\Orbitersdk.lib"
-				>
-			</File>
-			<File
-				RelativePath="..\..\lib\DlgCtrl.lib"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\DlgCtrl.h"
 				>
 			</File>
 			<File
@@ -253,7 +253,7 @@
 			RelativePath=".\AscensionUltra.cpp"
 			>
 			<FileConfiguration
-				Name="Debug|Win32"
+				Name="Release|Win32"
 				>
 				<Tool
 					Name="VCCLCompilerTool"
@@ -262,7 +262,7 @@
 				/>
 			</FileConfiguration>
 			<FileConfiguration
-				Name="Release|Win32"
+				Name="Debug|Win32"
 				>
 				<Tool
 					Name="VCCLCompilerTool"
@@ -279,14 +279,6 @@
 			RelativePath=".\AscensionUltra.rc"
 			>
 			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCResourceCompilerTool"
-					PreprocessorDefinitions=""
-				/>
-			</FileConfiguration>
-			<FileConfiguration
 				Name="Release|Win32"
 				>
 				<Tool
@@ -294,6 +286,22 @@
 					PreprocessorDefinitions=""
 				/>
 			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCResourceCompilerTool"
+					PreprocessorDefinitions=""
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\Crane.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Crane.h"
+			>
 		</File>
 		<File
 			RelativePath=".\meshres.h"
