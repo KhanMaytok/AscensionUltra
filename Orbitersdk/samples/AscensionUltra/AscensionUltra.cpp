@@ -77,17 +77,25 @@ AscensionUltra::~AscensionUltra ()
 void AscensionUltra::DefineAnimations ()
 {
 	// ***** Hangar door animation *****
-	static UINT DoorGrp[4] = {7,8,6,9};
+	static UINT DoorGrp[8] = {7,8,6,9,5,10,11,12};
 	static MGROUP_ROTATE Door1 (0, DoorGrp, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD));
 	static MGROUP_ROTATE Door2 (0, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD));
 	static MGROUP_TRANSLATE Door3 (0, DoorGrp+2, 1, _V(0,6,0));
 	static MGROUP_TRANSLATE Door4 (0, DoorGrp+3, 1, _V(0,6,0));
+	static MGROUP_TRANSLATE CraneX (0, DoorGrp+4, 1, _V(40,0,0));
+	static MGROUP_TRANSLATE CraneY (0, DoorGrp+5, 1, _V(0,0,15));
+	static MGROUP_TRANSLATE CraneZ (0, DoorGrp+7, 1, _V(0,-20,0));
+	static MGROUP_SCALE CraneReel (0, DoorGrp+6, 1, _V(0,31,0), _V(1,2.5,1));	
 
 	anim_olock = CreateAnimation (0);
 	AddAnimationComponent (anim_olock, 0, 1, &Door1);
 	AddAnimationComponent (anim_olock, 0, 1, &Door2);
 	AddAnimationComponent (anim_olock, 0, 1, &Door3);
 	AddAnimationComponent (anim_olock, 0, 1, &Door4);
+
+	crane1.Init(this, &CraneX, &CraneY, &CraneZ, &CraneReel);
+	crane1.DefineAnimations();	
+
 }
 
 // --------------------------------------------------------------
@@ -371,6 +379,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 		}
 		SetAnimation (anim_olock, olock_proc);
 	}
+	crane1.PostStep(simt, simdt, mjd);
 }
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
@@ -399,6 +408,12 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		switch (key) {
 		case OAPI_KEY_O:  // "operate outer airlock"
 			RevertOuterAirlock ();
+			return 1;
+		case OAPI_KEY_A:  // "operate outer airlock"
+			crane1.StartManual();
+			return 1;
+		case OAPI_KEY_S:  // "operate outer airlock"
+			crane1.Stop();
 			return 1;
 		}
 	}

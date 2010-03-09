@@ -10,47 +10,52 @@
 
 #include "Crane.h"
 
-Crane::Crane(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z)
+void Crane::Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel)
 {
 	this->owner=owner;
 	mgroupX=X;
 	mgroupY=Y;
-	mgroupZ=Z;	
+	mgroupZ=Z;
+	mgroupReel=Reel;
+	len=_V(length(mgroupX->shift),length(mgroupY->shift),length(mgroupZ->shift));
 }
-Crane::~Crane()
-{
-}
-void Crane::SetSpeed(VECTOR3 speed)
-{
-}
-void Crane::SetCrawl(VECTOR3 speed)
-{
-}
-void Crane::SetMargin(VECTOR3 margin)
-{
-}
-void Crane::SetAutoOverride(double percentage)
-{
-}
+
+void Crane::SetSpeed(VECTOR3 speed){this->speed=speed;}
+void Crane::SetCrawl(VECTOR3 speed){crawl=speed;}
+void Crane::SetMargin(VECTOR3 margin){this->margin=margin;}
+void Crane::SetAutoOverride(double percentage){autoOverride=percentage;}
+
 void Crane::StartAuto(int list)
 {
 }
+
 void Crane::Stop()
 {
+	command=_V(-0.1,-0.1,-0.1);
 }
+
 void Crane::StartManual()
 {
+	command=_V(0.1,0.1,0.1);
 }
+
 void Crane::Teach(int waypoint)
 {
 }
+
 VECTOR3 Crane::GetPosition()
 {
-	return _V(0,0,0);
+	return _V(position.x*len.x, position.y*len.y, position.z*len.z);
 }
-void Crane::SetPosition(VECTOR3 position)
+
+void Crane::SetPosition(VECTOR3 pos)
 {
+	position=pos;
+	SetAnimation(anim_x, position.x/=len.x);
+	SetAnimation(anim_y, position.y/=len.y);
+	SetAnimation(anim_z, position.z/=len.z);
 }
+
 void Crane::PostStep (double simt, double simdt, double mjd)
 {
 	position+=command*simdt;
@@ -69,9 +74,10 @@ void Crane::SetAnimation (int animation, double &position)
 void Crane::DefineAnimations()
 {	
 	anim_x = owner->CreateAnimation (0);
-	owner->AddAnimationComponent (anim_x, 0, 1, mgroupX);
+	ANIMATIONCOMPONENT_HANDLE parent = owner->AddAnimationComponent (anim_x, 0, 1, mgroupX);
 	anim_y = owner->CreateAnimation (0);
-	owner->AddAnimationComponent (anim_y, 0, 1, mgroupY);
+	parent = owner->AddAnimationComponent (anim_y, 0, 1, mgroupY, parent);
 	anim_z = owner->CreateAnimation (0);
-	owner->AddAnimationComponent (anim_z, 0, 1, mgroupZ);
+	owner->AddAnimationComponent (anim_z, 0, 1, mgroupReel, parent);
+	owner->AddAnimationComponent (anim_z, 0, 1, mgroupZ, parent);
 }

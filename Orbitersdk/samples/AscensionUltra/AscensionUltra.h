@@ -15,6 +15,7 @@
 
 #include "orbitersdk.h"
 #include "resource.h"
+#include "Crane.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 const double AIRLOCK_OPERATING_SPEED = 0.1; // Opening/closing speed of outer airlock (1/sec) => cycle = 10 sec
@@ -58,6 +59,7 @@ public:
 	void SetStrobe (bool on);
 	
 private:
+	Crane crane1;
 	void ApplySkin();                            // apply custom skin
 	void PaintMarkings (SURFHANDLE tex);         // paint individual vessel markings
 
