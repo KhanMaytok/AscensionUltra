@@ -18,6 +18,11 @@
 #include <math.h>
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
+#define CRANEXOFFSET 65.0
+#define CRANEYOFFSET 11.0
+#define CRANEREELUPPERPOINT 32.0
+#define CRANEREELLOWERPOINT 20.0
+#define CRANEREELHEIGHT (CRANEREELUPPERPOINT-CRANEREELLOWERPOINT)
 
 // ==============================================================
 // Global parameters
@@ -82,10 +87,10 @@ void AscensionUltra::DefineAnimations ()
 	static MGROUP_ROTATE Door2 (0, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD));
 	static MGROUP_TRANSLATE Door3 (0, DoorGrp+2, 1, _V(0,6,0));
 	static MGROUP_TRANSLATE Door4 (0, DoorGrp+3, 1, _V(0,6,0));
-	static MGROUP_TRANSLATE CraneX (0, DoorGrp+4, 1, _V(40,0,0));
-	static MGROUP_TRANSLATE CraneY (0, DoorGrp+5, 1, _V(0,0,15));
-	static MGROUP_TRANSLATE CraneZ (0, DoorGrp+7, 1, _V(0,-20,0));
-	static MGROUP_SCALE CraneReel (0, DoorGrp+6, 1, _V(0,31,0), _V(1,2.5,1));	
+	static MGROUP_TRANSLATE CraneX (0, DoorGrp+4, 1, _V(CRANEXOFFSET*2.0,0,0));
+	static MGROUP_TRANSLATE CraneY (0, DoorGrp+5, 1, _V(0,0,CRANEYOFFSET*2.0));
+	static MGROUP_TRANSLATE CraneZ (0, DoorGrp+7, 1, _V(0,-CRANEREELLOWERPOINT,0));
+	static MGROUP_SCALE CraneReel (0, DoorGrp+6, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1));
 
 	anim_olock = CreateAnimation (0);
 	AddAnimationComponent (anim_olock, 0, 1, &Door1);
@@ -219,7 +224,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetPMI (_V(15.5,22.1,7.7));
 
 	SetDockParams (_V(0,-0.49,10.076), _V(0,0,1), _V(0,1,0));
-	SetTouchdownPoints (_V(0,-2.57,10), _V(-3.5,-2.57,-3), _V(3.5,-2.57,-3));
+	SetTouchdownPoints (_V(0,0,10), _V(-3.5,0,-3), _V(3.5,0,-3));
 	EnableTransponder (true);
 	bool render_cockpit = true;
 
@@ -344,6 +349,18 @@ void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 
 	// set VC state
 	UpdateVCMesh();
+
+	//Transfer crane groups
+	//TODO: This can be removed if mesh is designed appropriately
+	MESHGROUP_TRANSFORM mt;
+	mt.nmesh=0;
+	mt.ngrp=5;
+	mt.transform=mt.TRANSLATE;
+	mt.P.transparam.shift=_V(-CRANEXOFFSET, 0, 0);
+	MeshgroupTransform(vis, mt);
+	for(mt.ngrp=10;mt.ngrp<13;mt.ngrp++) MeshgroupTransform(vis, mt);
+	mt.P.transparam.shift=_V(0, 0, -CRANEYOFFSET);
+	for(mt.ngrp=10;mt.ngrp<13;mt.ngrp++) MeshgroupTransform(vis, mt);
 }
 
 // Destroy DG visual
