@@ -304,6 +304,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\KeyboardFilter.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\KeyboardFilter.h"
+			>
+		</File>
+		<File
 			RelativePath=".\meshres.h"
 			>
 		</File>

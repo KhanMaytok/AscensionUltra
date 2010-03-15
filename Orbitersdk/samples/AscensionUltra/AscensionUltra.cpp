@@ -16,6 +16,7 @@
 #include "meshres.h"
 #include <stdio.h>
 #include <math.h>
+#include "KeyboardFilter.h"
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
 #define CRANEXOFFSET 65.0
@@ -428,6 +429,10 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		switch (key) {
 		case OAPI_KEY_O:  // "operate outer airlock"
 			RevertOuterAirlock ();
+			return 1;
+		case OAPI_KEY_V:
+			KeyboardFilter filter;
+			filter.GetCheckString(oapiDebugString());
 			return 1;
 		}
 	}

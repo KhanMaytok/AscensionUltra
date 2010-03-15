@@ -11,6 +11,7 @@
 #pragma once
 #include "orbitersdk.h"
 #include <vector>
+#include "KeyboardFilter.h"
 
 class Crane
 {
@@ -47,4 +48,5 @@ private:
 	double autoOverride;
 	std::vector<int> lists;
 	std::vector<int> waypoints;
+	KeyboardFilter filter;
 };
