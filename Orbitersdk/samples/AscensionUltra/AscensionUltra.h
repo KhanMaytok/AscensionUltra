@@ -39,6 +39,7 @@ public:
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 	void clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC);
 	int  clbkConsumeBufferedKey (DWORD key, bool down, char *kstate);
+	int  clbkConsumeDirectKey (char *kstate);
 	bool clbkLoadGenericCockpit ();
 
 	enum DoorStatus { DOOR_CLOSED, DOOR_OPEN, DOOR_CLOSING, DOOR_OPENING } olock_status;

@@ -27,6 +27,7 @@ public:
 	VECTOR3 GetPosition();
 	void SetPosition(VECTOR3 position);
 	void PostStep (double simt, double simdt, double mjd);
+	int ConsumeDirectKey (char *kstate);
 	void DefineAnimations();
 
 private:

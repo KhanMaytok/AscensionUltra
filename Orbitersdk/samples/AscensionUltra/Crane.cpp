@@ -81,3 +81,46 @@ void Crane::DefineAnimations()
 	owner->AddAnimationComponent (anim_z, 0, 1, mgroupReel, parent);
 	owner->AddAnimationComponent (anim_z, 0, 1, mgroupZ, parent);
 }
+
+int Crane::ConsumeDirectKey (char *kstate)
+{
+	command=_V(0,0,0);
+	if (KEYDOWN(kstate, OAPI_KEY_A))
+	{
+		//X neg
+		if (KEYMOD_SHIFT(kstate)) command.x=-crawl.x/len.x;
+		else command.x=-speed.x/len.x;		
+	}
+	if (KEYDOWN(kstate, OAPI_KEY_S))
+	{
+		//Y neg
+		if (KEYMOD_SHIFT(kstate)) command.y=-crawl.y/len.y;
+		else command.y=-speed.y/len.y;
+	}
+	if (KEYDOWN(kstate, OAPI_KEY_E))
+	{
+		//Z neg
+		if (KEYMOD_SHIFT(kstate)) command.z=-crawl.z/len.z;
+		else command.z=-speed.z/len.z;
+	}
+	if (KEYDOWN(kstate, OAPI_KEY_D))
+	{
+		//X pos
+		if (KEYMOD_SHIFT(kstate)) command.x=crawl.x/len.x;
+		else command.x=speed.x/len.x;
+	}
+	if (KEYDOWN(kstate, OAPI_KEY_W))
+	{
+		//Y pos
+		if (KEYMOD_SHIFT(kstate)) command.y=crawl.y/len.y;
+		else command.y=speed.y/len.y;
+	}
+	if (KEYDOWN(kstate, OAPI_KEY_Q))
+	{
+		//Z pos
+		if (KEYMOD_SHIFT(kstate)) command.z=crawl.z/len.z;
+		else command.z=speed.z/len.z;
+	}
+	if (length(command)!=0) return 1;
+	return 0;
+}

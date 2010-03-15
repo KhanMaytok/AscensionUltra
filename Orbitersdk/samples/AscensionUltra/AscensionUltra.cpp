@@ -66,6 +66,9 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 		for (j = 0; j < 3; j++) rotidx[i][j] = 0;
 
 	DefineAnimations();
+
+	crane1.SetSpeed(_V(10,10,10));
+	crane1.SetCrawl(_V(1,1,1));
 }
 
 // --------------------------------------------------------------
@@ -426,15 +429,14 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		case OAPI_KEY_O:  // "operate outer airlock"
 			RevertOuterAirlock ();
 			return 1;
-		case OAPI_KEY_A:  // "operate outer airlock"
-			crane1.StartManual();
-			return 1;
-		case OAPI_KEY_S:  // "operate outer airlock"
-			crane1.Stop();
-			return 1;
 		}
 	}
 	return 0;
+}
+
+int AscensionUltra::clbkConsumeDirectKey(char *kstate)
+{
+	return crane1.ConsumeDirectKey(kstate);
 }
 
 // Module initialisation
