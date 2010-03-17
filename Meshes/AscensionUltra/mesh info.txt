@@ -24,11 +24,18 @@ Upper Jig   -65,31.5,-9
 Cables      -65,30,-9
 Lower Jig   -65,28.5,-9
 
+** Animation Data
+
+CRANEXOFFSET		130.0
+CRANEYOFFSET		18.0
+CRANEREELUPPERPOINT	31.0
+CRANEREELLOWERPOINT	29.0
+
 ** Translation Distances **
 
 X axis = 130m
-Y axis = 28m
-Z axis = 18m 
+Y axis = 18m
+Z axis = 29m 
 
 ** Door Animations **
 

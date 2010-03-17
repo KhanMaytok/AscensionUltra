@@ -50,4 +50,5 @@ private:
 	std::vector<int> waypoints;
 	KeyboardFilter *filter;
 	static int ConsumeDirectKey (void *crane, char *kstate);
+	static void Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam);
 };

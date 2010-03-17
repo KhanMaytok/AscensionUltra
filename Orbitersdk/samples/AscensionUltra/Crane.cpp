@@ -33,12 +33,14 @@ void Crane::Stop()
 {
 	delete filter;
 	command=_V(0.0,0.0,0.0);
+	sprintf(oapiDebugString(), "Crane offline");
 }
 
 void Crane::StartManual()
 {
+	sprintf(oapiDebugString(), "Crane online (A/D long axis, W/S short axis, Q/E reel, B to return)");
 	command=_V(0.0,0.0,0.0);
-	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey);
+	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey, &Crane::Prefilter);
 }
 
 void Crane::Teach(int waypoint)
@@ -89,9 +91,27 @@ int Crane::ConsumeDirectKey (void *crane, char *kstate)
 	return((Crane *)crane)->ConsumeDirectKey(kstate);
 }
 
+void Crane::Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam)
+{
+	switch (wparam)
+	{
+	case VK_SHIFT:
+		wparam=VK_LSHIFT;
+		break;
+	case VK_CONTROL:
+		wparam=VK_LCONTROL;
+		break;
+	}
+}
+
 int Crane::ConsumeDirectKey (char *kstate)
 {
 	command=_V(0,0,0);
+	if (KEYDOWN(kstate, OAPI_KEY_B))
+	{
+		Stop();
+		return 1;
+	}
 	if (KEYDOWN(kstate, OAPI_KEY_A))
 	{
 		//X neg
@@ -122,7 +142,7 @@ int Crane::ConsumeDirectKey (char *kstate)
 		if (KEYMOD_SHIFT(kstate)) command.y=crawl.y/len.y;
 		else command.y=speed.y/len.y;
 	}
-	if (KEYDOWN(kstate, OAPI_KEY_Q))
+	if (KEYDOWN(kstate, OAPI_KEY_Q) && !KEYMOD_CONTROL(kstate)) //Check for Ctrl+Q, too
 	{
 		//Z pos
 		if (KEYMOD_SHIFT(kstate)) command.z=crawl.z/len.z;

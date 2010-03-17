@@ -1,4 +1,3 @@
-#include "orbitersdk.h"
 #include <windows.h>
 #include "KeyboardFilter.h"
 #include <stdio.h>

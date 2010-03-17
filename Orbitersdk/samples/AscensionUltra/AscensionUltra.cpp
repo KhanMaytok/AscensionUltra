@@ -19,10 +19,10 @@
 #include "KeyboardFilter.h"
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
-#define CRANEXOFFSET 65.0
-#define CRANEYOFFSET 11.0
-#define CRANEREELUPPERPOINT 32.0
-#define CRANEREELLOWERPOINT 20.0
+#define CRANEXOFFSET 130.0
+#define CRANEYOFFSET 18.0
+#define CRANEREELUPPERPOINT 31.0
+#define CRANEREELLOWERPOINT 29.0
 #define CRANEREELHEIGHT (CRANEREELUPPERPOINT-CRANEREELLOWERPOINT)
 
 // ==============================================================
@@ -86,13 +86,13 @@ AscensionUltra::~AscensionUltra ()
 void AscensionUltra::DefineAnimations ()
 {
 	// ***** Hangar door animation *****
-	static UINT DoorGrp[8] = {7,8,6,9,5,10,11,12};
+	static UINT DoorGrp[8] = {10,9,11,12,6,8,7,5};
 	static MGROUP_ROTATE Door1 (0, DoorGrp, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD));
 	static MGROUP_ROTATE Door2 (0, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD));
 	static MGROUP_TRANSLATE Door3 (0, DoorGrp+2, 1, _V(0,6,0));
 	static MGROUP_TRANSLATE Door4 (0, DoorGrp+3, 1, _V(0,6,0));
-	static MGROUP_TRANSLATE CraneX (0, DoorGrp+4, 1, _V(CRANEXOFFSET*2.0,0,0));
-	static MGROUP_TRANSLATE CraneY (0, DoorGrp+5, 1, _V(0,0,CRANEYOFFSET*2.0));
+	static MGROUP_TRANSLATE CraneX (0, DoorGrp+4, 1, _V(CRANEXOFFSET,0,0));
+	static MGROUP_TRANSLATE CraneY (0, DoorGrp+5, 1, _V(0,0,CRANEYOFFSET));
 	static MGROUP_TRANSLATE CraneZ (0, DoorGrp+7, 1, _V(0,-CRANEREELLOWERPOINT,0));
 	static MGROUP_SCALE CraneReel (0, DoorGrp+6, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1));
 
@@ -354,17 +354,6 @@ void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 	// set VC state
 	UpdateVCMesh();
 
-	//Transfer crane groups
-	//TODO: This can be removed if mesh is designed appropriately
-	MESHGROUP_TRANSFORM mt;
-	mt.nmesh=0;
-	mt.ngrp=5;
-	mt.transform=mt.TRANSLATE;
-	mt.P.transparam.shift=_V(-CRANEXOFFSET, 0, 0);
-	MeshgroupTransform(vis, mt);
-	for(mt.ngrp=10;mt.ngrp<13;mt.ngrp++) MeshgroupTransform(vis, mt);
-	mt.P.transparam.shift=_V(0, 0, -CRANEYOFFSET);
-	for(mt.ngrp=10;mt.ngrp<13;mt.ngrp++) MeshgroupTransform(vis, mt);
 }
 
 // Destroy DG visual
