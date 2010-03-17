@@ -1,0 +1,36 @@
+Ascension Ultra  -   Turn Around Hangar Information
+
+
+** Mesh Groups **
+
+0 - crane scaffold
+1 - End Door scaffolds
+2 - Hangar Ends
+3 - Main Door Scaffolds
+4 - Hangar Body
+5 - Crane Lower Jig
+6 - Crane Cross Beam
+7 - Crane Cables
+8 - Crane Upper Jig
+9 - Main Door (-Z)
+10 - Main Door (+z)
+11 - End Door (+x)
+11 - End Door (-x)
+
+** Rest Positions **
+
+Cross Beam  -65,33,0
+Upper Jig   -65,31.5,-9
+Cables      -65,30,-9
+Lower Jig   -65,28.5,-9
+
+** Translation Distances **
+
+X axis = 130m
+Y axis = 28m
+Z axis = 18m 
+
+** Door Animations **
+
+Main Hangar Doors - 30 degree X axis rotation around 0,0,0
+End Doors - 6m translation +Y axis
