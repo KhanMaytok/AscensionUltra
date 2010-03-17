@@ -431,17 +431,14 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			RevertOuterAirlock ();
 			return 1;
 		case OAPI_KEY_V:
-			KeyboardFilter filter;
-			filter.GetCheckString(oapiDebugString());
+			crane1.StartManual();
+			return 1;
+		case OAPI_KEY_B:
+			crane1.Stop();
 			return 1;
 		}
 	}
 	return 0;
-}
-
-int AscensionUltra::clbkConsumeDirectKey(char *kstate)
-{
-	return crane1.ConsumeDirectKey(kstate);
 }
 
 // Module initialisation

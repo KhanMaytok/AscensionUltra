@@ -48,5 +48,6 @@ private:
 	double autoOverride;
 	std::vector<int> lists;
 	std::vector<int> waypoints;
-	KeyboardFilter filter;
+	KeyboardFilter *filter;
+	static int ConsumeDirectKey (void *crane, char *kstate);
 };

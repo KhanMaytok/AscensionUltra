@@ -31,12 +31,14 @@ void Crane::StartAuto(int list)
 
 void Crane::Stop()
 {
-	command=_V(-0.1,-0.1,-0.1);
+	delete filter;
+	command=_V(0.0,0.0,0.0);
 }
 
 void Crane::StartManual()
 {
-	command=_V(0.1,0.1,0.1);
+	command=_V(0.0,0.0,0.0);
+	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey);
 }
 
 void Crane::Teach(int waypoint)
@@ -80,6 +82,11 @@ void Crane::DefineAnimations()
 	anim_z = owner->CreateAnimation (0);
 	owner->AddAnimationComponent (anim_z, 0, 1, mgroupReel, parent);
 	owner->AddAnimationComponent (anim_z, 0, 1, mgroupZ, parent);
+}
+
+int Crane::ConsumeDirectKey (void *crane, char *kstate)
+{
+	return((Crane *)crane)->ConsumeDirectKey(kstate);
 }
 
 int Crane::ConsumeDirectKey (char *kstate)
