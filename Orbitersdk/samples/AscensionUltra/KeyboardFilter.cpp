@@ -7,24 +7,19 @@ LRESULT CALLBACK Intercept(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	KeyboardFilter filter=*KeyboardFilter::Current;
 	if (nCode < 0) return CallNextHookEx(filter.GetHook(), nCode, wParam, lParam);
-	//Prefilter special keys
-	switch (wParam)
-	{
-	case VK_SHIFT:
-		wParam=0xA0;
-		break;	
-	}
+	filter.Preprocess(wParam, lParam);
 	if (filter.Process(wParam, (lParam & 0x80000000)==0)) return 1;
 	return CallNextHookEx(filter.GetHook(), nCode, wParam, lParam);
 }
 
-KeyboardFilter::KeyboardFilter(void *obj, int (*consumeDirectKey)(void*, char*))
+KeyboardFilter::KeyboardFilter(void *obj, int (*consumeDirectKey)(void*, char*), void (*prefilter)(void*, WPARAM &wparam, LPARAM &lparam))
 {
 	//Install keyboard hook
 	if (Current==NULL)
 	{
 		Current=this;
 		ConsumeDirectKey=consumeDirectKey;
+		Prefilter=prefilter;
 		object=obj;
 		kstate=new char[256];
 		for(int i=0;i<256;i++) kstate[i]=(char)0x00;
@@ -38,7 +33,17 @@ KeyboardFilter::~KeyboardFilter(void)
 	{
 		UnhookWindowsHookEx(hhook);
 		delete [] kstate;
-		Current=NULL;		
+		ConsumeDirectKey=NULL;
+		Prefilter=NULL;
+		Current=NULL;
+	}
+}
+
+void KeyboardFilter::Preprocess(WPARAM &wparam, LPARAM &lparam)
+{
+	if (Prefilter!=NULL)
+	{
+		Prefilter(object, wparam, lparam);
 	}
 }
 
