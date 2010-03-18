@@ -48,7 +48,7 @@ public:
 	UINT anim_olock;        // handle for outer airlock animation
 
 	SURFHANDLE insignia_tex;        // vessel-specific fuselage markings
-	MESHHANDLE exmesh, exmesh_tpl;  // local external mesh and global template
+	MESHHANDLE exmesh, meshHangar, meshTopo;  // local external mesh and global template
 	MESHHANDLE vcmesh, vcmesh_tpl;  // local VC mesh and global template
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
@@ -57,6 +57,7 @@ public:
 	void SetNavlight (bool on);
 	void SetBeacon (bool on);
 	void SetStrobe (bool on);
+	void MoveGroup(int mesh, VECTOR3 v);
 	
 private:
 	Crane crane1;
@@ -73,6 +74,9 @@ private:
 	struct RngDisp {
 		char dsp[2][10];
 	} p_rngdisp;
+
+	//DEBUG
+	double disx, disy, disz, stpx, stpy, stpz;
 };
 
 typedef struct {

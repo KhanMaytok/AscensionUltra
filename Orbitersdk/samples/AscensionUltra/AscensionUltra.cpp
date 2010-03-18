@@ -70,6 +70,14 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	crane1.SetSpeed(_V(10,10,10));
 	crane1.SetCrawl(_V(1,1,1));
+
+	//DEBUG
+	disx=0.0;
+	disy=0.0;
+	disz=0.0;
+	stpx=10.0;
+	stpy=10.0;
+	stpz=10.0;
 }
 
 // --------------------------------------------------------------
@@ -256,13 +264,16 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (exmesh_tpl = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1")), MESHVIS_EXTERNAL);
+	SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1")), MESHVIS_EXTERNAL);	
 	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\maptest"), &_V(-3010,0,-5000)), MESHVIS_EXTERNAL);
+
+	SetSize(5000);
 
 	// **************** vessel-specific insignia ****************
 
 	insignia_tex = oapiCreateTextureSurface (256, 256);
-	SURFHANDLE hTex = oapiGetTextureHandle (exmesh_tpl, 5);
+	SURFHANDLE hTex = oapiGetTextureHandle (meshHangar, 5);
 	if (hTex) oapiBlt (insignia_tex, hTex, 0, 0, 0, 0, 256, 256);
 }
 
@@ -353,7 +364,6 @@ void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 
 	// set VC state
 	UpdateVCMesh();
-
 }
 
 // Destroy DG visual
@@ -415,10 +425,51 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		}
 	} else {
+		int res;
 		switch (key) {
 		case OAPI_KEY_O:  // "operate outer airlock"
 			RevertOuterAirlock ();
 			return 1;
+		//DEBUG
+		case OAPI_KEY_1:
+			MoveGroup(0, _V(stpx, 0, 0));
+			disx+=stpx;
+			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			return 1;
+		case OAPI_KEY_2:
+			MoveGroup(0, _V(-stpx, 0, 0));
+			disx-=stpx;
+			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			return 1;
+		case OAPI_KEY_3:
+			MoveGroup(0, _V(0, stpy, 0));
+			disy+=stpy;
+			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			return 1;
+		case OAPI_KEY_4:
+			MoveGroup(0, _V(0, -stpy, 0));
+			disy-=stpy;
+			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			return 1;
+		case OAPI_KEY_5:
+			MoveGroup(0, _V(0, 0, stpz));
+			disz+=stpz;
+			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			return 1;
+		case OAPI_KEY_6:
+			MoveGroup(0, _V(0, 0, -stpz));
+			disz-=stpz;
+			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			return 1;
+		case OAPI_KEY_7:
+			stpz=stpy=stpx=stpx/10.0;
+			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			return 1;
+		case OAPI_KEY_8:
+			stpz=stpy=stpx=stpx*10.0;
+			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			return 1;
+		//DEBUG END
 		case OAPI_KEY_V:
 			crane1.StartManual();
 			return 1;
@@ -428,6 +479,18 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		}
 	}
 	return 0;
+}
+
+void AscensionUltra::MoveGroup(int mesh, VECTOR3 v)
+{
+	//Transfer crane groups
+	//TODO: This can be removed if mesh is designed appropriately
+	MESHGROUP_TRANSFORM mt;
+	mt.nmesh=mesh;
+	mt.transform=mt.TRANSLATE;
+	mt.P.transparam.shift=v;
+	int k=oapiMeshGroupCount(GetMesh(visual, mesh));
+	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }
 
 // Module initialisation
