@@ -24,6 +24,8 @@
 #define CRANEREELUPPERPOINT 31.0
 #define CRANEREELLOWERPOINT 29.0
 #define CRANEREELHEIGHT (CRANEREELUPPERPOINT-CRANEREELLOWERPOINT)
+#define TA1OFFSET _V(2955,0,3893)
+#define TA1MATRIXOFFSET _V(266,0,0)
 
 // ==============================================================
 // Global parameters
@@ -264,9 +266,10 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1")), MESHVIS_EXTERNAL);	
+	SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &TA1OFFSET), MESHVIS_EXTERNAL);	
 	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\maptest"), &_V(-3010,0,-5000)), MESHVIS_EXTERNAL);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1")), MESHVIS_EXTERNAL);
+	for(int i=1;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &(TA1OFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);	
 
 	SetSize(5000);
 
@@ -483,7 +486,7 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 
 void AscensionUltra::MoveGroup(int mesh, VECTOR3 v)
 {
-	//Transfer crane groups
+	//Transfer mesh groups
 	//TODO: This can be removed if mesh is designed appropriately
 	MESHGROUP_TRANSFORM mt;
 	mt.nmesh=mesh;

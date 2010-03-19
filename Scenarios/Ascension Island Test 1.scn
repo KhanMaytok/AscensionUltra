@@ -40,7 +40,7 @@ GL-01:DeltaGlider
   XPDR 0
   GEAR 1 1.0000
 END
-AU-island:AU_Island
+AscensionUltra:AscensionUltra
   STATUS Landed Earth
   POS -14.3671500 -7.9285500
   HEADING 208.00
