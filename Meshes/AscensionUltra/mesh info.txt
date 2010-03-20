@@ -3,19 +3,22 @@ Ascension Ultra  -   mesh information
 
 *******************************************TURNAROUND HANGAR
 ** Mesh Groups **
-0 - crane scaffold
-1 - End Door scaffolds
-2 - Hangar Ends
-3 - Main Door Scaffolds
-4 - Hangar Body
-5 - Crane Lower Jig
+11 - crane scaffold
+10 - End Door scaffolds
+12 - Hangar Ends
+9 - Main Door Scaffolds
+8 - Hangar Body
+7 - Crane Lower Jig
 6 - Crane Cross Beam
-7 - Crane Cables
-8 - Crane Upper Jig
-9 - Main Door (-Z)
-10 - Main Door (+z)
-11 - End Door (+x)
-11 - End Door (-x)
+5 - Crane Cables
+4 - Crane Upper Jig
+3 - Main Door (-Z)
+2 - Main Door (+z)
+1 - End Door (+x)
+0 - End Door (-x)
+13 -End Curve Windows
+14 -Main Hangar Windows
+15 - End Door Windows
 
 ** Rest Positions **
 Cross Beam  -65,33,0
