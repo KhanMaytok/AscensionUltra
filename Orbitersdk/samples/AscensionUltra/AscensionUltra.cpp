@@ -24,7 +24,7 @@
 #define CRANEREELUPPERPOINT 31.0
 #define CRANEREELLOWERPOINT 29.0
 #define CRANEREELHEIGHT (CRANEREELUPPERPOINT-CRANEREELLOWERPOINT)
-#define TA1OFFSET _V(2955,0,3893)
+#define TOPOOFFSET _V(-2955,0,-3893)
 #define TA1MATRIXOFFSET _V(266,0,0)
 
 // ==============================================================
@@ -225,7 +225,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	VESSEL2::SetEmptyMass (EMPTY_MASS);
 	VECTOR3 r[2] = {{0,0,6}, {0,0,-4}};
-	SetSize (10.0);
+	SetSize (5000);
 	SetVisibilityLimit (7.5e-4, 1.5e-3);
 	SetAlbedoRGB (_V(0.77,0.20,0.13));
 	SetGravityGradientDamping (20.0);
@@ -266,12 +266,10 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &TA1OFFSET), MESHVIS_EXTERNAL);	
+	SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1")), MESHVIS_EXTERNAL);	
 	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1")), MESHVIS_EXTERNAL);
-	for(int i=1;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &(TA1OFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);	
-
-	SetSize(5000);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &TOPOOFFSET), MESHVIS_EXTERNAL);
+	for(int i=1;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &(TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);	
 
 	// **************** vessel-specific insignia ****************
 
