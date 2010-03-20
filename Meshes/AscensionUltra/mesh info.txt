@@ -1,8 +1,8 @@
-Ascension Ultra  -   Turn Around Hangar Information
+Ascension Ultra  -   mesh information
 
 
+*******************************************TURNAROUND HANGAR
 ** Mesh Groups **
-
 0 - crane scaffold
 1 - End Door scaffolds
 2 - Hangar Ends
@@ -18,26 +18,33 @@ Ascension Ultra  -   Turn Around Hangar Information
 11 - End Door (-x)
 
 ** Rest Positions **
-
 Cross Beam  -65,33,0
 Upper Jig   -65,31.5,-9
 Cables      -65,30,-9
 Lower Jig   -65,28.5,-9
 
 ** Animation Data
-
 CRANEXOFFSET		130.0
 CRANEYOFFSET		18.0
 CRANEREELUPPERPOINT	31.0
 CRANEREELLOWERPOINT	29.0
 
 ** Translation Distances **
-
 X axis = 130m
 Y axis = 18m
 Z axis = 29m 
 
 ** Door Animations **
-
 Main Hangar Doors - 30 degree X axis rotation around 0,0,0
 End Doors - 6m translation +Y axis
+
+** OFFSET from TOPO mesh **
+2958,0,3891
+
+**Spacing between hangars**
+266m
+
+
+**************************************************************** Place Holder mesh
+** OFFSET from TOPO mesh**
+2350,0,4512
