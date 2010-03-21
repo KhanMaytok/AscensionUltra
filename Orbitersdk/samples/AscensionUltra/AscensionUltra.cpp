@@ -27,6 +27,7 @@
 #define TOPOOFFSET _V(-2958,0,-3891)
 #define TA1MATRIXOFFSET _V(266,0,0)
 #define ALLOFFSET _V(3,0,-2)
+#define PLACEHOLDEROFFSET _V(-2350,0,-4512)
 
 // ==============================================================
 // Global parameters
@@ -97,7 +98,7 @@ AscensionUltra::~AscensionUltra ()
 void AscensionUltra::DefineAnimations ()
 {
 	// ***** Hangar door animation *****
-	static UINT DoorGrp[8] = {10,9,11,12,6,8,7,5};
+	static UINT DoorGrp[8] = {2,3,0,1,6,4,5,7};
 	static MGROUP_ROTATE Door1 (0, DoorGrp, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD));
 	static MGROUP_ROTATE Door2 (0, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD));
 	static MGROUP_TRANSLATE Door3 (0, DoorGrp+2, 1, _V(0,6,0));
@@ -270,7 +271,9 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &ALLOFFSET), MESHVIS_EXTERNAL);	
 	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &(ALLOFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);
-	for(int i=1;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);	
+	for(int i=1;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
+	
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &(ALLOFFSET+PLACEHOLDEROFFSET-TOPOOFFSET)), MESHVIS_EXTERNAL);
 
 	// **************** vessel-specific insignia ****************
 
