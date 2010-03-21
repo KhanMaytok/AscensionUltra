@@ -76,7 +76,8 @@ private:
 	} p_rngdisp;
 
 	//DEBUG
-	double disx, disy, disz, stpx, stpy, stpz;
+	double disx, disy, disz, stp;
+	int mnr;
 };
 
 typedef struct {

@@ -27,7 +27,7 @@
 #define TOPOOFFSET _V(-2958,0,-3891)
 #define TA1MATRIXOFFSET _V(266,0,0)
 #define ALLOFFSET _V(3,0,-2)
-#define PLACEHOLDEROFFSET _V(-2350,0,-4512)
+#define PLACEHOLDEROFFSET _V(-2304,0,-4552)
 
 // ==============================================================
 // Global parameters
@@ -79,9 +79,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	disx=0.0;
 	disy=0.0;
 	disz=0.0;
-	stpx=10.0;
-	stpy=10.0;
-	stpz=10.0;
+	stp=10.0;
+	mnr=0;
 }
 
 // --------------------------------------------------------------
@@ -273,7 +272,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &(ALLOFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);
 	for(int i=1;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
 	
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &(ALLOFFSET+PLACEHOLDEROFFSET-TOPOOFFSET)), MESHVIS_EXTERNAL);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &(ALLOFFSET-PLACEHOLDEROFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);
 
 	// **************** vessel-specific insignia ****************
 
@@ -437,42 +436,50 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		//DEBUG
 		case OAPI_KEY_1:
-			MoveGroup(0, _V(stpx, 0, 0));
-			disx+=stpx;
-			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			MoveGroup(mnr, _V(stp, 0, 0));
+			disx+=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
 		case OAPI_KEY_2:
-			MoveGroup(0, _V(-stpx, 0, 0));
-			disx-=stpx;
-			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			MoveGroup(mnr, _V(-stp, 0, 0));
+			disx-=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
 		case OAPI_KEY_3:
-			MoveGroup(0, _V(0, stpy, 0));
-			disy+=stpy;
-			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			MoveGroup(mnr, _V(0, stp, 0));
+			disy+=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
 		case OAPI_KEY_4:
-			MoveGroup(0, _V(0, -stpy, 0));
-			disy-=stpy;
-			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			MoveGroup(mnr, _V(0, -stp, 0));
+			disy-=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
 		case OAPI_KEY_5:
-			MoveGroup(0, _V(0, 0, stpz));
-			disz+=stpz;
-			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			MoveGroup(mnr, _V(0, 0, stp));
+			disz+=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
 		case OAPI_KEY_6:
-			MoveGroup(0, _V(0, 0, -stpz));
-			disz-=stpz;
-			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			MoveGroup(mnr, _V(0, 0, -stp));
+			disz-=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
 		case OAPI_KEY_7:
-			stpz=stpy=stpx=stpx/10.0;
-			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			stp/=10.0;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
 		case OAPI_KEY_8:
-			stpz=stpy=stpx=stpx*10.0;
-			sprintf(oapiDebugString(), "x%f y%f z%f dx%f dy%f dz%f", disx, disy, disz, stpx, stpy, stpz);
+			stp*=10.0;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			return 1;
+		case OAPI_KEY_9:
+			if (mnr>0) mnr--;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			return 1;
+		case OAPI_KEY_0:
+			mnr++;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
 		//DEBUG END
 		case OAPI_KEY_V:
