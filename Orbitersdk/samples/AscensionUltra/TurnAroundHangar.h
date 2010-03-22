@@ -24,6 +24,7 @@ public:
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
+	void Init(VESSEL* owner);
 private:
 	VESSEL* owner;
 	Crane crane1;	

@@ -32,7 +32,7 @@ void TurnAroundHangar::DefineAnimations ()
 	owner->AddAnimationComponent (anim_doors, 0, 1, &Door4);
 
 	crane1.Init(owner, &CraneX, &CraneY, &CraneZ, &CraneReel);
-	crane1.DefineAnimations();	
+	crane1.DefineAnimations();
 
 }
 
@@ -44,7 +44,7 @@ void TurnAroundHangar::ActivateOuterAirlock (DoorStatus action)
 		doors_proc = (action == DOOR_CLOSED ? 0.0 : 1.0);
 		owner->SetAnimation (anim_doors, doors_proc);
 	}
-	owner->RecordEvent ("OLOCK", close ? "CLOSE" : "OPEN");
+	owner->RecordEvent ("DOOR", close ? "CLOSE" : "OPEN");
 }
 
 void TurnAroundHangar::RevertOuterAirlock ()
@@ -96,4 +96,9 @@ void TurnAroundHangar::clbkSaveState (FILEHANDLE scn)
 void TurnAroundHangar::clbkPostCreation ()
 {	
 	owner->SetAnimation (anim_doors, doors_proc);	
+}
+
+void TurnAroundHangar::Init(VESSEL* owner)
+{
+	this->owner=owner;
 }

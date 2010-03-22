@@ -63,6 +63,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++) rotidx[i][j] = 0;
 
+	for(i=0;i<5;i++) hangars[i].Init(this);
+
 	DefineAnimations();
 
 	//DEBUG
