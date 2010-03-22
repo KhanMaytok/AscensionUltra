@@ -319,6 +319,14 @@
 			RelativePath="resource.h"
 			>
 		</File>
+		<File
+			RelativePath=".\TurnAroundHangar.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\TurnAroundHangar.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

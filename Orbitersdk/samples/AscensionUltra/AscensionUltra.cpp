@@ -19,11 +19,6 @@
 #include "KeyboardFilter.h"
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
-#define CRANEXOFFSET 130.0
-#define CRANEYOFFSET 18.0
-#define CRANEREELUPPERPOINT 31.0
-#define CRANEREELLOWERPOINT 29.0
-#define CRANEREELHEIGHT (CRANEREELUPPERPOINT-CRANEREELLOWERPOINT)
 #define TOPOOFFSET _V(-2958,0,-3891)
 #define TA1MATRIXOFFSET _V(266,0,0)
 #define ALLOFFSET _V(3,0,-2)
@@ -55,8 +50,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	int i, j;
 
 	modelidx = (fmodel ? 1 : 0);
-	olock_status      = DOOR_CLOSED;
-	olock_proc        = 0.0;
 	visual            = NULL;
 	exmesh            = NULL;
 	vcmesh            = NULL;
@@ -71,9 +64,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 		for (j = 0; j < 3; j++) rotidx[i][j] = 0;
 
 	DefineAnimations();
-
-	crane1.SetSpeed(_V(10,10,10));
-	crane1.SetCrawl(_V(1,1,1));
 
 	//DEBUG
 	disx=0.0;
@@ -96,26 +86,7 @@ AscensionUltra::~AscensionUltra ()
 // --------------------------------------------------------------
 void AscensionUltra::DefineAnimations ()
 {
-	// ***** Hangar door animation *****
-	static UINT DoorGrp[8] = {2,3,0,1,6,4,5,7};
-	static MGROUP_ROTATE Door1 (0, DoorGrp, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD));
-	static MGROUP_ROTATE Door2 (0, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD));
-	static MGROUP_TRANSLATE Door3 (0, DoorGrp+2, 1, _V(0,6,0));
-	static MGROUP_TRANSLATE Door4 (0, DoorGrp+3, 1, _V(0,6,0));
-	static MGROUP_TRANSLATE CraneX (0, DoorGrp+4, 1, _V(CRANEXOFFSET,0,0));
-	static MGROUP_TRANSLATE CraneY (0, DoorGrp+5, 1, _V(0,0,CRANEYOFFSET));
-	static MGROUP_TRANSLATE CraneZ (0, DoorGrp+7, 1, _V(0,-CRANEREELLOWERPOINT,0));
-	static MGROUP_SCALE CraneReel (0, DoorGrp+6, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1));
-
-	anim_olock = CreateAnimation (0);
-	AddAnimationComponent (anim_olock, 0, 1, &Door1);
-	AddAnimationComponent (anim_olock, 0, 1, &Door2);
-	AddAnimationComponent (anim_olock, 0, 1, &Door3);
-	AddAnimationComponent (anim_olock, 0, 1, &Door4);
-
-	crane1.Init(this, &CraneX, &CraneY, &CraneZ, &CraneReel);
-	crane1.DefineAnimations();	
-
+	for(int i=0;i<5;i++) hangars[i].DefineAnimations();
 }
 
 // --------------------------------------------------------------
@@ -163,22 +134,15 @@ void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
 	// TODO: draw vessel status	
 }
 
-void AscensionUltra::ActivateOuterAirlock (DoorStatus action)
+void AscensionUltra::ActivateOuterAirlock (TurnAroundHangar::DoorStatus action)
 {
-	bool close = (action == DOOR_CLOSED || action == DOOR_CLOSING);
-	olock_status = action;
-	if (action <= DOOR_OPEN) {
-		olock_proc = (action == DOOR_CLOSED ? 0.0 : 1.0);
-		SetAnimation (anim_olock, olock_proc);
-	}
+	for(int i=0;i<5;i++) hangars[i].ActivateOuterAirlock(action);
 	UpdateCtrlDialog (this);
-	RecordEvent ("OLOCK", close ? "CLOSE" : "OPEN");
 }
 
 void AscensionUltra::RevertOuterAirlock ()
 {
-	ActivateOuterAirlock (olock_status == DOOR_CLOSED || olock_status == DOOR_CLOSING ?
-		                  DOOR_OPENING : DOOR_CLOSING);
+	for(int i=0;i<5;i++) hangars[i].RevertOuterAirlock();
 }
 
 void AscensionUltra::SetNavlight (bool on)
@@ -285,10 +249,11 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 {
     char *line;
+	static int cur_hangar=0;
 
 	while (oapiReadScenario_nextline (scn, line)) {
-        if (!strnicmp (line, "AIRLOCK", 7)) {
-			sscanf (line+7, "%d%lf", &olock_status, &olock_proc);
+        if (!strnicmp (line, "HANGAR", 6)) {
+			sscanf (line+6, "%d", &cur_hangar);
 		} else if (!strnicmp (line, "SKIN", 4)) {
 			sscanf (line+4, "%s", skinpath);
 			char fname[256];
@@ -305,6 +270,13 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			SetNavlight (lgt[0] != 0);
 			SetBeacon (lgt[1] != 0);
 			SetStrobe (lgt[2] != 0);
+        } else if (!strnicmp (line, "LIGHTS", 6)) {
+			int lgt[3];
+			sscanf (line+6, "%d%d%d", lgt+0, lgt+1, lgt+2);
+			SetNavlight (lgt[0] != 0);
+			SetBeacon (lgt[1] != 0);
+			SetStrobe (lgt[2] != 0);
+		} else if (hangars[cur_hangar].clbkLoadStateEx(line)) {
         } else {
             ParseScenarioLineEx (line, vs);
 			// unrecognised option - pass to Orbiter's generic parser
@@ -322,10 +294,13 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	VESSEL2::clbkSaveState (scn);
 
 	// Write custom parameters
-	if (olock_status) {
-		sprintf (cbuf, "%d %0.4f", olock_status, olock_proc);
-		oapiWriteScenario_string (scn, "AIRLOCK", cbuf);
+	for(i=0;i<5;i++)
+	{
+		sprintf (cbuf, "%d", i);
+		oapiWriteScenario_string (scn, "HANGAR", cbuf);
+		hangars[i].clbkSaveState(scn);
 	}
+	
 	if (skinpath[0])
 		oapiWriteScenario_string (scn, "SKIN", skinpath);
 	for (i = 0; i < 7; i++)
@@ -341,8 +316,7 @@ void AscensionUltra::clbkPostCreation ()
 {
 	SetEmptyMass (EMPTY_MASS);
 
-	// update animation states
-	SetAnimation (anim_olock, olock_proc);
+	for(int i=0;i<5;i++) hangars[i].clbkPostCreation();
 
 	PaintMarkings (insignia_tex);
 }
@@ -351,7 +325,7 @@ void AscensionUltra::clbkPostCreation ()
 bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
 	if (!stricmp (event_type, "OLOCK")) {
-		ActivateOuterAirlock (!stricmp (event, "CLOSE") ? DOOR_CLOSING : DOOR_OPENING);
+		ActivateOuterAirlock (!stricmp (event, "CLOSE") ? TurnAroundHangar::DOOR_CLOSING : TurnAroundHangar::DOOR_OPENING);
 		return true;
 	}
 	return false;
@@ -383,27 +357,7 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 // --------------------------------------------------------------
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
-	// animate outer airlock
-	if (olock_status >= DOOR_CLOSING) {
-		double da = simdt * AIRLOCK_OPERATING_SPEED;
-		if (olock_status == DOOR_CLOSING) {
-			if (olock_proc > 0.0)
-				olock_proc = max (0.0, olock_proc-da);
-			else {
-				olock_status = DOOR_CLOSED;
-				//oapiTriggerPanelRedrawArea (1, AID_AIRLOCKINDICATOR);
-			}
-		} else { // door opening
-			if (olock_proc < 1.0)
-				olock_proc = min (1.0, olock_proc+da);
-			else {
-				olock_status = DOOR_OPEN;
-				//oapiTriggerPanelRedrawArea (1, AID_AIRLOCKINDICATOR);
-			}
-		}
-		SetAnimation (anim_olock, olock_proc);
-	}
-	crane1.PostStep(simt, simdt, mjd);
+	for(int i=0;i<5;i++) hangars[i].clbkPostStep(simt, simdt, mjd);
 }
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
@@ -483,10 +437,10 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		//DEBUG END
 		case OAPI_KEY_V:
-			crane1.StartManual();
+			//crane1.StartManual();
 			return 1;
 		case OAPI_KEY_B:
-			crane1.Stop();
+			//crane1.Stop();
 			return 1;
 		}
 	}
@@ -503,6 +457,11 @@ void AscensionUltra::MoveGroup(int mesh, VECTOR3 v)
 	mt.P.transparam.shift=v;
 	int k=oapiMeshGroupCount(GetMesh(visual, mesh));
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
+}
+
+int AscensionUltra::GetDoorStatus()
+{
+	return hangars[0].doors_status;
 }
 
 // Module initialisation
@@ -580,10 +539,10 @@ BOOL CALLBACK EdPg1Proc (HWND hTab, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiOpenHelp (&g_hc);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			GetDG(hTab)->ActivateOuterAirlock (AscensionUltra::DOOR_CLOSED);
+			GetDG(hTab)->ActivateOuterAirlock (TurnAroundHangar::DOOR_CLOSED);
 			return TRUE;
 		case IDC_OLOCK_OPEN:
-			GetDG(hTab)->ActivateOuterAirlock (AscensionUltra::DOOR_OPEN);
+			GetDG(hTab)->ActivateOuterAirlock (TurnAroundHangar::DOOR_OPEN);
 			return TRUE;
 		}
 		break;
@@ -652,10 +611,10 @@ BOOL CALLBACK Ctrl_DlgProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiCloseDialog (hWnd);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			dg->ActivateOuterAirlock (AscensionUltra::DOOR_CLOSING);
+			dg->ActivateOuterAirlock (TurnAroundHangar::DOOR_CLOSING);
 			return 0;
 		case IDC_OLOCK_OPEN:
-			dg->ActivateOuterAirlock (AscensionUltra::DOOR_OPENING);
+			dg->ActivateOuterAirlock (TurnAroundHangar::DOOR_OPENING);
 			return 0;
 		}
 		break;
@@ -672,7 +631,7 @@ void UpdateCtrlDialog (AscensionUltra *dg, HWND hWnd)
 
 	int op;
 
-	op = dg->olock_status & 1;
+	op = dg->GetDoorStatus() & 1;
 	SendDlgItemMessage (hWnd, IDC_OLOCK_OPEN, BM_SETCHECK, bstatus[op], 0);
 	SendDlgItemMessage (hWnd, IDC_OLOCK_CLOSE, BM_SETCHECK, bstatus[1-op], 0);
 

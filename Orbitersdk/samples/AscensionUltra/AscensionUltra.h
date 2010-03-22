@@ -15,10 +15,9 @@
 
 #include "orbitersdk.h"
 #include "resource.h"
-#include "Crane.h"
+#include "TurnAroundHangar.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
-const double AIRLOCK_OPERATING_SPEED = 0.1; // Opening/closing speed of outer airlock (1/sec) => cycle = 10 sec
 
 class AscensionUltra: public VESSEL2 {
 public:
@@ -41,11 +40,8 @@ public:
 	int  clbkConsumeBufferedKey (DWORD key, bool down, char *kstate);	
 	bool clbkLoadGenericCockpit ();
 
-	enum DoorStatus { DOOR_CLOSED, DOOR_OPEN, DOOR_CLOSING, DOOR_OPENING } olock_status;
-	void ActivateOuterAirlock (DoorStatus action);
+	void ActivateOuterAirlock (TurnAroundHangar::DoorStatus action);
 	void RevertOuterAirlock ();
-	double olock_proc;     // logical status
-	UINT anim_olock;        // handle for outer airlock animation
 
 	SURFHANDLE insignia_tex;        // vessel-specific fuselage markings
 	MESHHANDLE exmesh, meshHangar, meshTopo, meshPlaceHolder;  // local external mesh and global template
@@ -58,9 +54,11 @@ public:
 	void SetBeacon (bool on);
 	void SetStrobe (bool on);
 	void MoveGroup(int mesh, VECTOR3 v);
+
+	int GetDoorStatus();
 	
 private:
-	Crane crane1;
+	TurnAroundHangar hangars[5];
 	void ApplySkin();                            // apply custom skin
 	void PaintMarkings (SURFHANDLE tex);         // paint individual vessel markings
 
