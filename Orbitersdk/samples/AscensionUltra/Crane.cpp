@@ -18,6 +18,7 @@ void Crane::Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP
 	mgroupZ=Z;
 	mgroupReel=Reel;
 	len=_V(length(mgroupX->shift),length(mgroupY->shift),length(mgroupZ->shift));
+	filter=NULL;
 }
 
 void Crane::SetSpeed(VECTOR3 speed){this->speed=speed;}
@@ -32,6 +33,7 @@ void Crane::StartAuto(int list)
 void Crane::Stop()
 {
 	delete filter;
+	filter=NULL;
 	command=_V(0.0,0.0,0.0);
 	sprintf(oapiDebugString(), "Crane offline");
 }

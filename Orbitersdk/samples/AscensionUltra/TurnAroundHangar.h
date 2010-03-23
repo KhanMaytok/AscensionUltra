@@ -25,6 +25,7 @@ public:
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
 	void Init(VESSEL* owner, UINT meshIndex);
+	Crane *GetCrane();
 private:
 	VESSEL* owner;
 	UINT meshIndex;

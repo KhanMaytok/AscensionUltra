@@ -438,10 +438,10 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		//DEBUG END
 		case OAPI_KEY_V:
-			//crane1.StartManual();
+			if (mnr<5) hangars[mnr].GetCrane()->StartManual();
 			return 1;
 		case OAPI_KEY_B:
-			//crane1.Stop();
+			if (mnr<5) hangars[mnr].GetCrane()->Stop();
 			return 1;
 		}
 	}

@@ -102,3 +102,8 @@ void TurnAroundHangar::Init(VESSEL* owner, UINT meshIndex)
 	this->owner=owner;
 	this->meshIndex=meshIndex;
 }
+
+Crane *TurnAroundHangar::GetCrane()
+{
+	return &crane1;
+}
