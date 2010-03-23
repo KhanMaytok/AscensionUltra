@@ -63,7 +63,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++) rotidx[i][j] = 0;
 
-	for(i=0;i<5;i++) hangars[i].Init(this);
+	for(i=0;i<5;i++) hangars[i].Init(this, i);
 
 	DefineAnimations();
 
@@ -233,11 +233,10 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &ALLOFFSET), MESHVIS_EXTERNAL);	
+	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1");
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
 	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &(ALLOFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);
-	for(int i=1;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1"), &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
-	
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &(ALLOFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);	
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &(ALLOFFSET-PLACEHOLDEROFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);
 
 	// **************** vessel-specific insignia ****************
@@ -326,7 +325,7 @@ void AscensionUltra::clbkPostCreation ()
 // Respond to playback event
 bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!stricmp (event_type, "OLOCK")) {
+	if (!stricmp (event_type, "DOOR")) {
 		ActivateOuterAirlock (!stricmp (event, "CLOSE") ? TurnAroundHangar::DOOR_CLOSING : TurnAroundHangar::DOOR_OPENING);
 		return true;
 	}
@@ -338,7 +337,7 @@ void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
 	exmesh = GetMesh (vis, 0);
-	vcmesh = GetMesh (vis, 1);
+	vcmesh = GetMesh (vis, 5);
 
 	ApplySkin();
 

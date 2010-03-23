@@ -24,9 +24,14 @@ public:
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
-	void Init(VESSEL* owner);
+	void Init(VESSEL* owner, UINT meshIndex);
 private:
 	VESSEL* owner;
+	UINT meshIndex;
 	Crane crane1;	
 	UINT anim_doors;
+
+	MGROUP_ROTATE *door1, *door2;
+	MGROUP_TRANSLATE *door3, *door4, *craneX, *craneY, *craneZ;
+	MGROUP_SCALE *craneReel;
 };

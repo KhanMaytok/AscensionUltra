@@ -16,22 +16,22 @@ TurnAroundHangar::~TurnAroundHangar(void)
 void TurnAroundHangar::DefineAnimations ()
 {
 	static UINT DoorGrp[8] = {2,3,0,1,6,4,5,7};
-	static MGROUP_ROTATE Door1 (0, DoorGrp, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD));
-	static MGROUP_ROTATE Door2 (0, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD));
-	static MGROUP_TRANSLATE Door3 (0, DoorGrp+2, 1, _V(0,6,0));
-	static MGROUP_TRANSLATE Door4 (0, DoorGrp+3, 1, _V(0,6,0));
-	static MGROUP_TRANSLATE CraneX (0, DoorGrp+4, 1, _V(CRANEXOFFSET,0,0));
-	static MGROUP_TRANSLATE CraneY (0, DoorGrp+5, 1, _V(0,0,CRANEYOFFSET));
-	static MGROUP_TRANSLATE CraneZ (0, DoorGrp+7, 1, _V(0,-CRANEREELLOWERPOINT,0));
-	static MGROUP_SCALE CraneReel (0, DoorGrp+6, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1));
+	door1=new MGROUP_ROTATE(meshIndex, DoorGrp, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD));
+	door2=new MGROUP_ROTATE(meshIndex, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD));
+	door3=new MGROUP_TRANSLATE(meshIndex, DoorGrp+2, 1, _V(0,6,0));
+	door4=new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1, _V(0,6,0));
+	craneX=new MGROUP_TRANSLATE(meshIndex, DoorGrp+4, 1, _V(CRANEXOFFSET,0,0));
+	craneY=new MGROUP_TRANSLATE(meshIndex, DoorGrp+5, 1, _V(0,0,CRANEYOFFSET));
+	craneZ=new MGROUP_TRANSLATE(meshIndex, DoorGrp+7, 1, _V(0,-CRANEREELLOWERPOINT,0));
+	craneReel=new MGROUP_SCALE(meshIndex, DoorGrp+6, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1));
 
 	anim_doors = owner->CreateAnimation (0);
-	owner->AddAnimationComponent (anim_doors, 0, 1, &Door1);
-	owner->AddAnimationComponent (anim_doors, 0, 1, &Door2);
-	owner->AddAnimationComponent (anim_doors, 0, 1, &Door3);
-	owner->AddAnimationComponent (anim_doors, 0, 1, &Door4);
+	owner->AddAnimationComponent (anim_doors, 0, 1, door1);
+	owner->AddAnimationComponent (anim_doors, 0, 1, door2);
+	owner->AddAnimationComponent (anim_doors, 0, 1, door3);
+	owner->AddAnimationComponent (anim_doors, 0, 1, door4);
 
-	crane1.Init(owner, &CraneX, &CraneY, &CraneZ, &CraneReel);
+	crane1.Init(owner, craneX, craneY, craneZ, craneReel);
 	crane1.DefineAnimations();
 
 }
@@ -55,7 +55,6 @@ void TurnAroundHangar::RevertOuterAirlock ()
 
 void TurnAroundHangar::clbkPostStep (double simt, double simdt, double mjd)
 {
-	// animate outer airlock
 	if (doors_status >= DOOR_CLOSING) {
 		double da = simdt * AIRLOCK_OPERATING_SPEED;
 		if (doors_status == TurnAroundHangar::DOOR_CLOSING) {
@@ -79,7 +78,7 @@ bool TurnAroundHangar::clbkLoadStateEx (char *line)
 		sscanf (line+4, "%d%d%lf", &doornrdummy, &doors_status, &doors_proc);
 		return true;
 	}
-	else false;
+	else return false;
 }
 
 // Write status to scenario file
@@ -98,7 +97,8 @@ void TurnAroundHangar::clbkPostCreation ()
 	owner->SetAnimation (anim_doors, doors_proc);	
 }
 
-void TurnAroundHangar::Init(VESSEL* owner)
+void TurnAroundHangar::Init(VESSEL* owner, UINT meshIndex)
 {
 	this->owner=owner;
+	this->meshIndex=meshIndex;
 }
