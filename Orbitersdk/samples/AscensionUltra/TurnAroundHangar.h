@@ -26,6 +26,7 @@ public:
 	void clbkPostCreation ();
 	void Init(VESSEL* owner, UINT meshIndex);
 	Crane *GetCrane();
+	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 private:
 	VESSEL* owner;
 	UINT meshIndex;

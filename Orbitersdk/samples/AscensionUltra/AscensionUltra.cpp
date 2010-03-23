@@ -325,9 +325,11 @@ void AscensionUltra::clbkPostCreation ()
 // Respond to playback event
 bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!stricmp (event_type, "DOOR")) {
-		ActivateOuterAirlock (!stricmp (event, "CLOSE") ? TurnAroundHangar::DOOR_CLOSING : TurnAroundHangar::DOOR_OPENING);
-		return true;
+	if (!strnicmp (event_type, "HANGAR", 6))
+	{
+		//Hangar event
+		int hangar=(int)(event_type+6)[0]-0x30;
+		if (hangar>=0 && hangar<5) return hangars[hangar].clbkPlaybackEvent(simt, event_t, event_type+7, event);
 	}
 	return false;
 }
@@ -386,8 +388,8 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 	} else {
 		int res;
 		switch (key) {
-		case OAPI_KEY_O:  // "operate outer airlock"
-			RevertOuterAirlock ();
+		case OAPI_KEY_O:
+			if (mnr<5) hangars[mnr].RevertOuterAirlock();
 			return 1;
 		//DEBUG
 		case OAPI_KEY_1:
@@ -517,13 +519,9 @@ DLLCLBK void ovcExit (VESSEL *vessel)
 }
 
 
-// ==============================================================
-// Scenario editor interface
-// ==============================================================
-
 AscensionUltra *GetDG (HWND hDlg)
 {
-	// retrieve DG interface from scenario editor
+	// retrieve AscensionUltra interface from scenario editor
 	OBJHANDLE hVessel;
 	SendMessage (hDlg, WM_SCNEDITOR, SE_GETVESSEL, (LPARAM)&hVessel);
 	return (AscensionUltra*)oapiGetVesselInterface (hVessel);

@@ -44,7 +44,10 @@ void TurnAroundHangar::ActivateOuterAirlock (DoorStatus action)
 		doors_proc = (action == DOOR_CLOSED ? 0.0 : 1.0);
 		owner->SetAnimation (anim_doors, doors_proc);
 	}
-	owner->RecordEvent ("DOOR", close ? "CLOSE" : "OPEN");
+	char event_type[20]="HANGARxDOORy";
+	event_type[6]=0x30+meshIndex;
+	event_type[11]=0x30+0;
+	owner->RecordEvent (event_type, close ? "CLOSE" : "OPEN");
 }
 
 void TurnAroundHangar::RevertOuterAirlock ()
@@ -106,4 +109,19 @@ void TurnAroundHangar::Init(VESSEL* owner, UINT meshIndex)
 Crane *TurnAroundHangar::GetCrane()
 {
 	return &crane1;
+}
+
+bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
+{
+	if (!strnicmp (event_type, "DOOR", 4))
+	{
+		//Hangar event
+		int door=(int)(event_type+4)[0]-0x30;
+		if (door>=0 && door<4)
+		{	
+			ActivateOuterAirlock (!stricmp (event, "CLOSE") ? DOOR_CLOSING : DOOR_OPENING);
+		}		
+		return true;
+	}
+	return false;
 }
