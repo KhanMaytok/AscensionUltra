@@ -24,7 +24,7 @@ public:
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
-	void Init(VESSEL* owner, UINT meshIndex);
+	void Init(VESSEL* owner, UINT meshIndex, const char *event_prefix);
 	Crane *GetCrane();
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 private:
@@ -36,4 +36,5 @@ private:
 	MGROUP_ROTATE *door1, *door2;
 	MGROUP_TRANSLATE *door3, *door4, *craneX, *craneY, *craneZ;
 	MGROUP_SCALE *craneReel;
+	char *event_prefix;
 };
