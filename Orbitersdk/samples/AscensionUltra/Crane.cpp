@@ -10,9 +10,10 @@
 
 #include "Crane.h"
 
-void Crane::Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel)
+void Crane::Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix)
 {
 	this->owner=owner;
+	strcpy(this->event_prefix=new char[strlen(event_prefix)], event_prefix);
 	mgroupX=X;
 	mgroupY=Y;
 	mgroupZ=Z;
@@ -152,4 +153,38 @@ int Crane::ConsumeDirectKey (char *kstate)
 	}
 	if (length(command)!=0) return 1;
 	return 0;
+}
+
+bool Crane::clbkLoadStateEx (char *line)
+{
+    if (!strnicmp (line, "POS", 3))
+	{
+		sscanf (line+4, "%lf%lf%lf", &position.x, &position.y, &position.z);
+		return true;
+	}
+	return false;
+}
+
+void Crane::clbkSaveState (FILEHANDLE scn)
+{
+	char cbuf[256];	
+	sprintf (cbuf, "%0.4f %0.4f %0.4f", position.x, position.y, position.z);
+	oapiWriteScenario_string (scn, "POS", cbuf);
+}
+
+void Crane::clbkPostCreation ()
+{	
+	SetAnimation(anim_x, position.x);
+	SetAnimation(anim_y, position.y);
+	SetAnimation(anim_z, position.z);
+}
+
+bool Crane::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
+{
+	if (!strnicmp (event_type, "CMD", 3))
+	{
+		sscanf (event, "%lf%lf%lf", &command.x, &command.y, &command.z);
+		return true;
+	}
+	return false;
 }

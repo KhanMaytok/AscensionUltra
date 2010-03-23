@@ -37,4 +37,5 @@ private:
 	MGROUP_TRANSLATE *door3, *door4, *craneX, *craneY, *craneZ;
 	MGROUP_SCALE *craneReel;
 	char *event_prefix;
+	int cur_crane;
 };

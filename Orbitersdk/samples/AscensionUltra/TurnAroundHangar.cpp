@@ -9,6 +9,8 @@ TurnAroundHangar::TurnAroundHangar(void)
 	doors_proc        = 0.0;
 
 	event_prefix=NULL;
+
+	cur_crane=-1;
 }
 
 TurnAroundHangar::~TurnAroundHangar(void)
@@ -34,7 +36,9 @@ void TurnAroundHangar::DefineAnimations ()
 	owner->AddAnimationComponent (anim_doors, 0, 1, door3);
 	owner->AddAnimationComponent (anim_doors, 0, 1, door4);
 
-	crane1.Init(owner, craneX, craneY, craneZ, craneReel);
+	char prefix[20]="";
+	sprintf(prefix, "%sCRANE%d", event_prefix, 0);
+	crane1.Init(owner, craneX, craneY, craneZ, craneReel, prefix);
 	crane1.DefineAnimations();
 
 }
@@ -78,28 +82,37 @@ bool TurnAroundHangar::clbkLoadStateEx (char *line)
 {
     int doornrdummy;
 	
-	if (!strnicmp (line, "DOOR", 4))
-	{
-		sscanf (line+4, "%d%d%lf", &doornrdummy, &doors_status, &doors_proc);
-		return true;
-	}
+	if (!strnicmp (line, "CRANE", 5)) sscanf (line+5, "%d", &cur_crane);
+	else if (cur_crane>=0 && cur_crane<1) return crane1.clbkLoadStateEx(line);
+	else if (!strnicmp (line, "DOOR", 4)) sscanf (line+4, "%d%d%lf", &doornrdummy, &doors_status, &doors_proc);
 	else return false;
+	return true;
 }
 
-// Write status to scenario file
 void TurnAroundHangar::clbkSaveState (FILEHANDLE scn)
 {
 	char cbuf[256];
+	int i;
 	// Write custom parameters
 	if (doors_status) {
 		sprintf (cbuf, "0 %d %0.4f", doors_status, doors_proc);
 		oapiWriteScenario_string (scn, "DOOR", cbuf);
-	}	
+	}
+
+	for(i=0;i<1;i++)
+	{
+		sprintf (cbuf, "%d", i);
+		oapiWriteScenario_string (scn, "CRANE", cbuf);
+		crane1.clbkSaveState(scn);
+	}
+	sprintf (cbuf, "%d", i);
+	oapiWriteScenario_string (scn, "CRANE", cbuf);
 }
 
 void TurnAroundHangar::clbkPostCreation ()
 {	
-	owner->SetAnimation (anim_doors, doors_proc);	
+	owner->SetAnimation (anim_doors, doors_proc);
+	crane1.clbkPostCreation();
 }
 
 void TurnAroundHangar::Init(VESSEL* owner, UINT meshIndex, const char *event_prefix)
@@ -116,6 +129,12 @@ Crane *TurnAroundHangar::GetCrane()
 
 bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
+	if (!strnicmp (event_type, "CRANE", 5))
+	{
+		//Hangar event
+		int crane=(int)(event_type+5)[0]-0x30;
+		if (crane>=0 && crane<1) return crane1.clbkPlaybackEvent(simt, event_t, event_type+5, event);
+	}
 	if (!strnicmp (event_type, "DOOR", 4))
 	{
 		//Hangar event

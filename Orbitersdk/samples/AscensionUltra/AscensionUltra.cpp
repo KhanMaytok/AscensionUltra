@@ -72,6 +72,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	DefineAnimations();
 
+	cur_hangar=-1;
+
 	//DEBUG
 	disx=0.0;
 	disy=0.0;
@@ -255,11 +257,12 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 {
     char *line;
-	static int cur_hangar=0;
-
+	
 	while (oapiReadScenario_nextline (scn, line)) {
-        if (!strnicmp (line, "HANGAR", 6)) {
+		if (!strnicmp (line, "HANGAR", 6)) {
 			sscanf (line+6, "%d", &cur_hangar);
+		} else if (cur_hangar>=0 && cur_hangar<5) {
+			if (!hangars[cur_hangar].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else if (!strnicmp (line, "SKIN", 4)) {
 			sscanf (line+4, "%s", skinpath);
 			char fname[256];
@@ -282,7 +285,6 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			SetNavlight (lgt[0] != 0);
 			SetBeacon (lgt[1] != 0);
 			SetStrobe (lgt[2] != 0);
-		} else if (hangars[cur_hangar].clbkLoadStateEx(line)) {
         } else {
             ParseScenarioLineEx (line, vs);
 			// unrecognised option - pass to Orbiter's generic parser
@@ -306,6 +308,8 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 		oapiWriteScenario_string (scn, "HANGAR", cbuf);
 		hangars[i].clbkSaveState(scn);
 	}
+	sprintf (cbuf, "%d", i);
+	oapiWriteScenario_string (scn, "HANGAR", cbuf);
 	
 	if (skinpath[0])
 		oapiWriteScenario_string (scn, "SKIN", skinpath);

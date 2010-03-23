@@ -16,7 +16,7 @@
 class Crane
 {
 public:
-	void Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel);
+	void Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix);
 	void SetSpeed(VECTOR3 speed);
 	void SetCrawl(VECTOR3 speed);
 	void SetMargin(VECTOR3 margin);
@@ -30,6 +30,10 @@ public:
 	void PostStep (double simt, double simdt, double mjd);
 	int ConsumeDirectKey (char *kstate);
 	void DefineAnimations();
+	bool clbkLoadStateEx (char *line);
+	void clbkSaveState (FILEHANDLE scn);
+	void clbkPostCreation ();
+	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 
 private:
 	void Crane::SetAnimation (int animation, double &position);
@@ -51,4 +55,5 @@ private:
 	KeyboardFilter *filter;
 	static int ConsumeDirectKey (void *crane, char *kstate);
 	static void Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam);
+	char *event_prefix;
 };

@@ -73,6 +73,8 @@ private:
 		char dsp[2][10];
 	} p_rngdisp;
 
+	int cur_hangar;
+
 	//DEBUG
 	double disx, disy, disz, stp;
 	int mnr;
