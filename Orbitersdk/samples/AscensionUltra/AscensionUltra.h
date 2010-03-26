@@ -74,7 +74,7 @@ private:
 
 	//DEBUG
 	double disx, disy, disz, stp;
-	int mnr;
+	int mnr, dnr;
 };
 
 typedef struct {

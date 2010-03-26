@@ -80,6 +80,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	disz=0.0;
 	stp=10.0;
 	mnr=0;
+	dnr=0;
 }
 
 // --------------------------------------------------------------
@@ -247,7 +248,7 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 {
     char *line;
 	
-	while (oapiReadScenario_nextline (scn, line)) {
+	while (oapiReadScenario_nextline (scn, line)) {		
 		if (!strnicmp (line, "HANGAR", 6)) {
 			sscanf (line+6, "%d", &cur_hangar);
 		} else if (cur_hangar>=0 && cur_hangar<5) {
@@ -390,56 +391,72 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		case OAPI_KEY_1:
 			MoveGroup(mnr, _V(stp, 0, 0));
 			disx+=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_2:
 			MoveGroup(mnr, _V(-stp, 0, 0));
 			disx-=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_3:
 			MoveGroup(mnr, _V(0, stp, 0));
 			disy+=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_4:
 			MoveGroup(mnr, _V(0, -stp, 0));
 			disy-=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_5:
 			MoveGroup(mnr, _V(0, 0, stp));
 			disz+=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_6:
 			MoveGroup(mnr, _V(0, 0, -stp));
 			disz-=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_7:
 			stp/=10.0;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_8:
 			stp*=10.0;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_9:
 			if (mnr>0) mnr--;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_0:
 			mnr++;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			return 1;	
+		case OAPI_KEY_C:
+			if (++dnr>=4) dnr=0;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
-		//DEBUG END
+		case OAPI_KEY_F:
+			if (dnr<4 && mnr<5) hangars[mnr].GetDoor(dnr)->Open();
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			return 1;
+		case OAPI_KEY_G:
+			if (dnr<4 && mnr<5) hangars[mnr].GetDoor(dnr)->Close();
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			return 1;
+		case OAPI_KEY_H:
+			if (dnr<4 && mnr<5) hangars[mnr].GetDoor(dnr)->Stop();
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			return 1;
 		case OAPI_KEY_V:
 			if (mnr<5) hangars[mnr].GetCrane()->StartManual();
 			return 1;
 		case OAPI_KEY_B:
 			if (mnr<5) hangars[mnr].GetCrane()->Stop();
 			return 1;
+		//DEBUG END
 		}
 	}
 	return 0;
