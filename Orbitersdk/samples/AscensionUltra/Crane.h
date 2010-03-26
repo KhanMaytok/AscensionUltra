@@ -36,7 +36,8 @@ public:
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 
 private:
-	void Crane::SetAnimation (int animation, double &position);
+	void RecordEvent(VECTOR3 &command);
+	void SetAnimation (int animation, double &position);
 	VESSEL* owner;
 	MGROUP_TRANSLATE *mgroupX;
 	MGROUP_TRANSLATE *mgroupY;
@@ -48,6 +49,7 @@ private:
 	VECTOR3 margin;
 	VECTOR3 position;
 	VECTOR3 command;
+	VECTOR3 oldcommand;
 	VECTOR3 len;
 	double autoOverride;
 	std::vector<int> lists;

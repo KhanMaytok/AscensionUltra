@@ -13,16 +13,25 @@
 void Door::Init(VESSEL *owner, MGROUP_TRANSFORM *door, const char *event_prefix)
 {
 	this->owner=owner;
-	strcpy(this->event_prefix=new char[strlen(event_prefix)], event_prefix);
+	sprintf(this->event_prefix=new char[strlen(event_prefix)+4], "%sCMD", event_prefix);
 	this->door=door;
 	SetSpeed(0.1);
-	Stop();
+	position=0;
+	command=0.0;
 }
 
 void Door::SetSpeed(double speed){this->speed=speed;}
-void Door::Stop(){command=0.0;}
-void Door::Open(){command=speed;};
-void Door::Close(){command=-speed;};
+void Door::Stop(){RecordEvent(command=0.0);}
+void Door::Open(){RecordEvent(command=speed);}
+void Door::Close(){RecordEvent(command=-speed);}
+
+void Door::RecordEvent(double command)
+{
+	static char e[8]="";
+	sprintf(e, "%0.4f", command);
+	owner->RecordEvent(event_prefix, e);
+}
+
 double Door::GetPosition(){return position;}
 
 void Door::PostStep (double simt, double simdt, double mjd)
@@ -53,6 +62,10 @@ bool Door::clbkLoadStateEx (char *line)
 	{
 		sscanf (line+4, "%lf", &position);
 		return true;
+	} else if (!strnicmp (line, "CMD", 3))
+	{
+		sscanf (line+4, "%lf", &command);
+		return true;
 	}
 	return false;
 }
@@ -62,6 +75,8 @@ void Door::clbkSaveState (FILEHANDLE scn)
 	char cbuf[256];	
 	sprintf (cbuf, "%0.4f", position);
 	oapiWriteScenario_string (scn, "POS", cbuf);
+	sprintf (cbuf, "%0.4f", command);
+	oapiWriteScenario_string (scn, "CMD", cbuf);
 }
 
 void Door::clbkPostCreation ()

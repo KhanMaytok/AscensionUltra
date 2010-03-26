@@ -13,13 +13,15 @@
 void Crane::Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix)
 {
 	this->owner=owner;
-	strcpy(this->event_prefix=new char[strlen(event_prefix)], event_prefix);
+	sprintf(this->event_prefix=new char[strlen(event_prefix)+4], "%sCMD", event_prefix);
 	mgroupX=X;
 	mgroupY=Y;
 	mgroupZ=Z;
 	mgroupReel=Reel;
 	len=_V(length(mgroupX->shift),length(mgroupY->shift),length(mgroupZ->shift));
 	filter=NULL;
+	position=_V(0,0,0);
+	oldcommand=command=_V(0.0,0.0,0.0);
 }
 
 void Crane::SetSpeed(VECTOR3 speed){this->speed=speed;}
@@ -33,16 +35,19 @@ void Crane::StartAuto(int list)
 
 void Crane::Stop()
 {
-	delete filter;
-	filter=NULL;
-	command=_V(0.0,0.0,0.0);
-	sprintf(oapiDebugString(), "Crane offline");
+	if (filter!=NULL)
+	{
+		sprintf(oapiDebugString(), "Crane offline");
+		delete filter;
+		filter=NULL;
+	}
+	RecordEvent(oldcommand=command=_V(0.0,0.0,0.0));
 }
 
 void Crane::StartManual()
 {
 	sprintf(oapiDebugString(), "Crane online (A/D long axis, W/S short axis, Q/E reel, B to return)");
-	command=_V(0.0,0.0,0.0);
+	RecordEvent(oldcommand=command=_V(0.0,0.0,0.0));
 	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey, &Crane::Prefilter);
 }
 
@@ -66,16 +71,16 @@ void Crane::SetPosition(VECTOR3 pos)
 void Crane::PostStep (double simt, double simdt, double mjd)
 {
 	position+=command*simdt;
-	SetAnimation(anim_x, position.x);
-	SetAnimation(anim_y, position.y);
-	SetAnimation(anim_z, position.z);
+	if (command.x!=0.0) SetAnimation(anim_x, position.x);
+	if (command.y!=0.0) SetAnimation(anim_y, position.y);
+	if (command.z!=0.0) SetAnimation(anim_z, position.z);
 }
 
 void Crane::SetAnimation (int animation, double &position)
 {
 	if (position<0) position=0;
 	if (position>1) position=1;
-	owner->SetAnimation (animation, position);
+	owner->SetAnimation (animation, position);	
 }
 
 void Crane::DefineAnimations()
@@ -109,6 +114,7 @@ void Crane::Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam)
 
 int Crane::ConsumeDirectKey (char *kstate)
 {
+	oldcommand=command;
 	command=_V(0,0,0);
 	if (KEYDOWN(kstate, OAPI_KEY_B))
 	{
@@ -151,15 +157,19 @@ int Crane::ConsumeDirectKey (char *kstate)
 		if (KEYMOD_SHIFT(kstate)) command.z=crawl.z/len.z;
 		else command.z=speed.z/len.z;
 	}
-	if (length(command)!=0) return 1;
+	if (length(command)!=0)
+	{
+		if (oldcommand.x!=command.x || oldcommand.y!=command.y || oldcommand.z!=command.z) RecordEvent(command);
+		return 1;
+	}
 	return 0;
 }
 
 bool Crane::clbkLoadStateEx (char *line)
 {
     if (!strnicmp (line, "POS", 3))
-	{
-		sscanf (line+4, "%lf%lf%lf", &position.x, &position.y, &position.z);
+	{		
+		sscanf (line+4, "%lf%lf%lf", &position.x, &position.y, &position.z);		
 		return true;
 	}
 	return false;
@@ -187,4 +197,11 @@ bool Crane::clbkPlaybackEvent (double simt, double event_t, const char *event_ty
 		return true;
 	}
 	return false;
+}
+
+void Crane::RecordEvent(VECTOR3 &command)
+{
+	static char e[40]="";
+	sprintf(e, "%0.4f %0.4f %0.4f", command.x, command.y, command.z);
+	owner->RecordEvent(event_prefix, e);
 }

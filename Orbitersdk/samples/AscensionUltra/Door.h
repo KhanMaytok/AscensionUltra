@@ -28,6 +28,7 @@ public:
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 
 private:
+	void RecordEvent(double command);
 	VESSEL* owner;
 	MGROUP_TRANSFORM *door;
 	int anim;
