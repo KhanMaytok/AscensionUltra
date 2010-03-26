@@ -114,13 +114,13 @@ bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const cha
 	{
 		//Crane event
 		int crane=(int)(event_type+5)[0]-0x30;
-		if (crane>=0 && crane<1) return crane1.clbkPlaybackEvent(simt, event_t, event_type+5, event);
+		if (crane>=0 && crane<1) return crane1.clbkPlaybackEvent(simt, event_t, event_type+6, event);
 	}
 	if (!strnicmp (event_type, "DOOR", 4))
 	{
 		//Door event
 		int door=(int)(event_type+4)[0]-0x30;
-		if (door>=0 && door<4) return doors[door].clbkPlaybackEvent(simt, event_t, event_type+4, event);
+		if (door>=0 && door<4) return doors[door].clbkPlaybackEvent(simt, event_t, event_type+5, event);
 	}
 	return false;
 }
