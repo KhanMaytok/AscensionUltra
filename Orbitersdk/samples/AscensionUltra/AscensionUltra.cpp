@@ -19,9 +19,9 @@
 #include "KeyboardFilter.h"
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
-#define TOPOOFFSET _V(-2958,0,-3891)
+#define TOPOOFFSET _V(-2958,0,-3890)
 #define TA1MATRIXOFFSET _V(266,0,0)
-#define ALLOFFSET _V(3,0,-2)
+#define ALLOFFSET _V(3,0,-3)
 #define PLACEHOLDEROFFSET _V(-2304,0,-4552)
 
 // ==============================================================

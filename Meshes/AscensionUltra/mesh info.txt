@@ -42,7 +42,7 @@ Main Hangar Doors - 30 degree X axis rotation around 0,0,0
 End Doors - 6m translation +Y axis
 
 ** OFFSET from TOPO mesh **
-2958,0,3891
+2958,0,3890
 
 **Spacing between hangars**
 266m
