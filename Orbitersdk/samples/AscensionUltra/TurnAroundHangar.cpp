@@ -60,9 +60,7 @@ void TurnAroundHangar::clbkPostStep (double simt, double simdt, double mjd)
 
 bool TurnAroundHangar::clbkLoadStateEx (char *line)
 {
-    int doornrdummy;
-	
-	if (!strnicmp (line, "DOOR", 4)) sscanf (line+4, "%d", &cur_door);
+    if (!strnicmp (line, "DOOR", 4)) sscanf (line+4, "%d", &cur_door);
 	else if (cur_door>=0 && cur_door<4) return doors[cur_door].clbkLoadStateEx(line);
 	else if (!strnicmp (line, "CRANE", 5)) sscanf (line+5, "%d", &cur_crane);
 	else if (cur_crane>=0 && cur_crane<1) return crane1.clbkLoadStateEx(line);	
