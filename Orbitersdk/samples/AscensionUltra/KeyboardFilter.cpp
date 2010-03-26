@@ -1,3 +1,12 @@
+// ==============================================================
+//                ORBITER MODULE: ASCENSIONULTRA
+//                  Part of Ascension Ultra
+//          Copyright (C) 2010 Friedrich Kastner-Masilko
+//                   All rights reserved
+//
+// KeyboardFilter.cpp
+// Class implementation of keyboard filter.
+// ==============================================================
 #include <windows.h>
 #include "KeyboardFilter.h"
 #include <stdio.h>
