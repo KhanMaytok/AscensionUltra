@@ -40,9 +40,6 @@ public:
 	int  clbkConsumeBufferedKey (DWORD key, bool down, char *kstate);	
 	bool clbkLoadGenericCockpit ();
 
-	void ActivateOuterAirlock (TurnAroundHangar::DoorStatus action);
-	void RevertOuterAirlock ();
-
 	SURFHANDLE insignia_tex;        // vessel-specific fuselage markings
 	MESHHANDLE exmesh, meshHangar, meshTopo, meshPlaceHolder;  // local external mesh and global template
 	MESHHANDLE vcmesh, vcmesh_tpl;  // local VC mesh and global template
@@ -55,7 +52,7 @@ public:
 	void SetStrobe (bool on);
 	void MoveGroup(int mesh, VECTOR3 v);
 
-	int GetDoorStatus();
+	TurnAroundHangar *GetHangar(int index);
 	
 private:
 	TurnAroundHangar hangars[5];

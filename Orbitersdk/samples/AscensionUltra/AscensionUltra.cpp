@@ -143,17 +143,6 @@ void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
 	// TODO: draw vessel status	
 }
 
-void AscensionUltra::ActivateOuterAirlock (TurnAroundHangar::DoorStatus action)
-{
-	for(int i=0;i<5;i++) hangars[i].ActivateOuterAirlock(action);
-	UpdateCtrlDialog (this);
-}
-
-void AscensionUltra::RevertOuterAirlock ()
-{
-	for(int i=0;i<5;i++) hangars[i].RevertOuterAirlock();
-}
-
 void AscensionUltra::SetNavlight (bool on)
 {
 	beacon[0].active = beacon[1].active = beacon[2].active = on;
@@ -397,9 +386,6 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 	} else {
 		int res;
 		switch (key) {
-		case OAPI_KEY_O:
-			if (mnr<5) hangars[mnr].RevertOuterAirlock();
-			return 1;
 		//DEBUG
 		case OAPI_KEY_1:
 			MoveGroup(mnr, _V(stp, 0, 0));
@@ -471,10 +457,7 @@ void AscensionUltra::MoveGroup(int mesh, VECTOR3 v)
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }
 
-int AscensionUltra::GetDoorStatus()
-{
-	return hangars[0].doors_status;
-}
+TurnAroundHangar *AscensionUltra::GetHangar(int index){return (index>=0 && index<5)?hangars+index:NULL;}
 
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
@@ -547,10 +530,10 @@ BOOL CALLBACK EdPg1Proc (HWND hTab, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiOpenHelp (&g_hc);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			GetDG(hTab)->ActivateOuterAirlock (TurnAroundHangar::DOOR_CLOSED);
+			GetDG(hTab)->GetHangar(0)->GetDoor(0)->Close();
 			return TRUE;
 		case IDC_OLOCK_OPEN:
-			GetDG(hTab)->ActivateOuterAirlock (TurnAroundHangar::DOOR_OPEN);
+			GetDG(hTab)->GetHangar(0)->GetDoor(0)->Open();
 			return TRUE;
 		}
 		break;
@@ -619,10 +602,10 @@ BOOL CALLBACK Ctrl_DlgProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiCloseDialog (hWnd);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			dg->ActivateOuterAirlock (TurnAroundHangar::DOOR_CLOSING);
+			dg->GetHangar(0)->GetDoor(0)->Close();
 			return 0;
 		case IDC_OLOCK_OPEN:
-			dg->ActivateOuterAirlock (TurnAroundHangar::DOOR_OPENING);
+			dg->GetHangar(0)->GetDoor(0)->Open();
 			return 0;
 		}
 		break;
@@ -639,7 +622,7 @@ void UpdateCtrlDialog (AscensionUltra *dg, HWND hWnd)
 
 	int op;
 
-	op = dg->GetDoorStatus() & 1;
+	op = dg->GetHangar(0)->GetDoor(0)->GetPosition()==0.0?0:1;
 	SendDlgItemMessage (hWnd, IDC_OLOCK_OPEN, BM_SETCHECK, bstatus[op], 0);
 	SendDlgItemMessage (hWnd, IDC_OLOCK_CLOSE, BM_SETCHECK, bstatus[1-op], 0);
 
