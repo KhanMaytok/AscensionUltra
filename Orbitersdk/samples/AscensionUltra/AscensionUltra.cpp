@@ -201,8 +201,9 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetMaxWheelbrakeForce (2e5);
 	SetPMI (_V(15.5,22.1,7.7));
 
-	SetDockParams (_V(0,-0.49,10.076), _V(0,0,1), _V(0,1,0));
+	SetDockParams (_V(0,-0.49,10.076), _V(0,0,1), _V(0,1,0));	
 	SetTouchdownPoints (_V(0,0,10), _V(-3.5,0,-3), _V(3.5,0,-3));
+	SetCOG_elev(0.001);
 	EnableTransponder (true);
 	bool render_cockpit = true;
 
