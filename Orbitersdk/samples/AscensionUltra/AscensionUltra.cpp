@@ -67,7 +67,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	for(i=0;i<5;i++)
 	{
 		prefix[6]=0x30+i;
-		hangars[i].Init(this, i, prefix);
+		hangars[i].Init(this, i+2, prefix);
 	}
 
 	DefineAnimations();
@@ -231,11 +231,11 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1");
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
-	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &(ALLOFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);	
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &(ALLOFFSET-PLACEHOLDEROFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);
+	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1");
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
+	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);	
 
 	// **************** vessel-specific insignia ****************
 
@@ -339,7 +339,7 @@ void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
 	exmesh = GetMesh (vis, 0);
-	vcmesh = GetMesh (vis, 5);
+	vcmesh = GetMesh (vis, 7);
 
 	ApplySkin();
 
@@ -440,22 +440,22 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_F:
-			if (dnr<4 && mnr<5) hangars[mnr].GetDoor(dnr)->Open();
+			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Open();
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_G:
-			if (dnr<4 && mnr<5) hangars[mnr].GetDoor(dnr)->Close();
+			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Close();
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_H:
-			if (dnr<4 && mnr<5) hangars[mnr].GetDoor(dnr)->Stop();
+			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Stop();
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_V:
-			if (mnr<5) hangars[mnr].GetCrane()->StartManual();
+			if (mnr>1 && mnr<7) hangars[mnr-2].GetCrane()->StartManual();
 			return 1;
 		case OAPI_KEY_B:
-			if (mnr<5) hangars[mnr].GetCrane()->Stop();
+			if (mnr>1 && mnr<7) hangars[mnr-2].GetCrane()->Stop();
 			return 1;
 		//DEBUG END
 		}

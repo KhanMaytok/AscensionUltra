@@ -27,26 +27,26 @@ TurnAroundHangar::~TurnAroundHangar(void)
 
 void TurnAroundHangar::DefineAnimations ()
 {
-	static UINT DoorGrp[8] = {2,3,0,1,6,4,5,7};
+	static UINT DoorGrp[8] = {1,2,3,4,5,6,7,8};
 	char prefix[20]="";
 	int i=0;
 
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
-	doors[0].Init(owner, new MGROUP_ROTATE(meshIndex, DoorGrp, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD)), prefix);
+	doors[0].Init(owner, new MGROUP_ROTATE(meshIndex, DoorGrp+4, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD)), prefix);
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
-	doors[1].Init(owner, new MGROUP_ROTATE(meshIndex, DoorGrp+1, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD)), prefix);
+	doors[1].Init(owner, new MGROUP_ROTATE(meshIndex, DoorGrp+5, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD)), prefix);
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
-	doors[2].Init(owner, new MGROUP_TRANSLATE(meshIndex, DoorGrp+2, 1, _V(0,6,0)), prefix);
+	doors[2].Init(owner, new MGROUP_TRANSLATE(meshIndex, DoorGrp+6, 1, _V(0,6,0)), prefix);
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
-	doors[3].Init(owner, new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1, _V(0,6,0)), prefix);
+	doors[3].Init(owner, new MGROUP_TRANSLATE(meshIndex, DoorGrp+7, 1, _V(0,6,0)), prefix);
 	for (i=0;i<4;i++) doors[i].DefineAnimations();
 
 	sprintf(prefix, "%sCRANE%d", event_prefix, 0);
 	crane1.Init(owner,
-		new MGROUP_TRANSLATE(meshIndex, DoorGrp+4, 1, _V(CRANEXOFFSET,0,0)),
-		new MGROUP_TRANSLATE(meshIndex, DoorGrp+5, 1, _V(0,0,CRANEYOFFSET)),
-		new MGROUP_TRANSLATE(meshIndex, DoorGrp+7, 1, _V(0,-CRANEREELLOWERPOINT,0)),
-		new MGROUP_SCALE(meshIndex, DoorGrp+6, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1)),
+		new MGROUP_TRANSLATE(meshIndex, DoorGrp+0, 1, _V(CRANEXOFFSET,0,0)),
+		new MGROUP_TRANSLATE(meshIndex, DoorGrp+1, 1, _V(0,0,CRANEYOFFSET)),
+		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1, _V(0,-CRANEREELLOWERPOINT,0)),
+		new MGROUP_SCALE(meshIndex, DoorGrp+2, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1)),
 		prefix);
 	crane1.DefineAnimations();
 
