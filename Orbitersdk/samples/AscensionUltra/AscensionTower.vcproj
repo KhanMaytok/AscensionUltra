@@ -171,13 +171,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\lib\orbitersdk.lib ..\..\lib\orbiter.lib"
 				OutputFile=".\..\..\..\Modules\Plugin\AscensionTower.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="msvcrt.lib, msvcirt.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\..\..\..\Modules\Plugin\AscensionTower.pdb"
 				RandomizedBaseAddress="1"

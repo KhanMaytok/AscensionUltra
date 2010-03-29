@@ -171,13 +171,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\lib\orbitersdk.lib ..\..\lib\orbiter.lib"
 				OutputFile=".\..\..\..\Modules\Startup/AscensionUltraConfigurator.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
+				IgnoreDefaultLibraryNames="msvcrt.lib, msvcirt.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\..\..\..\Modules\Startup/AscensionUltraConfigurator.pdb"
 				RandomizedBaseAddress="1"
