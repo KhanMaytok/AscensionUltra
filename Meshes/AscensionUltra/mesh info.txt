@@ -3,15 +3,14 @@ Ascension Ultra  -   mesh information
 
 *******************************************TURNAROUND HANGAR
 ** Relevant Mesh Groups **
-0 - windows
-1 - crane_beam
-2 - crane_upper jig
-3 - crane_cables
-4 - crane_lower jig
-5 - +Z main door
-6 - -Z main door
-7 - +X service door
-8 - -X service door
+0 - crane_beam
+1 - crane_upper jig
+2 - crane_cables
+3 - crane_lower jig
+4 - +Z main door
+5 - -Z main door
+6 - +X service door
+7 - -X service door
 
 
 ** Rest Positions **
@@ -40,6 +39,11 @@ End Doors - 6m translation +Y axis
 
 **Spacing between hangars**
 266m
+
+**Observation Room Camera Positions**
+88,22,0
+-88,22,0
+Cameras point toward 0,0,0 as default
 
 
 **************************************************************** Place Holder mesh
