@@ -76,19 +76,19 @@ void TurnAroundHangar::clbkSaveState (FILEHANDLE scn)
 	for(i=0;i<4;i++)
 	{
 		sprintf (cbuf, "%d", i);
-		oapiWriteScenario_string (scn, "DOOR", cbuf);
+		oapiWriteScenario_string (scn, "\tDOOR", cbuf);
 		doors[i].clbkSaveState(scn);
 	}
 	sprintf (cbuf, "%d", i);
-	oapiWriteScenario_string (scn, "DOOR", cbuf);
+	oapiWriteScenario_string (scn, "\tDOOR", cbuf);
 	for(i=0;i<1;i++)
 	{
 		sprintf (cbuf, "%d", i);
-		oapiWriteScenario_string (scn, "CRANE", cbuf);
+		oapiWriteScenario_string (scn, "\tCRANE", cbuf);
 		crane1.clbkSaveState(scn);
 	}
 	sprintf (cbuf, "%d", i);
-	oapiWriteScenario_string (scn, "CRANE", cbuf);
+	oapiWriteScenario_string (scn, "\tCRANE", cbuf);
 }
 
 void TurnAroundHangar::clbkPostCreation ()

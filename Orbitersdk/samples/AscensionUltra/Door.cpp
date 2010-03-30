@@ -74,9 +74,9 @@ void Door::clbkSaveState (FILEHANDLE scn)
 {
 	char cbuf[256];	
 	sprintf (cbuf, "%0.4f", position);
-	oapiWriteScenario_string (scn, "POS", cbuf);
+	oapiWriteScenario_string (scn, "\t\tPOS", cbuf);
 	sprintf (cbuf, "%0.4f", command);
-	oapiWriteScenario_string (scn, "CMD", cbuf);
+	oapiWriteScenario_string (scn, "\t\tCMD", cbuf);
 }
 
 void Door::clbkPostCreation ()
