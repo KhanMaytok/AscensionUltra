@@ -27,7 +27,7 @@ TurnAroundHangar::~TurnAroundHangar(void)
 
 void TurnAroundHangar::DefineAnimations ()
 {
-	static UINT DoorGrp[8] = {1,2,3,4,5,6,7,8};
+	static UINT DoorGrp[8] = {0,1,2,3,4,5,6,7};
 	char prefix[20]="";
 	int i=0;
 

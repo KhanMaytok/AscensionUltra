@@ -233,9 +233,11 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &(ALLOFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);	
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &(ALLOFFSET-PLACEHOLDEROFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);
-	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-1");
+	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-NW");
+	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\TA1-WO");
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
-	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);	
+	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
 
 	// **************** vessel-specific insignia ****************
 
