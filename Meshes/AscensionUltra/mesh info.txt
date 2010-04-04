@@ -1,7 +1,11 @@
 Ascension Ultra  -   mesh information
 
+GLOBAL LONG/LAT: -14.405 -7.955
+
 
 *******************************************TURNAROUND HANGAR
+LONG/LAT: -14.407322 -7.946957
+
 ** Relevant Mesh Groups **
 0 - crane_beam
 1 - crane_upper jig
@@ -11,7 +15,6 @@ Ascension Ultra  -   mesh information
 5 - -Z main door
 6 - +X service door
 7 - -X service door
-
 
 ** Rest Positions **
 Cross Beam  -65,33,0
@@ -34,9 +37,6 @@ Z axis = 29m
 Main Hangar Doors - 30 degree X axis rotation around 0,0,0
 End Doors - 6m translation +Y axis
 
-** OFFSET from TOPO mesh **
-2958,0,3890
-
 **Spacing between hangars**
 266m
 
@@ -46,6 +46,6 @@ End Doors - 6m translation +Y axis
 Cameras point toward 0,0,0 as default
 
 
+
 **************************************************************** Place Holder mesh
-** OFFSET from TOPO mesh**
-2350,0,4512
+LONG/LAT: -14.405 -7.955
