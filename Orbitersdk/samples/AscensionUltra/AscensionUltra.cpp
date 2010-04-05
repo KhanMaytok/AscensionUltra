@@ -19,10 +19,8 @@
 #include "KeyboardFilter.h"
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
-#define TOPOOFFSET _V(-2958,0,-3890)
 #define TA1MATRIXOFFSET _V(266,0,0)
-#define ALLOFFSET _V(3,0,-3)
-#define PLACEHOLDEROFFSET _V(-2304,0,-4552)
+#define ALLOFFSET _V(+645.5,0,-670)
 
 // ==============================================================
 // Global parameters
@@ -231,8 +229,8 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &(ALLOFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);	
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &(ALLOFFSET-PLACEHOLDEROFFSET+TOPOOFFSET)), MESHVIS_EXTERNAL);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1")), MESHVIS_EXTERNAL);	
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders")), MESHVIS_EXTERNAL);
 	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-NW");
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\TA1-WO");
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);

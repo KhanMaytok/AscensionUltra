@@ -43,7 +43,7 @@ GL-01:DeltaGlider
 END
 AU-Main:AscensionUltra
   STATUS Landed Earth
-  POS -14.4074100 -7.9470200
+  POS -14.405 -7.955
   HEADING 208.00
   NAVFREQ 0 0 0 0
   XPDR 0
