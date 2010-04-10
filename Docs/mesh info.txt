@@ -1,0 +1,54 @@
+Ascension Ultra  -   mesh information
+
+GLOBAL LONG/LAT: -14.405 -7.955
+Global 0,0 is in the top left corner of the basefloor mesh
+
+*******************************************TURNAROUND HANGAR
+
+**POS offset from mesh 0,0 of hangar 1 (rightmost)**
+2242,580
+
+
+** Relevant Mesh Groups **
+0 - crane_beam
+1 - crane_upper jig
+2 - crane_cables
+3 - crane_lower jig
+4 - +Z main door
+5 - -Z main door
+6 - +X service door
+7 - -X service door
+
+** Rest Positions **
+Cross Beam  -65,33,0
+Upper Jig   -65,31.5,-9
+Cables      -65,30,-9
+Lower Jig   -65,28.5,-9
+
+** Animation Data
+CRANEXOFFSET		130.0
+CRANEYOFFSET		18.0
+CRANEREELUPPERPOINT	31.0
+CRANEREELLOWERPOINT	29.0
+
+** Translation Distances **
+X axis = 130m
+Y axis = 18m
+Z axis = 29m 
+
+** Door Animations **
+Main Hangar Doors - 30 degree X axis rotation around 0,0,0
+End Doors - 6m translation +Y axis
+
+**Spacing between hangars**
+266m
+
+**Observation Room Camera Positions**
+88,22,0
+-88,22,0
+Cameras point toward 0,0,0 as default
+
+
+
+**************************************************************** Place Holder mesh
+0,0 is same as others, shouldn't require moving.
