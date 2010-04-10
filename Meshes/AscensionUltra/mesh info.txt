@@ -1,10 +1,13 @@
 Ascension Ultra  -   mesh information
 
 GLOBAL LONG/LAT: -14.405 -7.955
-
+Global 0,0 is in the top left corner of the basefloor mesh
 
 *******************************************TURNAROUND HANGAR
-LONG/LAT: -14.407322 -7.946957
+
+**POS offset from mesh 0,0 of hangar 1 (rightmost)**
+2242,580
+
 
 ** Relevant Mesh Groups **
 0 - crane_beam
@@ -48,4 +51,4 @@ Cameras point toward 0,0,0 as default
 
 
 **************************************************************** Place Holder mesh
-LONG/LAT: -14.405 -7.955
+0,0 is same as others, shouldn't require moving.
