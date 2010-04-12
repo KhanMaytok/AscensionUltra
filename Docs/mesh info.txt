@@ -1,12 +1,20 @@
 Ascension Ultra  -   mesh information
 
-GLOBAL LONG/LAT: -14.405 -7.955
+VESSEL LONG/LAT:-14.405		-7.955
+BASE LONG/LAT:	-14.422598	-7.936056
+LP-OFFSET:	+ 0.017598	-0.018944
+
 Global 0,0 is in the top left corner of the basefloor mesh
+Global direction is positive to the right and down
+Vessel-LP to 0,0 offset-vector:	-2700,0,-950
+Vessel direction is same as global, but x inverted
+Base-LP to 0,0 offset-vector: 	   0,0,0
+Base direction is same as global (?)
 
 *******************************************TURNAROUND HANGAR
 
-**POS offset from mesh 0,0 of hangar 1 (rightmost)**
-2242,580
+** Offset-vector for hangar 1 (rightmost) **
+2242,0,580
 
 
 ** Relevant Mesh Groups **
@@ -25,7 +33,7 @@ Upper Jig   -65,31.5,-9
 Cables      -65,30,-9
 Lower Jig   -65,28.5,-9
 
-** Animation Data
+** Animation Data **
 CRANEXOFFSET		130.0
 CRANEYOFFSET		18.0
 CRANEREELUPPERPOINT	31.0
@@ -40,15 +48,16 @@ Z axis = 29m
 Main Hangar Doors - 30 degree X axis rotation around 0,0,0
 End Doors - 6m translation +Y axis
 
-**Spacing between hangars**
+** Spacing between hangars **
 266m
 
-**Observation Room Camera Positions**
+** Observation Room Camera Positions **
+** (relative to hangar origin)       **
 88,22,0
 -88,22,0
 Cameras point toward 0,0,0 as default
 
 
-
-**************************************************************** Place Holder mesh
-0,0 is same as others, shouldn't require moving.
+************************************************PLACE HOLDER
+** Offset-vector
+0,0,0

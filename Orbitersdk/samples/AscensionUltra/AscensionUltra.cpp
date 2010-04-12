@@ -20,7 +20,8 @@
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
 #define TA1MATRIXOFFSET _V(266,0,0)
-#define ALLOFFSET _V(+645.5,0,-670)
+#define ALLOFFSET _V(-2242,0,580)
+#define OFFSET _V(2700,0,-950)
 
 // ==============================================================
 // Global parameters
@@ -229,13 +230,13 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1")), MESHVIS_EXTERNAL);	
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders")), MESHVIS_EXTERNAL);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &OFFSET), MESHVIS_EXTERNAL);	
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &OFFSET), MESHVIS_EXTERNAL);
 	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-NW");
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\TA1-WO");
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
 	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
 
 	// **************** vessel-specific insignia ****************
 
