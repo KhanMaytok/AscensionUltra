@@ -1,15 +1,35 @@
 Ascension Ultra  -   mesh information
 
-VESSEL LONG/LAT:-14.405		-7.955
-BASE LONG/LAT:	-14.422598	-7.936056
-LP-OFFSET:	+ 0.017598	-0.018944
+******************************************COORDINATE SYSTEMS
 
-Global 0,0 is in the top left corner of the basefloor mesh
-Global direction is positive to the right and down
-Vessel-LP to 0,0 offset-vector:	-2700,0,-950
-Vessel direction is same as global, but x inverted
-Base-LP to 0,0 offset-vector: 	   0,0,0
-Base direction is same as global (?)
+** Earth position **
+Global LONG/LAT:	-14.405	-7.955
+Intended Heading (a):	118°
+Heading of base:	242° = -118°
+Heading of vessel:	208° = 118°+90°
+
+(suffix '(g)' indicates global coordinates, suffix '(l)'
+ indicates mesh-local coordinates, suffix '(b)' is for base
+ configuration-file coordinates)
+
+* Global 0,0 is in the top left corner of the basefloor mesh
+
+* Global direction is positive to the right and down
+
+* Landing-point to 0,0 offset-vector:	-2700,0,-950(g)
+
+* Transformation matrix for global coordinates to vessel:
+	| -1	0	0	|
+	| 0	1	0	|
+	| 0	0	1	|
+  (or just invert the x coordinate)
+
+* Transformation matrix for global coordinates to base:
+	| -cos(a)	0	sin(a)	|
+	| 0		1	0	|
+	| sin(a)	0	cos(a)	|
+  (with a=118° and offset -2700,0,-950(g) =>
+	-2106.373433,0,-1937.960516(b))
 
 *******************************************TURNAROUND HANGAR
 
