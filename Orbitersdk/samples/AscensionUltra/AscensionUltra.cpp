@@ -22,6 +22,7 @@
 #define TA1MATRIXOFFSET _V(266,0,0)
 #define ALLOFFSET _V(-2242,0,580)
 #define OFFSET _V(2700,0,-950)
+#define CTRLROOM _V(-88,22,0)
 
 // ==============================================================
 // Global parameters
@@ -50,17 +51,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	modelidx = (fmodel ? 1 : 0);
 	visual            = NULL;
-	exmesh            = NULL;
-	vcmesh            = NULL;
-	vcmesh_tpl        = NULL;
-	insignia_tex      = NULL;
 	campos            = CAM_GENERIC;
-
-	skinpath[0] = '\0';
-	for (i = 0; i < 3; i++)
-		skin[i] = 0;
-	for (i = 0; i < 3; i++)
-		for (j = 0; j < 3; j++) rotidx[i][j] = 0;
 
 	char prefix[8]="HANGARx";
 	for(i=0;i<5;i++)
@@ -87,7 +78,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 // --------------------------------------------------------------
 AscensionUltra::~AscensionUltra ()
 {
-	if (insignia_tex) oapiDestroySurface(insignia_tex);
 }
 
 // --------------------------------------------------------------
@@ -96,43 +86,6 @@ AscensionUltra::~AscensionUltra ()
 void AscensionUltra::DefineAnimations ()
 {
 	for(int i=0;i<5;i++) hangars[i].DefineAnimations();
-}
-
-// --------------------------------------------------------------
-// Apply custom skin to the current mesh instance
-// --------------------------------------------------------------
-void AscensionUltra::ApplySkin ()
-{
-	if (!exmesh) return;
-	if (skin[0]) oapiSetTexture (exmesh, 2, skin[0]);
-	if (skin[1]) oapiSetTexture (exmesh, 3, skin[1]);
-	oapiSetTexture (exmesh, 5, insignia_tex);
-}
-
-// --------------------------------------------------------------
-// Paint individual vessel markings
-// --------------------------------------------------------------
-void AscensionUltra::PaintMarkings (SURFHANDLE tex)
-{
-	HDC hDC = oapiGetDC (tex);
-	HFONT hFont = CreateFont(38, 0, 0, 0, 700, 0, 0, 0, 0, 0, 0, 0, 0, "Arial");
-	HFONT pFont = (HFONT)SelectObject (hDC, hFont);
-	SetTextColor (hDC, 0xD0D0D0);
-	SetBkMode (hDC, TRANSPARENT);
-	SetTextAlign (hDC, TA_CENTER);
-	char cbuf[32];
-	strncpy (cbuf, GetName(), 10);
-	int len = min(strlen(GetName()), 10);
-	TextOut (hDC, 196, 10, cbuf, len);
-	TextOut (hDC, 196, 74, cbuf, len);
-	SetTextColor (hDC, 0x808080);
-	SetTextAlign (hDC, TA_RIGHT);
-	TextOut (hDC, 120, 158, cbuf, len);
-	SetTextAlign (hDC, TA_LEFT);
-	TextOut (hDC, 133, 158, cbuf, len);
-	SelectObject (hDC, pFont);
-	DeleteObject (hFont);
-	oapiReleaseDC (tex, hDC);
 }
 
 void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
@@ -165,20 +118,6 @@ static UINT HatchGrp[2] = {12,88};
 
 static UINT AileronGrp[8] = {29,51,30,52,35,55,36,54};
 
-void AscensionUltra::UpdateVCMesh()
-{
-	if (vcmesh) {
-		// hide pilot head in VCPILOT position
-		if (campos == CAM_VCPILOT) {
-			oapiMeshGroup(vcmesh, 138)->UsrFlag |= 0x00000003;
-			oapiMeshGroup(vcmesh, 139)->UsrFlag |= 0x00000003;
-		} else {
-			oapiMeshGroup(vcmesh, 138)->UsrFlag &= 0xFFFFFFFC;
-			oapiMeshGroup(vcmesh, 139)->UsrFlag &= 0xFFFFFFFC;
-		}
-	}
-}
-
 static float tv0[8] = {0,0,0.0469f,0.0469f,0,0,0.0469f,0.0469f};
 
 // Set vessel class parameters
@@ -191,16 +130,6 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetSize (5000);
 	SetVisibilityLimit (7.5e-4, 1.5e-3);
 	SetAlbedoRGB (_V(0.77,0.20,0.13));
-	SetGravityGradientDamping (20.0);
-	SetCW (0.09, 0.09, 2, 1.4);
-	SetWingAspect (0.7);
-	SetWingEffectiveness (2.5);
-	SetCrossSections (_V(53.0,186.9,25.9));
-	SetSurfaceFrictionCoeff (0.07, 0.3);
-	SetMaxWheelbrakeForce (2e5);
-	SetPMI (_V(15.5,22.1,7.7));
-
-	SetDockParams (_V(0,-0.49,10.076), _V(0,0,1), _V(0,1,0));	
 	SetTouchdownPoints (_V(0,0,10), _V(-3.5,0,-3), _V(3.5,0,-3));
 	SetCOG_elev(0.001);
 	EnableTransponder (true);
@@ -209,8 +138,6 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	// ******************** NAV radios **************************
 
 	InitNavRadios (4);
-
-	SetRotDrag (_V(0.10,0.13,0.04));
 
 	// ************************* mesh ***************************
 
@@ -230,19 +157,13 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &OFFSET), MESHVIS_EXTERNAL);	
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &OFFSET), MESHVIS_EXTERNAL);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &OFFSET), MESHVIS_ALWAYS);	
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &OFFSET), MESHVIS_ALWAYS);
 	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-NW");
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\TA1-WO");
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
-	SetMeshVisibilityMode (AddMesh (vcmesh_tpl = oapiLoadMeshGlobal ("DG\\DeltaGliderCockpit")), MESHVIS_VC);
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_EXTERNAL);
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
 
-	// **************** vessel-specific insignia ****************
-
-	insignia_tex = oapiCreateTextureSurface (256, 256);
-	SURFHANDLE hTex = oapiGetTextureHandle (meshHangar, 5);
-	if (hTex) oapiBlt (insignia_tex, hTex, 0, 0, 0, 0, 256, 256);
 }
 
 // Read status from scenario file
@@ -255,16 +176,6 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+6, "%d", &cur_hangar);
 		} else if (cur_hangar>=0 && cur_hangar<5) {
 			if (!hangars[cur_hangar].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "SKIN", 4)) {
-			sscanf (line+4, "%s", skinpath);
-			char fname[256];
-			strcpy (fname, "DG\\Skins\\");
-			strcat (fname, skinpath);
-			int n = strlen(fname); fname[n++] = '\\';
-			strcpy (fname+n, "dgmk4_1.dds");  skin[0] = oapiLoadTexture (fname);
-			strcpy (fname+n, "dgmk4_2.dds");  skin[1] = oapiLoadTexture (fname);
-			strcpy (fname+n, "idpanel1.dds"); skin[2] = oapiLoadTexture (fname);
-			if (skin[2]) oapiBlt (insignia_tex, skin[2], 0, 0, 0, 0, 256, 256);
 		} else if (!strnicmp (line, "LIGHTS", 6)) {
 			int lgt[3];
 			sscanf (line+6, "%d%d%d", lgt+0, lgt+1, lgt+2);
@@ -303,8 +214,6 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "HANGAR", cbuf);
 	
-	if (skinpath[0])
-		oapiWriteScenario_string (scn, "SKIN", skinpath);
 	for (i = 0; i < 7; i++)
 		if (beacon[i].active) {
 			sprintf (cbuf, "%d %d %d", beacon[0].active, beacon[3].active, beacon[5].active);
@@ -319,8 +228,6 @@ void AscensionUltra::clbkPostCreation ()
 	SetEmptyMass (EMPTY_MASS);
 
 	for(int i=0;i<5;i++) hangars[i].clbkPostCreation();
-
-	PaintMarkings (insignia_tex);
 }
 
 // Respond to playback event
@@ -339,21 +246,12 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
-	exmesh = GetMesh (vis, 0);
-	vcmesh = GetMesh (vis, 7);
-
-	ApplySkin();
-
-	// set VC state
-	UpdateVCMesh();
 }
 
 // Destroy DG visual
 void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 {
 	visual = NULL;
-	exmesh = NULL;
-	vcmesh = NULL;
 }
 
 // --------------------------------------------------------------
@@ -366,7 +264,8 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
 {
-	SetCameraOffset (_V(0,1.467,6.782));
+	SetCameraOffset (OFFSET+ALLOFFSET+CTRLROOM);
+	SetCameraDefaultDirection(_V(1,0,0));
 	oapiSetDefNavDisplay (1);
 	oapiSetDefRCSDisplay (1);
 	campos = CAM_GENERIC;

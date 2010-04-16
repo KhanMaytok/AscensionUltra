@@ -25,7 +25,6 @@ public:
 	~AscensionUltra ();
 	void DefineAnimations ();
 	void DrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC);
-	void UpdateVCMesh ();
 	
 	// Overloaded callback functions
 	void clbkSetClassCaps (FILEHANDLE cfg);
@@ -40,10 +39,8 @@ public:
 	int  clbkConsumeBufferedKey (DWORD key, bool down, char *kstate);	
 	bool clbkLoadGenericCockpit ();
 
-	SURFHANDLE insignia_tex;        // vessel-specific fuselage markings
-	MESHHANDLE exmesh, meshHangar, meshWindow, meshTopo, meshPlaceHolder;  // local external mesh and global template
-	MESHHANDLE vcmesh, vcmesh_tpl;  // local VC mesh and global template
-
+	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder;  // local external mesh and global template
+	
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
 	BEACONLIGHTSPEC beacon[7];                   // light beacon definitions
@@ -56,20 +53,10 @@ public:
 	
 private:
 	TurnAroundHangar hangars[5];
-	void ApplySkin();                            // apply custom skin
-	void PaintMarkings (SURFHANDLE tex);         // paint individual vessel markings
 
 	int modelidx;                                // flight model index
-	VISHANDLE visual;                            // handle to DG visual representation
-	SURFHANDLE skin[3];                          // custom skin textures, if applicable
-	char skinpath[32];                           // skin directory, if applicable
+	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int rotidx[3][3];
-
-	struct RngDisp {
-		char dsp[2][10];
-	} p_rngdisp;
-
 	int cur_hangar;
 
 	//DEBUG
