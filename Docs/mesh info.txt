@@ -31,11 +31,23 @@ Heading of vessel:	208° = 118°+90°
   (with a=118° and offset -2700,0,-950(g) =>
 	-2106.373433,0,-1937.960516(b))
 
+
 *******************************************TURNAROUND HANGAR
+
+**Y axis curviture compensation adjustment**
+TA Hangar 1 (rightmost)
+-0.02
+TA Hangar 2
+-0.05
+TA Hangar 3
+-0.08
+TA Hangar 4
+-0.12
+TA Hangar 5
+-0.17
 
 ** Offset-vector for hangar 1 (rightmost) **
 2242,0,580
-
 
 ** Relevant Mesh Groups **
 0 - crane_beam
