@@ -34,7 +34,7 @@ Heading of vessel:	208° = 118°+90°
 
 *******************************************TURNAROUND HANGAR
 
-**Y axis curviture compensation adjustment**
+** Y-axis curviture compensation adjustment **
 TA Hangar 1 (rightmost)
 -0.02
 TA Hangar 2

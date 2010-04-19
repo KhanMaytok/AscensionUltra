@@ -20,9 +20,10 @@
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
 #define TA1MATRIXOFFSET _V(266,0,0)
-#define ALLOFFSET _V(-2242,0,580)
+#define TA1OFFSET _V(-2242,0,580)
 #define OFFSET _V(2700,0,-950)
-#define CTRLROOM _V(-88,22,0)
+#define CTRLROOM1 _V(-88,22,0)
+#define CTRLROOM2 _V(-88,22,0)
 
 // ==============================================================
 // Global parameters
@@ -157,12 +158,16 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		AddBeacon (beacon+i);
 	}
 
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &OFFSET), MESHVIS_ALWAYS);	
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &OFFSET), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Base_Signs"), &OFFSET), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &OFFSET), MESHVIS_ALWAYS);
 	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-NW");
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\TA1-WO");
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+ALLOFFSET+TA1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
+
+	double curvoff[5]={-0.02,-0.05,-0.08,-0.12,-0.17};
+
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
+	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 
 }
 
@@ -264,7 +269,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
 {
-	SetCameraOffset (OFFSET+ALLOFFSET+CTRLROOM);
+	SetCameraOffset (OFFSET+TA1OFFSET+CTRLROOM1);
 	SetCameraDefaultDirection(_V(1,0,0));
 	oapiSetDefNavDisplay (1);
 	oapiSetDefRCSDisplay (1);
