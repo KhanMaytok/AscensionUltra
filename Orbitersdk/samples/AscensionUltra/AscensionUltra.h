@@ -54,7 +54,7 @@ public:
 	
 private:
 	TurnAroundHangar hangars[5];
-	BeaconArray taxiwayA[3];
+	BeaconArray taxiwayA[3], taxiwayB[5], taxiwayC[5], taxiwayD[4];
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

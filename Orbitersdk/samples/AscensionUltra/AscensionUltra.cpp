@@ -69,11 +69,39 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	};
 	int taxiwayAbeacons[3]={116,23,5};
 
-	for(i=0;i<3;i++)
+	VECTOR3 taxiwayBlines[5][2]=
 	{
-		taxiwayA[i].Init(this, OFFSET+taxiwayAlines[i][0],OFFSET+taxiwayAlines[i][1], _V(0,1,0), taxiwayAbeacons[i]);
-		taxiwayA[i].Switch(true);
-	}
+		{_V(-4485,0,405),_V(-5295,0,405)},
+		{_V(-4460,0,430),_V(-4460,0,879)},
+		{_V(-4460,0,926),_V(-4460,0,1014)},
+		{_V(-5320,0,430),_V(-5320,0,879)},
+		{_V(-5320,0,926),_V(-5320,0,1014)}
+	};
+	int taxiwayBbeacons[5]={40,22,5,22,5};
+
+	VECTOR3 taxiwayClines[5][2]=
+	{		
+		{_V(-788,0,765),_V(-5687,0,765)},
+		{_V(-763,0,790),_V(-763,0,879)},
+		{_V(-763,0,926),_V(-763,0,1014)},
+		{_V(-5713,0,790),_V(-5713,0,879)},
+		{_V(-5713,0,926),_V(-5713,0,1014)}
+	};
+	int taxiwayCbeacons[5]={246,5,5,5,5};
+
+	VECTOR3 taxiwayDlines[4][2]=
+	{
+		{_V(-965,0,420),_V(-965,0,879)},
+		{_V(-965,0,926),_V(-965,0,1014)},
+		{_V(-965,0,1096),_V(-965,0,1220)},
+		{_V(-990,0,1245),_V(-1239,0,1245)}
+	};
+	int taxiwayDbeacons[4]={23,5,11,12};
+
+	for(i=0;i<3;i++) taxiwayA[i].Init(this, OFFSET+taxiwayAlines[i][0],OFFSET+taxiwayAlines[i][1], _V(0,1,0), taxiwayAbeacons[i]);
+	for(i=0;i<5;i++) taxiwayB[i].Init(this, OFFSET+taxiwayBlines[i][0],OFFSET+taxiwayBlines[i][1], _V(0,1,0), taxiwayBbeacons[i]);
+	for(i=0;i<5;i++) taxiwayC[i].Init(this, OFFSET+taxiwayClines[i][0],OFFSET+taxiwayClines[i][1], _V(0,1,0), taxiwayCbeacons[i]);
+	for(i=0;i<4;i++) taxiwayD[i].Init(this, OFFSET+taxiwayDlines[i][0],OFFSET+taxiwayDlines[i][1], _V(0,1,0), taxiwayDbeacons[i]);
 
 	DefineAnimations();
 
@@ -311,70 +339,92 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		case OAPI_KEY_1:
 			MoveGroup(mnr, _V(stp, 0, 0));
 			disx+=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_2:
 			MoveGroup(mnr, _V(-stp, 0, 0));
 			disx-=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_3:
 			MoveGroup(mnr, _V(0, stp, 0));
 			disy+=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_4:
 			MoveGroup(mnr, _V(0, -stp, 0));
 			disy-=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_5:
 			MoveGroup(mnr, _V(0, 0, stp));
 			disz+=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_6:
 			MoveGroup(mnr, _V(0, 0, -stp));
 			disz-=stp;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_7:
 			stp/=10.0;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_8:
 			stp*=10.0;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_9:
 			if (mnr>0) mnr--;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_0:
 			mnr++;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;	
 		case OAPI_KEY_C:
 			if (++dnr>=4) dnr=0;
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_F:
 			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Open();
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_G:
 			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Close();
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_H:
 			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Stop();
-			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door %d", mnr, disx, disy, disz, stp, dnr);
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_V:
 			if (mnr>1 && mnr<7) hangars[mnr-2].GetCrane()->StartManual();
 			return 1;
 		case OAPI_KEY_B:
 			if (mnr>1 && mnr<7) hangars[mnr-2].GetCrane()->Stop();
+			return 1;
+		case OAPI_KEY_O:			
+			bool switchState;
+			switch (dnr)
+			{
+			case 0:
+				switchState=!taxiwayA[0].On();
+				for(int i=0;i<3;i++) taxiwayA[i].Switch(switchState);
+				break;
+			case 1:
+				switchState=!taxiwayB[0].On();
+				for(int i=0;i<5;i++) taxiwayB[i].Switch(switchState);
+				break;
+			case 2:
+				switchState=!taxiwayC[0].On();
+				for(int i=0;i<5;i++) taxiwayC[i].Switch(switchState);
+				break;
+			case 3:
+				switchState=!taxiwayD[0].On();
+				for(int i=0;i<4;i++) taxiwayD[i].Switch(switchState);
+				break;
+			}
 			return 1;
 		//DEBUG END
 		}
