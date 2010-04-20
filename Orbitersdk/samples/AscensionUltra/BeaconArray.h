@@ -53,16 +53,11 @@ public:
 	void SetPropagate(double propagate);
 	double GetPropagate();
 
-	/* Restart of strobe sequence -
-	   how long after the beacon switched off until the beacon is switched on again
-	   0..Never switch on again within the strobe animation period */
-	void SetRestart(double restart);
-	double GetRestart();
-
 private:
+	void Clear();
 	VESSEL *owner;
-	BEACONLIGHTSPEC *spec;
-	VECTOR3 start, end;
+	BEACONLIGHTSPEC *spec;	
 	int beacons;
-	double period, duration, propagate, restart;
+	VECTOR3 color;
+	double period, duration, propagate;
 };
