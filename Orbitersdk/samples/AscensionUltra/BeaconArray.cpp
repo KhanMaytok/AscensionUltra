@@ -32,15 +32,21 @@ void BeaconArray::Init(VESSEL *owner, VECTOR3 &start, VECTOR3 &end, VECTOR3 &col
 	for(int i=0;i<beacons;i++)
 	{
 		spec[i].active=false;
-		spec[i].pos=new VECTOR3;
+		spec[i].duration=0;
+		spec[i].falloff=0;
+		spec[i].period=0;
+		spec[i].shape=BEACONSHAPE_COMPACT;
+		spec[i].size=1;
+		spec[i].tofs=0;
+		spec[i].pos=new VECTOR3(_V(0,0,0));
 		spec[i].col=&this->color;
-		owner->AddBeacon(&spec[i]);
+		owner->AddBeacon(&(spec[i]));
 	}
 	SetLine(start, end);
 	SetColor(color);
 	SetShape(BEACONSHAPE_STAR);
 	SetSize(1.0);
-	SetFallOff(0.0);
+	SetFallOff(0.5);
 	SetPeriod(0.0);
 	SetDuration(0.0);
 	SetPropagate(0.0);
