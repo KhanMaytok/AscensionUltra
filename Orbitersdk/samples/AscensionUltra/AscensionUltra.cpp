@@ -58,7 +58,21 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	for(i=0;i<5;i++)
 	{
 		prefix[6]=0x30+i;
-		hangars[i].Init(this, i+2, prefix);
+		hangars[i].Init(this, i+3, prefix);
+	}
+
+	VECTOR3 taxiwayAlines[3][2]=
+	{
+		{_V(-110,0,395),_V(-2430,0,395)},
+		{_V(-2455,0,420),_V(-2455,0,879)},
+		{_V(-2455,0,926),_V(-3455,0,1014)}
+	};
+	int taxiwayAbeacons[3]={116,23,5};
+
+	for(i=0;i<3;i++)
+	{
+		taxiwayA[i].Init(this, OFFSET+taxiwayAlines[i][0],OFFSET+taxiwayAlines[i][1], _V(0,1,0), taxiwayAbeacons[i]);
+		taxiwayA[i].Switch(true);
 	}
 
 	DefineAnimations();

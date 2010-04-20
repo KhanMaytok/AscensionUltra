@@ -16,6 +16,7 @@
 #include "orbitersdk.h"
 #include "resource.h"
 #include "TurnAroundHangar.h"
+#include "BeaconArray.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -53,6 +54,7 @@ public:
 	
 private:
 	TurnAroundHangar hangars[5];
+	BeaconArray taxiwayA[3];
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
