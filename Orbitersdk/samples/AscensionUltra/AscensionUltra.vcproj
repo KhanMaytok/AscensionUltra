@@ -274,6 +274,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\BeaconArray.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Crane.cpp"
 				>
 			</File>
@@ -295,6 +299,10 @@
 			>
 			<File
 				RelativePath=".\AscensionUltra.h"
+				>
+			</File>
+			<File
+				RelativePath=".\BeaconArray.h"
 				>
 			</File>
 			<File
@@ -346,14 +354,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\BeaconArray.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\BeaconArray.h"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
