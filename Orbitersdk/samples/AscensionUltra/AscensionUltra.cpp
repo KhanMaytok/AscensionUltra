@@ -65,7 +65,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	{
 		{_V(-110,0,395),_V(-2430,0,395)},
 		{_V(-2455,0,420),_V(-2455,0,879)},
-		{_V(-2455,0,926),_V(-3455,0,1014)}
+		{_V(-2455,0,926),_V(-2455,0,1014)}
 	};
 	int taxiwayAbeacons[3]={116,23,5};
 

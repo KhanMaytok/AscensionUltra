@@ -5,7 +5,7 @@ TAXIWAY CENTRE LIGHTS - GREEN
 Taxiway A 							storage hangars to runways
  110,0,395  / 2430,0,395	2320m		116b
 2455,0,420  / 2455,0,879	459m		23b
-2455,0,926  / 3455,0,1014	88m		5b
+2455,0,926  / 2455,0,1014	88m		5b
 
 Taxiway B 							runways to aux hangars to runways
 4485,0,405  / 5295,0,405	810m 		40b
