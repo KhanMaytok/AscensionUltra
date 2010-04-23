@@ -4,9 +4,9 @@ Ascension Ultra  -   mesh information
 
 ** Earth position **
 Global LONG/LAT:	-14.405	-7.955
-Intended Heading (a):	118°
-Heading of base:	242° = -118°
-Heading of vessel:	208° = 118°+90°
+Intended Heading (a):	130°
+Heading of base:	230° = -130°
+Heading of vessel:	220° = 130°+90°
 
 (suffix '(g)' indicates global coordinates, suffix '(l)'
  indicates mesh-local coordinates, suffix '(b)' is for base
@@ -28,8 +28,8 @@ Heading of vessel:	208° = 118°+90°
 	| -cos(a)	0	sin(a)	|
 	| 0		1	0	|
 	| sin(a)	0	cos(a)	|
-  (with a=118° and offset -2700,0,-950(g) =>
-	-2106.373433,0,-1937.960516(b))
+  (with a=130° and offset -2700,0,-950(g) =>
+	-2463.268767,0,-1457.671767(b))
 
 
 *******************************************TURNAROUND HANGAR
