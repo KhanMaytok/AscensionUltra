@@ -20,6 +20,12 @@
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
+struct clbkBeaconArrayArray
+{
+	int len;
+	BeaconArray *taxiway;
+};
+
 class AscensionUltra: public VESSEL2 {
 public:
 	AscensionUltra (OBJHANDLE hObj, int fmodel);
@@ -53,6 +59,7 @@ public:
 	TurnAroundHangar *GetHangar(int index);
 	
 private:
+	void PrepareTaxiwayDebugCommand(clbkBeaconArrayArray &cb, char *title);
 	TurnAroundHangar hangars[5];
 	BeaconArray taxiwayA[3], taxiwayB[5], taxiwayC[5], taxiwayD[4];
 

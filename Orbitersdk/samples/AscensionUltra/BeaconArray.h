@@ -55,6 +55,7 @@ public:
 
 private:
 	void Clear();
+	void CalculateStrobe();
 	VESSEL *owner;
 	BEACONLIGHTSPEC *spec;	
 	int beacons;

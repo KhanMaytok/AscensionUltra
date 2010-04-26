@@ -88,9 +88,7 @@ void BeaconArray::SetBeacons(int beacons)
 	SetShape(shape);
 	SetSize(size);
 	SetFallOff(falloff);
-	SetPeriod(period);
-	SetDuration(duration);
-	SetPropagate(propagate);	
+	CalculateStrobe();
 }
 
 void BeaconArray::SetShape(DWORD shape){ for (int i=0;i<beacons;i++) spec[i].shape=shape; }
@@ -128,18 +126,40 @@ bool BeaconArray::On() { return (spec!=NULL && beacons>0)?spec[0].active:false; 
 
 void BeaconArray::SetPeriod(double period)
 {
+	this->period=period;
+	CalculateStrobe();
 }
 
 double BeaconArray::GetPeriod() { return period; }
 
 void BeaconArray::SetDuration(double duration)
 {
+	this->duration=duration;
+	CalculateStrobe();
+
 }
 
 double BeaconArray::GetDuration() { return duration; }
 
 void BeaconArray::SetPropagate(double propagate)
 {
+	this->propagate=propagate;
+	CalculateStrobe();
 }
 
 double BeaconArray::GetPropagate() { return propagate; }
+
+void BeaconArray::CalculateStrobe()
+{
+	double tofs=0;
+	int i=period<0?beacons-1:0;
+	int end=period<0?0:beacons-1;
+	int step=period<0?-1:1;
+	for (;i!=end;i+=step)	
+	{
+		spec[i].period=abs(period);
+		spec[i].duration=duration<0?period+duration:duration;
+		spec[i].tofs=tofs;
+		tofs+=spec[i].duration+propagate;
+	}	
+}

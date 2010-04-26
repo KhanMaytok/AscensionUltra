@@ -319,32 +319,66 @@ bool AscensionUltra::clbkLoadGenericCockpit ()
 	return true;
 }
 
-struct clbkBeaconArrayArray
-{
-	int len;
-	BeaconArray *taxiway;
-};
-
 bool clbkBeaconSizeInput (void *id, char *str, void *usrdata)
 {
-	double value=atof(str);
-	if (value<=0) return false;
+	double value1, value2;
+	sscanf(str, "%lf %lf", &value1, &value2);
+	sprintf(oapiDebugString(), "%f %f", value1, value2);
+	if (value1<=0.0 || value2<0) return false;
 	clbkBeaconArrayArray *baa=(clbkBeaconArrayArray *)usrdata;
-	for(int i=0;i<baa->len;i++)	baa->taxiway[i].SetSize(value);
+	for(int i=0;i<baa->len;i++)
+	{
+		baa->taxiway[i].SetSize(value1);
+		baa->taxiway[i].SetFallOff(value2);
+	}
+	return true;
 }
 
 bool clbkBeaconFallOffInput (void *id, char *str, void *usrdata)
 {
-	double value=atof(str);
-	if (value<=0) return false;
+	double value1, value2, value3;
+	sscanf(str, "%lf %lf %lf", &value1, &value2, &value3);
 	clbkBeaconArrayArray *baa=(clbkBeaconArrayArray *)usrdata;
-	for(int i=0;i<baa->len;i++)	baa->taxiway[i].SetFallOff(value);
+	for(int i=0;i<baa->len;i++)
+	{
+		baa->taxiway[i].SetPeriod(value1);
+		baa->taxiway[i].SetDuration(value2);
+		baa->taxiway[i].SetPropagate(value3);
+	}
+	return true;
+}
+
+void AscensionUltra::PrepareTaxiwayDebugCommand(clbkBeaconArrayArray &cb, char *title)
+{
+	switch (dnr)
+	{
+	case 0:
+		cb.len=3;
+		cb.taxiway=taxiwayA;
+		*title='A';
+		break;
+	case 1:
+		cb.len=5;
+		cb.taxiway=taxiwayB;
+		*title='B';
+		break;
+	case 2:
+		cb.len=5;
+		cb.taxiway=taxiwayC;
+		*title='C';
+		break;
+	case 3:
+		cb.len=4;
+		cb.taxiway=taxiwayD;
+		*title='D';
+		break;
+	}
 }
 
 // Process buffered key events
 int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 {
-	char inputBoxBuffer[21], inputBoxTitle[41];
+	char inputBoxBuffer[81], inputBoxTitle[81];
 	static clbkBeaconArrayArray cb;
 	if (!down) return 0; // only process keydown events
 	if (Playback()) return 0; // don't allow manual user input during a playback
@@ -430,83 +464,21 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		case OAPI_KEY_O:			
 			bool switchState;
-			switch (dnr)
-			{
-			case 0:
-				cb.len=3;
-				cb.taxiway=taxiwayA;
-				break;
-			case 1:
-				cb.len=5;
-				cb.taxiway=taxiwayB;
-				break;
-			case 2:
-				cb.len=5;
-				cb.taxiway=taxiwayC;
-				break;
-			case 3:
-				cb.len=4;
-				cb.taxiway=taxiwayD;
-				break;
-			}
+			PrepareTaxiwayDebugCommand(cb, inputBoxTitle);
 			switchState=!cb.taxiway[0].On();
 			for(int i=0;i<cb.len;i++) cb.taxiway[i].Switch(switchState);
 			return 1;
 		case OAPI_KEY_U:
-			sprintf(inputBoxTitle, "Taxiway X beacon size:");
-			switch (dnr)
-			{
-			case 0:
-				cb.len=3;
-				cb.taxiway=taxiwayA;
-				inputBoxTitle[8]='A';
-				break;
-			case 1:
-				cb.len=5;
-				cb.taxiway=taxiwayB;
-				inputBoxTitle[8]='B';
-				break;
-			case 2:
-				cb.len=5;
-				cb.taxiway=taxiwayC;
-				inputBoxTitle[8]='C';
-				break;
-			case 3:
-				cb.len=4;
-				cb.taxiway=taxiwayD;
-				inputBoxTitle[8]='D';
-				break;
-			}
-			sprintf(inputBoxBuffer, "%f", cb.taxiway[0].GetSize());
-			oapiOpenInputBox(inputBoxTitle, clbkBeaconSizeInput, inputBoxBuffer, 20, &cb);
+			sprintf(inputBoxTitle, "Taxiway X beacon (size,falloff):");
+			PrepareTaxiwayDebugCommand(cb, inputBoxTitle+8);
+			sprintf(inputBoxBuffer, "%f  %f", cb.taxiway[0].GetSize(),cb.taxiway[0].GetFallOff());
+			oapiOpenInputBox(inputBoxTitle, clbkBeaconSizeInput, inputBoxBuffer, 80, &cb);
 			return 1;
 		case OAPI_KEY_I:
-			sprintf(inputBoxTitle, "Taxiway X beacon fall-off:");
-			switch (dnr)
-			{
-			case 0:
-				cb.len=3;
-				cb.taxiway=taxiwayA;
-				inputBoxTitle[8]='A';
-				break;
-			case 1:
-				cb.len=5;
-				cb.taxiway=taxiwayB;
-				inputBoxTitle[8]='B';
-				break;
-			case 2:
-				cb.len=5;
-				cb.taxiway=taxiwayC;
-				inputBoxTitle[8]='C';
-				break;
-			case 3:
-				cb.len=4;
-				cb.taxiway=taxiwayD;
-				inputBoxTitle[8]='D';
-				break;
-			}
-			sprintf(inputBoxBuffer, "%f", cb.taxiway[0].GetFallOff());
-			oapiOpenInputBox(inputBoxTitle, clbkBeaconFallOffInput, inputBoxBuffer, 20, &cb);
+			sprintf(inputBoxTitle, "Taxiway X beacon (period, duration, propagate):");
+			PrepareTaxiwayDebugCommand(cb, inputBoxTitle+8);
+			sprintf(inputBoxBuffer, "%f  %f  %f", cb.taxiway[0].GetPeriod(), cb.taxiway[0].GetDuration(), cb.taxiway[0].GetPropagate());
+			oapiOpenInputBox(inputBoxTitle, clbkBeaconFallOffInput, inputBoxBuffer, 80, &cb);
 			return 1;
 		//DEBUG END
 		}
