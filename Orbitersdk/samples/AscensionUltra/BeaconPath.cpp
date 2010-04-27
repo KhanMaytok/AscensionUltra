@@ -55,12 +55,26 @@ double BeaconPath::GetOffset() { return offset; }
 void BeaconPath::CalculateStrobe(double period, double duration, double propagate)
 {
 	double offset=this->offset;
-	for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++)
+	if (period<0)
 	{
-		(*i)->SetPeriod(period);
-		(*i)->SetDuration(duration);
-		(*i)->SetPropagate(propagate);
-		(*i)->SetOffset(offset);
-		offset=(*i)->GetOffsetPropagation();
-	}	
+		for(std::list<BeaconArray *>::reverse_iterator i=arrays.rbegin(); i!=arrays.rend(); i++)
+		{
+			(*i)->SetPeriod(period);
+			(*i)->SetDuration(duration);
+			(*i)->SetPropagate(propagate);
+			(*i)->SetOffset(offset);
+			offset=(*i)->GetOffsetPropagation();		
+		}	
+	}
+	else
+	{
+		for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++)
+		{
+			(*i)->SetPeriod(period);
+			(*i)->SetDuration(duration);
+			(*i)->SetPropagate(propagate);
+			(*i)->SetOffset(offset);
+			offset=(*i)->GetOffsetPropagation();		
+		}
+	}
 }
