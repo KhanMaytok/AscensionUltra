@@ -354,6 +354,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\BeaconPath.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\BeaconPath.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
