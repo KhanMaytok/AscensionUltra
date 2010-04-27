@@ -11,13 +11,15 @@ void BeaconPath::Clear()
 	arrays.clear();
 }
 
-void BeaconPath::Init(VESSEL *owner, VECTOR3 **arrays, VECTOR3 &color, int *beacons, int length)
+void BeaconPath::Init(VESSEL *owner, VECTOR3 *arrays, VECTOR3 &color, int *beacons, int length)
 {
 	Clear();
+	offset=0;
 	for(int i=0;i<length;i++)
 	{
 		BeaconArray *ba=new BeaconArray();
-		ba->Init(owner, arrays[i][0], arrays[i][1], color, beacons[i]);
+		ba->Init(owner, arrays[0], arrays[1], color, beacons[i]);
+		arrays+=2;
 		Add(ba);
 	}
 }

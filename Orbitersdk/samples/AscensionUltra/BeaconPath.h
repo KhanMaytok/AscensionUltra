@@ -7,7 +7,7 @@ class BeaconPath
 {
 public:
 	~BeaconPath(void);
-	void Init(VESSEL *owner, VECTOR3 **arrays, VECTOR3 &color, int *beacons, int length);
+	void Init(VESSEL *owner, VECTOR3 *arrays, VECTOR3 &color, int *beacons, int length);
 	void Add(BeaconArray *beaconArray);
 	void Clear();
 	void SetColor(VECTOR3 &color);
