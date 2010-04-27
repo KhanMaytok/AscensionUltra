@@ -24,6 +24,9 @@
 #define OFFSET _V(2700,0,-950)
 #define CTRLROOM1 _V(-88,22,0)
 #define CTRLROOM2 _V(-88,22,0)
+#define _V_(x,y,z) _V(x,y,z)+OFFSET
+#define TAXIWAYS 4
+#define MAXTAXILINES 5
 
 // ==============================================================
 // Global parameters
@@ -61,47 +64,49 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 		hangars[i].Init(this, i+3, prefix);
 	}
 
-	VECTOR3 taxiwayAlines[3][2]=
+	VECTOR3 taxiwayLines[TAXIWAYS][MAXTAXILINES][2]=
 	{
-		{_V(-110,0,395),_V(-2430,0,395)},
-		{_V(-2455,0,420),_V(-2455,0,879)},
-		{_V(-2455,0,926),_V(-2455,0,1014)}
+		{
+			{_V_(-110,0,395),_V_(-2430,0,395)},
+			{_V_(-2455,0,420),_V_(-2455,0,879)},
+			{_V_(-2455,0,926),_V_(-2455,0,1014)},
+			{_V_(-2455,0,926),_V_(-2455,0,1014)},
+			{_V_(-2455,0,926),_V_(-2455,0,1014)}
+		},
+		{
+			{_V_(-4460,0,1014),_V_(-4460,0,926)},
+			{_V_(-4460,0,879),_V_(-4460,0,430)},
+			{_V_(-4485,0,405),_V_(-5295,0,405)},			
+			{_V_(-5320,0,430),_V_(-5320,0,879)},
+			{_V_(-5320,0,926),_V_(-5320,0,1014)}
+		},
+		{	
+			{_V_(-763,0,1014),_V_(-763,0,926)},
+			{_V_(-763,0,879),_V_(-763,0,790)},
+			{_V_(-788,0,765),_V_(-5687,0,765)},			
+			{_V_(-5713,0,790),_V_(-5713,0,879)},
+			{_V_(-5713,0,926),_V_(-5713,0,1014)}
+		},
+		{
+			{_V_(-965,0,420),_V_(-965,0,879)},
+			{_V_(-965,0,926),_V_(-965,0,1014)},
+			{_V_(-965,0,1096),_V_(-965,0,1220)},
+			{_V_(-990,0,1245),_V_(-1239,0,1245)},
+			{_V_(-990,0,1245),_V_(-1239,0,1245)}
+		}
 	};
-	int taxiwayAbeacons[3]={116,23,5};
 
-	VECTOR3 taxiwayBlines[5][2]=
+	int taxiwayBeacons[TAXIWAYS][MAXTAXILINES]=
 	{
-		{_V(-4485,0,405),_V(-5295,0,405)},
-		{_V(-4460,0,430),_V(-4460,0,879)},
-		{_V(-4460,0,926),_V(-4460,0,1014)},
-		{_V(-5320,0,430),_V(-5320,0,879)},
-		{_V(-5320,0,926),_V(-5320,0,1014)}
+		{116,23,5,5,5},
+		{5,22,40,22,5},
+		{5,5,246,5,5},
+		{23,5,11,12,12}
 	};
-	int taxiwayBbeacons[5]={40,22,5,22,5};
 
-	VECTOR3 taxiwayClines[5][2]=
-	{		
-		{_V(-788,0,765),_V(-5687,0,765)},
-		{_V(-763,0,790),_V(-763,0,879)},
-		{_V(-763,0,926),_V(-763,0,1014)},
-		{_V(-5713,0,790),_V(-5713,0,879)},
-		{_V(-5713,0,926),_V(-5713,0,1014)}
-	};
-	int taxiwayCbeacons[5]={246,5,5,5,5};
+	int taxiwayLength[TAXIWAYS]={3,5,5,4};
 
-	VECTOR3 taxiwayDlines[4][2]=
-	{
-		{_V(-965,0,420),_V(-965,0,879)},
-		{_V(-965,0,926),_V(-965,0,1014)},
-		{_V(-965,0,1096),_V(-965,0,1220)},
-		{_V(-990,0,1245),_V(-1239,0,1245)}
-	};
-	int taxiwayDbeacons[4]={23,5,11,12};
-
-	for(i=0;i<3;i++) taxiwayA[i].Init(this, OFFSET+taxiwayAlines[i][0],OFFSET+taxiwayAlines[i][1], _V(0,1,0), taxiwayAbeacons[i]);
-	for(i=0;i<5;i++) taxiwayB[i].Init(this, OFFSET+taxiwayBlines[i][0],OFFSET+taxiwayBlines[i][1], _V(0,1,0), taxiwayBbeacons[i]);
-	for(i=0;i<5;i++) taxiwayC[i].Init(this, OFFSET+taxiwayClines[i][0],OFFSET+taxiwayClines[i][1], _V(0,1,0), taxiwayCbeacons[i]);
-	for(i=0;i<4;i++) taxiwayD[i].Init(this, OFFSET+taxiwayDlines[i][0],OFFSET+taxiwayDlines[i][1], _V(0,1,0), taxiwayDbeacons[i]);
+	for(i=0;i<TAXIWAYS;i++) taxiways[i].Init(this, (VECTOR3 *)taxiwayLines[i], _V(0,1,0), taxiwayBeacons[i], taxiwayLength[i]);
 
 	DefineAnimations();
 
@@ -322,67 +327,31 @@ bool AscensionUltra::clbkLoadGenericCockpit ()
 bool clbkBeaconSizeInput (void *id, char *str, void *usrdata)
 {
 	double value1, value2;
-	sscanf(str, "%lf %lf", &value1, &value2);
-	sprintf(oapiDebugString(), "%f %f", value1, value2);
+	sscanf(str, "%lf %lf", &value1, &value2);	
 	if (value1<=0.0 || value2<0) return false;
-	clbkBeaconArrayArray *baa=(clbkBeaconArrayArray *)usrdata;
-	for(int i=0;i<baa->len;i++)
-	{
-		baa->taxiway[i].SetSize(value1);
-		baa->taxiway[i].SetFallOff(value2);
-	}
+	BeaconPath *bp=(BeaconPath *)usrdata;
+	bp->SetSize(value1);
+	bp->SetFallOff(value2);	
 	return true;
 }
 
 bool clbkBeaconFallOffInput (void *id, char *str, void *usrdata)
 {
-	double value1, value2, value3;
-	sscanf(str, "%lf %lf %lf", &value1, &value2, &value3);
-	clbkBeaconArrayArray *baa=(clbkBeaconArrayArray *)usrdata;
-	double offset=0;
-	for(int i=0;i<baa->len;i++)
-	{
-		baa->taxiway[i].SetPeriod(value1);
-		baa->taxiway[i].SetDuration(value2);
-		baa->taxiway[i].SetPropagate(value3);
-		baa->taxiway[i].SetOffset(offset);
-		offset=baa->taxiway[i].GetOffsetPropagation();
-	}
+	double value1, value2, value3, value4;
+	sscanf(str, "%lf %lf %lf %lf", &value1, &value2, &value3, &value4);
+	BeaconPath *bp=(BeaconPath *)usrdata;
+	bp->SetPeriod(value1);
+	bp->SetDuration(value2);
+	bp->SetPropagate(value3);
+	bp->SetOffset(value4);
 	return true;
-}
-
-void AscensionUltra::PrepareTaxiwayDebugCommand(clbkBeaconArrayArray &cb, char *title)
-{
-	switch (dnr)
-	{
-	case 0:
-		cb.len=3;
-		cb.taxiway=taxiwayA;
-		*title='A';
-		break;
-	case 1:
-		cb.len=5;
-		cb.taxiway=taxiwayB;
-		*title='B';
-		break;
-	case 2:
-		cb.len=5;
-		cb.taxiway=taxiwayC;
-		*title='C';
-		break;
-	case 3:
-		cb.len=4;
-		cb.taxiway=taxiwayD;
-		*title='D';
-		break;
-	}
 }
 
 // Process buffered key events
 int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 {
 	char inputBoxBuffer[81], inputBoxTitle[81];
-	static clbkBeaconArrayArray cb;
+	
 	if (!down) return 0; // only process keydown events
 	if (Playback()) return 0; // don't allow manual user input during a playback
 
@@ -466,22 +435,19 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			if (mnr>1 && mnr<7) hangars[mnr-2].GetCrane()->Stop();
 			return 1;
 		case OAPI_KEY_O:			
-			bool switchState;
-			PrepareTaxiwayDebugCommand(cb, inputBoxTitle);
-			switchState=!cb.taxiway[0].On();
-			for(int i=0;i<cb.len;i++) cb.taxiway[i].Switch(switchState);
+			taxiways[dnr].Switch(!taxiways[dnr].On());
 			return 1;
 		case OAPI_KEY_U:
 			sprintf(inputBoxTitle, "Taxiway X beacon (size,falloff):");
-			PrepareTaxiwayDebugCommand(cb, inputBoxTitle+8);
-			sprintf(inputBoxBuffer, "%f  %f", cb.taxiway[0].GetSize(),cb.taxiway[0].GetFallOff());
-			oapiOpenInputBox(inputBoxTitle, clbkBeaconSizeInput, inputBoxBuffer, 80, &cb);
+			inputBoxTitle[8]=0x30+dnr;
+			sprintf(inputBoxBuffer, "%f  %f", taxiways[dnr].GetSize(),taxiways[dnr].GetFallOff());
+			oapiOpenInputBox(inputBoxTitle, clbkBeaconSizeInput, inputBoxBuffer, 80, &taxiways[dnr]);
 			return 1;
 		case OAPI_KEY_I:
-			sprintf(inputBoxTitle, "Taxiway X beacon (period, duration, propagate):");
-			PrepareTaxiwayDebugCommand(cb, inputBoxTitle+8);
-			sprintf(inputBoxBuffer, "%f  %f  %f", cb.taxiway[0].GetPeriod(), cb.taxiway[0].GetDuration(), cb.taxiway[0].GetPropagate());
-			oapiOpenInputBox(inputBoxTitle, clbkBeaconFallOffInput, inputBoxBuffer, 80, &cb);
+			sprintf(inputBoxTitle, "Taxiway X beacon (period, duration, propagate, offset):");
+			inputBoxTitle[8]=0x30+dnr;
+			sprintf(inputBoxBuffer, "%f  %f  %f  %f", taxiways[dnr].GetPeriod(), taxiways[dnr].GetDuration(), taxiways[dnr].GetPropagate(), taxiways[dnr].GetOffset());
+			oapiOpenInputBox(inputBoxTitle, clbkBeaconFallOffInput, inputBoxBuffer, 80, &taxiways[dnr]);
 			return 1;
 		//DEBUG END
 		}
