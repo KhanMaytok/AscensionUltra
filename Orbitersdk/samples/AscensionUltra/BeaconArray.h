@@ -53,6 +53,12 @@ public:
 	void SetPropagate(double propagate);
 	double GetPropagate();
 
+	/* Offset of strobe animation -
+	   how far off is the animation's timing from the virtual zero point */
+	void SetOffset(double offset);
+	double GetOffset();
+	double GetOffsetPropagation();
+
 private:
 	void Clear();
 	void CalculateStrobe();
@@ -60,5 +66,5 @@ private:
 	BEACONLIGHTSPEC *spec;	
 	int beacons;
 	VECTOR3 color;
-	double period, duration, propagate;
+	double period, duration, propagate, offset, offsetPropagation;
 };

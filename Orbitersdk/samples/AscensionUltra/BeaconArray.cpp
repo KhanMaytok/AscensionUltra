@@ -149,11 +149,20 @@ void BeaconArray::SetPropagate(double propagate)
 
 double BeaconArray::GetPropagate() { return propagate; }
 
+void BeaconArray::SetOffset(double offset)
+{
+	this->offset=offset;
+	CalculateStrobe();
+}
+
+double BeaconArray::GetOffset() { return offset; }
+double BeaconArray::GetOffsetPropagation() { return offsetPropagation; }
+
 void BeaconArray::CalculateStrobe()
 {
-	double tofs=0;
+	double tofs=offset;
 	int i=period<0?beacons-1:0;
-	int end=period<0?0:beacons-1;
+	int end=period<0?-1:beacons;
 	int step=period<0?-1:1;
 	for (;i!=end;i+=step)	
 	{
@@ -161,5 +170,6 @@ void BeaconArray::CalculateStrobe()
 		spec[i].duration=duration<0?period+duration:duration;
 		spec[i].tofs=tofs;
 		tofs+=spec[i].duration+propagate;
-	}	
+	}
+	offsetPropagation=tofs;
 }

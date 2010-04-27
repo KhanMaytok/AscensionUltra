@@ -339,11 +339,14 @@ bool clbkBeaconFallOffInput (void *id, char *str, void *usrdata)
 	double value1, value2, value3;
 	sscanf(str, "%lf %lf %lf", &value1, &value2, &value3);
 	clbkBeaconArrayArray *baa=(clbkBeaconArrayArray *)usrdata;
+	double offset=0;
 	for(int i=0;i<baa->len;i++)
 	{
 		baa->taxiway[i].SetPeriod(value1);
 		baa->taxiway[i].SetDuration(value2);
 		baa->taxiway[i].SetPropagate(value3);
+		baa->taxiway[i].SetOffset(offset);
+		offset=baa->taxiway[i].GetOffsetPropagation();
 	}
 	return true;
 }
