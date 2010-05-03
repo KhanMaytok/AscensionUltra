@@ -32,7 +32,7 @@ Heading of vessel:	220° = 130°+90°
 	-2463.268767,0,-1457.671767(b))
 
 
-*******************************************TURNAROUND HANGAR
+*************************************************************TURNAROUND HANGAR
 
 ** Y-axis curviture compensation adjustment **
 TA Hangar 1 (rightmost)
@@ -90,6 +90,31 @@ End Doors - 6m translation +Y axis
 Cameras point toward 0,0,0 as default
 
 
-************************************************PLACE HOLDER
+**************************************************************** LIGHT STORAGE HANGAR
+12 Hangars
+
+** Y-axis curviture compensation adjustment **
+TBC
+
+**Offset vector for hangar L1 (rightmost)
+855,0,480
+
+** Relevant Mesh Groups **
+0 - Access Door Lower
+1 - Access Door Upper
+2 - Main Door -x
+3 - Main DOor +x
+
+** Door Animations **
+Main Hangar Doors +x  +45 degree Y axis rotation around 0,0,0
+Main Hangar Doors -x  -45 degree Y axis rotation around 0,0,0
+Access Doors Lower 3.62m translation +Y axis
+Access Door Upper 1.81m transition +Y axis
+
+** Spacing between hangars **
+70m
+
+
+****************************************************************PLACE HOLDER
 ** Offset-vector
 0,0,0
