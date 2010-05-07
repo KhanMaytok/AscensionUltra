@@ -7,8 +7,9 @@ BeaconPath::~BeaconPath(void)
 
 void BeaconPath::Clear()
 {
-	for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) delete *i;
+	for(std::list<BeaconArray *>::iterator i=selfCreated.begin(); i!=selfCreated.end(); i++) delete *i;
 	arrays.clear();
+	selfCreated.clear();
 }
 
 void BeaconPath::Init(VESSEL *owner, VECTOR3 *arrays, VECTOR3 &color, int *beacons, int length)
@@ -20,6 +21,7 @@ void BeaconPath::Init(VESSEL *owner, VECTOR3 *arrays, VECTOR3 &color, int *beaco
 		BeaconArray *ba=new BeaconArray();
 		ba->Init(owner, arrays[0], arrays[1], color, beacons[i]);
 		arrays+=2;
+		selfCreated.push_back(ba);
 		Add(ba);
 	}
 }

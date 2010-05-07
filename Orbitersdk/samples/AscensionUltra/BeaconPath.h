@@ -49,6 +49,6 @@ public:
 
 private:	
 	void CalculateStrobe(double period, double duration, double propagate);
-	std::list <BeaconArray *> arrays;
+	std::list <BeaconArray *> arrays, selfCreated;
 	double offset;
 };

@@ -278,6 +278,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BeaconPath.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Crane.cpp"
 				>
 			</File>
@@ -303,6 +307,10 @@
 			</File>
 			<File
 				RelativePath=".\BeaconArray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\BeaconPath.h"
 				>
 			</File>
 			<File
@@ -354,14 +362,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\BeaconPath.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\BeaconPath.h"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
