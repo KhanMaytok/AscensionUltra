@@ -40,7 +40,7 @@ public:
 	int  clbkConsumeBufferedKey (DWORD key, bool down, char *kstate);	
 	bool clbkLoadGenericCockpit ();
 
-	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder;  // local external mesh and global template
+	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLightStorage;  // local external mesh and global template
 	
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 

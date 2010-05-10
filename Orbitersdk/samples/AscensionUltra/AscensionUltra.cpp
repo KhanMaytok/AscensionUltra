@@ -27,6 +27,8 @@
 #define _V_(x,y,z) _V(x,y,z)+OFFSET
 #define TAXIWAYS 4
 #define MAXTAXILINES 5
+#define LS1OFFSET _V(-855,0,480)
+#define LS1MATRIXOFFSET _V(70,0,0)
 
 // ==============================================================
 // Global parameters
@@ -210,10 +212,12 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &OFFSET), MESHVIS_ALWAYS);
 	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-NW");
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\TA1-WO");
+	meshLightStorage = oapiLoadMeshGlobal ("AscensionUltra\\LS1-1");
 
 	double curvoff[5]={-0.02,-0.05,-0.08,-0.12,-0.17};
 
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
+	for(int i=0;i<12;i++) SetMeshVisibilityMode (AddMesh (meshLightStorage, &(OFFSET+LS1OFFSET+LS1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 
 }
