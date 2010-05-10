@@ -294,6 +294,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LightStorageHangar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TurnAroundHangar.cpp"
 				>
 			</File>
@@ -323,6 +327,10 @@
 			</File>
 			<File
 				RelativePath=".\KeyboardFilter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LightStorageHangar.h"
 				>
 			</File>
 			<File

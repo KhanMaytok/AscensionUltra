@@ -59,11 +59,17 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	visual            = NULL;
 	campos            = CAM_GENERIC;
 
-	char prefix[8]="HANGARx";
+	char prefix[14]="HANGARx";
 	for(i=0;i<5;i++)
 	{
 		prefix[6]=0x30+i;
-		hangars[i].Init(this, i+3, prefix);
+		turnAround[i].Init(this, i+3, prefix);
+	}
+	strcpy(prefix, "LIGHTSTORAGEx");
+	for(i=0;i<12;i++)
+	{
+		prefix[12]=0x30+i;
+		lightStorage[i].Init(this, i+8, prefix);
 	}
 
 	VECTOR3 taxiwayLines[TAXIWAYS][MAXTAXILINES][2]=
@@ -112,7 +118,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	DefineAnimations();
 
-	cur_hangar=-1;
+	cur_TurnAround=-1;
 
 	//DEBUG
 	disx=0.0;
@@ -135,7 +141,8 @@ AscensionUltra::~AscensionUltra ()
 // --------------------------------------------------------------
 void AscensionUltra::DefineAnimations ()
 {
-	for(int i=0;i<5;i++) hangars[i].DefineAnimations();
+	for(int i=0;i<5;i++) turnAround[i].DefineAnimations();
+	for(int i=0;i<12;i++) lightStorage[i].DefineAnimations();
 }
 
 void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
@@ -213,7 +220,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\TA1-NW");
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\TA1-WO");
 	meshLightStorage = oapiLoadMeshGlobal ("AscensionUltra\\LS1-1");
-
+	
 	double curvoff[5]={-0.02,-0.05,-0.08,-0.12,-0.17};
 
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
@@ -229,9 +236,13 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 	
 	while (oapiReadScenario_nextline (scn, line)) {		
 		if (!strnicmp (line, "HANGAR", 6)) {
-			sscanf (line+6, "%d", &cur_hangar);
-		} else if (cur_hangar>=0 && cur_hangar<5) {
-			if (!hangars[cur_hangar].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+			sscanf (line+6, "%d", &cur_TurnAround);
+		} else if (cur_TurnAround>=0 && cur_TurnAround<5) {
+			if (!turnAround[cur_TurnAround].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (!strnicmp (line, "LIGHTSTORAGE", 12)) {
+			sscanf (line+12, "%X", &cur_LightStorage);
+		} else if (cur_LightStorage>=0 && cur_LightStorage<12) {
+			if (!lightStorage[cur_LightStorage].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else if (!strnicmp (line, "LIGHTS", 6)) {
 			int lgt[3];
 			sscanf (line+6, "%d%d%d", lgt+0, lgt+1, lgt+2);
@@ -265,7 +276,16 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	{
 		sprintf (cbuf, "%d", i);
 		oapiWriteScenario_string (scn, "HANGAR", cbuf);
-		hangars[i].clbkSaveState(scn);
+		turnAround[i].clbkSaveState(scn);
+	}
+	sprintf (cbuf, "%d", i);
+	oapiWriteScenario_string (scn, "HANGAR", cbuf);
+
+	for(i=0;i<12;i++)
+	{
+		sprintf (cbuf, "%X", i);
+		oapiWriteScenario_string (scn, "LIGHTSTORAGE", cbuf);
+		lightStorage[i].clbkSaveState(scn);
 	}
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "HANGAR", cbuf);
@@ -283,7 +303,8 @@ void AscensionUltra::clbkPostCreation ()
 {
 	SetEmptyMass (EMPTY_MASS);
 
-	for(int i=0;i<5;i++) hangars[i].clbkPostCreation();
+	for(int i=0;i<5;i++) turnAround[i].clbkPostCreation();
+	for(int i=0;i<12;i++) lightStorage[i].clbkPostCreation();
 }
 
 // Respond to playback event
@@ -293,7 +314,13 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 	{
 		//Hangar event
 		int hangar=(int)(event_type+6)[0]-0x30;
-		if (hangar>=0 && hangar<5) return hangars[hangar].clbkPlaybackEvent(simt, event_t, event_type+7, event);
+		if (hangar>=0 && hangar<5) return turnAround[hangar].clbkPlaybackEvent(simt, event_t, event_type+7, event);
+	}
+	if (!strnicmp (event_type, "LIGHTSTORAGE", 12))
+	{
+		//Hangar event
+		int hangar=(int)(event_type+12)[0]-0x30;
+		if (hangar>=0 && hangar<12) return lightStorage[hangar].clbkPlaybackEvent(simt, event_t, event_type+13, event);
 	}
 	return false;
 }
@@ -315,7 +342,8 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 // --------------------------------------------------------------
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
-	for(int i=0;i<5;i++) hangars[i].clbkPostStep(simt, simdt, mjd);
+	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
+	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
 }
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
@@ -421,22 +449,22 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_F:
-			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Open();
+			if (dnr<4 && mnr>1 && mnr<7) turnAround[mnr-2].GetDoor(dnr)->Open();
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_G:
-			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Close();
+			if (dnr<4 && mnr>1 && mnr<7) turnAround[mnr-2].GetDoor(dnr)->Close();
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_H:
-			if (dnr<4 && mnr>1 && mnr<7) hangars[mnr-2].GetDoor(dnr)->Stop();
+			if (dnr<4 && mnr>1 && mnr<7) turnAround[mnr-2].GetDoor(dnr)->Stop();
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f - door/beacon %d", mnr, disx, disy, disz, stp, dnr);
 			return 1;
 		case OAPI_KEY_V:
-			if (mnr>1 && mnr<7) hangars[mnr-2].GetCrane()->StartManual();
+			if (mnr>1 && mnr<7) turnAround[mnr-2].GetCrane()->StartManual();
 			return 1;
 		case OAPI_KEY_B:
-			if (mnr>1 && mnr<7) hangars[mnr-2].GetCrane()->Stop();
+			if (mnr>1 && mnr<7) turnAround[mnr-2].GetCrane()->Stop();
 			return 1;
 		case OAPI_KEY_O:			
 			taxiways[dnr].Switch(!taxiways[dnr].On());
@@ -471,7 +499,7 @@ void AscensionUltra::MoveGroup(int mesh, VECTOR3 v)
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }
 
-TurnAroundHangar *AscensionUltra::GetHangar(int index){return (index>=0 && index<5)?hangars+index:NULL;}
+TurnAroundHangar *AscensionUltra::GetHangar(int index){return (index>=0 && index<5)?turnAround+index:NULL;}
 
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
