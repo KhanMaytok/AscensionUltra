@@ -12,11 +12,7 @@
 #define __ASCENSIONTOWER_H
 
 #include <map>
-
-struct MFDData
-{
-	int page;
-};
+#include "AscensionTowerData.h"
 
 class AscensionTower: public MFD {
 public:
@@ -29,11 +25,12 @@ public:
 	bool AscensionTower::ConsumeButton(int bt, int event);
 	static int MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
 private:
-	MFDData *data;
+	AscensionTowerData *data;
 	int width, height;
+	
 };
 
-std::map<OBJHANDLE, std::map<UINT, MFDData *> *> g_MFDData;
+std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;
 HBRUSH g_Bar;
 COLORREF g_MiddleGreen;
 

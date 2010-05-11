@@ -244,6 +244,18 @@
 			RelativePath=".\AscensionTower.h"
 			>
 		</File>
+		<File
+			RelativePath=".\AscensionTowerData.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\AscensionTowerData.h"
+			>
+		</File>
+		<File
+			RelativePath=".\AscensionUltra.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

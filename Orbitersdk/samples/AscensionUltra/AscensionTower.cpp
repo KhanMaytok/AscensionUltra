@@ -50,19 +50,14 @@ AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
 	height=(int)h/28;
 
 	OBJHANDLE obj=vessel->GetHandle();
-	std::map<UINT, MFDData *> *mfds=g_MFDData[obj];
+	std::map<UINT, AscensionTowerData *> *mfds=g_MFDData[obj];
 	if (mfds==NULL)
 	{
-		mfds=new std::map<UINT, MFDData *>;
+		mfds=new std::map<UINT, AscensionTowerData *>;
 		g_MFDData[obj]=mfds;
 	}
-	MFDData *mfdData=(*mfds)[mfd];
-	if (mfdData==NULL)
-	{
-		mfdData=new MFDData();
-		(*mfds)[mfd]=mfdData;
-	}
-	data=mfdData;
+	data=(*mfds)[mfd];
+	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData();	
 }
 
 // Destructor
@@ -95,6 +90,7 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 // Repaint the MFD
 void AscensionTower::Update (HDC hDC)
 {
+	//
 	//Creating the pen for drawing the progress bar
 	if (g_Bar==NULL)
 	{
@@ -111,7 +107,7 @@ void AscensionTower::Update (HDC hDC)
 
 	//Descriptions (normal, light green)
 	SelectDefaultFont (hDC, 0);
-	sprintf(line, "%d", data->page);
+	sprintf(line, "%d", data->GetPage());
 	l=strlen(line);
 	TextOut(hDC, (1+(37-l)/2)*width, (5*height) >> 1, line, l);
 }
@@ -135,10 +131,10 @@ bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 	switch(key)
 	{
 	case OAPI_KEY_U://Up
-		data->page++;
+		data->SetPage(data->GetPage()+1);
 		break;
 	case OAPI_KEY_D://Down
-		data->page--;
+		data->SetPage(data->GetPage()-1);
 		break;
 	default:
 		result=false;
