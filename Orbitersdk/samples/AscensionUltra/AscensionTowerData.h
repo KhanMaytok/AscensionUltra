@@ -11,11 +11,11 @@ public:
 	void SetAscension(int index);
 	int GetPage();
 	void SetPage(int page);
-private:
-	int ascensionIndex;
+private:	
+	OBJHANDLE ascensionHandle;
 	char *ascensionName;
 	AscensionUltra *ascension;
-	std::map<UINT, VESSEL *> scanList;
+	std::map<UINT, char*> scanList;
 	int page;
 	void Scan();
 };

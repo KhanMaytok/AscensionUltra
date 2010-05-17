@@ -104,12 +104,26 @@ void AscensionTower::Update (HDC hDC)
 	Title (hDC, "Ascension Tower");
 	char line[20];
 	int l=0;
+	AscensionUltra *ascension=data->GetAscension();
+	int page=data->GetPage();
 
 	//Descriptions (normal, light green)
 	SelectDefaultFont (hDC, 0);
-	sprintf(line, "%d", data->GetPage());
-	l=strlen(line);
-	TextOut(hDC, (1+(37-l)/2)*width, (5*height) >> 1, line, l);
+
+	if (page<0)
+	{
+		//Base selection screens	
+		sprintf(line, "%d", page);
+		l=strlen(line);
+		TextOut(hDC, (1+(37-l)/2)*width, (5*height) >> 1, line, l);
+	}
+	else
+	{
+		//Base interaction screens
+		sprintf(line, "%s", ascension->GetName());
+		l=strlen(line);
+		TextOut(hDC, (1+(37-l)/2)*width, (6*height) >> 1, line, l);
+	}	
 }
 
 // MFD message parser
