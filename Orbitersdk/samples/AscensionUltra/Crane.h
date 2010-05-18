@@ -16,6 +16,7 @@
 class Crane
 {
 public:
+	~Crane(void);
 	void Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix);
 	void SetSpeed(VECTOR3 speed);
 	void SetCrawl(VECTOR3 speed);

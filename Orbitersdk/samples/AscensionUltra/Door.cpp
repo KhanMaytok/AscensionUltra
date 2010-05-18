@@ -20,6 +20,11 @@ void Door::Init(VESSEL *owner, MGROUP_TRANSFORM *door, const char *event_prefix)
 	command=0.0;
 }
 
+Door::~Door(void)
+{
+	delete [] event_prefix;
+}
+
 void Door::SetSpeed(double speed){this->speed=speed;}
 void Door::Stop(){RecordEvent(command=0.0);}
 void Door::Open(){RecordEvent(command=speed);}

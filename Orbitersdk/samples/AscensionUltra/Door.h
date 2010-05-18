@@ -14,6 +14,7 @@
 class Door
 {
 public:
+	~Door(void);
 	void Init(VESSEL *owner, MGROUP_TRANSFORM *door, const char *event_prefix);
 	void SetSpeed(double speed);
 	void Stop();

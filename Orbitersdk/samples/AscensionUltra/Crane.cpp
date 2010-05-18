@@ -24,6 +24,12 @@ void Crane::Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP
 	oldcommand=command=_V(0.0,0.0,0.0);
 }
 
+Crane::~Crane(void)
+{
+	delete filter;
+	delete [] event_prefix;
+}
+
 void Crane::SetSpeed(VECTOR3 speed){this->speed=speed;}
 void Crane::SetCrawl(VECTOR3 speed){crawl=speed;}
 void Crane::SetMargin(VECTOR3 margin){this->margin=margin;}

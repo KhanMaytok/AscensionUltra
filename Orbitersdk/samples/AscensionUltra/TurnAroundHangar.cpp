@@ -101,7 +101,7 @@ void TurnAroundHangar::Init(VESSEL* owner, UINT meshIndex, const char *event_pre
 {
 	this->owner=owner;
 	this->meshIndex=meshIndex;
-	strcpy(this->event_prefix=new char[strlen(event_prefix)], event_prefix);
+	strcpy(this->event_prefix=new char[strlen(event_prefix)+1], event_prefix);
 }
 
 Crane *TurnAroundHangar::GetCrane(){return &crane1;}

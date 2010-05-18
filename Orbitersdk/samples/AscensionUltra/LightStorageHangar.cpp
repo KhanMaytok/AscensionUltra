@@ -77,7 +77,7 @@ void LightStorageHangar::Init(VESSEL* owner, UINT meshIndex, const char *event_p
 {
 	this->owner=owner;
 	this->meshIndex=meshIndex;
-	strcpy(this->event_prefix=new char[strlen(event_prefix)], event_prefix);
+	strcpy(this->event_prefix=new char[strlen(event_prefix)+1], event_prefix);
 }
 
 Door *LightStorageHangar::GetDoor(int index){return (index>=0 && index<4)?doors+index:NULL;}
