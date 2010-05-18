@@ -76,3 +76,19 @@ void AscensionTowerData::Scan()
 	}
 	page=-1;
 }
+
+bool AscensionTowerData::StartList()
+{
+	listIter=scanList.begin();
+	return listIter!=scanList.end();
+}
+
+bool AscensionTowerData::NextList()
+{
+	listIter++;
+	return listIter!=scanList.end();
+}
+
+int AscensionTowerData::GetListIndex(){return listIter->first;}
+
+char *AscensionTowerData::GetListName(){return listIter->second;}

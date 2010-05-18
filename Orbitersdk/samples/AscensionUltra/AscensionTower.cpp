@@ -112,15 +112,33 @@ void AscensionTower::Update (HDC hDC)
 
 	if (page<0)
 	{
-		//Base selection screens	
-		sprintf(line, "%d", page);
-		l=strlen(line);
-		TextOut(hDC, (1+(37-l)/2)*width, (5*height) >> 1, line, l);
+		if (data->StartList())
+		{
+			//Base selection screens	
+			sprintf(line, "Select base:");
+			l=strlen(line);
+			TextOut(hDC, (1+(37-l)/2)*width, (2*height) >> 1, line, l);
+			int i=4;
+			do
+			{
+				sprintf(line, "[%d] %s", data->GetListIndex(), data->GetListName());
+				l=strlen(line);
+				TextOut(hDC, 1*width, (i++*height) >> 1, line, l);
+			}
+			while (data->NextList());
+		}
+		else
+		{
+			//No bases available
+			sprintf(line, "N O   B A S E S   A V A I L A B L E");
+			l=strlen(line);
+			TextOut(hDC, (1+(37-l)/2)*width, (12*height) >> 1, line, l);
+		}
 	}
 	else
 	{
 		//Base interaction screens
-		sprintf(line, "%s", ascension->GetName());
+		sprintf(line, "Base %s", ascension->GetName());
 		l=strlen(line);
 		TextOut(hDC, (1+(37-l)/2)*width, (6*height) >> 1, line, l);
 	}	
