@@ -123,7 +123,7 @@ void AscensionTower::Update (HDC hDC)
 			{
 				sprintf(line, "[%d] %s", data->GetListIndex(), data->GetListName());
 				l=strlen(line);
-				TextOut(hDC, 1*width, (i++*height) >> 1, line, l);
+				TextOut(hDC, 1*width, i++*height, line, l);
 			}
 			while (data->NextList());
 		}
