@@ -55,7 +55,7 @@ void AscensionTowerData::SetAscension(int index)
 	ascension=(AscensionUltra *)vessel;
 	char *name=ascension->GetName();
 	delete [] ascensionName;
-	strcpy(ascensionName=new char[strlen(name)], name);	
+	strcpy(ascensionName=new char[strlen(name)+1], name);	
 	page=0;
 }
 
@@ -69,7 +69,7 @@ void AscensionTowerData::Scan()
 		if (strcmp(vessel->GetClassName(), "AscensionUltra")==0)
 		{
 			char *source=vessel->GetName();
-			char *target=new char[strlen(source)];
+			char *target=new char[strlen(source)+1];
 			strcpy(target, source);
 			scanList[i]=target;
 		}
