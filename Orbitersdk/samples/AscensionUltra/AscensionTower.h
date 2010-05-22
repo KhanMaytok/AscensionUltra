@@ -27,7 +27,9 @@ public:
 private:
 	AscensionTowerData *data;
 	int width, height;
-	
+	int pageRE;
+	HDC hDC;
+	bool WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false);
 };
 
 std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;

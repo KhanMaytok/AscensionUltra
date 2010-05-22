@@ -77,6 +77,8 @@ void AscensionTowerData::Scan()
 	page=-1;
 }
 
+int AscensionTowerData::GetListSize(){return scanList.size();}
+
 bool AscensionTowerData::StartList()
 {
 	listIter=scanList.begin();

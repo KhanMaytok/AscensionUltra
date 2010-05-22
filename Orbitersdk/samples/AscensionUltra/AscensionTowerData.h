@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include "AscensionUltra.h"
+#include "orbitersdk.h"
 
 class AscensionTowerData
 {
@@ -11,6 +12,7 @@ public:
 	void SetAscension(int index);
 	int GetPage();
 	void SetPage(int page);
+	int GetListSize();
 	bool StartList();
 	bool NextList();
 	int GetListIndex();

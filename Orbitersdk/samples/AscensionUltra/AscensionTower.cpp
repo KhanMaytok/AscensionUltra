@@ -69,27 +69,132 @@ AscensionTower::~AscensionTower ()
 // Return button labels
 char *AscensionTower::ButtonLabel (int bt)
 {
-	// The labels for the two buttons used by our MFD mode
-	static char *label[2] = {"UP", "DN"};
-	return (bt < 2 ? label[bt] : 0);
+	int page=data->GetPage();
+	switch (page)
+	{
+	case 0:
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	default:
+		if (page<0)
+		{
+			switch (bt)
+			{
+				case 6: return (data->GetListSize()>1)?"SEL":NULL;
+				case 7: return (data->GetListSize()>1)?"UP":NULL;
+				case 8: return (data->GetListSize()>1)?"DWN":NULL;
+				case 9: return (data->GetListSize()>6)?"NXT":NULL;
+				case 10: return (data->GetListSize()>6)?"PRV":NULL;
+				case 11: return "SCN";
+				default: return ((-page-1)*6+bt<data->GetListSize())?"==>":NULL;
+			}
+		}
+		break;
+	}
+	return NULL;
 }
 
 // Return button menus
 int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 {
-	// The menu descriptions for the two buttons
-	static const MFDBUTTONMENU mnu[2] = {
-		{"Move up", 0, 'U'},
-		{"Move down", 0, 'D'}
-	};
+	static MFDBUTTONMENU mnu[12];
 	if (menu) *menu = mnu;
-	return 2; // return the number of buttons used
+	int page=data->GetPage();
+	switch (page)
+	{
+	case 0:
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	default:
+		if (page<0)
+		{
+			int size=data->GetListSize();
+			int k=size+(page+1)*6;
+
+			for(int i=0;i<k;i++)
+			{
+				mnu[i].line1="Select base";
+				mnu[i].line2="next to the button";
+				mnu[i].selchar=0;
+			}
+			for(int i=k;i<6;i++)
+			{
+				mnu[i].line1=NULL;
+				mnu[i].line2=NULL;
+				mnu[i].selchar=0;
+			}
+			
+			if (size>1)
+			{
+				mnu[6].line1="Select currently";
+				mnu[6].line2="marked base";
+				mnu[6].selchar='S';
+				mnu[7].line1="Move marker up";
+				mnu[7].line2=NULL;
+				mnu[7].selchar='U';
+				mnu[8].line1="Move marker down";
+				mnu[8].line2=NULL;
+				mnu[8].selchar='D';
+			}
+			else for(int i=6;i<9;i++)
+			{
+				mnu[i].line1=NULL;
+				mnu[i].line2=NULL;
+				mnu[i].selchar=0;
+			}
+
+			if (size>6)
+			{
+				mnu[9].line1="Switch to next";
+				mnu[9].line2="page";
+				mnu[9].selchar='N';
+				mnu[10].line1="Switch to previous";
+				mnu[10].line2="page";
+				mnu[10].selchar='P';
+			}
+			else for(int i=9;i<11;i++)
+			{
+				mnu[i].line1=NULL;
+				mnu[i].line2=NULL;
+				mnu[i].selchar=0;
+			}
+
+			mnu[11].line1="Scan for changes";
+			mnu[11].line2=NULL;
+			mnu[11].selchar='C';
+			
+			return 12;			
+		}
+		break;
+	}
+	return 0;
 }
 
+bool AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, bool rightAligned)
+{
+	int l=strlen(text);			
+	if (line<0) return TextOut(hDC, (1+(37-l)/2)*width, 13*height, text, l);
+	int y=(line*height) >> (halfLines?1:0);
+	if (column<0 && !rightAligned) return TextOut(hDC, (1+(37-l)/2)*width, y, text, l);
+	if (rightAligned) return TextOut(hDC, (37-l)*width, y, text, l);
+	TextOut(hDC, column*width, y, text, l);
+}
 
 // Repaint the MFD
 void AscensionTower::Update (HDC hDC)
 {
+	static int atButton[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
+
+	this->hDC=hDC;
+
 	//
 	//Creating the pen for drawing the progress bar
 	if (g_Bar==NULL)
@@ -101,47 +206,57 @@ void AscensionTower::Update (HDC hDC)
 		g_Bar=CreateSolidBrush(g_MiddleGreen);
 	}
 
-	Title (hDC, "Ascension Tower");
-	char line[20];
-	int l=0;
+	char line[40];
 	AscensionUltra *ascension=data->GetAscension();
-	int page=data->GetPage();
-
-	//Descriptions (normal, light green)
-	SelectDefaultFont (hDC, 0);
+	int page=data->GetPage();	
 
 	if (page<0)
 	{
 		if (data->StartList())
 		{
-			//Base selection screens	
-			sprintf(line, "Select base:");
-			l=strlen(line);
-			TextOut(hDC, (1+(37-l)/2)*width, (2*height) >> 1, line, l);
-			int i=4;
+			//Base selection screens
+			//Descriptions (normal, light green)
+			SelectDefaultFont (hDC, 0);			
+			int i=data->GetListSize();
+			int pages=(i+5)/6;
+			if (-page>pages) data->SetPage(page=-pages);
+			for (i=-1;i>page;i--) for (int j=0;j<6;j++) data->NextList();			
+			i=0;
 			do
 			{
-				sprintf(line, "[%d] %s", data->GetListIndex(), data->GetListName());
-				l=strlen(line);
-				TextOut(hDC, 1*width, i++*height, line, l);
+				sprintf(line, "[%d] %s", data->GetListIndex(), data->GetListName());				
+				WriteMFD(line, atButton[i++], 1, true);
 			}
-			while (data->NextList());
+			while (data->NextList() && i<6);
+			if (pages>1)
+			{
+				sprintf(line, "p.%d/%d", -page, pages);
+				WriteMFD(line, 27, NULL, false, true);
+			}
+
+			Title (hDC, "Ascension Tower: select...");
 		}
 		else
 		{
 			//No bases available
-			sprintf(line, "N O   B A S E S   A V A I L A B L E");
-			l=strlen(line);
-			TextOut(hDC, (1+(37-l)/2)*width, (12*height) >> 1, line, l);
+			//Descriptions (normal, light green)
+			SelectDefaultFont (hDC, 0);
+			WriteMFD("N O   B A S E S   A V A I L A B L E");
+			Title (hDC, "Ascension Tower");
 		}
 	}
 	else
 	{
 		//Base interaction screens
-		sprintf(line, "Base %s", ascension->GetName());
-		l=strlen(line);
-		TextOut(hDC, (1+(37-l)/2)*width, (6*height) >> 1, line, l);
-	}	
+		//Descriptions (normal, light green)
+		SelectDefaultFont (hDC, 0);
+
+		sprintf(line, "Ascension Tower: %s", ascension->GetName());
+		Title (hDC, line);
+	}
+
+	if (pageRE!=page) InvalidateButtons();
+	pageRE=page;
 }
 
 // MFD message parser
