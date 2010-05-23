@@ -21,7 +21,6 @@ AscensionTowerData::~AscensionTowerData(void)
 // 3. return NULL
 AscensionUltra *AscensionTowerData::GetAscension()
 {	
-	if (page<0) return NULL;
 	if (oapiIsVessel(ascensionHandle)) return ascension;
 	Scan();
 	int detected=-1;
@@ -56,7 +55,6 @@ void AscensionTowerData::SetAscension(int index)
 	char *name=ascension->GetName();
 	delete [] ascensionName;
 	strcpy(ascensionName=new char[strlen(name)+1], name);	
-	page=0;
 }
 
 void AscensionTowerData::Scan()
@@ -73,8 +71,7 @@ void AscensionTowerData::Scan()
 			strcpy(target, source);
 			scanList[i]=target;
 		}
-	}
-	page=-1;
+	}	
 }
 
 int AscensionTowerData::GetListSize(){return scanList.size();}

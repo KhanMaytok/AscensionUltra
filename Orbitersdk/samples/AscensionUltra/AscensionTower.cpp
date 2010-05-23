@@ -207,9 +207,10 @@ void AscensionTower::Update (HDC hDC)
 	}
 
 	char line[40];
-	AscensionUltra *ascension=data->GetAscension();
-	int page=data->GetPage();	
-
+	AscensionUltra *ascension=NULL;	
+	int page=data->GetPage();
+	if (page>=0) if ((ascension=data->GetAscension())==NULL) data->SetPage(page=-1);
+	
 	if (page<0)
 	{
 		if (data->StartList())
@@ -246,7 +247,7 @@ void AscensionTower::Update (HDC hDC)
 		}
 	}
 	else
-	{
+	{		
 		//Base interaction screens
 		//Descriptions (normal, light green)
 		SelectDefaultFont (hDC, 0);
