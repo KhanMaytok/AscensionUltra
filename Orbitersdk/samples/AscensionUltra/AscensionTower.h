@@ -30,6 +30,10 @@ private:
 	int pageRE;
 	HDC hDC;
 	bool WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false);
+	char *SelectionButtonLabel (int bt, int page);
+	int SelectionButtonMenu (MFDBUTTONMENU *mnu, int page) const;
+	bool SelectionConsumeKeyBuffered(DWORD key, int page);
+	bool SelectionConsumeButton(int bt, int page);
 };
 
 std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;

@@ -80,22 +80,26 @@ char *AscensionTower::ButtonLabel (int bt)
 	case 3:
 		break;
 	default:
-		if (page<0)
-		{
-			switch (bt)
-			{
-				case 6: return (data->GetListSize()>1)?"SEL":NULL;
-				case 7: return (data->GetListSize()>1)?"UP":NULL;
-				case 8: return (data->GetListSize()>1)?"DWN":NULL;
-				case 9: return (data->GetListSize()>6)?"NXT":NULL;
-				case 10: return (data->GetListSize()>6)?"PRV":NULL;
-				case 11: return "SCN";
-				default: return ((-page-1)*6+bt<data->GetListSize())?"==>":NULL;
-			}
-		}
+		if (page<0) return SelectionButtonLabel(bt, -page-1);		
 		break;
 	}
 	return NULL;
+}
+
+// Return selection page button labels
+char *AscensionTower::SelectionButtonLabel (int bt, int page)
+{
+	int size=data->GetListSize();
+	switch (bt)
+	{
+		case 6: return size>1?"SEL":NULL;
+		case 7: return size>1?"UP":NULL;
+		case 8: return size>1?"DWN":NULL;
+		case 9: return size>6?"NXT":NULL;
+		case 10: return size>6?"PRV":NULL;
+		case 11: return "SCN";
+		default: return size>page*6+bt?"==>":NULL;
+	}	
 }
 
 // Return button menus
@@ -114,68 +118,71 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 	case 3:
 		break;
 	default:
-		if (page<0)
-		{
-			int size=data->GetListSize();
-			int k=size+(page+1)*6;
-
-			for(int i=0;i<k;i++)
-			{
-				mnu[i].line1="Select base";
-				mnu[i].line2="next to the button";
-				mnu[i].selchar=0;
-			}
-			for(int i=k;i<6;i++)
-			{
-				mnu[i].line1=NULL;
-				mnu[i].line2=NULL;
-				mnu[i].selchar=0;
-			}
-			
-			if (size>1)
-			{
-				mnu[6].line1="Select currently";
-				mnu[6].line2="marked base";
-				mnu[6].selchar='S';
-				mnu[7].line1="Move marker up";
-				mnu[7].line2=NULL;
-				mnu[7].selchar='U';
-				mnu[8].line1="Move marker down";
-				mnu[8].line2=NULL;
-				mnu[8].selchar='D';
-			}
-			else for(int i=6;i<9;i++)
-			{
-				mnu[i].line1=NULL;
-				mnu[i].line2=NULL;
-				mnu[i].selchar=0;
-			}
-
-			if (size>6)
-			{
-				mnu[9].line1="Switch to next";
-				mnu[9].line2="page";
-				mnu[9].selchar='N';
-				mnu[10].line1="Switch to previous";
-				mnu[10].line2="page";
-				mnu[10].selchar='P';
-			}
-			else for(int i=9;i<11;i++)
-			{
-				mnu[i].line1=NULL;
-				mnu[i].line2=NULL;
-				mnu[i].selchar=0;
-			}
-
-			mnu[11].line1="Scan for changes";
-			mnu[11].line2=NULL;
-			mnu[11].selchar='C';
-			
-			return 12;			
-		}
+		if (page<0) return SelectionButtonMenu(mnu, -page-1);
 		break;
 	}
 	return 0;
+}
+
+// Return button menus for selection pages
+int AscensionTower::SelectionButtonMenu (MFDBUTTONMENU *mnu, int page) const
+{	
+	int size=data->GetListSize();
+	int k=size-page*6;
+
+	for(int i=0;i<k;i++)
+	{
+		mnu[i].line1="Select base";
+		mnu[i].line2="next to the button";
+		mnu[i].selchar=0;
+	}
+	for(int i=k;i<6;i++)
+	{
+		mnu[i].line1=NULL;
+		mnu[i].line2=NULL;
+		mnu[i].selchar=0;
+	}
+	
+	if (size>1)
+	{
+		mnu[6].line1="Select currently";
+		mnu[6].line2="marked base";
+		mnu[6].selchar='S';
+		mnu[7].line1="Move marker up";
+		mnu[7].line2=NULL;
+		mnu[7].selchar='U';
+		mnu[8].line1="Move marker down";
+		mnu[8].line2=NULL;
+		mnu[8].selchar='D';
+	}
+	else for(int i=6;i<9;i++)
+	{
+		mnu[i].line1=NULL;
+		mnu[i].line2=NULL;
+		mnu[i].selchar=0;
+	}
+
+	if (size>6)
+	{
+		mnu[9].line1="Switch to next";
+		mnu[9].line2="page";
+		mnu[9].selchar='N';
+		mnu[10].line1="Switch to previous";
+		mnu[10].line2="page";
+		mnu[10].selchar='P';
+	}
+	else for(int i=9;i<11;i++)
+	{
+		mnu[i].line1=NULL;
+		mnu[i].line2=NULL;
+		mnu[i].selchar=0;
+	}
+
+	mnu[11].line1="Scan for changes";
+	mnu[11].line2=NULL;
+	mnu[11].selchar='C';
+	
+	return 12;
 }
 
 bool AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, bool rightAligned)
@@ -275,14 +282,70 @@ int AscensionTower::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
 // Handling shortcut keys
 bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 {	
+	int page=data->GetPage();
+	switch (page)
+	{
+	case 0:
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	default:
+		if (page<0) return SelectionConsumeKeyBuffered(key, -page-1);		
+		break;
+	}
+	return false;
+}
+
+// Handling selection pages shortcut keys
+bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
+{	
 	bool result=true;
+	int size=data->GetListSize();
+	int pages=(size+5)/6;
 	switch(key)
 	{
-	case OAPI_KEY_U://Up
-		data->SetPage(data->GetPage()+1);
+	case OAPI_KEY_N://Next page
+		if (size>6)
+		{
+			if (page<pages-1) data->SetPage(-page-2);
+			else data->SetPage(-1);
+		}
+		else result=false;
 		break;
-	case OAPI_KEY_D://Down
-		data->SetPage(data->GetPage()-1);
+	case OAPI_KEY_P://Previous page
+		if (size>6)
+		{
+			if (page>0) data->SetPage(-page);
+			else data->SetPage(-pages);
+		}
+		else result=false;
+		break;
+	case OAPI_KEY_U://Selection up
+		if (size>1)
+		{
+			
+		}
+		else result=false;
+		break;
+	case OAPI_KEY_D://Selection down
+		if (size>1)
+		{
+			
+		}
+		else result=false;
+		break;
+	case OAPI_KEY_S://Select
+		if (size>1)
+		{
+			
+		}
+		else result=false;
+		break;
+	case OAPI_KEY_C://Scan for changes
+		data->GetAscension();
 		break;
 	default:
 		result=false;
@@ -292,18 +355,41 @@ bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 	return true;
 }
 
-// Handling button presses by forwarding shortcuts
+// Handling button presses
 bool AscensionTower::ConsumeButton(int bt, int event)
 {	
 	if (event & PANEL_MOUSE_LBDOWN)
 	{
-		switch(bt)
+		int page=data->GetPage();
+		switch (page)
 		{
 		case 0:
-			return ConsumeKeyBuffered(OAPI_KEY_U);
 		case 1:
-			return ConsumeKeyBuffered(OAPI_KEY_D);
-		}
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		default:
+			if (page<0) return SelectionConsumeButton(bt, -page-1);		
+			break;
+		}		
 	}	
+	return false;
+}
+
+// Handling selection pages button presses
+bool AscensionTower::SelectionConsumeButton(int bt, int page)
+{
+	int size=data->GetListSize();
+	switch(bt)
+	{
+	case 6: return size>1?ConsumeKeyBuffered(OAPI_KEY_S):NULL;
+	case 7: return size>1?ConsumeKeyBuffered(OAPI_KEY_U):NULL;
+	case 8: return size>1?ConsumeKeyBuffered(OAPI_KEY_D):NULL;
+	case 9: return size>6?ConsumeKeyBuffered(OAPI_KEY_N):NULL;
+	case 10: return size>6?ConsumeKeyBuffered(OAPI_KEY_P):NULL;
+	case 11: return ConsumeKeyBuffered(OAPI_KEY_C);
+	}		
 	return false;
 }
