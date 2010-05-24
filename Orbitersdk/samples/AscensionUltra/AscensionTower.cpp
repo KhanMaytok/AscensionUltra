@@ -93,13 +93,13 @@ char *AscensionTower::SelectionButtonLabel (int bt, int page)
 	int size=data->GetListSize();
 	switch (bt)
 	{
-		case 6: return size>1?"SEL":NULL;
-		case 7: return size>1?"UP":NULL;
-		case 8: return size>1?"DWN":NULL;
-		case 9: return size>6?"NXT":NULL;
-		case 10: return size>6?"PRV":NULL;
+		case 6: return size>1?"SEL":"";
+		case 7: return size>1?"UP":"";
+		case 8: return size>1?"DWN":"";
+		case 9: return size>6?"NXT":"";
+		case 10: return size>6?"PRV":"";
 		case 11: return "SCN";
-		default: return size>page*6+bt?"==>":NULL;
+		default: return size>page*6+bt?"==>":"";
 	}	
 }
 
