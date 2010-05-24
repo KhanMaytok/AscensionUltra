@@ -251,7 +251,8 @@ void AscensionTower::Update (HDC hDC)
 			i=0;
 			do
 			{
-				sprintf(line, "[%d] %s", data->GetListIndex(), data->GetListName());				
+				selections[i]=data->GetListIndex();
+				sprintf(line, "[%d] %s", selections[i], data->GetListName());				
 				WriteMFD(line, atButton[i], 1, true, false, i==selection);				
 			}
 			while (data->NextList() && ++i<6);
@@ -364,7 +365,8 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
 	case OAPI_KEY_S://Select
 		if (size>1)
 		{
-			
+			data->SetAscension(selections[selection]);
+			data->SetPage(0);
 		}
 		else result=false;
 		break;
@@ -414,6 +416,13 @@ bool AscensionTower::SelectionConsumeButton(int bt, int page)
 	case 9: return size>6?ConsumeKeyBuffered(OAPI_KEY_N):NULL;
 	case 10: return size>6?ConsumeKeyBuffered(OAPI_KEY_P):NULL;
 	case 11: return ConsumeKeyBuffered(OAPI_KEY_C);
+	default:
+		if (bt<min(size-page*6, 6))
+		{
+			data->SetAscension(selections[bt]);
+			data->SetPage(0);
+			return true;
+		}
 	}		
 	return false;
 }
