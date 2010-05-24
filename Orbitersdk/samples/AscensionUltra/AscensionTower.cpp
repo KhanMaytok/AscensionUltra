@@ -128,7 +128,7 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 int AscensionTower::SelectionButtonMenu (MFDBUTTONMENU *mnu, int page) const
 {	
 	int size=data->GetListSize();
-	int k=size-page*6;
+	int k=min(size-page*6, 6);
 
 	for(int i=0;i<k;i++)
 	{
@@ -185,14 +185,32 @@ int AscensionTower::SelectionButtonMenu (MFDBUTTONMENU *mnu, int page) const
 	return 12;
 }
 
-bool AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, bool rightAligned)
+void AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, bool rightAligned, bool highlight)
 {
-	int l=strlen(text);			
-	if (line<0) return TextOut(hDC, (1+(37-l)/2)*width, 13*height, text, l);
-	int y=(line*height) >> (halfLines?1:0);
-	if (column<0 && !rightAligned) return TextOut(hDC, (1+(37-l)/2)*width, y, text, l);
-	if (rightAligned) return TextOut(hDC, (37-l)*width, y, text, l);
-	TextOut(hDC, column*width, y, text, l);
+	int l=strlen(text);
+	int x=0;
+	int y=0;
+	if (line<0)
+	{
+		x=(1+(37-l)/2)*width;
+		y=13*height;		
+	}
+	else
+	{
+		y=(line*height) >> (halfLines?1:0);
+		if (column<0 && !rightAligned) x=(1+(37-l)/2)*width;
+		else
+		{
+			if (rightAligned) x=(37-l)*width;
+			else x=column*width;
+		}
+	}
+	if (highlight)
+	{
+		SelectObject(hDC, g_Bar);
+		Rectangle(hDC, width-2, y-2, 38*width+2, y+height+6 );		
+	}
+	TextOut(hDC, x, y, text, l);
 }
 
 // Repaint the MFD
@@ -227,20 +245,21 @@ void AscensionTower::Update (HDC hDC)
 			SelectDefaultFont (hDC, 0);			
 			int i=data->GetListSize();
 			int pages=(i+5)/6;
+			int selection=data->GetSelection();
 			if (-page>pages) data->SetPage(page=-pages);
 			for (i=-1;i>page;i--) for (int j=0;j<6;j++) data->NextList();			
 			i=0;
 			do
 			{
 				sprintf(line, "[%d] %s", data->GetListIndex(), data->GetListName());				
-				WriteMFD(line, atButton[i++], 1, true);
+				WriteMFD(line, atButton[i], 1, true, false, i==selection);				
 			}
-			while (data->NextList() && i<6);
+			while (data->NextList() && ++i<6);
 			if (pages>1)
 			{
 				sprintf(line, "p.%d/%d", -page, pages);
 				WriteMFD(line, 27, NULL, false, true);
-			}
+			}			
 
 			Title (hDC, "Ascension Tower: select...");
 		}
@@ -305,6 +324,7 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
 	bool result=true;
 	int size=data->GetListSize();
 	int pages=(size+5)/6;
+	int selection=data->GetSelection();
 	switch(key)
 	{
 	case OAPI_KEY_N://Next page
@@ -314,6 +334,7 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
 			else data->SetPage(-1);
 		}
 		else result=false;
+		data->SetSelection(0);
 		break;
 	case OAPI_KEY_P://Previous page
 		if (size>6)
@@ -322,18 +343,21 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
 			else data->SetPage(-pages);
 		}
 		else result=false;
+		data->SetSelection(min(size+data->GetPage()*6+6, 6)-1);
 		break;
 	case OAPI_KEY_U://Selection up
 		if (size>1)
 		{
-			
+			if (selection>0) data->SetSelection(selection-1);
+			else SelectionConsumeKeyBuffered(OAPI_KEY_P, page);			
 		}
 		else result=false;
 		break;
 	case OAPI_KEY_D://Selection down
 		if (size>1)
 		{
-			
+			if (selection<min(size-page*6, 6)-1) data->SetSelection(selection+1);
+			else SelectionConsumeKeyBuffered(OAPI_KEY_N, page);			
 		}
 		else result=false;
 		break;

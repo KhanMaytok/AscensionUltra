@@ -17,6 +17,8 @@ public:
 	bool NextList();
 	int GetListIndex();
 	char *GetListName();
+	int GetSelection();
+	void SetSelection(int selection);
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;
@@ -24,5 +26,6 @@ private:
 	std::map<UINT, char*> scanList;
 	std::map<UINT, char*>::iterator listIter;
 	int page;
+	int selection;
 	void Scan();
 };

@@ -29,7 +29,7 @@ private:
 	int width, height;
 	int pageRE;
 	HDC hDC;
-	bool WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false);
+	void WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false, bool highlight=false);
 	char *SelectionButtonLabel (int bt, int page);
 	int SelectionButtonMenu (MFDBUTTONMENU *mnu, int page) const;
 	bool SelectionConsumeKeyBuffered(DWORD key, int page);

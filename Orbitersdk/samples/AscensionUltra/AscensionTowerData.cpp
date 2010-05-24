@@ -6,6 +6,7 @@ AscensionTowerData::AscensionTowerData(void)
 	ascensionName=NULL;
 	ascension=NULL;
 	page=0;
+	selection=0;
 }
 
 AscensionTowerData::~AscensionTowerData(void)
@@ -91,3 +92,6 @@ bool AscensionTowerData::NextList()
 int AscensionTowerData::GetListIndex(){return listIter->first;}
 
 char *AscensionTowerData::GetListName(){return listIter->second;}
+
+int AscensionTowerData::GetSelection(){return selection;}
+void AscensionTowerData::SetSelection(int selection){this->selection=selection;}
