@@ -73,6 +73,7 @@ char *AscensionTower::ButtonLabel (int bt)
 	switch (page)
 	{
 	case 0:
+		return bt==11?"SCN":"";
 	case 1:
 		break;
 	case 2:
@@ -111,6 +112,16 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 	switch (page)
 	{
 	case 0:
+		for(int i=0;i<11;i++)
+		{
+			mnu[i].line1=NULL;
+			mnu[i].line2=NULL;
+			mnu[i].selchar=0;
+		}
+		mnu[11].line1="Scan for changes";
+		mnu[11].line2=NULL;
+		mnu[11].selchar='C';
+		return 12;		
 	case 1:
 		break;
 	case 2:
@@ -262,7 +273,7 @@ void AscensionTower::Update (HDC hDC)
 				WriteMFD(line, 27, NULL, false, true);
 			}			
 
-			Title (hDC, "Ascension Tower: select...");
+			Title (hDC, "Ascension Tower: select base");
 		}
 		else
 		{
@@ -302,10 +313,19 @@ int AscensionTower::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
 // Handling shortcut keys
 bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 {	
+	bool result=true;
 	int page=data->GetPage();
 	switch (page)
 	{
 	case 0:
+		if (key==OAPI_KEY_C)
+		{
+			data->SetAscension(-1);
+			data->SetPage(-1);
+			InvalidateButtons();
+		}
+		else result=false;
+		break;
 	case 1:
 		break;
 	case 2:
@@ -313,10 +333,13 @@ bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 	case 3:
 		break;
 	default:
-		if (page<0) return SelectionConsumeKeyBuffered(key, -page-1);		
+		if (page<0) result=SelectionConsumeKeyBuffered(key, -page-1);
+		else result=false;
 		break;
 	}
-	return false;
+	if (!result) return false;
+	InvalidateDisplay();
+	return true;
 }
 
 // Handling selection pages shortcut keys
@@ -367,18 +390,18 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
 		{
 			data->SetAscension(selections[selection]);
 			data->SetPage(0);
+			InvalidateButtons();
 		}
 		else result=false;
 		break;
 	case OAPI_KEY_C://Scan for changes
-		data->GetAscension();
+		data->SetAscension(-1);
+		InvalidateButtons();
 		break;
 	default:
 		result=false;
 	}
-	if (!result) return false;
-	InvalidateDisplay();
-	return true;
+	return result;
 }
 
 // Handling button presses
@@ -390,6 +413,8 @@ bool AscensionTower::ConsumeButton(int bt, int event)
 		switch (page)
 		{
 		case 0:
+			if (bt==11) return ConsumeKeyBuffered(OAPI_KEY_C);
+			break;
 		case 1:
 			break;
 		case 2:
@@ -421,6 +446,8 @@ bool AscensionTower::SelectionConsumeButton(int bt, int page)
 		{
 			data->SetAscension(selections[bt]);
 			data->SetPage(0);
+			InvalidateButtons();
+			InvalidateDisplay();
 			return true;
 		}
 	}		
