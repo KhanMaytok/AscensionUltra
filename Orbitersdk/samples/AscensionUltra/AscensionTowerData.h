@@ -11,8 +11,8 @@ typedef enum AscensionTowerState
 
 typedef struct AscensionTowerListPair
 {
-	UINT index;
-	char *name;
+	UINT Index;
+	char *Name;
 };
 
 class AscensionTowerData

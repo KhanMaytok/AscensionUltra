@@ -13,7 +13,7 @@ AscensionTowerData::AscensionTowerData(void)
 AscensionTowerData::~AscensionTowerData(void)
 {
 	delete [] ascensionName;
-	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->name;
+	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->Name;
 	scanList.clear();
 }
 
@@ -28,16 +28,16 @@ AscensionUltra *AscensionTowerData::GetAscension()
 	int detected=-1;
 	if (ascensionName!=NULL) for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++)
 	{
-		if (strcmp(i->name, ascensionName)==0)
+		if (strcmp(i->Name, ascensionName)==0)
 		{
 			if (detected>=0) return NULL; //Name is not unique
-			detected=i->index;			
+			detected=i->Index;			
 		}
 	}
 	if (detected<0)
 	{
 		if (scanList.size()!=1) return NULL;
-		detected=scanList.begin()->index;
+		detected=scanList.begin()->Index;
 	}
 	SetAscension(detected);	
 	return ascension;
@@ -60,7 +60,7 @@ void AscensionTowerData::SetAscension(int index)
 
 void AscensionTowerData::Scan()
 {
-	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->name;
+	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->Name;
 	scanList.clear();
 	int k=oapiGetVesselCount();
 	for (int i=0;i<k;i++)
@@ -113,11 +113,8 @@ void AscensionTowerData::Select()
 {
 	switch(state)
 	{
-	case AscensionTowerState::BaseSelect:
-		StartList();
-		for (int i=0;i<page;i++) for (int j=0;j<6;j++) NextList();
-		for (int i=0;i<selection;i++) NextList();
-		SetAscension(GetListItem().index);
+	case AscensionTowerState::BaseSelect:		
+		SetAscension(scanList[page*6+selection].Index);
 		SetState(AscensionTowerState::MainMenu);
 		break;	
 	}

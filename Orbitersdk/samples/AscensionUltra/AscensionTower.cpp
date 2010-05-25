@@ -213,8 +213,6 @@ void AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, 
 // Repaint the MFD
 void AscensionTower::Update (HDC hDC)
 {
-	static int atButton[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
-
 	this->hDC=hDC;
 
 	//
@@ -239,48 +237,11 @@ void AscensionTower::Update (HDC hDC)
 			InvalidateButtons();
 		}
 	}
-	int page=data->GetPage();
 
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
-		if (data->StartList())
-		{
-			//Base selection screens
-			//Descriptions (normal, light green)
-			SelectDefaultFont (hDC, 0);			
-			int i=data->GetListSize();
-			int pages=(i+5)/6;
-			int selection=data->GetSelection();
-			if (page>=pages)
-			{
-				data->SetPage(page=pages-1);
-				InvalidateButtons();
-			}
-			for (i=0;i<page;i++) for (int j=0;j<6;j++) data->NextList();			
-			i=0;
-			do
-			{
-				sprintf(line, "%s", data->GetListItem().name);				
-				WriteMFD(line, atButton[i], 1, true, false, i==selection);				
-			}
-			while (data->NextList() && ++i<6);
-			if (pages>1)
-			{
-				sprintf(line, "p.%d/%d", page+1, pages);
-				WriteMFD(line, 27, NULL, false, true);
-			}			
-
-			Title (hDC, "Ascension Tower: select base");
-		}
-		else
-		{
-			//No bases available
-			//Descriptions (normal, light green)
-			SelectDefaultFont (hDC, 0);
-			WriteMFD("N O   B A S E S   A V A I L A B L E");
-			Title (hDC, "Ascension Tower");
-		}
+		RenderSelectionPage();
 		break;
 	case AscensionTowerState::MainMenu:		
 		//Base main menu screens
@@ -293,6 +254,47 @@ void AscensionTower::Update (HDC hDC)
 	}
 }
 
+void AscensionTower::RenderSelectionPage()
+{
+	static int atButton[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
+	char line[40];
+	int page=data->GetPage();
+	int pages=(data->GetListSize()+5)/6;
+	if (page>=pages)
+	{
+		data->SetPage(page=pages-1);
+		InvalidateButtons();
+	}
+	if (data->StartList(page*6))
+	{
+		//Base selection screens
+		//Descriptions (normal, light green)
+		SelectDefaultFont (hDC, 0);
+		int selection=data->GetSelection();
+		int i=0;
+		do
+		{
+			sprintf(line, "%s", data->GetListItem().Name);
+			WriteMFD(line, atButton[i], 1, true, false, i==selection);
+		}
+		while (data->NextList() && ++i<6);
+		if (pages>1)
+		{
+			sprintf(line, "p.%d/%d", page+1, pages);
+			WriteMFD(line, 27, NULL, false, true);
+		}
+
+		Title (hDC, "Ascension Tower: select base");
+	}
+	else
+	{
+		//No bases available
+		//Descriptions (normal, light green)
+		SelectDefaultFont (hDC, 0);
+		WriteMFD("N O   B A S E S   A V A I L A B L E");
+		Title (hDC, "Ascension Tower");
+	}
+}
 // MFD message parser
 int AscensionTower::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
 {
