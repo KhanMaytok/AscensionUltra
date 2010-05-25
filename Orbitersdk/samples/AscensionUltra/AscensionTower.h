@@ -33,7 +33,7 @@ private:
 	int SelectionButtonMenu (MFDBUTTONMENU *mnu) const;
 	bool SelectionConsumeKeyBuffered(DWORD key);
 	bool SelectionConsumeButton(int bt);
-	void RenderSelectionPage();
+	bool RenderSelectionPage();
 };
 
 std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;

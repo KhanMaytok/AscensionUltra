@@ -247,8 +247,7 @@ void AscensionTower::Update (HDC hDC)
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
-		RenderSelectionPage();
-		WriteMFD("Select Ascension Ultra base", 3, -1, true);
+		if (RenderSelectionPage()) WriteMFD("Select Ascension Ultra base", 3, -1, true);
 		Title (hDC, "Ascension Tower");
 		break;
 	case AscensionTowerState::MainMenu:		
@@ -274,7 +273,7 @@ void AscensionTower::Update (HDC hDC)
 	}
 }
 
-void AscensionTower::RenderSelectionPage()
+bool AscensionTower::RenderSelectionPage()
 {
 	static int atButton[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
 	char line[40];
@@ -302,15 +301,14 @@ void AscensionTower::RenderSelectionPage()
 		{
 			sprintf(line, "p.%d/%d", page+1, pages);
 			WriteMFD(line, 27, NULL, false, true);
-		}		
+		}
+		return true;
 	}
-	else
-	{
-		//No bases available
-		//Descriptions (normal, light green)
-		SelectDefaultFont (hDC, 0);
-		WriteMFD("N O   B A S E S   A V A I L A B L E");		
-	}
+	//No bases available
+	//Descriptions (normal, light green)
+	SelectDefaultFont (hDC, 0);
+	WriteMFD("N O   B A S E S   A V A I L A B L E");
+	return false;
 }
 // MFD message parser
 int AscensionTower::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
