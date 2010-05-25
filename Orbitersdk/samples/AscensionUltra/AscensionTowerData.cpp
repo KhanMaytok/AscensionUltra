@@ -7,6 +7,7 @@ AscensionTowerData::AscensionTowerData(void)
 	ascension=NULL;
 	page=0;
 	selection=0;
+	state=AscensionTowerState::MainMenu;
 }
 
 AscensionTowerData::~AscensionTowerData(void)
@@ -38,8 +39,7 @@ AscensionUltra *AscensionTowerData::GetAscension()
 		if (scanList.size()!=1) return NULL;
 		detected=scanList.begin()->first;
 	}
-	SetAscension(detected);
-	if (page<0) return NULL;
+	SetAscension(detected);	
 	return ascension;
 }
 
@@ -95,3 +95,6 @@ char *AscensionTowerData::GetListName(){return listIter->second;}
 
 int AscensionTowerData::GetSelection(){return selection;}
 void AscensionTowerData::SetSelection(int selection){this->selection=selection;}
+
+AscensionTowerState AscensionTowerData::GetState(){return state;}
+void AscensionTowerData::SetState(AscensionTowerState state){this->state=state;}

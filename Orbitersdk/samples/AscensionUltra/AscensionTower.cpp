@@ -69,26 +69,19 @@ AscensionTower::~AscensionTower ()
 // Return button labels
 char *AscensionTower::ButtonLabel (int bt)
 {
-	int page=data->GetPage();
-	switch (page)
+	AscensionTowerState state=data->GetState();
+	switch (state)
 	{
-	case 0:
+	case AscensionTowerState::MainMenu:
 		return bt==11?"SCN":"";
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	default:
-		if (page<0) return SelectionButtonLabel(bt, -page-1);		
-		break;
+	case AscensionTowerState::BaseSelect:
+		return SelectionButtonLabel(bt);
 	}
 	return NULL;
 }
 
 // Return selection page button labels
-char *AscensionTower::SelectionButtonLabel (int bt, int page)
+char *AscensionTower::SelectionButtonLabel (int bt)
 {
 	int size=data->GetListSize();
 	switch (bt)
@@ -99,7 +92,7 @@ char *AscensionTower::SelectionButtonLabel (int bt, int page)
 		case 9: return size>6?"NXT":"";
 		case 10: return size>6?"PRV":"";
 		case 11: return "SCN";
-		default: return size>page*6+bt?"==>":"";
+		default: return size>data->GetPage()*6+bt?"==>":"";
 	}	
 }
 
@@ -108,10 +101,10 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 {
 	static MFDBUTTONMENU mnu[12];
 	if (menu) *menu = mnu;
-	int page=data->GetPage();
-	switch (page)
+	AscensionTowerState state=data->GetState();
+	switch (state)
 	{
-	case 0:
+	case AscensionTowerState::MainMenu:
 		for(int i=0;i<11;i++)
 		{
 			mnu[i].line1=NULL;
@@ -122,24 +115,17 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 		mnu[11].line2=NULL;
 		mnu[11].selchar='C';
 		return 12;		
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	default:
-		if (page<0) return SelectionButtonMenu(mnu, -page-1);
-		break;
+	case AscensionTowerState::BaseSelect:
+		return SelectionButtonMenu(mnu);
 	}
 	return 0;
 }
 
 // Return button menus for selection pages
-int AscensionTower::SelectionButtonMenu (MFDBUTTONMENU *mnu, int page) const
+int AscensionTower::SelectionButtonMenu (MFDBUTTONMENU *mnu) const
 {	
 	int size=data->GetListSize();
-	int k=min(size-page*6, 6);
+	int k=min(size-data->GetPage()*6, 6);
 
 	for(int i=0;i<k;i++)
 	{
@@ -244,11 +230,20 @@ void AscensionTower::Update (HDC hDC)
 
 	char line[40];
 	AscensionUltra *ascension=NULL;	
-	int page=data->GetPage();
-	if (page>=0) if ((ascension=data->GetAscension())==NULL) data->SetPage(page=-1);
-	
-	if (page<0)
+	AscensionTowerState state=data->GetState();
+	if (state!=AscensionTowerState::BaseSelect)
 	{
+		if ((ascension=data->GetAscension())==NULL)
+		{
+			data->SetState(state=AscensionTowerState::BaseSelect);
+			InvalidateButtons();
+		}
+	}
+	int page=data->GetPage();
+
+	switch(state)
+	{
+	case AscensionTowerState::BaseSelect:
 		if (data->StartList())
 		{
 			//Base selection screens
@@ -257,8 +252,12 @@ void AscensionTower::Update (HDC hDC)
 			int i=data->GetListSize();
 			int pages=(i+5)/6;
 			int selection=data->GetSelection();
-			if (-page>pages) data->SetPage(page=-pages);
-			for (i=-1;i>page;i--) for (int j=0;j<6;j++) data->NextList();			
+			if (page>=pages)
+			{
+				data->SetPage(page=pages-1);
+				InvalidateButtons();
+			}
+			for (i=0;i<page;i++) for (int j=0;j<6;j++) data->NextList();			
 			i=0;
 			do
 			{
@@ -269,7 +268,7 @@ void AscensionTower::Update (HDC hDC)
 			while (data->NextList() && ++i<6);
 			if (pages>1)
 			{
-				sprintf(line, "p.%d/%d", -page, pages);
+				sprintf(line, "p.%d/%d", page+1, pages);
 				WriteMFD(line, 27, NULL, false, true);
 			}			
 
@@ -283,19 +282,16 @@ void AscensionTower::Update (HDC hDC)
 			WriteMFD("N O   B A S E S   A V A I L A B L E");
 			Title (hDC, "Ascension Tower");
 		}
-	}
-	else
-	{		
-		//Base interaction screens
+		break;
+	case AscensionTowerState::MainMenu:		
+		//Base main menu screens
 		//Descriptions (normal, light green)
 		SelectDefaultFont (hDC, 0);
 
 		sprintf(line, "Ascension Tower: %s", ascension->GetName());
 		Title (hDC, line);
+		break;
 	}
-
-	if (pageRE!=page) InvalidateButtons();
-	pageRE=page;
 }
 
 // MFD message parser
@@ -314,27 +310,20 @@ int AscensionTower::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
 bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 {	
 	bool result=true;
-	int page=data->GetPage();
-	switch (page)
+	AscensionTowerState state=data->GetState();
+	switch (state)
 	{
-	case 0:
+	case AscensionTowerState::MainMenu:
 		if (key==OAPI_KEY_C)
 		{
 			data->SetAscension(-1);
-			data->SetPage(-1);
+			data->SetState(AscensionTowerState::BaseSelect);
 			InvalidateButtons();
 		}
 		else result=false;
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	default:
-		if (page<0) result=SelectionConsumeKeyBuffered(key, -page-1);
-		else result=false;
+		break;	
+	case AscensionTowerState::BaseSelect:
+		result=SelectionConsumeKeyBuffered(key);
 		break;
 	}
 	if (!result) return false;
@@ -343,19 +332,20 @@ bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 }
 
 // Handling selection pages shortcut keys
-bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
+bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key)
 {	
 	bool result=true;
 	int size=data->GetListSize();
 	int pages=(size+5)/6;
 	int selection=data->GetSelection();
+	int page=data->GetPage();
 	switch(key)
 	{
 	case OAPI_KEY_N://Next page
 		if (size>6)
 		{
-			if (page<pages-1) data->SetPage(-page-2);
-			else data->SetPage(-1);
+			if (page<pages-1) data->SetPage(++page);
+			else data->SetPage(0);
 		}
 		else result=false;
 		data->SetSelection(0);
@@ -363,17 +353,17 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
 	case OAPI_KEY_P://Previous page
 		if (size>6)
 		{
-			if (page>0) data->SetPage(-page);
-			else data->SetPage(-pages);
+			if (page>0) data->SetPage(--page);
+			else data->SetPage(pages-1);
 		}
 		else result=false;
-		data->SetSelection(min(size+data->GetPage()*6+6, 6)-1);
+		data->SetSelection(min(size-data->GetPage()*6, 6)-1);
 		break;
 	case OAPI_KEY_U://Selection up
 		if (size>1)
 		{
 			if (selection>0) data->SetSelection(selection-1);
-			else SelectionConsumeKeyBuffered(OAPI_KEY_P, page);			
+			else SelectionConsumeKeyBuffered(OAPI_KEY_P);			
 		}
 		else result=false;
 		break;
@@ -381,7 +371,7 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
 		if (size>1)
 		{
 			if (selection<min(size-page*6, 6)-1) data->SetSelection(selection+1);
-			else SelectionConsumeKeyBuffered(OAPI_KEY_N, page);			
+			else SelectionConsumeKeyBuffered(OAPI_KEY_N);			
 		}
 		else result=false;
 		break;
@@ -389,7 +379,7 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key, int page)
 		if (size>1)
 		{
 			data->SetAscension(selections[selection]);
-			data->SetPage(0);
+			data->SetState(AscensionTowerState::MainMenu);
 			InvalidateButtons();
 		}
 		else result=false;
@@ -409,28 +399,21 @@ bool AscensionTower::ConsumeButton(int bt, int event)
 {	
 	if (event & PANEL_MOUSE_LBDOWN)
 	{
-		int page=data->GetPage();
-		switch (page)
+		AscensionTowerState state=data->GetState();
+		switch (state)
 		{
-		case 0:
+		case AscensionTowerState::MainMenu:
 			if (bt==11) return ConsumeKeyBuffered(OAPI_KEY_C);
-			break;
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		default:
-			if (page<0) return SelectionConsumeButton(bt, -page-1);		
-			break;
+			break;		
+		case AscensionTowerState::BaseSelect:
+			return SelectionConsumeButton(bt);
 		}		
 	}	
 	return false;
 }
 
 // Handling selection pages button presses
-bool AscensionTower::SelectionConsumeButton(int bt, int page)
+bool AscensionTower::SelectionConsumeButton(int bt)
 {
 	int size=data->GetListSize();
 	switch(bt)
@@ -442,10 +425,10 @@ bool AscensionTower::SelectionConsumeButton(int bt, int page)
 	case 10: return size>6?ConsumeKeyBuffered(OAPI_KEY_P):NULL;
 	case 11: return ConsumeKeyBuffered(OAPI_KEY_C);
 	default:
-		if (bt<min(size-page*6, 6))
+		if (bt<min(size-data->GetPage()*6, 6))
 		{
 			data->SetAscension(selections[bt]);
-			data->SetPage(0);
+			data->SetState(AscensionTowerState::MainMenu);
 			InvalidateButtons();
 			InvalidateDisplay();
 			return true;

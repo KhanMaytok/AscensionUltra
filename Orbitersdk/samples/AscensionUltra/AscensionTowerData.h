@@ -3,6 +3,12 @@
 #include "AscensionUltra.h"
 #include "orbitersdk.h"
 
+typedef enum AscensionTowerState
+{
+	BaseSelect,
+	MainMenu,
+};
+
 class AscensionTowerData
 {
 public:
@@ -19,6 +25,8 @@ public:
 	char *GetListName();
 	int GetSelection();
 	void SetSelection(int selection);
+	AscensionTowerState GetState();
+	void SetState(AscensionTowerState state);
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;
@@ -26,6 +34,7 @@ private:
 	std::map<UINT, char*> scanList;
 	std::map<UINT, char*>::iterator listIter;
 	int page;
+	AscensionTowerState state;
 	int selection;
 	void Scan();
 };

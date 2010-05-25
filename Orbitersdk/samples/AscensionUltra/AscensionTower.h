@@ -27,13 +27,12 @@ public:
 private:
 	AscensionTowerData *data;
 	int width, height;
-	int pageRE;
 	HDC hDC;
 	void WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false, bool highlight=false);
-	char *SelectionButtonLabel (int bt, int page);
-	int SelectionButtonMenu (MFDBUTTONMENU *mnu, int page) const;
-	bool SelectionConsumeKeyBuffered(DWORD key, int page);
-	bool SelectionConsumeButton(int bt, int page);
+	char *SelectionButtonLabel (int bt);
+	int SelectionButtonMenu (MFDBUTTONMENU *mnu) const;
+	bool SelectionConsumeKeyBuffered(DWORD key);
+	bool SelectionConsumeButton(int bt);
 	int selections[6];
 };
 
