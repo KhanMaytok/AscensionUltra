@@ -1,5 +1,5 @@
 #pragma once
-#include <map>
+#include <vector>
 #include "AscensionUltra.h"
 #include "orbitersdk.h"
 
@@ -24,7 +24,7 @@ public:
 	int GetPage();
 	void SetPage(int page);
 	int GetListSize();
-	bool StartList();
+	bool StartList(int index=0);
 	bool NextList();
 	AscensionTowerListPair GetListItem();
 	int GetSelection();
@@ -36,8 +36,8 @@ private:
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;
 	AscensionUltra *ascension;
-	std::list<AscensionTowerListPair> scanList;
-	std::list<AscensionTowerListPair>::iterator listIter;
+	std::vector<AscensionTowerListPair> scanList;
+	int listIter;
 	int page;
 	AscensionTowerState state;
 	int selection;

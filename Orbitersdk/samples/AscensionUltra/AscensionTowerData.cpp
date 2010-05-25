@@ -13,7 +13,7 @@ AscensionTowerData::AscensionTowerData(void)
 AscensionTowerData::~AscensionTowerData(void)
 {
 	delete [] ascensionName;
-	for (std::list<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->name;
+	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->name;
 	scanList.clear();
 }
 
@@ -26,7 +26,7 @@ AscensionUltra *AscensionTowerData::GetAscension()
 	if (oapiIsVessel(ascensionHandle)) return ascension;
 	Scan();
 	int detected=-1;
-	if (ascensionName!=NULL) for (std::list<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++)
+	if (ascensionName!=NULL) for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++)
 	{
 		if (strcmp(i->name, ascensionName)==0)
 		{
@@ -60,9 +60,10 @@ void AscensionTowerData::SetAscension(int index)
 
 void AscensionTowerData::Scan()
 {
-	for (std::list<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->name;
+	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->name;
 	scanList.clear();
-	for (int i=oapiGetVesselCount()-1;i>=0;i--)
+	int k=oapiGetVesselCount();
+	for (int i=0;i<k;i++)
 	{
 		VESSEL *vessel=oapiGetVesselInterface(oapiGetVesselByIndex(i));	
 		if (strcmp(vessel->GetClassName(), "AscensionUltra")==0)
@@ -78,19 +79,19 @@ void AscensionTowerData::Scan()
 
 int AscensionTowerData::GetListSize(){return scanList.size();}
 
-bool AscensionTowerData::StartList()
+bool AscensionTowerData::StartList(int index)
 {
-	listIter=scanList.begin();
-	return listIter!=scanList.end();
+	listIter=index;
+	return listIter<scanList.size();
 }
 
 bool AscensionTowerData::NextList()
 {
 	listIter++;
-	return listIter!=scanList.end();
+	return listIter<scanList.size();
 }
 
-AscensionTowerListPair AscensionTowerData::GetListItem(){return *listIter;}
+AscensionTowerListPair AscensionTowerData::GetListItem(){return scanList[listIter];}
 
 int AscensionTowerData::GetSelection(){return selection;}
 void AscensionTowerData::SetSelection(int selection){this->selection=selection;}
