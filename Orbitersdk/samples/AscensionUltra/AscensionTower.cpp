@@ -86,7 +86,7 @@ char *AscensionTower::SelectionButtonLabel (int bt)
 	int size=data->GetListSize();
 	switch (bt)
 	{
-		case 6: return size>1?"SEL":"";
+		case 6: return size>0?"SEL":"";
 		case 7: return size>1?"UP":"";
 		case 8: return size>1?"DWN":"";
 		case 9: return size>6?"NXT":"";
@@ -140,19 +140,25 @@ int AscensionTower::SelectionButtonMenu (MFDBUTTONMENU *mnu) const
 		mnu[i].selchar=0;
 	}
 	
-	if (size>1)
+	k=6;
+	if (size>0)
 	{
 		mnu[6].line1="Select currently";
 		mnu[6].line2="marked base";
 		mnu[6].selchar='S';
+		k=7;
+	}
+	if (size>1)
+	{
 		mnu[7].line1="Move marker up";
 		mnu[7].line2=NULL;
 		mnu[7].selchar='U';
 		mnu[8].line1="Move marker down";
 		mnu[8].line2=NULL;
 		mnu[8].selchar='D';
+		k=9;
 	}
-	else for(int i=6;i<9;i++)
+	for(int i=k;i<9;i++)
 	{
 		mnu[i].line1=NULL;
 		mnu[i].line2=NULL;
@@ -242,11 +248,25 @@ void AscensionTower::Update (HDC hDC)
 	{
 	case AscensionTowerState::BaseSelect:
 		RenderSelectionPage();
+		WriteMFD("Select Ascension Ultra base", 3, -1, true);
+		Title (hDC, "Ascension Tower");
 		break;
 	case AscensionTowerState::MainMenu:		
 		//Base main menu screens
+		
 		//Descriptions (normal, light green)
 		SelectDefaultFont (hDC, 0);
+
+		//Settings (normal, white)	
+		//SetTextColor(hDC, RGB(255,255,255));
+
+		//Capacitor status (small font, light green)
+		//SetTextColor(hDC, RGB(255,255,0));
+		//SelectDefaultFont (hDC, 1);
+
+		//MFD mode labels (small font, dark green)
+		//SelectDefaultFont (hDC, 1);
+		//SetTextColor(hDC, g_MiddleGreen);
 
 		sprintf(line, "Ascension Tower: %s", ascension->GetName());
 		Title (hDC, line);
@@ -282,17 +302,14 @@ void AscensionTower::RenderSelectionPage()
 		{
 			sprintf(line, "p.%d/%d", page+1, pages);
 			WriteMFD(line, 27, NULL, false, true);
-		}
-
-		Title (hDC, "Ascension Tower: select base");
+		}		
 	}
 	else
 	{
 		//No bases available
 		//Descriptions (normal, light green)
 		SelectDefaultFont (hDC, 0);
-		WriteMFD("N O   B A S E S   A V A I L A B L E");
-		Title (hDC, "Ascension Tower");
+		WriteMFD("N O   B A S E S   A V A I L A B L E");		
 	}
 }
 // MFD message parser
@@ -381,7 +398,7 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key)
 		else result=false;
 		break;
 	case OAPI_KEY_S://Select
-		if (size>1) data->Select();
+		if (size>0) data->Select();
 		else result=false;
 		break;
 	case OAPI_KEY_C://Scan for changes
