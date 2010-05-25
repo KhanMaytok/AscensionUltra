@@ -281,7 +281,7 @@ bool AscensionTower::RenderSelectionPage()
 	int pages=(data->GetListSize()+5)/6;
 	if (page>=pages)
 	{
-		data->SetPage(page=pages-1);
+		data->SetPage(page=max(pages-1,0));
 		InvalidateButtons();
 	}
 	if (data->StartList(page*6))
