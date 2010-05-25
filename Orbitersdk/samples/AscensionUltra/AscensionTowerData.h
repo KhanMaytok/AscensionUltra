@@ -14,8 +14,7 @@ class AscensionTowerData
 public:
 	AscensionTowerData(void);
 	~AscensionTowerData(void);
-	AscensionUltra *GetAscension();
-	void SetAscension(int index);
+	AscensionUltra *GetAscension();	
 	int GetPage();
 	void SetPage(int page);
 	int GetListSize();
@@ -27,6 +26,7 @@ public:
 	void SetSelection(int selection);
 	AscensionTowerState GetState();
 	void SetState(AscensionTowerState state);
+	void Select();
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;
@@ -37,4 +37,5 @@ private:
 	AscensionTowerState state;
 	int selection;
 	void Scan();
+	void SetAscension(int index);
 };

@@ -97,4 +97,28 @@ int AscensionTowerData::GetSelection(){return selection;}
 void AscensionTowerData::SetSelection(int selection){this->selection=selection;}
 
 AscensionTowerState AscensionTowerData::GetState(){return state;}
-void AscensionTowerData::SetState(AscensionTowerState state){this->state=state;}
+
+void AscensionTowerData::SetState(AscensionTowerState state)
+{
+	switch(state)
+	{
+	case AscensionTowerState::BaseSelect:
+		Scan();
+		break;
+	}
+	this->state=state;
+}
+
+void AscensionTowerData::Select()
+{
+	switch(state)
+	{
+	case AscensionTowerState::BaseSelect:
+		StartList();
+		for (int i=0;i<page;i++) for (int j=0;j<6;j++) NextList();
+		for (int i=0;i<selection;i++) NextList();
+		SetAscension(GetListIndex());
+		SetState(AscensionTowerState::MainMenu);
+		break;	
+	}
+}

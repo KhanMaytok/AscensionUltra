@@ -314,12 +314,7 @@ bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 	switch (state)
 	{
 	case AscensionTowerState::MainMenu:
-		if (key==OAPI_KEY_C)
-		{
-			data->SetAscension(-1);
-			data->SetState(AscensionTowerState::BaseSelect);
-			InvalidateButtons();
-		}
+		if (key==OAPI_KEY_C) data->SetState(AscensionTowerState::BaseSelect);
 		else result=false;
 		break;	
 	case AscensionTowerState::BaseSelect:
@@ -327,6 +322,7 @@ bool AscensionTower::ConsumeKeyBuffered(DWORD key)
 		break;
 	}
 	if (!result) return false;
+	InvalidateButtons();
 	InvalidateDisplay();
 	return true;
 }
@@ -384,17 +380,11 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key)
 		else result=false;
 		break;
 	case OAPI_KEY_S://Select
-		if (size>1)
-		{
-			data->SetAscension(selections[selection]);
-			data->SetState(AscensionTowerState::MainMenu);
-			InvalidateButtons();
-		}
+		if (size>1) data->Select();
 		else result=false;
 		break;
 	case OAPI_KEY_C://Scan for changes
-		data->SetAscension(-1);
-		InvalidateButtons();
+		data->SetState(AscensionTowerState::BaseSelect);		
 		break;
 	default:
 		if (key>=OAPI_KEY_1 && key<=OAPI_KEY_6)
@@ -402,10 +392,8 @@ bool AscensionTower::SelectionConsumeKeyBuffered(DWORD key)
 			int bt=key-OAPI_KEY_1;
 			if (bt<min(size-page*6, 6))
 			{
-				data->SetAscension(selections[bt]);
-				data->SetState(AscensionTowerState::MainMenu);
-				InvalidateButtons();
-				InvalidateDisplay();				
+				data->SetSelection(bt);
+				data->Select();
 			}
 			else result=false;
 		}
