@@ -9,6 +9,12 @@ typedef enum AscensionTowerState
 	MainMenu,
 };
 
+typedef struct AscensionTowerListPair
+{
+	UINT index;
+	char *name;
+};
+
 class AscensionTowerData
 {
 public:
@@ -20,8 +26,7 @@ public:
 	int GetListSize();
 	bool StartList();
 	bool NextList();
-	int GetListIndex();
-	char *GetListName();
+	AscensionTowerListPair GetListItem();
 	int GetSelection();
 	void SetSelection(int selection);
 	AscensionTowerState GetState();
@@ -31,8 +36,8 @@ private:
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;
 	AscensionUltra *ascension;
-	std::map<UINT, char*> scanList;
-	std::map<UINT, char*>::iterator listIter;
+	std::list<AscensionTowerListPair> scanList;
+	std::list<AscensionTowerListPair>::iterator listIter;
 	int page;
 	AscensionTowerState state;
 	int selection;

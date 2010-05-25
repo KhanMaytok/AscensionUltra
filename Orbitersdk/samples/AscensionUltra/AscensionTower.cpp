@@ -261,8 +261,7 @@ void AscensionTower::Update (HDC hDC)
 			i=0;
 			do
 			{
-				selections[i]=data->GetListIndex();
-				sprintf(line, "[%d] %s", selections[i], data->GetListName());				
+				sprintf(line, "%s", data->GetListItem().name);				
 				WriteMFD(line, atButton[i], 1, true, false, i==selection);				
 			}
 			while (data->NextList() && ++i<6);

@@ -13,7 +13,7 @@ AscensionTowerData::AscensionTowerData(void)
 AscensionTowerData::~AscensionTowerData(void)
 {
 	delete [] ascensionName;
-	for (std::map<UINT, char*>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->second;
+	for (std::list<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->name;
 	scanList.clear();
 }
 
@@ -26,18 +26,18 @@ AscensionUltra *AscensionTowerData::GetAscension()
 	if (oapiIsVessel(ascensionHandle)) return ascension;
 	Scan();
 	int detected=-1;
-	if (ascensionName!=NULL) for (std::map<UINT, char*>::iterator i=scanList.begin(); i!=scanList.end(); i++)
+	if (ascensionName!=NULL) for (std::list<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++)
 	{
-		if (strcmp(i->second, ascensionName)==0)
+		if (strcmp(i->name, ascensionName)==0)
 		{
 			if (detected>=0) return NULL; //Name is not unique
-			detected=i->first;			
+			detected=i->index;			
 		}
 	}
 	if (detected<0)
 	{
 		if (scanList.size()!=1) return NULL;
-		detected=scanList.begin()->first;
+		detected=scanList.begin()->index;
 	}
 	SetAscension(detected);	
 	return ascension;
@@ -60,7 +60,7 @@ void AscensionTowerData::SetAscension(int index)
 
 void AscensionTowerData::Scan()
 {
-	for (std::map<UINT, char*>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->second;
+	for (std::list<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->name;
 	scanList.clear();
 	for (int i=oapiGetVesselCount()-1;i>=0;i--)
 	{
@@ -70,7 +70,8 @@ void AscensionTowerData::Scan()
 			char *source=vessel->GetName();
 			char *target=new char[strlen(source)+1];
 			strcpy(target, source);
-			scanList[i]=target;
+			AscensionTowerListPair pair={i,target};
+			scanList.push_back(pair);
 		}
 	}	
 }
@@ -89,9 +90,7 @@ bool AscensionTowerData::NextList()
 	return listIter!=scanList.end();
 }
 
-int AscensionTowerData::GetListIndex(){return listIter->first;}
-
-char *AscensionTowerData::GetListName(){return listIter->second;}
+AscensionTowerListPair AscensionTowerData::GetListItem(){return *listIter;}
 
 int AscensionTowerData::GetSelection(){return selection;}
 void AscensionTowerData::SetSelection(int selection){this->selection=selection;}
@@ -117,7 +116,7 @@ void AscensionTowerData::Select()
 		StartList();
 		for (int i=0;i<page;i++) for (int j=0;j<6;j++) NextList();
 		for (int i=0;i<selection;i++) NextList();
-		SetAscension(GetListIndex());
+		SetAscension(GetListItem().index);
 		SetState(AscensionTowerState::MainMenu);
 		break;	
 	}
