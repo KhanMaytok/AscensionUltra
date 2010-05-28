@@ -329,6 +329,7 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
+	for(int i=0;i<12;i++) RotateGroup(i+5, PI, _V(0,1,0), _V(0,0,0));
 }
 
 // Destroy DG visual
@@ -489,12 +490,24 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 
 void AscensionUltra::MoveGroup(int mesh, VECTOR3 v)
 {
-	//Transfer mesh groups
-	//TODO: This can be removed if mesh is designed appropriately
+	//Transfer mesh groups	
 	MESHGROUP_TRANSFORM mt;
 	mt.nmesh=mesh;
 	mt.transform=mt.TRANSLATE;
 	mt.P.transparam.shift=v;
+	int k=oapiMeshGroupCount(GetMesh(visual, mesh));
+	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
+}
+
+void AscensionUltra::RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref)
+{
+	//Transfer mesh groups	
+	MESHGROUP_TRANSFORM mt;
+	mt.nmesh=mesh;
+	mt.transform=mt.ROTATE;
+	mt.P.rotparam.angle=angle;
+	mt.P.rotparam.axis=v;
+	mt.P.rotparam.ref=ref;
 	int k=oapiMeshGroupCount(GetMesh(visual, mesh));
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }

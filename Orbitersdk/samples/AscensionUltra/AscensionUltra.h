@@ -50,6 +50,7 @@ public:
 	void SetBeacon (bool on);
 	void SetStrobe (bool on);
 	void MoveGroup(int mesh, VECTOR3 v);
+	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
 
 	TurnAroundHangar *GetHangar(int index);
 	
