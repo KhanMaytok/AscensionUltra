@@ -38,9 +38,9 @@ private:
 	AscensionUltra *ascension;
 	std::vector<AscensionTowerListPair> scanList;
 	int listIter;
-	int page;
+	int page[10]; //stores page information - 10 is arbitrary for now
 	AscensionTowerState state;
-	int selection;
+	int selection[10]; //stores selection information - 10 is arbitrary for now
 	void Scan();
 	void SetAscension(int index);
 };

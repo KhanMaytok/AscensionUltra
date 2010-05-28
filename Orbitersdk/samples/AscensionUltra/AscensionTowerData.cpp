@@ -5,8 +5,11 @@ AscensionTowerData::AscensionTowerData(void)
 	ascensionHandle=NULL;
 	ascensionName=NULL;
 	ascension=NULL;
-	page=0;
-	selection=0;
+	for(int i=0;i<10;i++)
+	{
+		page[i]=0;
+		selection[i]=0;
+	}
 	state=AscensionTowerState::MainMenu;
 }
 
@@ -43,8 +46,8 @@ AscensionUltra *AscensionTowerData::GetAscension()
 	return ascension;
 }
 
-int AscensionTowerData::GetPage(){return page;}
-void AscensionTowerData::SetPage(int page){this->page=page;}
+int AscensionTowerData::GetPage(){return page[state];}
+void AscensionTowerData::SetPage(int page){this->page[state]=page;}
 
 void AscensionTowerData::SetAscension(int index)
 {
@@ -93,8 +96,8 @@ bool AscensionTowerData::NextList()
 
 AscensionTowerListPair AscensionTowerData::GetListItem(){return scanList[listIter];}
 
-int AscensionTowerData::GetSelection(){return selection;}
-void AscensionTowerData::SetSelection(int selection){this->selection=selection;}
+int AscensionTowerData::GetSelection(){return selection[state];}
+void AscensionTowerData::SetSelection(int selection){this->selection[state]=selection;}
 
 AscensionTowerState AscensionTowerData::GetState(){return state;}
 
@@ -114,7 +117,7 @@ void AscensionTowerData::Select()
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:		
-		SetAscension(scanList[page*6+selection].Index);
+		SetAscension(scanList[page[0]*6+selection[0]].Index);
 		SetState(AscensionTowerState::MainMenu);
 		break;	
 	}
