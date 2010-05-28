@@ -29,8 +29,6 @@ private:
 	int width, height;
 	HDC hDC;
 	void WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false, bool highlight=false);
-	char *SelectionButtonLabel (int bt);
-	int SelectionButtonMenu (MFDBUTTONMENU *mnu) const;
 	bool SelectionConsumeKeyBuffered(DWORD key);
 	bool SelectionConsumeButton(int bt);
 	bool RenderSelectionPage();

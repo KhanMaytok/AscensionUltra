@@ -22,16 +22,18 @@ public:
 	~AscensionTowerData(void);
 	AscensionUltra *GetAscension();	
 	int GetPage();
-	void SetPage(int page);
 	int GetListSize();
 	bool StartList(int index=0);
 	bool NextList();
 	AscensionTowerListPair GetListItem();
 	int GetSelection();
-	void SetSelection(int selection);
 	AscensionTowerState GetState();
+	char *GetButtonLabel (int bt);
+	int GetButtonMenu (MFDBUTTONMENU *mnu);
+	bool SetButton(int bt);
+	bool SetKey(DWORD key);
 	void SetState(AscensionTowerState state);
-	void Select();
+	void SetPage(int page);
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;
@@ -43,4 +45,6 @@ private:
 	int selection[10]; //stores selection information - 10 is arbitrary for now
 	void Scan();
 	void SetAscension(int index);
+	bool ListEnd();	
+	void Select();
 };
