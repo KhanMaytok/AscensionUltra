@@ -7,6 +7,20 @@ typedef enum AscensionTowerState
 {
 	BaseSelect,
 	MainMenu,
+	GroundMenu,
+	ATCMenu,
+	HangarForRoomSelection,
+	RoomSelection,
+	HangarForDoorSelection,
+	DoorSelection,
+	TaxiRouteSelection,
+	HangarForCraneSelection,
+	PassengerTerminal,
+	Fueling,
+	LaunchTunnel,
+	Bearing,
+	LandingRunwaySelection,
+	Launch,
 };
 
 typedef struct AscensionTowerListPair
@@ -34,6 +48,8 @@ public:
 	bool SetKey(DWORD key);
 	void SetState(AscensionTowerState state);
 	void SetPage(int page);
+	char *GetTitle();
+	char *GetSubtitle();
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;
@@ -47,4 +63,5 @@ private:
 	void SetAscension(int index);
 	bool ListEnd();	
 	void Select();
+	void Back();
 };

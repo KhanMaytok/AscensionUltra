@@ -86,6 +86,8 @@ int AscensionTowerData::GetListSize()
 	{
 	case AscensionTowerState::BaseSelect: return scanList.size();
 	case AscensionTowerState::MainMenu: return 3;
+	case AscensionTowerState::GroundMenu: return 4;
+	case AscensionTowerState::ATCMenu: return 3;
 	}
 	return 0;
 }
@@ -108,6 +110,8 @@ bool AscensionTowerData::ListEnd()
 	{
 	case AscensionTowerState::BaseSelect: return listIter<scanList.size();
 	case AscensionTowerState::MainMenu: return listIter<3;
+	case AscensionTowerState::GroundMenu: return listIter<4;
+	case AscensionTowerState::ATCMenu: return listIter<3;
 	}
 	return false;
 }
@@ -115,11 +119,15 @@ bool AscensionTowerData::ListEnd()
 AscensionTowerListPair AscensionTowerData::GetListItem()
 {
 	static AscensionTowerListPair mainMenu[3]={{0,"1. Request Ground Operation"},{1,"2. Air Traffic Control"},{2,"3. Control Rooms"}};
+	static AscensionTowerListPair groundMenu[4]={{0,"1. Request Roll-in/Roll-out"},{1,"2. Request Taxi"},{2,"3. Request Cargo Control"},{3,"4. Request Launch"}};
+	static AscensionTowerListPair atcMenu[3]={{0,"1. Request Bearing"},{1,"2. Request Clearance to Land"},{2,"3. Request Launch Clearance"}};
 	static AscensionTowerListPair nullItem={0,""};
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect: return scanList[listIter];
 	case AscensionTowerState::MainMenu: return mainMenu[listIter];
+	case AscensionTowerState::GroundMenu: return groundMenu[listIter];
+	case AscensionTowerState::ATCMenu: return atcMenu[listIter];
 	}
 	return nullItem;
 }
@@ -147,6 +155,31 @@ void AscensionTowerData::Select()
 		SetAscension(scanList[page[0]*6+selection[0]].Index);
 		SetState(AscensionTowerState::MainMenu);
 		break;	
+	case AscensionTowerState::MainMenu:
+		switch(selection[state])
+		{
+		case 0: SetState(AscensionTowerState::GroundMenu); break;
+		case 1: SetState(AscensionTowerState::ATCMenu); break;
+		case 2: SetState(AscensionTowerState::HangarForRoomSelection); break;
+		}		
+		break;
+	case AscensionTowerState::GroundMenu:
+		switch(selection[state])
+		{
+		case 0: SetState(AscensionTowerState::HangarForDoorSelection); break;
+		case 1: SetState(AscensionTowerState::TaxiRouteSelection); break;
+		case 2: SetState(AscensionTowerState::HangarForCraneSelection); break;
+		case 3: SetState(AscensionTowerState::PassengerTerminal); break;
+		}		
+		break;
+	case AscensionTowerState::ATCMenu:
+		switch(selection[state])
+		{
+		case 0: SetState(AscensionTowerState::Bearing); break;
+		case 1: SetState(AscensionTowerState::LandingRunwaySelection); break;
+		case 2: SetState(AscensionTowerState::Launch); break;
+		}		
+		break;
 	}
 }
 
@@ -310,7 +343,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 		else result=false;
 		break;
 	case OAPI_KEY_C://Scan for changes
-		SetState(AscensionTowerState::BaseSelect);		
+		Back();
 		break;
 	default:
 		if (key>=OAPI_KEY_1 && key<=OAPI_KEY_6)
@@ -326,4 +359,88 @@ bool AscensionTowerData::SetKey(DWORD key)
 		else result=false;
 	}
 	return result;
+}
+
+char *AscensionTowerData::GetTitle()
+{
+	static char *label="Tower";
+	static char *ground="Ground";
+	static char *atc="ATC";
+	static char title[40];
+	switch(state)
+	{
+	case AscensionTowerState::BaseSelect:
+		sprintf(title, "Ascension %s", label);
+		break;
+	case AscensionTowerState::GroundMenu:
+	case AscensionTowerState::HangarForDoorSelection:
+	case AscensionTowerState::DoorSelection:
+	case AscensionTowerState::TaxiRouteSelection:
+	case AscensionTowerState::HangarForCraneSelection:
+	case AscensionTowerState::PassengerTerminal:
+	case AscensionTowerState::Fueling:
+	case AscensionTowerState::LaunchTunnel:
+		sprintf_s(title, 40, "%s Ground", ascension->GetName());
+		break;
+	case AscensionTowerState::ATCMenu:
+	case AscensionTowerState::Bearing:
+	case AscensionTowerState::LandingRunwaySelection:
+	case AscensionTowerState::Launch:
+		sprintf_s(title, 40, "%s ATC", ascension->GetName());
+		break;
+	case AscensionTowerState::MainMenu:
+	case AscensionTowerState::HangarForRoomSelection:
+	case AscensionTowerState::RoomSelection:
+	default:
+		sprintf_s(title, 40, "%s %s", ascension->GetName(), label);
+		break;
+	}
+	return title;
+}
+
+char *AscensionTowerData::GetSubtitle()
+{
+	switch(state)
+	{
+	case AscensionTowerState::BaseSelect: return scanList.size()>0?"Select base":"";
+	case AscensionTowerState::MainMenu: return "Select request";
+	case AscensionTowerState::GroundMenu: return "Select ground request";
+	case AscensionTowerState::ATCMenu: return "Select ATC request";	
+	case AscensionTowerState::HangarForDoorSelection: return "Select Hangar for Roll-in/Roll-out";	
+	case AscensionTowerState::DoorSelection: return "Select Door for Roll-in/Roll-out";	
+	case AscensionTowerState::TaxiRouteSelection: return "Select Taxi Route";	
+	case AscensionTowerState::HangarForCraneSelection: return "Select Hangar for Cargo";	
+	case AscensionTowerState::PassengerTerminal: return "Passenger Terminal";	
+	case AscensionTowerState::Fueling: return "Fueling";	
+	case AscensionTowerState::LaunchTunnel: return "Launch Tunnel";	
+	case AscensionTowerState::Bearing: return "Bearing";	
+	case AscensionTowerState::LandingRunwaySelection: return "Select Runway for Landing";	
+	case AscensionTowerState::Launch: return "Request Launch Clearance";	
+	case AscensionTowerState::HangarForRoomSelection: return "Select Hangar for Control Room";	
+	case AscensionTowerState::RoomSelection: return "Select Control Room";	
+	}
+	return "";
+}
+
+void AscensionTowerData::Back()
+{
+	switch(state)
+	{
+	case AscensionTowerState::MainMenu:
+	case AscensionTowerState::BaseSelect: SetState(AscensionTowerState::BaseSelect);break;	
+	case AscensionTowerState::GroundMenu: SetState(AscensionTowerState::MainMenu);break;
+	case AscensionTowerState::ATCMenu: SetState(AscensionTowerState::MainMenu);break;
+	case AscensionTowerState::HangarForDoorSelection: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::DoorSelection: SetState(AscensionTowerState::HangarForDoorSelection);break;
+	case AscensionTowerState::TaxiRouteSelection: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::HangarForCraneSelection: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::PassengerTerminal: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::Fueling: SetState(AscensionTowerState::PassengerTerminal);break;
+	case AscensionTowerState::LaunchTunnel: SetState(AscensionTowerState::Fueling);break;
+	case AscensionTowerState::Bearing: SetState(AscensionTowerState::ATCMenu);break;
+	case AscensionTowerState::LandingRunwaySelection: SetState(AscensionTowerState::ATCMenu);break;
+	case AscensionTowerState::Launch: SetState(AscensionTowerState::ATCMenu);break;
+	case AscensionTowerState::HangarForRoomSelection: SetState(AscensionTowerState::MainMenu);break;
+	case AscensionTowerState::RoomSelection: SetState(AscensionTowerState::HangarForRoomSelection);break;
+	}
 }

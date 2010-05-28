@@ -136,31 +136,16 @@ void AscensionTower::Update (HDC hDC)
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
-		if (RenderSelectionPage()) WriteMFD("Select Ascension Ultra base", 3, -1, true);
-		Title (hDC, "Ascension Tower");
-		break;
-	case AscensionTowerState::MainMenu:		
-		//Base main menu screens
-		RenderSelectionPage();
-		
-		//Descriptions (normal, light green)
-		SelectDefaultFont (hDC, 0);
-
-		//Settings (normal, white)	
-		//SetTextColor(hDC, RGB(255,255,255));
-
-		//Capacitor status (small font, light green)
-		//SetTextColor(hDC, RGB(255,255,0));
-		//SelectDefaultFont (hDC, 1);
-
-		//MFD mode labels (small font, dark green)
-		//SelectDefaultFont (hDC, 1);
-		//SetTextColor(hDC, g_MiddleGreen);
-
-		sprintf(line, "Ascension Tower: %s", ascension->GetName());
-		Title (hDC, line);
+	case AscensionTowerState::MainMenu:
+	case AscensionTowerState::GroundMenu:
+	case AscensionTowerState::ATCMenu:
+		RenderSelectionPage();	
 		break;
 	}
+
+	Title (hDC, data->GetTitle());
+	WriteMFD(data->GetSubtitle(), 2);
+
 }
 
 bool AscensionTower::RenderSelectionPage()
