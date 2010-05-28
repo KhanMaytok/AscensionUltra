@@ -194,7 +194,7 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 		case 8: return size>1?"DWN":"";
 		case 9: return size>6?"NXT":"";
 		case 10: return size>6?"PRV":"";
-		case 11: return "SCN";
+		case 11: return (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"SCN":"CNL";
 		default: return size>page[state]*6+bt?" > ":"";
 	}
 	return NULL;
@@ -203,12 +203,33 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 // Return button menus
 int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 {	
+	static char select[20];
+	static char marked[20];
+	static char *target;
+
+	switch(state)
+	{	
+	case AscensionTowerState::BaseSelect: target="base"; break;		
+	case AscensionTowerState::GroundMenu: 
+	case AscensionTowerState::ATCMenu:
+	case AscensionTowerState::MainMenu:  target="request"; break;
+	case AscensionTowerState::HangarForCraneSelection:
+	case AscensionTowerState::HangarForRoomSelection:
+	case AscensionTowerState::HangarForDoorSelection: target="hangar"; break;
+	case AscensionTowerState::DoorSelection: target="door"; break;
+	case AscensionTowerState::TaxiRouteSelection: target="route"; break;
+	case AscensionTowerState::LandingRunwaySelection: target="runway"; break;
+	case AscensionTowerState::RoomSelection: target="room"; break;
+	}
+	sprintf(select, "Select %s", target);
+	sprintf(marked, "marked %s", target);
+
 	int size=GetListSize();
 	int k=min(size-page[state]*6, 6);
 
 	for(int i=0;i<k;i++)
 	{
-		mnu[i].line1="Select base";
+		mnu[i].line1=select;
 		mnu[i].line2="next to the button";
 		mnu[i].selchar=0x31+i;
 	}
@@ -223,7 +244,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	if (size>0)
 	{
 		mnu[6].line1="Select currently";
-		mnu[6].line2="marked base";
+		mnu[6].line2=marked;
 		mnu[6].selchar='S';
 		k=7;
 	}
@@ -260,7 +281,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		mnu[i].selchar=0;
 	}
 
-	mnu[11].line1="Scan for changes";
+	mnu[11].line1=(state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"Scan for bases":"Cancel command";
 	mnu[11].line2=NULL;
 	mnu[11].selchar='C';
 	
