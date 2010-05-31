@@ -43,8 +43,7 @@ bool Hangar::clbkLoadStateEx (char *line)
 	int k=GetDoors();
     if (!strnicmp (line, "DOOR", 4)) sscanf (line+4, "%d", &cur_door);
 	else if (cur_door>=0 && cur_door<k) return GetDoor(cur_door)->clbkLoadStateEx(line);
-	else return false;
-	return true;
+	else return false;	
 }
 
 void Hangar::clbkSaveState (FILEHANDLE scn)

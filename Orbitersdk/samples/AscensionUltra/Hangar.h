@@ -8,7 +8,6 @@
 // Class definition of abstract hangar building.
 // ==============================================================
 #pragma once
-
 #include "Door.h"
 
 typedef enum HangarType
@@ -32,7 +31,7 @@ public:
 	virtual int GetDoors();
 	virtual Door *GetDoor(int index);
 	virtual bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
-private:
+protected:
 	VESSEL* owner;
 	UINT meshIndex;
 	char *event_prefix;
