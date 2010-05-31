@@ -96,6 +96,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::MainMenu: return 3;
 	case AscensionTowerState::GroundMenu: return 4;
 	case AscensionTowerState::ATCMenu: return 3;
+	case AscensionTowerState::HangarForDoorSelection: return ascension->GetHangars();
 	}
 	return 0;
 }
@@ -120,6 +121,7 @@ bool AscensionTowerData::ListEnd()
 	case AscensionTowerState::MainMenu: return listIter<3;
 	case AscensionTowerState::GroundMenu: return listIter<4;
 	case AscensionTowerState::ATCMenu: return listIter<3;
+	case AscensionTowerState::HangarForDoorSelection: return listIter<ascension->GetHangars();
 	}
 	return false;
 }
@@ -129,13 +131,20 @@ AscensionTowerListPair AscensionTowerData::GetListItem()
 	static AscensionTowerListPair mainMenu[3]={{0,"1. Request Ground Operation"},{1,"2. Air Traffic Control"},{2,"3. Control Rooms"}};
 	static AscensionTowerListPair groundMenu[4]={{0,"1. Request Roll-in/Roll-out"},{1,"2. Request Taxi"},{2,"3. Request Cargo Control"},{3,"4. Request Launch"}};
 	static AscensionTowerListPair atcMenu[3]={{0,"1. Request Bearing"},{1,"2. Request Clearance to Land"},{2,"3. Request Launch Clearance"}};
-	static AscensionTowerListPair nullItem={0,""};
+	AscensionTowerListPair nullItem={0,""};
+	char line[40];
+	AscensionTowerListPair item={0, "test"};
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect: return scanList[listIter];
 	case AscensionTowerState::MainMenu: return mainMenu[listIter];
 	case AscensionTowerState::GroundMenu: return groundMenu[listIter];
 	case AscensionTowerState::ATCMenu: return atcMenu[listIter];
+	case AscensionTowerState::HangarForDoorSelection:
+		sprintf(line, "%i. %s", listIter<5?listIter+1:listIter-5+1, ascension->GetHangar(listIter)->GetType()==HangarType::LightStorage?"Light Storage Hangar":"Turn Around Hangar");
+		item.Index=listIter;
+		item.Name=line;
+		return item;
 	}
 	return nullItem;
 }
