@@ -136,6 +136,8 @@ AscensionUltra::~AscensionUltra ()
 {
 }
 
+double AscensionUltra::GetVersion(){return 1.0;}
+
 // --------------------------------------------------------------
 // Define animation sequences for moving parts
 // --------------------------------------------------------------

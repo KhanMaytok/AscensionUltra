@@ -25,6 +25,7 @@ class AscensionUltra: public VESSEL2 {
 public:
 	AscensionUltra (OBJHANDLE hObj, int fmodel);
 	~AscensionUltra ();
+	virtual double GetVersion();
 	void DefineAnimations ();
 	void DrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC);
 	

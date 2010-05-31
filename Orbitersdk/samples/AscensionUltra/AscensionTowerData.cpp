@@ -51,12 +51,20 @@ void AscensionTowerData::SetPage(int page){this->page[state]=page;}
 
 void AscensionTowerData::SetAscension(int index)
 {
+	ascension=NULL;
 	if (index<0 || index>=oapiGetVesselCount()) return Scan();
 	ascensionHandle=oapiGetVesselByIndex(index);
 	VESSEL *vessel=oapiGetVesselInterface(ascensionHandle);	
 	if (strcmp(vessel->GetClassName(), "AscensionUltra")!=0) return Scan();
 	ascension=(AscensionUltra *)vessel;
 	char *name=ascension->GetName();
+	double version=ascension->GetVersion();
+	if (version!=1.0)
+	{
+		ascension=NULL;
+		sprintf(oapiDebugString(), "%s has version %f (need 1.0). Please upgrade MFD and/or vessel.", name, version);
+		return Scan();
+	}
 	delete [] ascensionName;
 	strcpy(ascensionName=new char[strlen(name)+1], name);	
 }
