@@ -290,6 +290,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Hangar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\KeyboardFilter.cpp"
 				>
 			</File>
@@ -323,6 +327,10 @@
 			</File>
 			<File
 				RelativePath=".\Door.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Hangar.h"
 				>
 			</File>
 			<File
