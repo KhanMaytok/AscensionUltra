@@ -15,6 +15,7 @@
 
 const double AIRLOCK_OPERATING_SPEED = 0.1; // Opening/closing speed of outer airlock (1/sec) => cycle = 10 sec
 
+#define DOORS 4
 #define CRANEXOFFSET 130.0
 #define CRANEYOFFSET 18.0
 #define CRANEREELUPPERPOINT 31.0
@@ -25,6 +26,7 @@ class TurnAroundHangar:public Hangar
 {
 public:
 	TurnAroundHangar(void);
+	HangarType GetType();
 	void DefineAnimations ();
 	void clbkPostStep (double simt, double simdt, double mjd);
 	bool clbkLoadStateEx (char *line);
@@ -36,6 +38,6 @@ public:
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 private:
 	Crane crane1;
-	Door doors[4];
+	Door doors[DOORS];
 	int cur_crane;
 };

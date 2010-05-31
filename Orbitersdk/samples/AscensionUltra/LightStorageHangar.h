@@ -15,6 +15,7 @@
 class LightStorageHangar:public Hangar
 {
 public:
+	HangarType GetType();
 	void DefineAnimations ();
 	int GetDoors();
 	Door *GetDoor(int index);	

@@ -9,6 +9,8 @@
 // ==============================================================
 #include "LightStorageHangar.h"
 
+HangarType LightStorageHangar::GetType(){return HangarType::LightStorage;}
+
 void LightStorageHangar::DefineAnimations ()
 {
 	static UINT DoorGrp[DOORS] = {0,1,2,3};

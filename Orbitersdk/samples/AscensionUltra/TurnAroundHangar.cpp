@@ -15,6 +15,8 @@ TurnAroundHangar::TurnAroundHangar(void):Hangar()
 	crane1.SetCrawl(_V(1,1,1));	
 }
 
+HangarType TurnAroundHangar::GetType(){return HangarType::TurnAround;}
+
 void TurnAroundHangar::DefineAnimations ()
 {
 	static UINT DoorGrp[8] = {0,1,2,3,4,5,6,7};
@@ -79,9 +81,9 @@ void TurnAroundHangar::clbkPostCreation ()
 
 Crane *TurnAroundHangar::GetCrane(){return &crane1;}
 
-int TurnAroundHangar::GetDoors(){return 4;}
+int TurnAroundHangar::GetDoors(){return DOORS;}
 
-Door *TurnAroundHangar::GetDoor(int index){return (index>=0 && index<4)?doors+index:NULL;}
+Door *TurnAroundHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
 
 bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
