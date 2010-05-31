@@ -8,26 +8,16 @@
 // Class definition of light storage hangar building.
 // ==============================================================
 #pragma once
-
+#include "Hangar.h"
 #include "Door.h"
+#define DOORS 4
 
-class LightStorageHangar
+class LightStorageHangar:public Hangar
 {
 public:
-	LightStorageHangar(void);
-	~LightStorageHangar(void);	
 	void DefineAnimations ();
-	void clbkPostStep (double simt, double simdt, double mjd);
-	bool clbkLoadStateEx (char *line);
-	void clbkSaveState (FILEHANDLE scn);
-	void clbkPostCreation ();
-	void Init(VESSEL* owner, UINT meshIndex, const char *event_prefix);
-	Door *GetDoor(int index);
-	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
+	int GetDoors();
+	Door *GetDoor(int index);	
 private:
-	VESSEL* owner;
-	UINT meshIndex;
-	Door doors[4];
-	char *event_prefix;
-	int cur_door;
+	Door doors[DOORS];
 };
