@@ -514,7 +514,15 @@ void AscensionUltra::RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref)
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }
 
-TurnAroundHangar *AscensionUltra::GetHangar(int index){return (index>=0 && index<5)?turnAround+index:NULL;}
+int AscensionUltra::GetHangars(){return 5+12;}
+
+Hangar *AscensionUltra::GetHangar(int index)
+{
+	if (index<0) return NULL;
+	if (index<5) return turnAround+index;
+	if (index<5+12) return lightStorage+index-5;
+	return NULL;
+}
 
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
