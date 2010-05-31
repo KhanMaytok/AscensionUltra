@@ -11,6 +11,7 @@
 
 #include "Crane.h"
 #include "Door.h"
+#include "Hangar.h"
 
 const double AIRLOCK_OPERATING_SPEED = 0.1; // Opening/closing speed of outer airlock (1/sec) => cycle = 10 sec
 
@@ -20,25 +21,21 @@ const double AIRLOCK_OPERATING_SPEED = 0.1; // Opening/closing speed of outer ai
 #define CRANEREELLOWERPOINT 29.0
 #define CRANEREELHEIGHT (CRANEREELUPPERPOINT-CRANEREELLOWERPOINT)
 
-class TurnAroundHangar
+class TurnAroundHangar:public Hangar
 {
 public:
 	TurnAroundHangar(void);
-	~TurnAroundHangar(void);	
 	void DefineAnimations ();
 	void clbkPostStep (double simt, double simdt, double mjd);
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
-	void Init(VESSEL* owner, UINT meshIndex, const char *event_prefix);
 	Crane *GetCrane();
+	int GetDoors();
 	Door *GetDoor(int index);
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 private:
-	VESSEL* owner;
-	UINT meshIndex;
 	Crane crane1;
 	Door doors[4];
-	char *event_prefix;
-	int cur_crane, cur_door;
+	int cur_crane;
 };
