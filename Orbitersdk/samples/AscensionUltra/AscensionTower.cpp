@@ -46,8 +46,10 @@ DLLCLBK void opcDLLExit (HINSTANCE hDLL)
 AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
 : MFD (w, h, vessel)
 {	
-	width=(int)w/35;
+	width=(int)w/36;
 	height=(int)h/28;
+	mfdWidth=w;
+	mfdHeight=h;
 
 	OBJHANDLE obj=vessel->GetHandle();
 	std::map<UINT, AscensionTowerData *> *mfds=g_MFDData[obj];
@@ -84,23 +86,23 @@ void AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, 
 	int y=0;
 	if (line<0)
 	{
-		x=(1+(37-l)/2)*width;
+		x=(1+(36-l)/2)*width;
 		y=13*height;		
 	}
 	else
 	{
-		y=(line*height) >> (halfLines?1:0);
-		if (column<0 && !rightAligned) x=(1+(37-l)/2)*width;
+		y=(int)(line*height) >> (halfLines?1:0);
+		if (column<0 && !rightAligned) x=(1+(36-l)/2)*width;
 		else
 		{
-			if (rightAligned) x=(37-l)*width;
+			if (rightAligned) x=(36-l)*width;
 			else x=column*width;
 		}
 	}
 	if (highlight)
 	{
 		SelectObject(hDC, g_Bar);
-		Rectangle(hDC, width-2, y-2, 38*width+2, y+height+6 );		
+		Rectangle(hDC, width-2, y-2, mfdWidth-width+2, y+height+6 );		
 	}
 	TextOut(hDC, x, y, text, l);
 }

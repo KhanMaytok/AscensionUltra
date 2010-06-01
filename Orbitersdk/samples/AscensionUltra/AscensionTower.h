@@ -26,7 +26,8 @@ public:
 	static int MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
 private:
 	AscensionTowerData *data;
-	int width, height;
+	float width, height;
+	int mfdWidth, mfdHeight;
 	HDC hDC;
 	void WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false, bool highlight=false);
 	bool SelectionConsumeKeyBuffered(DWORD key);
