@@ -60,16 +60,21 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	campos            = CAM_GENERIC;
 
 	char prefix[14]="HANGARx";
+	char name[40]=" x. Turn-around Hangar";
 	for(i=0;i<5;i++)
 	{
 		prefix[6]=0x30+i;
-		turnAround[i].Init(this, i+3, prefix);
-	}
+		name[1]=0x31+i;
+		turnAround[i].Init(this, name, i+3, prefix);
+	}	
 	strcpy(prefix, "LIGHTSTORAGEx");
+	strcpy(name, " x. Light Storage Hangar");
 	for(i=0;i<12;i++)
 	{
 		prefix[12]=0x30+i;
-		lightStorage[i].Init(this, i+8, prefix);
+		name[1]=0x30+((i+1) % 10);
+		if (i>8) name[0]=0x31;
+		lightStorage[i].Init(this, name, i+8, prefix);
 	}
 
 	VECTOR3 taxiwayLines[TAXIWAYS][MAXTAXILINES][2]=
