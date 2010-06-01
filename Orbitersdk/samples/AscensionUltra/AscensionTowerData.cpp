@@ -102,24 +102,7 @@ int AscensionTowerData::GetListSize()
 	return 0;
 }
 
-bool AscensionTowerData::StartList(int index)
-{
-	listIter=index;
-	return ListEnd();	
-}
-
-bool AscensionTowerData::NextList()
-{
-	listIter++;
-	return ListEnd();
-}
-
-bool AscensionTowerData::ListEnd()
-{
-	return listIter<GetListSize();
-}
-
-AscensionTowerListPair AscensionTowerData::GetListItem()
+AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 {
 	static AscensionTowerListPair mainMenu[3]={{0,"1. Request Ground Operation"},{1,"2. Air Traffic Control"},{2,"3. Control Rooms"}};
 	static AscensionTowerListPair groundMenu[4]={{0,"1. Request Roll-in/Roll-out"},{1,"2. Request Taxi"},{2,"3. Request Cargo Control"},{3,"4. Request Launch"}};
@@ -128,17 +111,17 @@ AscensionTowerListPair AscensionTowerData::GetListItem()
 	AscensionTowerListPair item;
 	switch(state)
 	{
-	case AscensionTowerState::BaseSelect: return scanList[listIter];
-	case AscensionTowerState::MainMenu: return mainMenu[listIter];
-	case AscensionTowerState::GroundMenu: return groundMenu[listIter];
-	case AscensionTowerState::ATCMenu: return atcMenu[listIter];
+	case AscensionTowerState::BaseSelect: return scanList[index];
+	case AscensionTowerState::MainMenu: return mainMenu[index];
+	case AscensionTowerState::GroundMenu: return groundMenu[index];
+	case AscensionTowerState::ATCMenu: return atcMenu[index];
 	case AscensionTowerState::HangarForDoorSelection:
-		item.Index=listIter;
-		item.Name=ascension->GetHangar(listIter)->GetName();
+		item.Index=index;
+		item.Name=ascension->GetHangar(index)->GetName();
 		return item;
 	case AscensionTowerState::DoorSelection:
-		item.Index=listIter;
-		item.Name=ascension->GetHangar(selection[AscensionTowerState::HangarForDoorSelection])->GetDoor(listIter)->GetName();
+		item.Index=index;
+		item.Name=ascension->GetHangar(selection[AscensionTowerState::HangarForDoorSelection])->GetDoor(index)->GetName();
 		return item;
 	}
 	return nullItem;

@@ -37,9 +37,7 @@ public:
 	AscensionUltra *GetAscension();	
 	int GetPage();
 	int GetListSize();
-	bool StartList(int index=0);
-	bool NextList();
-	AscensionTowerListPair GetListItem();
+	AscensionTowerListPair GetListItem(int index);
 	int GetSelection();
 	AscensionTowerState GetState();
 	char *GetButtonLabel (int bt);
@@ -55,7 +53,6 @@ private:
 	char *ascensionName;
 	AscensionUltra *ascension;
 	std::vector<AscensionTowerListPair> scanList;
-	int listIter;
 	int page[10]; //stores page information - 10 is arbitrary for now
 	AscensionTowerState state;
 	int selection[10]; //stores selection information - 10 is arbitrary for now

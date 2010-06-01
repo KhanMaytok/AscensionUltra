@@ -150,43 +150,32 @@ void AscensionTower::Update (HDC hDC)
 
 }
 
-bool AscensionTower::RenderSelectionPage()
+void AscensionTower::RenderSelectionPage()
 {
 	static int atButton[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
 	char line[40];
+	int size=data->GetListSize();
 	int page=data->GetPage();
-	int pages=(data->GetListSize()+5)/6;
+	int pages=(size+5)/6;
 	if (page>=pages)
 	{
 		data->SetPage(page=max(pages-1,0));
 		InvalidateButtons();
 	}
-	if (data->StartList(page*6))
-	{
-		//Base selection screens
-		//Descriptions (normal, light green)
-		SelectDefaultFont (hDC, 0);
-		int selection=data->GetSelection();
-		int i=0;
-		do
-		{
-			sprintf(line, "%s", data->GetListItem().Name);
-			WriteMFD(line, atButton[i], 1, true, false, i==selection);
-		}
-		while (data->NextList() && ++i<6);
-		if (pages>1)
-		{
-			sprintf(line, "p.%d/%d", page+1, pages);
-			WriteMFD(line, 27, NULL, false, true);
-		}
-		return true;
-	}
-	//No bases available
+	
+	//Base selection screens
 	//Descriptions (normal, light green)
 	SelectDefaultFont (hDC, 0);
-	WriteMFD("N O   B A S E S   A V A I L A B L E");
-	return false;
+	int selection=data->GetSelection();
+	for(int i=0; i+page*6<size && i<6; i++) WriteMFD(data->GetListItem(i+page*6).Name, atButton[i], 1, true, false, i==selection);
+	if (pages>1)
+	{
+		sprintf(line, "p.%d/%d", page+1, pages);
+		WriteMFD(line, 27, NULL, false, true);
+	}
+	else if (pages==0) WriteMFD("N O   B A S E S   A V A I L A B L E");
 }
+
 // MFD message parser
 int AscensionTower::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
 {

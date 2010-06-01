@@ -31,7 +31,7 @@ private:
 	void WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false, bool highlight=false);
 	bool SelectionConsumeKeyBuffered(DWORD key);
 	bool SelectionConsumeButton(int bt);
-	bool RenderSelectionPage();
+	void RenderSelectionPage();
 };
 
 std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;
