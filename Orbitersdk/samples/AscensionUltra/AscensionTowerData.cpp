@@ -203,7 +203,7 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 		case 8: return size>1?"DWN":"";
 		case 9: return size>6?"NXT":"";
 		case 10: return size>6?"PRV":"";
-		case 11: return (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"SCN":"CNL";
+		case 11: return (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"BAS":"BCK";
 		default: return size>page[state]*6+bt?" > ":"";
 	}
 	return NULL;
@@ -259,11 +259,11 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	}
 	if (size>1)
 	{
-		mnu[7].line1="Move marker up";
-		mnu[7].line2=NULL;
+		mnu[7].line1="Move marker";
+		mnu[7].line2="up";
 		mnu[7].selchar='U';
-		mnu[8].line1="Move marker down";
-		mnu[8].line2=NULL;
+		mnu[8].line1="Move marker";
+		mnu[8].line2="down";
 		mnu[8].selchar='D';
 		k=9;
 	}
@@ -276,11 +276,11 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 
 	if (size>6)
 	{
-		mnu[9].line1="Switch to next";
-		mnu[9].line2="page";
+		mnu[9].line1="Switch to";
+		mnu[9].line2="next page";
 		mnu[9].selchar='N';
-		mnu[10].line1="Switch to previous";
-		mnu[10].line2="page";
+		mnu[10].line1="Switch to";
+		mnu[10].line2="previous page";
 		mnu[10].selchar='P';
 	}
 	else for(int i=9;i<11;i++)
@@ -290,9 +290,9 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		mnu[i].selchar=0;
 	}
 
-	mnu[11].line1=(state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"Scan for bases":"Cancel command";
+	mnu[11].line1=(state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"Scan for bases":"Go back";
 	mnu[11].line2=NULL;
-	mnu[11].selchar='C';
+	mnu[11].selchar='B';
 	
 	return 12;
 }
@@ -313,7 +313,7 @@ bool AscensionTowerData::SetButton(int bt)
 	case 8: return SetKey(OAPI_KEY_D);
 	case 9: return SetKey(OAPI_KEY_N);
 	case 10: return SetKey(OAPI_KEY_P);
-	case 11: return SetKey(OAPI_KEY_C);	
+	case 11: return SetKey(OAPI_KEY_B);	
 	}		
 	return false;
 }
@@ -372,7 +372,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 		if (size>0) Select();
 		else result=false;
 		break;
-	case OAPI_KEY_C://Scan for changes
+	case OAPI_KEY_B://Go back/Scan for bases
 		Back();
 		break;
 	default:
