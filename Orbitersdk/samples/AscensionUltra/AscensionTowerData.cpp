@@ -9,6 +9,7 @@ AscensionTowerData::AscensionTowerData(void)
 	{
 		page[i]=0;
 		selection[i]=0;
+		selectedIndex[i]=0;
 	}
 	state=AscensionTowerState::MainMenu;
 }
@@ -97,7 +98,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::GroundMenu: return 4;
 	case AscensionTowerState::ATCMenu: return 3;
 	case AscensionTowerState::HangarForDoorSelection: return ascension->GetHangars();
-	case AscensionTowerState::DoorSelection: return ascension->GetHangar(selection[AscensionTowerState::HangarForDoorSelection])->GetDoors();
+	case AscensionTowerState::DoorSelection: return ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoors();
 	}
 	return 0;
 }
@@ -121,7 +122,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		return item;
 	case AscensionTowerState::DoorSelection:
 		item.Index=index;
-		item.Name=ascension->GetHangar(selection[AscensionTowerState::HangarForDoorSelection])->GetDoor(index)->GetName();
+		item.Name=ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(index)->GetName();
 		return item;
 	}
 	return nullItem;
@@ -144,10 +145,11 @@ void AscensionTowerData::SetState(AscensionTowerState state)
 
 void AscensionTowerData::Select()
 {
+	selectedIndex[state]=GetListItem(page[state]*6+selection[state]).Index;
 	switch(state)
 	{
-	case AscensionTowerState::BaseSelect:		
-		SetAscension(scanList[page[0]*6+selection[AscensionTowerState::BaseSelect]].Index);
+	case AscensionTowerState::BaseSelect:
+		SetAscension(selectedIndex[state]);
 		SetState(AscensionTowerState::MainMenu);
 		break;	
 	case AscensionTowerState::MainMenu:

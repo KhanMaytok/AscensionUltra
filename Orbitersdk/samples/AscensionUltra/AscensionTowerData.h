@@ -53,12 +53,12 @@ private:
 	char *ascensionName;
 	AscensionUltra *ascension;
 	std::vector<AscensionTowerListPair> scanList;
-	int page[10]; //stores page information - 10 is arbitrary for now
 	AscensionTowerState state;
+	int page[10]; //stores page information - 10 is arbitrary for now
+	int selectedIndex[10];
 	int selection[10]; //stores selection information - 10 is arbitrary for now
 	void Scan();
 	void SetAscension(int index);
-	bool ListEnd();	
 	void Select();
 	void Back();
 };
