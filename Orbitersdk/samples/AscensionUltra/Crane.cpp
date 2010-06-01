@@ -10,10 +10,11 @@
 
 #include "Crane.h"
 
-void Crane::Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix)
+void Crane::Init(VESSEL *owner, const char *name, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix)
 {
 	this->owner=owner;
 	sprintf(this->event_prefix=new char[strlen(event_prefix)+4], "%sCMD", event_prefix);
+	strcpy(this->name=new char[strlen(name)+1], name);
 	mgroupX=X;
 	mgroupY=Y;
 	mgroupZ=Z;
@@ -28,6 +29,7 @@ Crane::~Crane(void)
 {
 	delete filter;
 	delete [] event_prefix;
+	delete [] name;
 }
 
 void Crane::SetSpeed(VECTOR3 speed){this->speed=speed;}
@@ -211,3 +213,5 @@ void Crane::RecordEvent(VECTOR3 &command)
 	sprintf(e, "%0.4f %0.4f %0.4f", command.x, command.y, command.z);
 	owner->RecordEvent(event_prefix, e);
 }
+
+char *Crane::GetName(){return name;}

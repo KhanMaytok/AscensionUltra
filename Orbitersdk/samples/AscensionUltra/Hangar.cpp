@@ -15,6 +15,7 @@ Hangar::Hangar(void)
 	for(int i=0;i<k;i++) GetDoor(i)->SetSpeed(0.1);
 
 	event_prefix=NULL;
+	name=NULL;
 
 	cur_door=-1;
 }
@@ -22,6 +23,7 @@ Hangar::Hangar(void)
 Hangar::~Hangar(void)
 {
 	delete [] event_prefix;
+	delete [] name;
 }
 
 HangarType Hangar::GetType(){throw "GetType() not allowed on abstract hangar class!";}
@@ -68,11 +70,12 @@ void Hangar::clbkPostCreation ()
 	for(int i=0;i<k;i++) GetDoor(i)->clbkPostCreation();
 }
 
-void Hangar::Init(VESSEL* owner, UINT meshIndex, const char *event_prefix)
+void Hangar::Init(VESSEL* owner, const char *name, UINT meshIndex, const char *event_prefix)
 {
 	this->owner=owner;
 	this->meshIndex=meshIndex;
 	strcpy(this->event_prefix=new char[strlen(event_prefix)+1], event_prefix);
+	strcpy(this->name=new char[strlen(name)+1], name);
 }
 
 int Hangar::GetDoors(){return 0;}
@@ -89,3 +92,5 @@ bool Hangar::clbkPlaybackEvent (double simt, double event_t, const char *event_t
 	}
 	return false;
 }
+
+char *Hangar::GetName(){return name;}

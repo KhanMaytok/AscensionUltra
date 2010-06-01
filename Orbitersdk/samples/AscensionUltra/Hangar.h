@@ -27,13 +27,14 @@ public:
 	virtual bool clbkLoadStateEx (char *line);
 	virtual void clbkSaveState (FILEHANDLE scn);
 	virtual void clbkPostCreation ();
-	virtual void Init(VESSEL* owner, UINT meshIndex, const char *event_prefix);
+	virtual void Init(VESSEL* owner, const char *name, UINT meshIndex, const char *event_prefix);
 	virtual int GetDoors();
 	virtual Door *GetDoor(int index);
 	virtual bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
+	virtual char *GetName();
 protected:
 	VESSEL* owner;
 	UINT meshIndex;
-	char *event_prefix;
+	char *event_prefix, *name;
 	int cur_door;
 };

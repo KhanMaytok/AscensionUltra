@@ -15,7 +15,7 @@ class Door
 {
 public:
 	~Door(void);
-	void Init(VESSEL *owner, MGROUP_TRANSFORM *door, const char *event_prefix);
+	void Init(VESSEL *owner, const char *name, MGROUP_TRANSFORM *door, const char *event_prefix);
 	void SetSpeed(double speed);
 	void Stop();
 	void Open();
@@ -27,6 +27,7 @@ public:
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
+	virtual char *GetName();
 
 private:
 	void RecordEvent(double command);
@@ -36,5 +37,5 @@ private:
 	double speed;
 	double command;
 	double position;
-	char *event_prefix;
+	char *event_prefix, *name;
 };

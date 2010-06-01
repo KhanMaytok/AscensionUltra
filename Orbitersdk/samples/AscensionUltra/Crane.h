@@ -17,7 +17,7 @@ class Crane
 {
 public:
 	~Crane(void);
-	void Init(VESSEL *owner, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix);
+	void Init(VESSEL *owner, const char *name, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix);
 	void SetSpeed(VECTOR3 speed);
 	void SetCrawl(VECTOR3 speed);
 	void SetMargin(VECTOR3 margin);
@@ -35,6 +35,7 @@ public:
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
+	virtual char *GetName();
 
 private:
 	void RecordEvent(VECTOR3 &command);
@@ -58,5 +59,5 @@ private:
 	KeyboardFilter *filter;
 	static int ConsumeDirectKey (void *crane, char *kstate);
 	static void Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam);
-	char *event_prefix;
+	char *event_prefix, *name;
 };

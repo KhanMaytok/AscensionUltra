@@ -10,10 +10,11 @@
 
 #include "Door.h"
 
-void Door::Init(VESSEL *owner, MGROUP_TRANSFORM *door, const char *event_prefix)
+void Door::Init(VESSEL *owner, const char *name, MGROUP_TRANSFORM *door, const char *event_prefix)
 {
 	this->owner=owner;
 	sprintf(this->event_prefix=new char[strlen(event_prefix)+4], "%sCMD", event_prefix);
+	strcpy(this->name=new char[strlen(name)+1], name);
 	this->door=door;
 	SetSpeed(0.1);
 	position=0;
@@ -23,7 +24,10 @@ void Door::Init(VESSEL *owner, MGROUP_TRANSFORM *door, const char *event_prefix)
 Door::~Door(void)
 {
 	delete [] event_prefix;
+	delete [] name;
 }
+
+char *Door::GetName(){return name;}
 
 void Door::SetSpeed(double speed){this->speed=speed;}
 void Door::Stop(){RecordEvent(command=0.0);}
