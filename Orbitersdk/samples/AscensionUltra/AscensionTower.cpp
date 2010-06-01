@@ -139,6 +139,8 @@ void AscensionTower::Update (HDC hDC)
 	case AscensionTowerState::MainMenu:
 	case AscensionTowerState::GroundMenu:
 	case AscensionTowerState::ATCMenu:
+	case AscensionTowerState::HangarForDoorSelection:
+	case AscensionTowerState::DoorSelection:
 		RenderSelectionPage();	
 		break;
 	}
