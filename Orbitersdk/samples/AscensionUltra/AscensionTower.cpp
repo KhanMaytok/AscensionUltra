@@ -95,7 +95,7 @@ void AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, 
 		if (column<0 && !rightAligned) x=(1+(36-l)/2)*width;
 		else
 		{
-			if (rightAligned) x=(36-l)*width;
+			if (rightAligned) x=mfdWidth-(l+1)*width;
 			else x=column*width;
 		}
 	}
