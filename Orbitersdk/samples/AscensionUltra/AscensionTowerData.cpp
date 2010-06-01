@@ -75,14 +75,23 @@ void AscensionTowerData::Scan()
 	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->Name;
 	scanList.clear();
 	int k=oapiGetVesselCount();
+	char line[20]; //enough for int conversion base 10
+	char *target;
 	for (int i=0;i<k;i++)
 	{
 		VESSEL *vessel=oapiGetVesselInterface(oapiGetVesselByIndex(i));	
 		if (strcmp(vessel->GetClassName(), "AscensionUltra")==0)
 		{
 			char *source=vessel->GetName();
-			char *target=new char[strlen(source)+1];
-			strcpy(target, source);
+			int l=strlen(itoa(i, line, 10));
+			int sum=strlen(source)+l+3;
+			if (sum<37) sprintf(target=new char[sum+1], "[%s] %s", line, source);
+			else
+			{
+				sprintf(target=new char[37], "[%s] ", line);
+				strncat(target, source, 31-l);
+				strcat(target, "..");
+			}
 			AscensionTowerListPair pair={i,target};
 			scanList.push_back(pair);
 		}
@@ -382,17 +391,34 @@ bool AscensionTowerData::SetKey(DWORD key)
 	return result;
 }
 
+char *AscensionTowerData::GetNameSafeTitle(char *title, char *trailer)
+{
+	char *name=ascension->GetName();
+	int i=36-strlen(trailer);
+	bool longer=false;
+	if (strlen(name)>i)
+	{
+		i-=2;
+		longer=true;
+	}
+	strncpy(title, name, i);
+	title[i]=0;
+	if (longer) strcat(title, "..");
+	strcat(title, trailer);
+	return title;
+}
+
 char *AscensionTowerData::GetTitle()
 {
-	static char *label="Tower";
-	static char *ground="Ground";
-	static char *atc="ATC";
-	static char title[40];
+	static char *tower=" Tower";
+	static char *ground=" Ground";
+	static char *atc=" ATC";
+	static char title[37];
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
-		sprintf(title, "Ascension %s", label);
-		break;
+		sprintf(title, "Ascension%s", tower);
+		return title;
 	case AscensionTowerState::GroundMenu:
 	case AscensionTowerState::HangarForDoorSelection:
 	case AscensionTowerState::DoorSelection:
@@ -400,23 +426,20 @@ char *AscensionTowerData::GetTitle()
 	case AscensionTowerState::HangarForCraneSelection:
 	case AscensionTowerState::PassengerTerminal:
 	case AscensionTowerState::Fueling:
-	case AscensionTowerState::LaunchTunnel:
-		sprintf_s(title, 40, "%s Ground", ascension->GetName());
-		break;
+	case AscensionTowerState::LaunchTunnel:		
+		return GetNameSafeTitle(title, ground);	
 	case AscensionTowerState::ATCMenu:
 	case AscensionTowerState::Bearing:
 	case AscensionTowerState::LandingRunwaySelection:
 	case AscensionTowerState::Launch:
-		sprintf_s(title, 40, "%s ATC", ascension->GetName());
+		return GetNameSafeTitle(title, atc);	
 		break;
 	case AscensionTowerState::MainMenu:
 	case AscensionTowerState::HangarForRoomSelection:
 	case AscensionTowerState::RoomSelection:
-	default:
-		sprintf_s(title, 40, "%s %s", ascension->GetName(), label);
-		break;
-	}
-	return title;
+	default:		
+		return GetNameSafeTitle(title, tower);	
+	}	
 }
 
 char *AscensionTowerData::GetSubtitle()

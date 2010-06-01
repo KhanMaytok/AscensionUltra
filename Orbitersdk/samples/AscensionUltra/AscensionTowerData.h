@@ -61,4 +61,5 @@ private:
 	void SetAscension(int index);
 	void Select();
 	void Back();
+	char *GetNameSafeTitle(char *title, char *trailer);
 };
