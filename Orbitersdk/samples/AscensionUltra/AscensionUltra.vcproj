@@ -239,6 +239,14 @@
 				RelativePath="..\..\include\ScnEditorAPI.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Source"
