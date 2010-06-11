@@ -23,6 +23,7 @@ typedef enum AscensionTowerState
 	Bearing,
 	LandingRunwaySelection,
 	Launch,
+	DoorControl,
 };
 
 typedef struct AscensionTowerListPair
