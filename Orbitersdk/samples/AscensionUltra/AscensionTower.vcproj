@@ -256,6 +256,10 @@
 			RelativePath=".\AscensionUltra.h"
 			>
 		</File>
+		<File
+			RelativePath=".\Door.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

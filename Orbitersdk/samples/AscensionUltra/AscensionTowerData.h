@@ -51,6 +51,7 @@ public:
 	void SetPage(int page);
 	char *GetTitle();
 	char *GetSubtitle();
+	void *GetObject();
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;

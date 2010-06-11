@@ -512,3 +512,12 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::RoomSelection: SetState(AscensionTowerState::HangarForRoomSelection);break;
 	}
 }
+
+void *AscensionTowerData::GetObject()
+{
+	switch(state)
+	{
+	case AscensionTowerState::DoorControl: return ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection]);
+	}
+	return NULL;
+}
