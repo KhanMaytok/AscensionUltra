@@ -147,9 +147,10 @@ void AscensionTower::Update (HDC hDC)
 		break;
 	}
 
-	Title (hDC, data->GetTitle());
-	WriteMFD(data->GetSubtitle(), 2);
+	SelectDefaultFont(hDC, 1);
 
+	Title (hDC, data->GetTitle());	
+	WriteMFD(data->GetSubtitle(), 2, 2);
 }
 
 void AscensionTower::RenderSelectionPage()
