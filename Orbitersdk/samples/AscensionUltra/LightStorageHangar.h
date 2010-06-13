@@ -10,7 +10,7 @@
 #pragma once
 #include "Hangar.h"
 #include "Door.h"
-#define DOORS 4
+#define DOORS 2
 
 class LightStorageHangar:public Hangar
 {

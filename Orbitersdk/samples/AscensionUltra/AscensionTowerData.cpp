@@ -107,16 +107,18 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::GroundMenu: return 4;
 	case AscensionTowerState::ATCMenu: return 3;
 	case AscensionTowerState::HangarForDoorSelection: return ascension->GetHangars();
-	case AscensionTowerState::DoorSelection: return ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoors();
+	case AscensionTowerState::DoorSelection: return ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoors();		
+	case AscensionTowerState::DoorControl: return 3;
 	}
 	return 0;
 }
 
 AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 {
-	static AscensionTowerListPair mainMenu[3]={{0,"1. Request Ground Operation"},{1,"2. Air Traffic Control"},{2,"3. Control Rooms"}};
-	static AscensionTowerListPair groundMenu[4]={{0,"1. Request Roll-in/Roll-out"},{1,"2. Request Taxi"},{2,"3. Request Cargo Control"},{3,"4. Request Launch"}};
-	static AscensionTowerListPair atcMenu[3]={{0,"1. Request Bearing"},{1,"2. Request Clearance to Land"},{2,"3. Request Launch Clearance"}};
+	static AscensionTowerListPair mainMenu[3]={{0," Request Ground Operation"},{1," Air Traffic Control"},{2," Control Rooms"}};
+	static AscensionTowerListPair groundMenu[4]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"}};
+	static AscensionTowerListPair atcMenu[3]={{0," Request Bearing"},{1," Request Clearance to Land"},{2," Request Launch Clearance"}};
+	static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};
 	AscensionTowerListPair nullItem={0,""};	
 	AscensionTowerListPair item;
 	switch(state)
@@ -125,6 +127,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::MainMenu: return mainMenu[index];
 	case AscensionTowerState::GroundMenu: return groundMenu[index];
 	case AscensionTowerState::ATCMenu: return atcMenu[index];
+	case AscensionTowerState::DoorControl: return doorMenu[index];
 	case AscensionTowerState::HangarForDoorSelection:
 		item.Index=index;
 		item.Name=ascension->GetHangar(index)->GetName();
@@ -189,6 +192,17 @@ void AscensionTowerData::Select()
 	case AscensionTowerState::HangarForDoorSelection:
 		SetState(AscensionTowerState::DoorSelection);
 		break;
+	case AscensionTowerState::DoorSelection:
+		SetState(AscensionTowerState::DoorControl);
+		break;
+	case AscensionTowerState::DoorControl:
+		switch(selection[state])
+		{
+		case 0: ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection])->Open(); break;
+		case 1: ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection])->Close(); break;
+		case 2: ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection])->Stop(); break;
+		}		
+		break;
 	}
 }
 
@@ -229,6 +243,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	case AscensionTowerState::TaxiRouteSelection: target="route"; break;
 	case AscensionTowerState::LandingRunwaySelection: target="runway"; break;
 	case AscensionTowerState::RoomSelection: target="room"; break;
+	case AscensionTowerState::DoorControl: target="command"; break;
 	}
 	sprintf(select, "Select %s", target);
 	sprintf(marked, "marked %s", target);
@@ -426,7 +441,8 @@ char *AscensionTowerData::GetTitle()
 	case AscensionTowerState::HangarForCraneSelection:
 	case AscensionTowerState::PassengerTerminal:
 	case AscensionTowerState::Fueling:
-	case AscensionTowerState::LaunchTunnel:		
+	case AscensionTowerState::LaunchTunnel:
+	case AscensionTowerState::DoorControl:
 		return GetNameSafeTitle(title, ground);	
 	case AscensionTowerState::ATCMenu:
 	case AscensionTowerState::Bearing:
@@ -463,7 +479,12 @@ char *AscensionTowerData::GetSubtitle()
 	case AscensionTowerState::LandingRunwaySelection: return "Select Runway for Landing";	
 	case AscensionTowerState::Launch: return "Request Launch Clearance";	
 	case AscensionTowerState::HangarForRoomSelection: return "Select Hangar for Control Room";	
-	case AscensionTowerState::RoomSelection: return "Select Control Room";	
+	case AscensionTowerState::RoomSelection: return "Select Control Room";
+	case AscensionTowerState::DoorControl:
+		sprintf(subtitle, "%s -> %s",
+			ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetName(),
+			ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection])->GetName());
+		return subtitle;
 	}
 	return "";
 }
@@ -478,6 +499,7 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::ATCMenu: SetState(AscensionTowerState::MainMenu);break;
 	case AscensionTowerState::HangarForDoorSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::DoorSelection: SetState(AscensionTowerState::HangarForDoorSelection);break;
+	case AscensionTowerState::DoorControl: SetState(AscensionTowerState::DoorSelection);break;
 	case AscensionTowerState::TaxiRouteSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::HangarForCraneSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::PassengerTerminal: SetState(AscensionTowerState::GroundMenu);break;
@@ -489,4 +511,13 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::HangarForRoomSelection: SetState(AscensionTowerState::MainMenu);break;
 	case AscensionTowerState::RoomSelection: SetState(AscensionTowerState::HangarForRoomSelection);break;
 	}
+}
+
+void *AscensionTowerData::GetObject()
+{
+	switch(state)
+	{
+	case AscensionTowerState::DoorControl: return ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection]);
+	}
+	return NULL;
 }

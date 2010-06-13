@@ -23,6 +23,7 @@ typedef enum AscensionTowerState
 	Bearing,
 	LandingRunwaySelection,
 	Launch,
+	DoorControl,
 };
 
 typedef struct AscensionTowerListPair
@@ -50,6 +51,7 @@ public:
 	void SetPage(int page);
 	char *GetTitle();
 	char *GetSubtitle();
+	void *GetObject();
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;

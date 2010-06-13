@@ -10,12 +10,17 @@
 
 #include "Door.h"
 
-void Door::Init(VESSEL *owner, const char *name, MGROUP_TRANSFORM *door, const char *event_prefix)
+void Door::Init(VESSEL *owner, const char *name, const char *event_prefix, int transforms, ... )
 {
 	this->owner=owner;
 	sprintf(this->event_prefix=new char[strlen(event_prefix)+4], "%sCMD", event_prefix);
-	strcpy(this->name=new char[strlen(name)+1], name);
-	this->door=door;
+	strcpy(this->name=new char[strlen(name)+1], name);	
+	this->transforms=transforms;
+	door=new MGROUP_TRANSFORM*[transforms];
+	va_list doors;
+	va_start(doors, transforms);
+	for(int i=0;i<transforms;i++) door[i]=va_arg(doors, MGROUP_TRANSFORM*);
+	va_end(doors);
 	SetSpeed(0.1);
 	position=0;
 	command=0.0;
@@ -25,6 +30,8 @@ Door::~Door(void)
 {
 	delete [] event_prefix;
 	delete [] name;
+	for(int i=0;i<transforms;i++) delete door[i];
+	delete [] door;
 }
 
 char *Door::GetName(){return name;}
@@ -62,7 +69,7 @@ void Door::PostStep (double simt, double simdt, double mjd)
 void Door::DefineAnimations()
 {	
 	anim = owner->CreateAnimation (0);
-	owner->AddAnimationComponent (anim, 0, 1, door);
+	for(int i=0;i<transforms;i++) owner->AddAnimationComponent (anim, 0, 1, door[i]);
 }
 
 bool Door::clbkLoadStateEx (char *line)

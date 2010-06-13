@@ -135,6 +135,8 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 		}
 	}
 
+	Door *door=NULL;
+
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
@@ -144,6 +146,13 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 	case AscensionTowerState::HangarForDoorSelection:
 	case AscensionTowerState::DoorSelection:
 		RenderSelectionPage();	
+		break;
+	case AscensionTowerState::DoorControl:
+		RenderSelectionPage();
+		door=(Door *)data->GetObject();
+		if (door->GetPosition()<=0) WriteMFD("Closed", 15);
+		else if (door->GetPosition()>=1) WriteMFD("Open", 15);
+		else WriteMFD("Moving", 15);
 		break;
 	}
 

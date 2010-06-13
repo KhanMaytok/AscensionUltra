@@ -336,7 +336,7 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
-	for(int i=0;i<12;i++) RotateGroup(i+5, PI, _V(0,1,0), _V(0,0,0));
+	for(int i=0;i<12;i++) RotateGroup(i+5+3, PI, _V(0,1,0), _V(0,0,0));
 }
 
 // Destroy DG visual
