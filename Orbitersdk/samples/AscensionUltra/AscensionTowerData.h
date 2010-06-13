@@ -3,6 +3,8 @@
 #include "AscensionUltra.h"
 #include "orbitersdk.h"
 
+#define STATES 17
+
 typedef enum AscensionTowerState
 {
 	BaseSelect,
@@ -54,9 +56,7 @@ private:
 	AscensionUltra *ascension;
 	std::vector<AscensionTowerListPair> scanList;
 	AscensionTowerState state;
-	int page[10]; //stores page information - 10 is arbitrary for now
-	int selectedIndex[10];
-	int selection[10]; //stores selection information - 10 is arbitrary for now
+	int page[STATES], selectedIndex[STATES], selection[STATES];
 	void Scan();
 	void SetAscension(int index);
 	void Select();

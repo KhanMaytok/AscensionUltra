@@ -44,7 +44,7 @@ DLLCLBK void opcDLLExit (HINSTANCE hDLL)
 
 // Constructor
 AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
-: MFD (w, h, vessel)
+: MFD2 (w, h, vessel)
 {	
 	width=(int)w/36;
 	height=(int)h/28;
@@ -108,9 +108,9 @@ void AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, 
 }
 
 // Repaint the MFD
-void AscensionTower::Update (HDC hDC)
+bool AscensionTower::Update (oapi::Sketchpad *skp)
 {
-	this->hDC=hDC;
+	hDC=skp->GetDC();
 
 	//
 	//Creating the pen for drawing the progress bar
@@ -147,9 +147,12 @@ void AscensionTower::Update (HDC hDC)
 		break;
 	}
 
-	Title (hDC, data->GetTitle());
-	WriteMFD(data->GetSubtitle(), 2);
+	skp->SetFont(GetDefaultFont(1));
+	
+	Title (skp, data->GetTitle());	
+	WriteMFD(data->GetSubtitle(), 2, 2);
 
+	return true;
 }
 
 void AscensionTower::RenderSelectionPage()

@@ -5,7 +5,7 @@ AscensionTowerData::AscensionTowerData(void)
 	ascensionHandle=NULL;
 	ascensionName=NULL;
 	ascension=NULL;
-	for(int i=0;i<10;i++)
+	for(int i=0;i<STATES;i++)
 	{
 		page[i]=0;
 		selection[i]=0;
@@ -394,7 +394,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 char *AscensionTowerData::GetNameSafeTitle(char *title, char *trailer)
 {
 	char *name=ascension->GetName();
-	int i=36-strlen(trailer);
+	int i=56-strlen(trailer);
 	bool longer=false;
 	if (strlen(name)>i)
 	{
@@ -413,7 +413,7 @@ char *AscensionTowerData::GetTitle()
 	static char *tower=" Tower";
 	static char *ground=" Ground";
 	static char *atc=" ATC";
-	static char title[37];
+	static char title[57];
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
@@ -444,6 +444,8 @@ char *AscensionTowerData::GetTitle()
 
 char *AscensionTowerData::GetSubtitle()
 {
+	static char subtitle[57];
+
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect: return scanList.size()>0?"Select base":"";

@@ -14,13 +14,13 @@
 #include <map>
 #include "AscensionTowerData.h"
 
-class AscensionTower: public MFD {
+class AscensionTower: public MFD2 {
 public:
 	AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel);
 	~AscensionTower ();
 	char *ButtonLabel (int bt);
 	int ButtonMenu (const MFDBUTTONMENU **menu) const;
-	void Update (HDC hDC);
+	bool Update (oapi::Sketchpad *skp);
 	bool AscensionTower::ConsumeKeyBuffered(DWORD key);
 	bool AscensionTower::ConsumeButton(int bt, int event);
 	static int MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
