@@ -15,7 +15,7 @@ class Door
 {
 public:
 	~Door(void);
-	void Init(VESSEL *owner, const char *name, MGROUP_TRANSFORM *door, const char *event_prefix);
+	void Init(VESSEL *owner, const char *name, const char *event_prefix, int transforms, ... );
 	void SetSpeed(double speed);
 	virtual void Stop();
 	virtual void Open();
@@ -32,8 +32,8 @@ public:
 private:
 	void RecordEvent(double command);
 	VESSEL* owner;
-	MGROUP_TRANSFORM *door;
-	int anim;
+	MGROUP_TRANSFORM **door;
+	int anim, transforms;
 	double speed;
 	double command;
 	double position;

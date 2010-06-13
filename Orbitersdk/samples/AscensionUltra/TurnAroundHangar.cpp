@@ -24,13 +24,13 @@ void TurnAroundHangar::DefineAnimations ()
 	int i=0;
 
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
-	doors[0].Init(owner, "South Main Door", new MGROUP_ROTATE(meshIndex, DoorGrp+4, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD)), prefix);
+	doors[0].Init(owner, "South Main Door", prefix, 1, new MGROUP_ROTATE(meshIndex, DoorGrp+4, 1,	_V(0,0,0), _V(-1,0,0), (float)(30*RAD)));
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
-	doors[1].Init(owner, "North Main Door", new MGROUP_ROTATE(meshIndex, DoorGrp+5, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD)), prefix);
+	doors[1].Init(owner, "North Main Door", prefix, 1, new MGROUP_ROTATE(meshIndex, DoorGrp+5, 1,	_V(0,0,0), _V(1,0,0), (float)(30*RAD)));
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
-	doors[2].Init(owner, "East Maintenance Door", new MGROUP_TRANSLATE(meshIndex, DoorGrp+6, 1, _V(0,6,0)), prefix);
+	doors[2].Init(owner, "East Maintenance Door", prefix, 1, new MGROUP_TRANSLATE(meshIndex, DoorGrp+6, 1, _V(0,6,0)));
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
-	doors[3].Init(owner, "West Maintenance Door", new MGROUP_TRANSLATE(meshIndex, DoorGrp+7, 1, _V(0,6,0)), prefix);
+	doors[3].Init(owner, "West Maintenance Door", prefix, 1, new MGROUP_TRANSLATE(meshIndex, DoorGrp+7, 1, _V(0,6,0)));
 	Hangar::DefineAnimations();
 	
 	sprintf(prefix, "%sCRANE%d", event_prefix, 0);
