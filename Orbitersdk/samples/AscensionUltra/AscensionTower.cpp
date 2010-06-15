@@ -124,13 +124,16 @@ void AscensionTower::Update (HDC hDC)
 	}
 
 	char line[40];
-	AscensionUltra *ascension=NULL;	
 	AscensionTowerState state=data->GetState();
+	AscensionUltra *au=NULL;
+	//Get Ascension object - lost or changed Ascension objects will cause state to change
 	if (state!=AscensionTowerState::BaseSelect)
 	{
-		if ((ascension=data->GetAscension())==NULL)
+		au=data->GetAscension();
+		if (au!=ascension)
 		{
-			data->SetState(state=AscensionTowerState::BaseSelect);
+			ascension=au;
+			state=data->GetState();
 			InvalidateButtons();
 		}
 	}

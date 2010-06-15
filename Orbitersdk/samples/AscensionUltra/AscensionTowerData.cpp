@@ -43,7 +43,8 @@ AscensionUltra *AscensionTowerData::GetAscension()
 		if (scanList.size()!=1) return NULL;
 		detected=scanList.begin()->Index;
 	}
-	SetAscension(detected);	
+	SetAscension(detected);
+	SetState(ascension==NULL?AscensionTowerState::BaseSelect:AscensionTowerState::MainMenu);
 	return ascension;
 }
 

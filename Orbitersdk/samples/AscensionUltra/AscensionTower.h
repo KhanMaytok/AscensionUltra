@@ -26,6 +26,7 @@ public:
 	static int MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
 private:
 	AscensionTowerData *data;
+	AscensionUltra *ascension;
 	float width, height;
 	int mfdWidth, mfdHeight;
 	HDC hDC;
