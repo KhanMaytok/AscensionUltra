@@ -3,7 +3,7 @@
 #include "AscensionUltra.h"
 #include "orbitersdk.h"
 
-#define STATES 17
+#define STATES 18
 
 typedef enum AscensionTowerState
 {
@@ -24,6 +24,7 @@ typedef enum AscensionTowerState
 	LandingRunwaySelection,
 	Launch,
 	DoorControl,
+	CraneControl,
 };
 
 typedef struct AscensionTowerListPair
@@ -59,6 +60,7 @@ private:
 	std::vector<AscensionTowerListPair> scanList;
 	AscensionTowerState state;
 	int page[STATES], selectedIndex[STATES], selection[STATES];
+	void *object[STATES];
 	void Scan();
 	void SetAscension(int index);
 	void Select();

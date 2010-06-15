@@ -32,7 +32,7 @@ public:
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
-	Crane *GetCrane();
+	virtual Crane *GetCrane();
 	int GetDoors();
 	Door *GetDoor(int index);
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);

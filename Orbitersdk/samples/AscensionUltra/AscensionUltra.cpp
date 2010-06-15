@@ -519,13 +519,24 @@ void AscensionUltra::RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref)
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }
 
-int AscensionUltra::GetHangars(){return 5+12;}
+int AscensionUltra::GetHangars(HangarType type)
+{
+	switch(type)
+	{
+	case HangarType::TurnAround: return 5;
+	case HangarType::LightStorage: return 12;	
+	}
+	return 0;
+}
 
-Hangar *AscensionUltra::GetHangar(int index)
+Hangar *AscensionUltra::GetHangar(HangarType type, int index)
 {
 	if (index<0) return NULL;
-	if (index<5) return turnAround+index;
-	if (index<5+12) return lightStorage+index-5;
+	switch(type)
+	{
+	case HangarType::TurnAround: return index<5?turnAround+index:NULL;
+	case HangarType::LightStorage: return index<12?lightStorage+index:NULL;	
+	}
 	return NULL;
 }
 
@@ -600,10 +611,10 @@ BOOL CALLBACK EdPg1Proc (HWND hTab, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiOpenHelp (&g_hc);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			GetDG(hTab)->GetHangar(0)->GetDoor(0)->Close();
+			GetDG(hTab)->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Close();
 			return TRUE;
 		case IDC_OLOCK_OPEN:
-			GetDG(hTab)->GetHangar(0)->GetDoor(0)->Open();
+			GetDG(hTab)->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Open();
 			return TRUE;
 		}
 		break;
@@ -672,10 +683,10 @@ BOOL CALLBACK Ctrl_DlgProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiCloseDialog (hWnd);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			dg->GetHangar(0)->GetDoor(0)->Close();
+			dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Close();
 			return 0;
 		case IDC_OLOCK_OPEN:
-			dg->GetHangar(0)->GetDoor(0)->Open();
+			dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Open();
 			return 0;
 		}
 		break;
@@ -692,7 +703,7 @@ void UpdateCtrlDialog (AscensionUltra *dg, HWND hWnd)
 
 	int op;
 
-	op = dg->GetHangar(0)->GetDoor(0)->GetPosition()==0.0?0:1;
+	op = dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->GetPosition()==0.0?0:1;
 	SendDlgItemMessage (hWnd, IDC_OLOCK_OPEN, BM_SETCHECK, bstatus[op], 0);
 	SendDlgItemMessage (hWnd, IDC_OLOCK_CLOSE, BM_SETCHECK, bstatus[1-op], 0);
 

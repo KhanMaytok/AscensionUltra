@@ -53,8 +53,8 @@ public:
 	void MoveGroup(int mesh, VECTOR3 v);
 	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
 
-	virtual Hangar *GetHangar(int index);
-	virtual int GetHangars();
+	virtual Hangar *GetHangar(HangarType type, int index);
+	virtual int GetHangars(HangarType type);
 	
 private:
 	TurnAroundHangar turnAround[5];
