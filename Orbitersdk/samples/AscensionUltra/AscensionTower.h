@@ -34,6 +34,8 @@ private:
 	bool SelectionConsumeKeyBuffered(DWORD key);
 	bool SelectionConsumeButton(int bt);
 	void RenderSelectionPage();
+	void RenderDoorControlPage();
+	void RenderCraneControlPage();
 };
 
 std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;

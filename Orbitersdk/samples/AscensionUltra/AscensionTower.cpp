@@ -138,8 +138,6 @@ void AscensionTower::Update (HDC hDC)
 		}
 	}
 
-	Door *door=NULL;
-
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
@@ -147,15 +145,16 @@ void AscensionTower::Update (HDC hDC)
 	case AscensionTowerState::GroundMenu:
 	case AscensionTowerState::ATCMenu:
 	case AscensionTowerState::HangarForDoorSelection:
+	case AscensionTowerState::HangarForCraneSelection:
 	case AscensionTowerState::DoorSelection:
 		RenderSelectionPage();	
 		break;
 	case AscensionTowerState::DoorControl:
 		RenderSelectionPage();
-		door=(Door *)data->GetObject();
-		if (door->GetPosition()<=0) WriteMFD("Closed", 15);
-		else if (door->GetPosition()>=1) WriteMFD("Open", 15);
-		else WriteMFD("Moving", 15);
+		RenderDoorControlPage();
+		break;
+	case AscensionTowerState::CraneControl:
+		RenderCraneControlPage();
 		break;
 	}
 
@@ -178,8 +177,6 @@ void AscensionTower::RenderSelectionPage()
 		InvalidateButtons();
 	}
 	
-	//Base selection screens
-	//Descriptions (normal, light green)
 	SelectDefaultFont (hDC, 0);
 	int selection=data->GetSelection();
 	for(int i=0; i+page*6<size && i<6; i++) WriteMFD(data->GetListItem(i+page*6).Name, atButton[i], 1, true, false, i==selection);
@@ -189,6 +186,29 @@ void AscensionTower::RenderSelectionPage()
 		WriteMFD(line, 27, NULL, false, true);
 	}
 	else if (pages==0) WriteMFD("N O   B A S E S   A V A I L A B L E");
+}
+
+void AscensionTower::RenderDoorControlPage()
+{
+	SetTextColor(hDC, RGB(255,255,255));
+	Door* door=(Door *)data->GetObject();
+	if (door->GetPosition()<=0) WriteMFD("Closed", 15);
+	else if (door->GetPosition()>=1) WriteMFD("Open", 15);
+	else WriteMFD("Moving", 15);
+}
+
+void AscensionTower::RenderCraneControlPage()
+{
+	SetTextColor(hDC, RGB(255,255,255));
+	Crane* crane=(Crane *)data->GetObject();
+	VECTOR3 pos=crane->GetPosition();
+	char line[40];
+	sprintf(line, "X: %f", pos.x);
+	WriteMFD(line, 6, 4);
+	sprintf(line, "Y: %f", pos.y);
+	WriteMFD(line, 8, 4);
+	sprintf(line, "Z: %f", pos.z);
+	WriteMFD(line, 10, 4);
 }
 
 // MFD message parser
