@@ -24,7 +24,7 @@ public:
 	void SetAutoOverride(double percentage);
 	void StartAuto(int list);
 	void Stop();
-	void StartManual();
+	virtual void StartManual();
 	void Teach(int waypoint);
 	virtual VECTOR3 GetPosition();
 	void SetPosition(VECTOR3 position);
