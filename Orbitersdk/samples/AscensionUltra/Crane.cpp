@@ -56,6 +56,7 @@ void Crane::StartManual()
 {
 	sprintf(oapiDebugString(), "Crane online (A/D long axis, W/S short axis, Q/E reel, B to return)");
 	RecordEvent(oldcommand=command=_V(0.0,0.0,0.0));
+	if (filter!=NULL) delete filter;
 	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey, &Crane::Prefilter);
 }
 
