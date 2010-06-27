@@ -446,8 +446,12 @@ bool AscensionTowerData::SetKey(DWORD key)
 		case OAPI_KEY_B:
 			Back();
 			break;
+		default:
+			result=false;
+			break;
 		}
-		break;
+		return result;
+		
 	default:
 		switch(key)
 		{	
