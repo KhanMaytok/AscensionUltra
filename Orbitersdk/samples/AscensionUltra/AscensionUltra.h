@@ -21,6 +21,13 @@
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
+#define TURNAROUNDHANGARS 5
+#define LIGHTSTORAGEHANGARS 12
+#define TAXIWAYSUBSECTIONS 32
+#define TAXIWAYPATHS 36
+#define RUNWAYSUBSECTIONS 56
+#define RUNWAYPATHS 5
+
 class AscensionUltra: public VESSEL2 {
 public:
 	AscensionUltra (OBJHANDLE hObj, int fmodel);
@@ -57,9 +64,12 @@ public:
 	virtual int GetHangars(HangarType type);
 	
 private:
-	TurnAroundHangar turnAround[5];
-	LightStorageHangar lightStorage[12];
-	BeaconPath taxiways[4];
+	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
+	LightStorageHangar lightStorage[LIGHTSTORAGEHANGARS];
+	BeaconArray taxiwaySubsection[TAXIWAYSUBSECTIONS];
+	BeaconPath taxiwayPath[TAXIWAYPATHS];
+	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
+	BeaconPath runwayPath[RUNWAYPATHS];
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
