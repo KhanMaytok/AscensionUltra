@@ -17,7 +17,7 @@
 #include "resource.h"
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
-#include "BeaconPath.h"
+#include "BeaconLinks.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -70,6 +70,7 @@ private:
 	BeaconPath taxiwayPath[TAXIWAYPATHS];
 	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
 	BeaconPath runwayPath[RUNWAYPATHS];
+	BeaconLinks taxiways;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
