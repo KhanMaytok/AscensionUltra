@@ -28,6 +28,7 @@
 #define LS1OFFSET _V(-855,0,480)
 #define LS1MATRIXOFFSET _V(70,0,0)
 #define MAXSTATICRUNWAYLINES 14
+#define RUNWAYENDPOINTS 9
 
 // ==============================================================
 // Global parameters
@@ -150,8 +151,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	taxiwayPath[34].Add(&taxiwaySubsection[28]);	taxiwayPath[34].Add(&taxiwaySubsection[27]);	taxiwayPath[34].Add(&taxiwaySubsection[4]);	taxiwayPath[34].Add(&taxiwaySubsection[3]);					
 	taxiwayPath[35].Add(&taxiwaySubsection[28]);	taxiwayPath[35].Add(&taxiwaySubsection[27]);	taxiwayPath[35].Add(&taxiwaySubsection[26]);	taxiwayPath[35].Add(&taxiwaySubsection[19]);	taxiwayPath[35].Add(&taxiwaySubsection[4]);	taxiwayPath[35].Add(&taxiwaySubsection[3]);
 
-	for(int i=0;i<TAXIWAYPATHS;i++) taxiwayPath[i].Switch(true);
-
 	VECTOR3 runwayLines[MAXSTATICRUNWAYLINES][2]=
 	{
 		//Generated lines by Excel - last comma removed
@@ -172,7 +171,9 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	};
 
 	int runwayBeacons[MAXSTATICRUNWAYLINES]=
-	{		//Generated lines by Excel - last comma removed		70,
+	{
+		//Generated lines by Excel - last comma removed
+		70,
 		96,
 		40,
 		70,
@@ -256,6 +257,65 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	runwayPath[4].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=42;i<56;i++) runwayPath[4].Add(&runwaySubsection[i]);
 
+	static char *points[RUNWAYENDPOINTS]=
+	{
+		"Launch",
+		"Storage Hangars",
+		"TA Hangars",
+		"Aux Hangars",
+		"Runway 13L",
+		"Runway 13R",
+		"Runway 31L",
+		"Runway 31R",
+		"Airport",
+	};
+
+	//Generated subsection table by Excel
+	taxiways.Add(&taxiwayPath[0], points[1], points[2], false);
+	taxiways.Add(&taxiwayPath[1], points[1], points[3], false);
+	taxiways.Add(&taxiwayPath[3], points[1], points[0], false);
+	taxiways.Add(&taxiwayPath[2], points[2], points[1], false);
+	taxiways.Add(&taxiwayPath[4], points[2], points[3], false);
+	taxiways.Add(&taxiwayPath[5], points[0], points[2], false);
+	taxiways.Add(&taxiwayPath[30], points[2], points[0], false);
+	taxiways.Add(&taxiwayPath[28], points[3], points[2], false);
+	taxiways.Add(&taxiwayPath[29], points[3], points[1], false);
+	taxiways.Add(&taxiwayPath[28], points[0], points[3], false);
+	taxiways.Add(&taxiwayPath[33], points[3], points[0], false);
+	taxiways.Add(&taxiwayPath[10], points[4], points[2], false);
+	taxiways.Add(&taxiwayPath[14], points[2], points[4], false);
+	taxiways.Add(&taxiwayPath[10], points[4], points[1], false);
+	taxiways.Add(&taxiwayPath[15], points[1], points[4], false);
+	taxiways.Add(&taxiwayPath[11], points[4], points[3], false);
+	taxiways.Add(&taxiwayPath[12], points[3], points[4], false);
+	taxiways.Add(&taxiwayPath[10], points[4], points[8], false);
+	taxiways.Add(&taxiwayPath[13], points[8], points[4], false);
+	taxiways.Add(&taxiwayPath[8], points[5], points[2], false);
+	taxiways.Add(&taxiwayPath[18], points[2], points[5], false);
+	taxiways.Add(&taxiwayPath[8], points[5], points[1], false);
+	taxiways.Add(&taxiwayPath[19], points[1], points[5], false);
+	taxiways.Add(&taxiwayPath[9], points[5], points[3], false);
+	taxiways.Add(&taxiwayPath[16], points[3], points[5], false);
+	taxiways.Add(&taxiwayPath[8], points[5], points[8], false);
+	taxiways.Add(&taxiwayPath[17], points[8], points[5], false);
+	taxiways.Add(&taxiwayPath[21], points[6], points[2], false);
+	taxiways.Add(&taxiwayPath[7], points[2], points[6], false);
+	taxiways.Add(&taxiwayPath[20], points[6], points[1], false);
+	taxiways.Add(&taxiwayPath[35], points[1], points[6], false);
+	taxiways.Add(&taxiwayPath[22], points[6], points[3], false);
+	taxiways.Add(&taxiwayPath[34], points[3], points[6], false);
+	taxiways.Add(&taxiwayPath[23], points[6], points[8], false);
+	taxiways.Add(&taxiwayPath[34], points[8], points[6], false);
+	taxiways.Add(&taxiwayPath[25], points[7], points[2], false);
+	taxiways.Add(&taxiwayPath[6], points[2], points[7], false);
+	taxiways.Add(&taxiwayPath[24], points[7], points[1], false);
+	taxiways.Add(&taxiwayPath[32], points[1], points[7], false);
+	taxiways.Add(&taxiwayPath[26], points[7], points[3], false);
+	taxiways.Add(&taxiwayPath[31], points[3], points[7], false);
+	taxiways.Add(&taxiwayPath[27], points[7], points[8], false);
+	taxiways.Add(&taxiwayPath[31], points[8], points[7], false);
+
+	for(int i=0;i<RUNWAYENDPOINTS;i++) taxiways.SwitchAll(points[i], false, true);
 	for(int i=0;i<RUNWAYPATHS;i++) runwayPath[i].Switch(true);
 
 	DefineAnimations();
