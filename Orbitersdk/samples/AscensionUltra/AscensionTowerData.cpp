@@ -35,13 +35,21 @@ AscensionUltra *AscensionTowerData::GetAscension()
 	{
 		if (strcmp(i->Name, ascensionName)==0)
 		{
-			if (detected>=0) return NULL; //Name is not unique
+			if (detected>=0)
+			{
+				SetState(AscensionTowerState::BaseSelect);
+				return ascension=NULL; //Name is not unique
+			}
 			detected=i->Index;			
 		}
 	}
 	if (detected<0)
 	{
-		if (scanList.size()!=1) return NULL;
+		if (scanList.size()!=1)
+		{
+			SetState(AscensionTowerState::BaseSelect);
+			return ascension=NULL;
+		}
 		detected=scanList.begin()->Index;
 	}
 	SetAscension(detected);
