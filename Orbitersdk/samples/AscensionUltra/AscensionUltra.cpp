@@ -322,13 +322,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	cur_TurnAround=-1;
 
-	//DEBUG
-	disx=0.0;
-	disy=0.0;
-	disz=0.0;
-	stp=10.0;
-	mnr=0;
-	dnr=0;
 }
 
 // --------------------------------------------------------------
@@ -357,30 +350,6 @@ void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
 	// TODO: draw vessel status	
 }
 
-void AscensionUltra::SetNavlight (bool on)
-{
-	beacon[0].active = beacon[1].active = beacon[2].active = on;
-	UpdateCtrlDialog (this);
-}
-
-void AscensionUltra::SetBeacon (bool on)
-{
-	beacon[3].active = beacon[4].active = on;
-	UpdateCtrlDialog (this);
-}
-
-void AscensionUltra::SetStrobe (bool on)
-{
-	beacon[5].active = beacon[6].active = on;
-	UpdateCtrlDialog (this);
-}
-
-static UINT HatchGrp[2] = {12,88};
-
-static UINT AileronGrp[8] = {29,51,30,52,35,55,36,54};
-
-static float tv0[8] = {0,0,0.0469f,0.0469f,0,0,0.0469f,0.0469f};
-
 // Set vessel class parameters
 void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 {
@@ -401,23 +370,6 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	InitNavRadios (4);
 
 	// ************************* mesh ***************************
-
-	// ********************* beacon lights **********************
-	static VECTOR3 beaconpos[8] = {{-8.6,0,-3.3}, {8.6,0,-3.3}, {0,0.5,-7.5}, {0,2.2,2}, {0,-1.4,2}, {-8.9,2.5,-5.4}, {8.9,2.5,-5.4}, {0,-1.8,2}};
-	static VECTOR3 beaconcol[7] = {{1.0,0.5,0.5}, {0.5,1.0,0.5}, {1,1,1}, {1,0.6,0.6}, {1,0.6,0.6}, {1,1,1}, {1,1,1}};
-	for (int i = 0; i < 7; i++) {
-		beacon[i].shape = (i < 3 ? BEACONSHAPE_DIFFUSE : BEACONSHAPE_STAR);
-		beacon[i].pos = beaconpos+i;
-		beacon[i].col = beaconcol+i;
-		beacon[i].size = (i < 3 ? 0.3 : 0.55);
-		beacon[i].falloff = (i < 3 ? 0.4 : 0.6);
-		beacon[i].period = (i < 3 ? 0 : i < 5 ? 2 : 1.13);
-		beacon[i].duration = (i < 5 ? 0.1 : 0.05);
-		beacon[i].tofs = (6-i)*0.2;
-		beacon[i].active = false;
-		AddBeacon (beacon+i);
-	}
-
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &OFFSET), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Base_Signs"), &OFFSET), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &OFFSET), MESHVIS_ALWAYS);
@@ -447,19 +399,7 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+12, "%X", &cur_LightStorage);
 		} else if (cur_LightStorage>=0 && cur_LightStorage<12) {
 			if (!lightStorage[cur_LightStorage].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "LIGHTS", 6)) {
-			int lgt[3];
-			sscanf (line+6, "%d%d%d", lgt+0, lgt+1, lgt+2);
-			SetNavlight (lgt[0] != 0);
-			SetBeacon (lgt[1] != 0);
-			SetStrobe (lgt[2] != 0);
-        } else if (!strnicmp (line, "LIGHTS", 6)) {
-			int lgt[3];
-			sscanf (line+6, "%d%d%d", lgt+0, lgt+1, lgt+2);
-			SetNavlight (lgt[0] != 0);
-			SetBeacon (lgt[1] != 0);
-			SetStrobe (lgt[2] != 0);
-        } else {
+		} else {
             ParseScenarioLineEx (line, vs);
 			// unrecognised option - pass to Orbiter's generic parser
         }
@@ -494,12 +434,6 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "HANGAR", cbuf);
 	
-	for (i = 0; i < 7; i++)
-		if (beacon[i].active) {
-			sprintf (cbuf, "%d %d %d", beacon[0].active, beacon[3].active, beacon[5].active);
-			oapiWriteScenario_string (scn, "LIGHTS", cbuf);
-			break;
-		}
 }
 
 // Finalise vessel creation
@@ -533,6 +467,7 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
+	//Rotate light storage hangars
 	for(int i=0;i<12;i++) RotateGroup(i+5+3, PI, _V(0,1,0), _V(0,0,0));
 }
 
@@ -561,42 +496,16 @@ bool AscensionUltra::clbkLoadGenericCockpit ()
 	return true;
 }
 
-bool clbkBeaconSizeInput (void *id, char *str, void *usrdata)
-{
-	double value1, value2;
-	sscanf(str, "%lf %lf", &value1, &value2);	
-	if (value1<=0.0 || value2<0) return false;
-	BeaconPath *bp=(BeaconPath *)usrdata;
-	bp->SetSize(value1);
-	bp->SetFallOff(value2);	
-	return true;
-}
-
-bool clbkBeaconFallOffInput (void *id, char *str, void *usrdata)
-{
-	double value1, value2, value3, value4;
-	sscanf(str, "%lf %lf %lf %lf", &value1, &value2, &value3, &value4);
-	BeaconPath *bp=(BeaconPath *)usrdata;
-	bp->SetPeriod(value1);
-	bp->SetDuration(value2);
-	bp->SetPropagate(value3);
-	bp->SetOffset(value4);
-	return true;
-}
-
 // Process buffered key events
 int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 {
-	char inputBoxBuffer[81], inputBoxTitle[81];
-	
 	if (!down) return 0; // only process keydown events
 	if (Playback()) return 0; // don't allow manual user input during a playback
 
 	if (KEYMOD_SHIFT (kstate)) {
 	} else if (KEYMOD_CONTROL (kstate)) {
 		switch (key) {
-		case OAPI_KEY_SPACE: // open control dialog
-			oapiOpenDialogEx (g_Param.hDLL, IDD_CTRL, Ctrl_DlgProc, DLG_CAPTIONCLOSE, this);
+		case OAPI_KEY_SPACE: // dummy key
 			return 1;
 		}
 	} else {
@@ -816,12 +725,5 @@ void UpdateCtrlDialog (AscensionUltra *dg, HWND hWnd)
 
 	op = dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->GetPosition()==0.0?0:1;
 	SendDlgItemMessage (hWnd, IDC_OLOCK_OPEN, BM_SETCHECK, bstatus[op], 0);
-	SendDlgItemMessage (hWnd, IDC_OLOCK_CLOSE, BM_SETCHECK, bstatus[1-op], 0);
-
-	op = dg->beacon[0].active ? 1:0;
-	SendDlgItemMessage (hWnd, IDC_NAVLIGHT, BM_SETCHECK, bstatus[op], 0);
-	op = dg->beacon[3].active ? 1:0;
-	SendDlgItemMessage (hWnd, IDC_BEACONLIGHT, BM_SETCHECK, bstatus[op], 0);
-	op = dg->beacon[5].active ? 1:0;
-	SendDlgItemMessage (hWnd, IDC_STROBELIGHT, BM_SETCHECK, bstatus[op], 0);
+	SendDlgItemMessage (hWnd, IDC_OLOCK_CLOSE, BM_SETCHECK, bstatus[1-op], 0);	
 }
