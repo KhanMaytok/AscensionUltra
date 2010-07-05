@@ -51,6 +51,7 @@ public:
 
 	virtual Hangar *GetHangar(HangarType type, int index);
 	virtual int GetHangars(HangarType type);
+	virtual BeaconLinks *GetTaxiways();
 	
 private:
 	void MoveGroup(int mesh, VECTOR3 v);

@@ -120,6 +120,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HangarType::TurnAround);
 	case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();		
 	case AscensionTowerState::DoorControl: return 3;
+	case AscensionTowerState::TaxiRouteSelection: return ascension->GetTaxiways()->GetPoints();
 	}
 	return 0;
 }
@@ -150,6 +151,10 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::HangarForCraneSelection:
 		item.Index=index;
 		item.Name=ascension->GetHangar(HangarType::TurnAround, index)->GetName();
+		return item;
+	case AscensionTowerState::TaxiRouteSelection:
+		item.Index=index;
+		item.Name=ascension->GetTaxiways()->GetPoint(index);
 		return item;
 	}
 	return nullItem;

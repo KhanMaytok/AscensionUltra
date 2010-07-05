@@ -17,10 +17,12 @@ public:
 	void Add(BeaconPath *beaconPath, const char *start, const char *end, bool inversed);
 	void Clear();
 	void Switch(const char *start, const char *end, bool on);
-	void SwitchAll(const char *point, bool isEnd, bool on);
+	void SwitchAll(const char *point, bool on, bool isEnd=false);
 	bool On(const char *start, const char *end);
-	bool AnyOn(const char *point, bool isEnd);
-
+	bool AnyOn(const char *point, bool isEnd=false);
+	virtual int GetPoints(bool isEnd=false, char *fromPoint=NULL);
+	virtual char *GetPoint(int index, bool isEnd=false, char *fromPoint=NULL);
+	
 private:	
 	std::map<const char *, std::map<const char *, BeaconLink *>> links;
 	std::map<const char *, std::map<const char *, BeaconLink *>> reverse;

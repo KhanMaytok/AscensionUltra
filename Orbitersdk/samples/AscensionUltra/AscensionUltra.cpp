@@ -560,6 +560,8 @@ Hangar *AscensionUltra::GetHangar(HangarType type, int index)
 	return NULL;
 }
 
+BeaconLinks *AscensionUltra::GetTaxiways(){return &taxiways;}
+
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
 {

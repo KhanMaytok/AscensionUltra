@@ -66,7 +66,7 @@ bool BeaconLinks::On(const char *start, const char *end)
 	return link->Path->On(); 
 }
 
-void BeaconLinks::SwitchAll(const char *point, bool isEnd, bool on)
+void BeaconLinks::SwitchAll(const char *point, bool on, bool isEnd)
 {
 	std::map<const char *, BeaconLink *> *points=isEnd?GetStarts(point):GetEnds(point);
 	if (points==NULL) return;
@@ -79,4 +79,37 @@ bool BeaconLinks::AnyOn(const char *point, bool isEnd)
 	if (points==NULL) return false;
 	for (std::map<const char *, BeaconLink *>::iterator i=points->begin();i!=points->end();i++) if (i->second->Path->On()) return true;
 	return false;
+}
+
+int BeaconLinks::GetPoints(bool isEnd, char *fromPoint)
+{
+	if (fromPoint==NULL) return isEnd?reverse.size():links.size();
+	return isEnd?GetStarts(fromPoint)->size():GetEnds(fromPoint)->size();
+}
+
+char *BeaconLinks::GetPoint(int index, bool isEnd, char *fromPoint)
+{
+	int points=GetPoints(isEnd, fromPoint);
+	if (index<0 || index>=points) return NULL;
+	if (fromPoint==NULL)
+	{
+		if (index<points/2)
+		{
+			std::map<const char *, std::map<const char *, BeaconLink *>>::iterator i;
+			for(i=isEnd?reverse.begin():links.begin();index>0;index--) i++;
+			return (char *)i->first;
+		}
+		std::map<const char *, std::map<const char *, BeaconLink *>>::reverse_iterator i;
+		for(i=isEnd?reverse.rbegin():links.rbegin();index<points-1;index++) i++;
+		return (char *)i->first;
+	}
+	if (index<points/2)
+	{
+		std::map<const char *, BeaconLink *>::iterator i;
+		for(i=isEnd?GetStarts(fromPoint)->begin():GetEnds(fromPoint)->begin();index>0;index--) i++;
+		return (char *)i->first;
+	}
+	std::map<const char *, BeaconLink *>::reverse_iterator i;		
+	for(i=isEnd?GetStarts(fromPoint)->rbegin():GetEnds(fromPoint)->rbegin();index<points-1;index++) i++;
+	return (char *)i->first;		
 }
