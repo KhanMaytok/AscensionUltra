@@ -315,9 +315,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	taxiways.Add(&taxiwayPath[27], points[7], points[8], false);
 	taxiways.Add(&taxiwayPath[31], points[8], points[7], false);
 
-	for(int i=0;i<RUNWAYENDPOINTS;i++) taxiways.SwitchAll(points[i], false, true);
-	for(int i=0;i<RUNWAYPATHS;i++) runwayPath[i].Switch(true);
-
 	DefineAnimations();
 
 	cur_TurnAround=-1;

@@ -3,7 +3,7 @@
 #include "AscensionUltra.h"
 #include "orbitersdk.h"
 
-#define STATES 18
+#define STATES 19
 
 typedef enum AscensionTowerState
 {
@@ -15,7 +15,8 @@ typedef enum AscensionTowerState
 	RoomSelection,
 	HangarForDoorSelection,
 	DoorSelection,
-	TaxiRouteSelection,
+	TaxiRouteStartSelection,
+	TaxiRouteEndSelection,
 	HangarForCraneSelection,
 	PassengerTerminal,
 	Fueling,

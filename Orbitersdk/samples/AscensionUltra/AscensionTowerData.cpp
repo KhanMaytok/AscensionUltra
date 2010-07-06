@@ -120,7 +120,8 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HangarType::TurnAround);
 	case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();		
 	case AscensionTowerState::DoorControl: return 3;
-	case AscensionTowerState::TaxiRouteSelection: return ascension->GetTaxiways()->GetPoints();
+	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
+	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
 	}
 	return 0;
 }
@@ -131,8 +132,11 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	static AscensionTowerListPair groundMenu[4]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"}};
 	static AscensionTowerListPair atcMenu[3]={{0," Request Bearing"},{1," Request Clearance to Land"},{2," Request Launch Clearance"}};
 	static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};
+	static char text[57];
+
 	AscensionTowerListPair nullItem={0,""};	
 	AscensionTowerListPair item;
+	
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect: return scanList[index];
@@ -152,9 +156,23 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		item.Index=index;
 		item.Name=ascension->GetHangar(HangarType::TurnAround, index)->GetName();
 		return item;
-	case AscensionTowerState::TaxiRouteSelection:
+	case AscensionTowerState::TaxiRouteStartSelection:
 		item.Index=index;
-		item.Name=ascension->GetTaxiways()->GetPoint(index);
+		{
+			BeaconLinks *t=ascension->GetTaxiways();
+			item.Name=t->GetPoint(index);
+			sprintf(text, "%c %s", t->AnyOn(item.Name)?'*':' ', item.Name);
+		}
+		item.Name=text;
+		return item;
+	case AscensionTowerState::TaxiRouteEndSelection:
+		item.Index=index;
+		{
+			BeaconLinks *t=ascension->GetTaxiways();
+			item.Name=t->GetPoint(index, false, (char *)object[state]);
+			sprintf(text, "%c %s", t->On((char *)object[state], item.Name)?'*':' ', item.Name);
+		}
+		item.Name=text;
 		return item;
 	}
 	return nullItem;
@@ -197,7 +215,7 @@ void AscensionTowerData::Select()
 		switch(selection[state])
 		{
 		case 0: SetState(AscensionTowerState::HangarForDoorSelection); break;
-		case 1: SetState(AscensionTowerState::TaxiRouteSelection); break;
+		case 1: SetState(AscensionTowerState::TaxiRouteStartSelection); break;
 		case 2: SetState(AscensionTowerState::HangarForCraneSelection); break;
 		case 3: SetState(AscensionTowerState::PassengerTerminal); break;
 		}		
@@ -231,6 +249,16 @@ void AscensionTowerData::Select()
 		case 1: ((Door *)object[state])->Close(); break;
 		case 2: ((Door *)object[state])->Stop(); break;
 		}		
+		break;
+	case AscensionTowerState::TaxiRouteStartSelection:
+		object[AscensionTowerState::TaxiRouteEndSelection]=ascension->GetTaxiways()->GetPoint(selectedIndex[state]);
+		SetState(AscensionTowerState::TaxiRouteEndSelection);
+		break;
+	case AscensionTowerState::TaxiRouteEndSelection:
+		BeaconLinks *t=ascension->GetTaxiways();
+		char *start=(char *)object[AscensionTowerState::TaxiRouteEndSelection];
+		char *end=t->GetPoint(selectedIndex[state], false, start);
+		t->Switch(start, end, !t->On(start,end));
 		break;
 	}
 }
@@ -304,7 +332,8 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	case AscensionTowerState::HangarForRoomSelection:
 	case AscensionTowerState::HangarForDoorSelection: target="hangar"; break;
 	case AscensionTowerState::DoorSelection: target="door"; break;
-	case AscensionTowerState::TaxiRouteSelection: target="route"; break;
+	case AscensionTowerState::TaxiRouteStartSelection: target="route start"; break;
+	case AscensionTowerState::TaxiRouteEndSelection: target="route end"; break;
 	case AscensionTowerState::LandingRunwaySelection: target="runway"; break;
 	case AscensionTowerState::RoomSelection: target="room"; break;
 	case AscensionTowerState::DoorControl: target="command"; break;
@@ -566,7 +595,8 @@ char *AscensionTowerData::GetTitle()
 	case AscensionTowerState::GroundMenu:
 	case AscensionTowerState::HangarForDoorSelection:
 	case AscensionTowerState::DoorSelection:
-	case AscensionTowerState::TaxiRouteSelection:
+	case AscensionTowerState::TaxiRouteStartSelection:
+	case AscensionTowerState::TaxiRouteEndSelection:
 	case AscensionTowerState::HangarForCraneSelection:
 	case AscensionTowerState::PassengerTerminal:
 	case AscensionTowerState::Fueling:
@@ -600,7 +630,7 @@ char *AscensionTowerData::GetSubtitle()
 	case AscensionTowerState::ATCMenu: return "Select ATC request";	
 	case AscensionTowerState::HangarForDoorSelection: return "Select Hangar for Roll-in/Roll-out";	
 	case AscensionTowerState::DoorSelection: return "Select Door for Roll-in/Roll-out";	
-	case AscensionTowerState::TaxiRouteSelection: return "Select Taxi Route";	
+	case AscensionTowerState::TaxiRouteStartSelection: return "Select Taxi Route Start";
 	case AscensionTowerState::HangarForCraneSelection: return "Select Hangar for Cargo Crane";	
 	case AscensionTowerState::PassengerTerminal: return "Passenger Terminal";	
 	case AscensionTowerState::Fueling: return "Fueling";	
@@ -610,6 +640,10 @@ char *AscensionTowerData::GetSubtitle()
 	case AscensionTowerState::Launch: return "Request Launch Clearance";	
 	case AscensionTowerState::HangarForRoomSelection: return "Select Hangar for Control Room";
 	case AscensionTowerState::RoomSelection: return "Select Control Room";
+	case AscensionTowerState::TaxiRouteEndSelection:
+		sprintf(subtitle, "Taxi from %s to",
+			(char *)object[state]);
+		return subtitle;
 	case AscensionTowerState::DoorControl:
 		sprintf(subtitle, "%s -> %s",
 			((Hangar *)object[AscensionTowerState::DoorSelection])->GetName(),
@@ -634,7 +668,8 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::HangarForDoorSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::DoorSelection: SetState(AscensionTowerState::HangarForDoorSelection);break;
 	case AscensionTowerState::DoorControl: SetState(AscensionTowerState::DoorSelection);break;
-	case AscensionTowerState::TaxiRouteSelection: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::TaxiRouteStartSelection: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::TaxiRouteEndSelection: SetState(AscensionTowerState::TaxiRouteStartSelection);break;
 	case AscensionTowerState::HangarForCraneSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::CraneControl: SetState(AscensionTowerState::HangarForCraneSelection);break;
 	case AscensionTowerState::PassengerTerminal: SetState(AscensionTowerState::GroundMenu);break;
