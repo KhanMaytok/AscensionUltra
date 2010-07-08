@@ -151,6 +151,15 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	taxiwayPath[34].Add(&taxiwaySubsection[28]);	taxiwayPath[34].Add(&taxiwaySubsection[27]);	taxiwayPath[34].Add(&taxiwaySubsection[4]);	taxiwayPath[34].Add(&taxiwaySubsection[3]);					
 	taxiwayPath[35].Add(&taxiwaySubsection[28]);	taxiwayPath[35].Add(&taxiwaySubsection[27]);	taxiwayPath[35].Add(&taxiwaySubsection[26]);	taxiwayPath[35].Add(&taxiwaySubsection[19]);	taxiwayPath[35].Add(&taxiwaySubsection[4]);	taxiwayPath[35].Add(&taxiwaySubsection[3]);
 
+	for(int i=0;i<TAXIWAYPATHS;i++)
+	{
+		taxiwayPath[i].SetPeriod(2);
+		taxiwayPath[i].SetDuration(0.3);
+		taxiwayPath[i].SetPropagate(-0.2);
+		taxiwayPath[i].SetSize(1.4);
+		taxiwayPath[i].SetFallOff(0.8);
+	}
+
 	VECTOR3 runwayLines[MAXSTATICRUNWAYLINES][2]=
 	{
 		//Generated lines by Excel - last comma removed
@@ -250,12 +259,24 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	runwayPath[0].Init(this, (VECTOR3 *)runwayLines, _V(1,1,1), runwayBeacons, MAXSTATICRUNWAYLINES);
 	runwayPath[1].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=0;i<14;i++) runwayPath[1].Add(&runwaySubsection[i]);
+	runwaySubsection[13].SetPeriod(3);
+	runwaySubsection[13].SetDuration(0.2);
+	runwaySubsection[13].SetPropagate(-0.15);
 	runwayPath[2].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=14;i<28;i++) runwayPath[2].Add(&runwaySubsection[i]);
+	runwaySubsection[27].SetPeriod(3);
+	runwaySubsection[27].SetDuration(0.2);
+	runwaySubsection[27].SetPropagate(-0.15);
 	runwayPath[3].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=28;i<42;i++) runwayPath[3].Add(&runwaySubsection[i]);
+	runwaySubsection[41].SetPeriod(3);
+	runwaySubsection[41].SetDuration(0.2);
+	runwaySubsection[41].SetPropagate(-0.15);
 	runwayPath[4].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=42;i<56;i++) runwayPath[4].Add(&runwaySubsection[i]);
+	runwaySubsection[55].SetPeriod(3);
+	runwaySubsection[55].SetDuration(0.2);
+	runwaySubsection[55].SetPropagate(-0.15);
 
 	static char *points[RUNWAYENDPOINTS]=
 	{
