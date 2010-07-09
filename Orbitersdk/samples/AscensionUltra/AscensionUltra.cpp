@@ -153,7 +153,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	for(int i=0;i<TAXIWAYPATHS;i++)
 	{
-		taxiwayPath[i].SetPeriod(2);
+		taxiwayPath[i].SetPeriod(-2);
 		taxiwayPath[i].SetDuration(0.3);
 		taxiwayPath[i].SetPropagate(-0.2);
 		taxiwayPath[i].SetSize(1.4);
