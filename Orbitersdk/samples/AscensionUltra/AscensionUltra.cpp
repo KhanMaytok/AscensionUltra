@@ -29,6 +29,7 @@
 #define LS1MATRIXOFFSET _V(70,0,0)
 #define MAXSTATICRUNWAYLINES 14
 #define RUNWAYENDPOINTS 9
+#define LFMC1OFFSET _V(-1462.7,0,1260.2)
 
 // ==============================================================
 // Global parameters
@@ -404,6 +405,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<12;i++) SetMeshVisibilityMode (AddMesh (meshLightStorage, &(OFFSET+LS1OFFSET+LS1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshLaunch = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC1"), &(OFFSET+LFMC1OFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 
 }

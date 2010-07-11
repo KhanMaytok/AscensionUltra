@@ -59,7 +59,7 @@ private:
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
-	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLightStorage;
+	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLightStorage, meshLaunch;
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LightStorageHangar lightStorage[LIGHTSTORAGEHANGARS];
 	BeaconArray taxiwaySubsection[TAXIWAYSUBSECTIONS];
