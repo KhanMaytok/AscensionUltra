@@ -73,6 +73,11 @@ private:
 	
 	int cur_TurnAround, cur_LightStorage;
 
+	//DEBUG
+
+	int cur_Path;
+	int cur_Section;
+
 };
 
 typedef struct {
