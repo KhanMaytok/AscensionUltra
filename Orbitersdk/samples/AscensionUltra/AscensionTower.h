@@ -26,6 +26,7 @@ public:
 	static int MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
 private:
 	AscensionTowerData *data;
+	AscensionUltra *ascension;
 	float width, height;
 	int mfdWidth, mfdHeight;
 	HDC hDC;
@@ -33,6 +34,8 @@ private:
 	bool SelectionConsumeKeyBuffered(DWORD key);
 	bool SelectionConsumeButton(int bt);
 	void RenderSelectionPage();
+	void RenderDoorControlPage();
+	void RenderCraneControlPage();
 };
 
 std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;

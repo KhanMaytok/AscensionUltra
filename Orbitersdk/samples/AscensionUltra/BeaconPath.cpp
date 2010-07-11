@@ -16,6 +16,7 @@ void BeaconPath::Init(VESSEL *owner, VECTOR3 *arrays, VECTOR3 &color, int *beaco
 {
 	Clear();
 	offset=0;
+	on=false;
 	for(int i=0;i<length;i++)
 	{
 		BeaconArray *ba=new BeaconArray();
@@ -32,13 +33,17 @@ void BeaconPath::SetColor(VECTOR3 &color){ for(std::list<BeaconArray *>::iterato
 void BeaconPath::SetShape(DWORD shape){ for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->SetShape(shape); }
 void BeaconPath::SetSize(double size){ for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->SetSize(size); }
 void BeaconPath::SetFallOff(double falloff){ for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->SetFallOff(falloff); }
-void BeaconPath::Switch(bool on){ for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->Switch(on); }
+void BeaconPath::Switch(bool on)
+{
+	for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->Switch(on);
+	this->on=on;
+}
 
 void BeaconPath::GetColor(VECTOR3 &color) { if (arrays.empty()) color=_V(0,0,0); else arrays.front()->GetColor(color); }
 DWORD BeaconPath::GetShape() { return arrays.empty()?0:arrays.front()->GetShape(); }
 double BeaconPath::GetSize() { return arrays.empty()?0:arrays.front()->GetSize(); }
 double BeaconPath::GetFallOff() { return arrays.empty()?0:arrays.front()->GetFallOff(); }
-bool BeaconPath::On() { return arrays.empty()?0:arrays.front()->On(); }
+bool BeaconPath::On() { return on; }
 
 void BeaconPath::SetPeriod(double period){ CalculateStrobe(period, GetDuration(), GetPropagate()); }
 double BeaconPath::GetPeriod() { return arrays.empty()?0:arrays.front()->GetPeriod(); }

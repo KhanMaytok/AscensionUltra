@@ -115,6 +115,25 @@ Access Door Upper 1.81m transition +Y axis
 70m
 
 
+**************************************************************** Launch Facility & Mission Control
+1 mesh
+
+** Y-axis curviture compensation adjustment **
+TBC
+
+**Offset vector for hangar L1 (rightmost)
+1462.7,0,1260.2
+
+** Relevant Mesh Groups **
+TBC
+
+** Door Animations **
+TBC
+
+** Spacing between hangars **
+N/A
+
+
 ****************************************************************PLACE HOLDER
 ** Offset-vector
 0,0,0

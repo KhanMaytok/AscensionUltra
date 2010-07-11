@@ -10,6 +10,7 @@ AscensionTowerData::AscensionTowerData(void)
 		page[i]=0;
 		selection[i]=0;
 		selectedIndex[i]=0;
+		object[i]=NULL;
 	}
 	state=AscensionTowerState::MainMenu;
 }
@@ -34,16 +35,25 @@ AscensionUltra *AscensionTowerData::GetAscension()
 	{
 		if (strcmp(i->Name, ascensionName)==0)
 		{
-			if (detected>=0) return NULL; //Name is not unique
+			if (detected>=0)
+			{
+				SetState(AscensionTowerState::BaseSelect);
+				return ascension=NULL; //Name is not unique
+			}
 			detected=i->Index;			
 		}
 	}
 	if (detected<0)
 	{
-		if (scanList.size()!=1) return NULL;
+		if (scanList.size()!=1)
+		{
+			SetState(AscensionTowerState::BaseSelect);
+			return ascension=NULL;
+		}
 		detected=scanList.begin()->Index;
 	}
-	SetAscension(detected);	
+	SetAscension(detected);
+	SetState(ascension==NULL?AscensionTowerState::BaseSelect:AscensionTowerState::MainMenu);
 	return ascension;
 }
 
@@ -106,9 +116,12 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::MainMenu: return 3;
 	case AscensionTowerState::GroundMenu: return 4;
 	case AscensionTowerState::ATCMenu: return 3;
-	case AscensionTowerState::HangarForDoorSelection: return ascension->GetHangars();
-	case AscensionTowerState::DoorSelection: return ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoors();		
+	case AscensionTowerState::HangarForDoorSelection: return ascension->GetHangars(HangarType::TurnAround)+ascension->GetHangars(HangarType::LightStorage);
+	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HangarType::TurnAround);
+	case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();		
 	case AscensionTowerState::DoorControl: return 3;
+	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
+	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
 	}
 	return 0;
 }
@@ -119,8 +132,11 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	static AscensionTowerListPair groundMenu[4]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"}};
 	static AscensionTowerListPair atcMenu[3]={{0," Request Bearing"},{1," Request Clearance to Land"},{2," Request Launch Clearance"}};
 	static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};
+	static char text[57];
+
 	AscensionTowerListPair nullItem={0,""};	
 	AscensionTowerListPair item;
+	
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect: return scanList[index];
@@ -130,11 +146,33 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::DoorControl: return doorMenu[index];
 	case AscensionTowerState::HangarForDoorSelection:
 		item.Index=index;
-		item.Name=ascension->GetHangar(index)->GetName();
+		item.Name=ascension->GetHangar(index<5?HangarType::TurnAround:HangarType::LightStorage, index<5?index:index-5)->GetName();
 		return item;
 	case AscensionTowerState::DoorSelection:
 		item.Index=index;
-		item.Name=ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(index)->GetName();
+		item.Name=((Hangar *)object[state])->GetDoor(index)->GetName();
+		return item;
+	case AscensionTowerState::HangarForCraneSelection:
+		item.Index=index;
+		item.Name=ascension->GetHangar(HangarType::TurnAround, index)->GetName();
+		return item;
+	case AscensionTowerState::TaxiRouteStartSelection:
+		item.Index=index;
+		{
+			BeaconLinks *t=ascension->GetTaxiways();
+			item.Name=t->GetPoint(index);
+			sprintf(text, "%c %s", t->AnyOn(item.Name)?'*':' ', item.Name);
+		}
+		item.Name=text;
+		return item;
+	case AscensionTowerState::TaxiRouteEndSelection:
+		item.Index=index;
+		{
+			BeaconLinks *t=ascension->GetTaxiways();
+			item.Name=t->GetPoint(index, false, (char *)object[state]);
+			sprintf(text, "%c %s", t->On((char *)object[state], item.Name)?'*':' ', item.Name);
+		}
+		item.Name=text;
 		return item;
 	}
 	return nullItem;
@@ -158,6 +196,7 @@ void AscensionTowerData::SetState(AscensionTowerState state)
 void AscensionTowerData::Select()
 {
 	selectedIndex[state]=GetListItem(page[state]*6+selection[state]).Index;
+	int index;
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
@@ -176,7 +215,7 @@ void AscensionTowerData::Select()
 		switch(selection[state])
 		{
 		case 0: SetState(AscensionTowerState::HangarForDoorSelection); break;
-		case 1: SetState(AscensionTowerState::TaxiRouteSelection); break;
+		case 1: SetState(AscensionTowerState::TaxiRouteStartSelection); break;
 		case 2: SetState(AscensionTowerState::HangarForCraneSelection); break;
 		case 3: SetState(AscensionTowerState::PassengerTerminal); break;
 		}		
@@ -190,18 +229,36 @@ void AscensionTowerData::Select()
 		}		
 		break;
 	case AscensionTowerState::HangarForDoorSelection:
-		SetState(AscensionTowerState::DoorSelection);
+		index=selectedIndex[state];
+		object[AscensionTowerState::DoorSelection]=ascension->GetHangar(index<5?HangarType::TurnAround:HangarType::LightStorage, index<5?index:index-5);
+		SetState(AscensionTowerState::DoorSelection);		
 		break;
 	case AscensionTowerState::DoorSelection:
+		object[AscensionTowerState::DoorControl]=((Hangar *)object[state])->GetDoor(selectedIndex[state]);
 		SetState(AscensionTowerState::DoorControl);
+		break;
+	case AscensionTowerState::HangarForCraneSelection:
+		object[state]=ascension->GetHangar(HangarType::TurnAround, selectedIndex[state]);
+		object[AscensionTowerState::CraneControl]=((TurnAroundHangar *)object[state])->GetCrane();
+		SetState(AscensionTowerState::CraneControl);
 		break;
 	case AscensionTowerState::DoorControl:
 		switch(selection[state])
 		{
-		case 0: ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection])->Open(); break;
-		case 1: ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection])->Close(); break;
-		case 2: ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection])->Stop(); break;
+		case 0: ((Door *)object[state])->Open(); break;
+		case 1: ((Door *)object[state])->Close(); break;
+		case 2: ((Door *)object[state])->Stop(); break;
 		}		
+		break;
+	case AscensionTowerState::TaxiRouteStartSelection:
+		object[AscensionTowerState::TaxiRouteEndSelection]=ascension->GetTaxiways()->GetPoint(selectedIndex[state]);
+		SetState(AscensionTowerState::TaxiRouteEndSelection);
+		break;
+	case AscensionTowerState::TaxiRouteEndSelection:
+		BeaconLinks *t=ascension->GetTaxiways();
+		char *start=(char *)object[AscensionTowerState::TaxiRouteEndSelection];
+		char *end=t->GetPoint(selectedIndex[state], false, start);
+		t->Switch(start, end, !t->On(start,end));
 		break;
 	}
 }
@@ -209,19 +266,41 @@ void AscensionTowerData::Select()
 // Return button labels
 char *AscensionTowerData::GetButtonLabel (int bt)
 {
-	int size=GetListSize();
-	switch (bt)
+	switch(state)
 	{
-		case 6: return size>0?"SEL":"";
-		case 7: return size>1?"UP":"";
-		case 8: return size>1?"DWN":"";
-		case 9: return size>6?"NXT":"";
-		case 10: return size>6?"PRV":"";
-		case 11: return (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"BAS":"BCK";
-		default: return size>page[state]*6+bt?" > ":"";
+	case AscensionTowerState::CraneControl:
+		switch (bt)
+		{
+			case 0: return "X+";
+			case 1: return "X-";
+			case 2: return "Y+";
+			case 3: return "Y-";
+			case 4: return "Z+";
+			case 5: return "Z-";
+			case 6: return "STP";
+			case 7: return "SPD";
+			case 8: return "CWL";
+			case 9: return "DIR";
+			case 10: return "LST";
+			case 11: return "BCK";
+		}
+		return NULL;
+	default:
+		int size=GetListSize();
+		switch (bt)
+		{
+			case 6: return size>0?"SEL":"";
+			case 7: return size>1?"UP":"";
+			case 8: return size>1?"DWN":"";
+			case 9: return size>6?"NXT":"";
+			case 10: return size>6?"PRV":"";
+			case 11: return (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"BAS":"BCK";
+			default: return size>page[state]*6+bt?" > ":"";
+		}
+		return NULL;
 	}
-	return NULL;
 }
+
 
 // Return button menus
 int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
@@ -229,6 +308,19 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	static char select[20];
 	static char marked[20];
 	static char *target;
+	static MFDBUTTONMENU craneControlMenu[12] = {
+		{"Move X axis", "pos. by step", 'A'},
+		{"Move X axis", "neg. by step", 'D'},
+		{"Move Y axis", "pos. by step", 'W'},
+		{"Move Y axis", "neg. by step", 'S'},
+		{"Move Z axis", "up by step", 'Q'},
+		{"Move Z axis", "down by step", 'E'},
+		{"Toggle step", "size", 'R'},
+		{"Set speed", NULL, 'F'},
+		{"Set crawl", NULL, 'V'},
+		{"Direct key", "command", 'C'},
+		{"Goto list", "page", 'X'},
+		{"Go back", NULL, 'B'}};
 
 	switch(state)
 	{	
@@ -240,10 +332,14 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	case AscensionTowerState::HangarForRoomSelection:
 	case AscensionTowerState::HangarForDoorSelection: target="hangar"; break;
 	case AscensionTowerState::DoorSelection: target="door"; break;
-	case AscensionTowerState::TaxiRouteSelection: target="route"; break;
+	case AscensionTowerState::TaxiRouteStartSelection: target="route start"; break;
+	case AscensionTowerState::TaxiRouteEndSelection: target="route end"; break;
 	case AscensionTowerState::LandingRunwaySelection: target="runway"; break;
 	case AscensionTowerState::RoomSelection: target="room"; break;
 	case AscensionTowerState::DoorControl: target="command"; break;
+	case AscensionTowerState::CraneControl:
+		for(int i=0;i<12;i++) mnu[i]=craneControlMenu[i];
+		return 12;
 	}
 	sprintf(select, "Select %s", target);
 	sprintf(marked, "marked %s", target);
@@ -315,21 +411,43 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 // Handling button presses
 bool AscensionTowerData::SetButton(int bt)
 {
-	switch(bt)
+	switch(state)
 	{
-	case 0:
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-	case 5: return SetKey(OAPI_KEY_1+bt);
-	case 6: return SetKey(OAPI_KEY_S);
-	case 7: return SetKey(OAPI_KEY_U);
-	case 8: return SetKey(OAPI_KEY_D);
-	case 9: return SetKey(OAPI_KEY_N);
-	case 10: return SetKey(OAPI_KEY_P);
-	case 11: return SetKey(OAPI_KEY_B);	
-	}		
+	case AscensionTowerState::CraneControl:
+		switch(bt)
+		{
+		case 0: return SetKey(OAPI_KEY_A);
+		case 1: return SetKey(OAPI_KEY_D);
+		case 2: return SetKey(OAPI_KEY_W);
+		case 3: return SetKey(OAPI_KEY_S);
+		case 4: return SetKey(OAPI_KEY_Q);
+		case 5: return SetKey(OAPI_KEY_E);
+		case 6: return SetKey(OAPI_KEY_R);
+		case 7: return SetKey(OAPI_KEY_F);
+		case 8: return SetKey(OAPI_KEY_V);
+		case 9: return SetKey(OAPI_KEY_C);
+		case 10: return SetKey(OAPI_KEY_X);
+		case 11: return SetKey(OAPI_KEY_B);	
+		}
+		break;
+	default:
+		switch(bt)
+		{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5: return SetKey(OAPI_KEY_1+bt);
+		case 6: return SetKey(OAPI_KEY_S);
+		case 7: return SetKey(OAPI_KEY_U);
+		case 8: return SetKey(OAPI_KEY_D);
+		case 9: return SetKey(OAPI_KEY_N);
+		case 10: return SetKey(OAPI_KEY_P);
+		case 11: return SetKey(OAPI_KEY_B);	
+		}
+		break;
+	}
 	return false;
 }
 
@@ -339,71 +457,111 @@ bool AscensionTowerData::SetKey(DWORD key)
 	bool result=true;
 	int size=GetListSize();
 	int pages=(size+5)/6;
-	switch(key)
-	{	
-	case OAPI_KEY_N://Next page
-		if (size>6)
+	switch(state)
+	{
+	case AscensionTowerState::CraneControl:
+		switch(key)
 		{
-			if (page[state]<pages-1) page[state]++;
-			else page[state]=0;
-			selection[state]=0;
+		case OAPI_KEY_A:
+			break;
+		case OAPI_KEY_D:
+			break;
+		case OAPI_KEY_W:
+			break;
+		case OAPI_KEY_S:
+			break;
+		case OAPI_KEY_Q:
+			break;
+		case OAPI_KEY_E:
+			break;
+		case OAPI_KEY_R:
+			break;
+		case OAPI_KEY_F:
+			break;
+		case OAPI_KEY_V:
+			break;
+		case OAPI_KEY_C:
+			((Crane*)GetObject())->StartManual();
+			break;
+		case OAPI_KEY_X:			
+			break;
+		case OAPI_KEY_B:
+			Back();
+			break;
+		default:
+			result=false;
+			break;
 		}
-		else result=false;		
-		break;
-	case OAPI_KEY_P://Previous page
-		if (size>6)
-		{
-			if (page[state]>0) page[state]--;
-			else page[state]=pages-1;
-			selection[state]=min(size-page[state]*6, 6)-1;
-		}
-		else result=false;		
-		break;
-	case OAPI_KEY_U://Selection up
-		if (size>1)
-		{
-			if (selection[state]>0) selection[state]--;
-			else
+		return result;
+		
+	default:
+		switch(key)
+		{	
+		case OAPI_KEY_N://Next page
+			if (size>6)
 			{
-				SetKey(OAPI_KEY_P);
-				selection[state]=min(size-page[state]*6, 6)-1;
-			}
-		}
-		else result=false;
-		break;
-	case OAPI_KEY_D://Selection down
-		if (size>1)
-		{
-			if (selection[state]<min(size-page[state]*6, 6)-1) selection[state]++;
-			else
-			{
-				SetKey(OAPI_KEY_N);
+				if (page[state]<pages-1) page[state]++;
+				else page[state]=0;
 				selection[state]=0;
 			}
-		}
-		else result=false;
-		break;
-	case OAPI_KEY_S://Select
-		if (size>0) Select();
-		else result=false;
-		break;
-	case OAPI_KEY_B://Go back/Scan for bases
-		Back();
-		break;
-	default:
-		if (key>=OAPI_KEY_1 && key<=OAPI_KEY_6)
-		{
-			int bt=key-OAPI_KEY_1;
-			if (bt<min(size-page[state]*6, 6))
+			else result=false;		
+			break;
+		case OAPI_KEY_P://Previous page
+			if (size>6)
 			{
-				selection[state]=bt;
-				Select();
+				if (page[state]>0) page[state]--;
+				else page[state]=pages-1;
+				selection[state]=min(size-page[state]*6, 6)-1;
+			}
+			else result=false;		
+			break;
+		case OAPI_KEY_U://Selection up
+			if (size>1)
+			{
+				if (selection[state]>0) selection[state]--;
+				else
+				{
+					SetKey(OAPI_KEY_P);
+					selection[state]=min(size-page[state]*6, 6)-1;
+				}
+			}
+			else result=false;
+			break;
+		case OAPI_KEY_D://Selection down
+			if (size>1)
+			{
+				if (selection[state]<min(size-page[state]*6, 6)-1) selection[state]++;
+				else
+				{
+					SetKey(OAPI_KEY_N);
+					selection[state]=0;
+				}
+			}
+			else result=false;
+			break;
+		case OAPI_KEY_S://Select
+			if (size>0) Select();
+			else result=false;
+			break;
+		case OAPI_KEY_B://Go back/Scan for bases
+			Back();
+			break;
+		default:
+			if (key>=OAPI_KEY_1 && key<=OAPI_KEY_6)
+			{
+				int bt=key-OAPI_KEY_1;
+				if (bt<min(size-page[state]*6, 6))
+				{
+					selection[state]=bt;
+					Select();
+				}
+				else result=false;
 			}
 			else result=false;
 		}
-		else result=false;
+		return result;
 	}
-	return result;
+	return false;
 }
 
 char *AscensionTowerData::GetNameSafeTitle(char *title, char *trailer)
@@ -437,12 +595,14 @@ char *AscensionTowerData::GetTitle()
 	case AscensionTowerState::GroundMenu:
 	case AscensionTowerState::HangarForDoorSelection:
 	case AscensionTowerState::DoorSelection:
-	case AscensionTowerState::TaxiRouteSelection:
+	case AscensionTowerState::TaxiRouteStartSelection:
+	case AscensionTowerState::TaxiRouteEndSelection:
 	case AscensionTowerState::HangarForCraneSelection:
 	case AscensionTowerState::PassengerTerminal:
 	case AscensionTowerState::Fueling:
 	case AscensionTowerState::LaunchTunnel:
 	case AscensionTowerState::DoorControl:
+	case AscensionTowerState::CraneControl:
 		return GetNameSafeTitle(title, ground);	
 	case AscensionTowerState::ATCMenu:
 	case AscensionTowerState::Bearing:
@@ -470,20 +630,28 @@ char *AscensionTowerData::GetSubtitle()
 	case AscensionTowerState::ATCMenu: return "Select ATC request";	
 	case AscensionTowerState::HangarForDoorSelection: return "Select Hangar for Roll-in/Roll-out";	
 	case AscensionTowerState::DoorSelection: return "Select Door for Roll-in/Roll-out";	
-	case AscensionTowerState::TaxiRouteSelection: return "Select Taxi Route";	
-	case AscensionTowerState::HangarForCraneSelection: return "Select Hangar for Cargo";	
+	case AscensionTowerState::TaxiRouteStartSelection: return "Select Taxi Route Start";
+	case AscensionTowerState::HangarForCraneSelection: return "Select Hangar for Cargo Crane";	
 	case AscensionTowerState::PassengerTerminal: return "Passenger Terminal";	
 	case AscensionTowerState::Fueling: return "Fueling";	
 	case AscensionTowerState::LaunchTunnel: return "Launch Tunnel";	
 	case AscensionTowerState::Bearing: return "Bearing";	
 	case AscensionTowerState::LandingRunwaySelection: return "Select Runway for Landing";	
 	case AscensionTowerState::Launch: return "Request Launch Clearance";	
-	case AscensionTowerState::HangarForRoomSelection: return "Select Hangar for Control Room";	
+	case AscensionTowerState::HangarForRoomSelection: return "Select Hangar for Control Room";
 	case AscensionTowerState::RoomSelection: return "Select Control Room";
+	case AscensionTowerState::TaxiRouteEndSelection:
+		sprintf(subtitle, "Taxi from %s to",
+			(char *)object[state]);
+		return subtitle;
 	case AscensionTowerState::DoorControl:
 		sprintf(subtitle, "%s -> %s",
-			ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetName(),
-			ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection])->GetName());
+			((Hangar *)object[AscensionTowerState::DoorSelection])->GetName(),
+			((Door *)object[state])->GetName());
+		return subtitle;
+	case AscensionTowerState::CraneControl:
+		sprintf(subtitle, "%s -> Crane",
+			((Hangar *)object[AscensionTowerState::HangarForCraneSelection])->GetName());
 		return subtitle;
 	}
 	return "";
@@ -500,8 +668,10 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::HangarForDoorSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::DoorSelection: SetState(AscensionTowerState::HangarForDoorSelection);break;
 	case AscensionTowerState::DoorControl: SetState(AscensionTowerState::DoorSelection);break;
-	case AscensionTowerState::TaxiRouteSelection: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::TaxiRouteStartSelection: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::TaxiRouteEndSelection: SetState(AscensionTowerState::TaxiRouteStartSelection);break;
 	case AscensionTowerState::HangarForCraneSelection: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::CraneControl: SetState(AscensionTowerState::HangarForCraneSelection);break;
 	case AscensionTowerState::PassengerTerminal: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::Fueling: SetState(AscensionTowerState::PassengerTerminal);break;
 	case AscensionTowerState::LaunchTunnel: SetState(AscensionTowerState::Fueling);break;
@@ -513,11 +683,4 @@ void AscensionTowerData::Back()
 	}
 }
 
-void *AscensionTowerData::GetObject()
-{
-	switch(state)
-	{
-	case AscensionTowerState::DoorControl: return ascension->GetHangar(selectedIndex[AscensionTowerState::HangarForDoorSelection])->GetDoor(selectedIndex[AscensionTowerState::DoorSelection]);
-	}
-	return NULL;
-}
+void *AscensionTowerData::GetObject(){return object[state];}

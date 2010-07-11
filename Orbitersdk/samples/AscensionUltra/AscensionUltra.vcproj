@@ -278,6 +278,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BeaconLinks.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\BeaconPath.cpp"
 				>
 			</File>
@@ -315,6 +319,10 @@
 			</File>
 			<File
 				RelativePath=".\BeaconArray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\BeaconLinks.h"
 				>
 			</File>
 			<File
