@@ -141,15 +141,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	taxiwayPath[23].Add(&taxiwaySubsection[16]);	taxiwayPath[23].Add(&taxiwaySubsection[18]);	taxiwayPath[23].Add(&taxiwaySubsection[19]);	taxiwayPath[23].Add(&taxiwaySubsection[20]);	taxiwayPath[23].Add(&taxiwaySubsection[8]);	taxiwayPath[23].Add(&taxiwaySubsection[10]);	taxiwayPath[23].Add(&taxiwaySubsection[3]);	taxiwayPath[23].Add(&taxiwaySubsection[4]);	taxiwayPath[23].Add(&taxiwaySubsection[27]);		
 	taxiwayPath[24].Add(&taxiwaySubsection[16]);	taxiwayPath[24].Add(&taxiwaySubsection[18]);	taxiwayPath[24].Add(&taxiwaySubsection[19]);	taxiwayPath[24].Add(&taxiwaySubsection[20]);	taxiwayPath[24].Add(&taxiwaySubsection[21]);	taxiwayPath[24].Add(&taxiwaySubsection[3]);	taxiwayPath[24].Add(&taxiwaySubsection[4]);	taxiwayPath[24].Add(&taxiwaySubsection[27]);
 
-	for(int i=0;i<TAXIWAYPATHS;i++)
-	{
-		taxiwayPath[i].SetPeriod(2);
-		taxiwayPath[i].SetDuration(0.3);
-		taxiwayPath[i].SetPropagate(-0.2);
-		taxiwayPath[i].SetSize(1.4);
-		taxiwayPath[i].SetFallOff(0.8);
-	}
-
 	VECTOR3 runwayLines[MAXSTATICRUNWAYLINES][2]=
 	{
 		//Generated lines by Excel - last comma removed

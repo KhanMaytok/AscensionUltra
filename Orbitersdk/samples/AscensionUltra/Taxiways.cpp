@@ -23,7 +23,15 @@ void Taxiways::Add(BeaconPath *beaconPath, const char *start, const char *end, b
 	link->Path=beaconPath;
 	link->Inversed=inversed;
 	link->OriginalPeriod=beaconPath->GetPeriod();
+	link->On=false;
 	reverse[end][start]=links[start][end]=link;
+	beaconPath->SetSize(1.4);
+	beaconPath->SetFallOff(0);
+	beaconPath->SetPeriod(0);
+	beaconPath->SetDuration(0.3);
+	beaconPath->SetPropagate(-0.2);
+	beaconPath->Switch(true);
+	lastLink=link;
 }
 
 std::map<const char *, Taxiway *> *Taxiways::GetEnds(char const*start)
@@ -53,8 +61,19 @@ void Taxiways::Switch(Taxiway *link, bool on)
 {
 	if (link==NULL) return;
 	BeaconPath *bp=link->Path;
-	if (on) bp->SetPeriod((link->Inversed?-1:1) * link->OriginalPeriod);
-	bp->Switch(on);
+	if (on)
+	{
+		Switch(lastLink, false);
+		bp->SetFallOff(0.8);
+		bp->SetPeriod(link->Inversed?-2:2);		
+		lastLink=link;
+	}
+	else
+	{
+		bp->SetFallOff(0);
+		bp->SetPeriod(0);
+	}
+	link->On=on;
 }
 
 void Taxiways::Switch(const char *start, const char *end, bool on){Switch(GetLink(start, end), on);}
@@ -63,21 +82,14 @@ bool Taxiways::On(const char *start, const char *end)
 {
 	Taxiway *link=GetLink(start, end);
 	if (link==NULL) return false;
-	return link->Path->On(); 
+	return link->On; 
 }
 
-void Taxiways::SwitchAll(const char *point, bool on, bool isEnd)
-{
-	std::map<const char *, Taxiway *> *points=isEnd?GetStarts(point):GetEnds(point);
-	if (points==NULL) return;
-	for (std::map<const char *, Taxiway *>::iterator i=points->begin();i!=points->end();i++) Switch(i->second, on);
-}
-	
 bool Taxiways::AnyOn(const char *point, bool isEnd)
 {
 	std::map<const char *, Taxiway *> *points=isEnd?GetStarts(point):GetEnds(point);
 	if (points==NULL) return false;
-	for (std::map<const char *, Taxiway *>::iterator i=points->begin();i!=points->end();i++) if (i->second->Path->On()) return true;
+	for (std::map<const char *, Taxiway *>::iterator i=points->begin();i!=points->end();i++) if (i->second->On) return true;
 	return false;
 }
 
