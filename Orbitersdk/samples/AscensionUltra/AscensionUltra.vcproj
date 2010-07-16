@@ -278,10 +278,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\BeaconLinks.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\BeaconPath.cpp"
 				>
 			</File>
@@ -306,6 +302,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Taxiways.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TurnAroundHangar.cpp"
 				>
 			</File>
@@ -319,10 +319,6 @@
 			</File>
 			<File
 				RelativePath=".\BeaconArray.h"
-				>
-			</File>
-			<File
-				RelativePath=".\BeaconLinks.h"
 				>
 			</File>
 			<File
@@ -351,6 +347,10 @@
 			</File>
 			<File
 				RelativePath=".\meshres.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Taxiways.h"
 				>
 			</File>
 			<File
