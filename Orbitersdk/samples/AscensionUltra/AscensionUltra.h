@@ -24,7 +24,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define TURNAROUNDHANGARS 5
 #define LIGHTSTORAGEHANGARS 12
 #define TAXIWAYSUBSECTIONS 32
-#define TAXIWAYPATHS 36
+#define TAXIWAYPATHS 25
 #define RUNWAYSUBSECTIONS 56
 #define RUNWAYPATHS 5
 
