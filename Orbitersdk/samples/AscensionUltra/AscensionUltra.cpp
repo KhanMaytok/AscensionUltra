@@ -570,7 +570,7 @@ Hangar *AscensionUltra::GetHangar(HangarType type, int index)
 	return NULL;
 }
 
-Taxiways *AscensionUltra::GetTaxiways(){return &taxiways;}
+Routes *AscensionUltra::GetTaxiways(){return &taxiways;}
 
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)

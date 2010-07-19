@@ -3,17 +3,17 @@
 #include <map>
 #include "BeaconPath.h"
 
-struct Taxiway
+struct Route
 {
 	BeaconPath *Path;
 	bool Inversed;
 	bool On;
 };
 
-class Taxiways
+class Routes
 {
 public:
-	~Taxiways(void);
+	~Routes(void);
 	void Add(BeaconPath *beaconPath, const char *start, const char *end, bool inversed);
 	void Clear();
 
@@ -25,13 +25,13 @@ public:
 	// Check if routes are turned on
 	virtual bool On();
 
-	// Switch strobing of specified taxi-route on and off
+	// Switch strobing of specified route on and off
 	virtual void Switch(const char *start, const char *end, bool on);
 
-	// Check if specified taxi-route is strobing
+	// Check if specified route is strobing
 	virtual bool On(const char *start, const char *end);
 
-	// Check if one of the taxi-routes from/to the given start/end point is strobing
+	// Check if one of the routes from/to the given start/end point is strobing
 	virtual bool AnyOn(const char *point, bool isEnd=false);
 
 	/* Return count of all:
@@ -49,13 +49,13 @@ public:
 	virtual char *GetPoint(int index, bool isEnd=false, char *fromPoint=NULL);
 	
 private:	
-	std::map<const char *, std::map<const char *, Taxiway *>> links;
-	std::map<const char *, std::map<const char *, Taxiway *>> reverse;
-	std::map<const char *, Taxiway *> *GetEnds(char const*start);
-	std::map<const char *, Taxiway *> *GetStarts(char const*end);
-	Taxiway *Taxiways::GetLink(char const*start, char const*end);
-	void Taxiways::Switch(Taxiway *link, bool on);
-	Taxiway *lastLink;
+	std::map<const char *, std::map<const char *, Route *>> links;
+	std::map<const char *, std::map<const char *, Route *>> reverse;
+	std::map<const char *, Route *> *GetEnds(char const*start);
+	std::map<const char *, Route *> *GetStarts(char const*end);
+	Route *Routes::GetLink(char const*start, char const*end);
+	void Routes::Switch(Route *link, bool on);
+	Route *lastLink;
 	bool on;
 	double size, fallOff, period, duration, propagate;
 };

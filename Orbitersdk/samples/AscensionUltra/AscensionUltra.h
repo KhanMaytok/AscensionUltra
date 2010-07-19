@@ -17,7 +17,7 @@
 #include "resource.h"
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
-#include "Taxiways.h"
+#include "Routes.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -51,7 +51,7 @@ public:
 
 	virtual Hangar *GetHangar(HangarType type, int index);
 	virtual int GetHangars(HangarType type);
-	virtual Taxiways *GetTaxiways();	
+	virtual Routes *GetTaxiways();	
 	
 private:
 	void MoveGroup(int mesh, VECTOR3 v);
@@ -66,7 +66,7 @@ private:
 	BeaconPath taxiwayPath[TAXIWAYPATHS];
 	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
 	BeaconPath runwayPath[RUNWAYPATHS];
-	Taxiways taxiways;
+	Routes taxiways;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

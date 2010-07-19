@@ -159,7 +159,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::TaxiRouteStartSelection:
 		item.Index=index;
 		{
-			Taxiways *t=ascension->GetTaxiways();
+			Routes *t=ascension->GetTaxiways();
 			item.Name=t->GetPoint(index);
 			sprintf(text, "%c %s", t->AnyOn(item.Name)?'*':' ', item.Name);
 		}
@@ -168,7 +168,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::TaxiRouteEndSelection:
 		item.Index=index;
 		{
-			Taxiways *t=ascension->GetTaxiways();
+			Routes *t=ascension->GetTaxiways();
 			item.Name=t->GetPoint(index, false, (char *)object[state]);
 			sprintf(text, "%c %s", t->On((char *)object[state], item.Name)?'*':' ', item.Name);
 		}
@@ -255,7 +255,7 @@ void AscensionTowerData::Select()
 		SetState(AscensionTowerState::TaxiRouteEndSelection);
 		break;
 	case AscensionTowerState::TaxiRouteEndSelection:
-		Taxiways *t=ascension->GetTaxiways();
+		Routes *t=ascension->GetTaxiways();
 		char *start=(char *)object[AscensionTowerState::TaxiRouteEndSelection];
 		char *end=t->GetPoint(selectedIndex[state], false, start);
 		t->Switch(start, end, !t->On(start,end));
