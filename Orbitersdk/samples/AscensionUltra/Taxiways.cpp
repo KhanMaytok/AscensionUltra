@@ -17,20 +17,37 @@ void Taxiways::Clear()
 	reverse.clear();
 }
 
+void Taxiways::Init(double size, double fallOff, double period, double duration, double propagate)
+{
+	on=false;
+	this->size=size;
+	this->fallOff=fallOff;
+	this->period=period;
+	this->duration=duration;
+	this->propagate=propagate;
+}
+
+void Taxiways::Switch(bool on)
+{
+	for (std::map<const char *, std::map<const char *, Taxiway *>>::iterator i=links.begin();i!=links.end();i++)
+		for (std::map<const char *, Taxiway *>::iterator j=i->second.begin();j!=i->second.end();j++)
+			j->second->Path->Switch(on);
+}
+
+bool Taxiways::On(){return on;}
+
 void Taxiways::Add(BeaconPath *beaconPath, const char *start, const char *end, bool inversed)
 {
 	Taxiway *link=new Taxiway;
 	link->Path=beaconPath;
 	link->Inversed=inversed;
-	link->OriginalPeriod=beaconPath->GetPeriod();
 	link->On=false;
 	reverse[end][start]=links[start][end]=link;
-	beaconPath->SetSize(1.4);
+	beaconPath->SetSize(size);
 	beaconPath->SetFallOff(0);
 	beaconPath->SetPeriod(0);
-	beaconPath->SetDuration(0.3);
-	beaconPath->SetPropagate(-0.2);
-	beaconPath->Switch(true);
+	beaconPath->SetDuration(duration);
+	beaconPath->SetPropagate(propagate);
 	lastLink=link;
 }
 
@@ -64,8 +81,8 @@ void Taxiways::Switch(Taxiway *link, bool on)
 	if (on)
 	{
 		Switch(lastLink, false);
-		bp->SetFallOff(0.8);
-		bp->SetPeriod(link->Inversed?-2:2);		
+		bp->SetFallOff(fallOff);
+		bp->SetPeriod(link->Inversed?-period:period);		
 		lastLink=link;
 	}
 	else

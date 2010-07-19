@@ -273,6 +273,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	};
 
 	//Generated subsection table by Excel
+	taxiways.Init(1.4, 0.8, 2, 0.3, -0.2);
 	taxiways.Add(&taxiwayPath[0], points[1], points[2], true);
 	taxiways.Add(&taxiwayPath[1], points[1], points[3], true);
 	taxiways.Add(&taxiwayPath[2], points[1], points[0], true);
@@ -298,6 +299,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	taxiways.Add(&taxiwayPath[22], points[7], points[1], true);
 	taxiways.Add(&taxiwayPath[23], points[7], points[3], true);
 	taxiways.Add(&taxiwayPath[24], points[7], points[8], true);
+	taxiways.Switch(true);
 
 	DefineAnimations();
 
