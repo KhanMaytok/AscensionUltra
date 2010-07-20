@@ -26,7 +26,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define TAXIWAYSUBSECTIONS 32
 #define TAXIWAYPATHS 25
 #define RUNWAYSUBSECTIONS 56
-#define RUNWAYPATHS 5
+#define RUNWAYPATHS 10
 
 class AscensionUltra: public VESSEL2 {
 public:
@@ -51,7 +51,8 @@ public:
 
 	virtual Hangar *GetHangar(HangarType type, int index);
 	virtual int GetHangars(HangarType type);
-	virtual Routes *GetTaxiways();	
+	virtual Routes *GetTaxiways();
+	virtual Routes *GetRunways();
 	
 private:
 	void MoveGroup(int mesh, VECTOR3 v);
@@ -67,6 +68,7 @@ private:
 	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
 	BeaconPath runwayPath[RUNWAYPATHS];
 	Routes taxiways;
+	Routes runways;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

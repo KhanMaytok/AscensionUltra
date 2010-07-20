@@ -19,7 +19,6 @@ void Routes::Clear()
 
 void Routes::Init(double size, double fallOff, double period, double duration, double propagate)
 {
-	on=false;
 	this->size=size;
 	this->fallOff=fallOff;
 	this->period=period;
@@ -31,24 +30,28 @@ void Routes::Switch(bool on)
 {
 	for (std::map<const char *, std::map<const char *, Route *>>::iterator i=links.begin();i!=links.end();i++)
 		for (std::map<const char *, Route *>::iterator j=i->second.begin();j!=i->second.end();j++)
-			j->second->Path->Switch(on);
+			j->second->Path->Switch(j->second->On=on);
 }
 
-bool Routes::On(){return on;}
+void Routes::Strobe(bool on)
+{
+	for (std::map<const char *, std::map<const char *, Route *>>::iterator i=links.begin();i!=links.end();i++)
+		for (std::map<const char *, Route *>::iterator j=i->second.begin();j!=i->second.end();j++)
+			Strobe(j->second, on);
+}
 
 void Routes::Add(BeaconPath *beaconPath, const char *start, const char *end, bool inversed)
 {
 	Route *link=new Route;
 	link->Path=beaconPath;
 	link->Inversed=inversed;
-	link->On=false;
+	link->Strobing=false;
 	reverse[end][start]=links[start][end]=link;
 	beaconPath->SetSize(size);
 	beaconPath->SetFallOff(0);
 	beaconPath->SetPeriod(0);
 	beaconPath->SetDuration(duration);
 	beaconPath->SetPropagate(propagate);
-	lastLink=link;
 }
 
 std::map<const char *, Route *> *Routes::GetEnds(char const*start)
@@ -74,26 +77,38 @@ Route *Routes::GetLink(char const*start, char const*end)
 	return ends->second;
 }
 
-void Routes::Switch(Route *link, bool on)
+void Routes::Strobe(Route *link, bool on)
 {
 	if (link==NULL) return;
 	BeaconPath *bp=link->Path;
 	if (on)
 	{
-		Switch(lastLink, false);
 		bp->SetFallOff(fallOff);
-		bp->SetPeriod(link->Inversed?-period:period);		
-		lastLink=link;
+		bp->SetPeriod(link->Inversed?-period:period);
 	}
 	else
 	{
 		bp->SetFallOff(0);
 		bp->SetPeriod(0);
 	}
-	link->On=on;
+	link->Strobing=on;
 }
 
-void Routes::Switch(const char *start, const char *end, bool on){Switch(GetLink(start, end), on);}
+void Routes::Strobe(const char *start, const char *end, bool on){Strobe(GetLink(start, end), on);}
+
+bool Routes::Strobing(const char *start, const char *end)
+{
+	Route *link=GetLink(start, end);
+	if (link==NULL) return false;
+	return link->Strobing; 
+}
+
+void Routes::Switch(const char *start, const char *end, bool on)
+{
+	Route *link=GetLink(start, end);
+	if (link==NULL) return;
+	link->Path->Switch(link->On=on);
+}
 
 bool Routes::On(const char *start, const char *end)
 {
@@ -102,11 +117,11 @@ bool Routes::On(const char *start, const char *end)
 	return link->On; 
 }
 
-bool Routes::AnyOn(const char *point, bool isEnd)
+bool Routes::AnyStrobing(const char *point, bool isEnd)
 {
 	std::map<const char *, Route *> *points=isEnd?GetStarts(point):GetEnds(point);
 	if (points==NULL) return false;
-	for (std::map<const char *, Route *>::iterator i=points->begin();i!=points->end();i++) if (i->second->On) return true;
+	for (std::map<const char *, Route *>::iterator i=points->begin();i!=points->end();i++) if (i->second->Strobing) return true;
 	return false;
 }
 

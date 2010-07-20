@@ -8,6 +8,7 @@ struct Route
 	BeaconPath *Path;
 	bool Inversed;
 	bool On;
+	bool Strobing;
 };
 
 class Routes
@@ -22,17 +23,23 @@ public:
 	// Turn all routes on and off
 	virtual void Switch(bool on);
 
-	// Check if routes are turned on
-	virtual bool On();
+	// Switch strobing of all routes on and off
+	virtual void Strobe(bool on);
 
 	// Switch strobing of specified route on and off
 	virtual void Switch(const char *start, const char *end, bool on);
 
-	// Check if specified route is strobing
+	// Check if specified route is on or off
 	virtual bool On(const char *start, const char *end);
 
+	// Switch strobing of specified route on and off
+	virtual void Strobe(const char *start, const char *end, bool on);
+
+	// Check if specified route is strobing
+	virtual bool Strobing(const char *start, const char *end);
+
 	// Check if one of the routes from/to the given start/end point is strobing
-	virtual bool AnyOn(const char *point, bool isEnd=false);
+	virtual bool AnyStrobing(const char *point, bool isEnd=false);
 
 	/* Return count of all:
 	   no parameters        .. available start points
@@ -54,8 +61,6 @@ private:
 	std::map<const char *, Route *> *GetEnds(char const*start);
 	std::map<const char *, Route *> *GetStarts(char const*end);
 	Route *Routes::GetLink(char const*start, char const*end);
-	void Routes::Switch(Route *link, bool on);
-	Route *lastLink;
-	bool on;
+	void Strobe(Route *link, bool on);
 	double size, fallOff, period, duration, propagate;
 };

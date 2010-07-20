@@ -28,7 +28,8 @@
 #define LS1OFFSET _V(-855,0,480)
 #define LS1MATRIXOFFSET _V(70,0,0)
 #define MAXSTATICRUNWAYLINES 14
-#define RUNWAYENDPOINTS 9
+#define STATICRUNWAYLINESSPLIT 7
+#define RUNWAYENDPOINTS 12
 #define LFMC1OFFSET _V(-1462.7,0,1260.2)
 
 // ==============================================================
@@ -237,28 +238,34 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	runwaySubsection[54].Init(this, _V_(5274,0,910), _V_(5584,0,910), _V(1,0,0), 20);
 	runwaySubsection[55].Init(this, _V_(6205,0,902.5), _V_(5429,0,902.5), _V(1,1,1), 25);
 
-	runwayPath[0].Init(this, (VECTOR3 *)runwayLines, _V(1,1,1), runwayBeacons, MAXSTATICRUNWAYLINES);
-	runwayPath[1].Init(this, NULL, _V(0,0,0), NULL, 0);
-	for(int i=0;i<14;i++) runwayPath[1].Add(&runwaySubsection[i]);
-	runwaySubsection[13].SetPeriod(3);
-	runwaySubsection[13].SetDuration(0.2);
-	runwaySubsection[13].SetPropagate(-0.15);
+	runwayPath[0].Init(this, (VECTOR3 *)runwayLines, _V(1,1,1), runwayBeacons, STATICRUNWAYLINESSPLIT);	
+	
+	runwayPath[1].Init(this, (VECTOR3 *)(runwayLines+STATICRUNWAYLINESSPLIT), _V(1,1,1), runwayBeacons+STATICRUNWAYLINESSPLIT, MAXSTATICRUNWAYLINES-STATICRUNWAYLINESSPLIT);	
+	
 	runwayPath[2].Init(this, NULL, _V(0,0,0), NULL, 0);
-	for(int i=14;i<28;i++) runwayPath[2].Add(&runwaySubsection[i]);
-	runwaySubsection[27].SetPeriod(3);
-	runwaySubsection[27].SetDuration(0.2);
-	runwaySubsection[27].SetPropagate(-0.15);
+	for(int i=0;i<13;i++) runwayPath[2].Add(&runwaySubsection[i]);
+	
 	runwayPath[3].Init(this, NULL, _V(0,0,0), NULL, 0);
-	for(int i=28;i<42;i++) runwayPath[3].Add(&runwaySubsection[i]);
-	runwaySubsection[41].SetPeriod(3);
-	runwaySubsection[41].SetDuration(0.2);
-	runwaySubsection[41].SetPropagate(-0.15);
+	runwayPath[3].Add(&runwaySubsection[13]);
+	
 	runwayPath[4].Init(this, NULL, _V(0,0,0), NULL, 0);
-	for(int i=42;i<56;i++) runwayPath[4].Add(&runwaySubsection[i]);
-	runwaySubsection[55].SetPeriod(3);
-	runwaySubsection[55].SetDuration(0.2);
-	runwaySubsection[55].SetPropagate(-0.15);
-
+	for(int i=14;i<27;i++) runwayPath[4].Add(&runwaySubsection[i]);
+	
+	runwayPath[5].Init(this, NULL, _V(0,0,0), NULL, 0);
+	runwayPath[5].Add(&runwaySubsection[27]);
+	
+	runwayPath[6].Init(this, NULL, _V(0,0,0), NULL, 0);
+	for(int i=28;i<41;i++) runwayPath[6].Add(&runwaySubsection[i]);
+	
+	runwayPath[7].Init(this, NULL, _V(0,0,0), NULL, 0);
+	runwayPath[7].Add(&runwaySubsection[41]);
+	
+	runwayPath[8].Init(this, NULL, _V(0,0,0), NULL, 0);
+	for(int i=42;i<55;i++) runwayPath[8].Add(&runwaySubsection[i]);
+	
+	runwayPath[9].Init(this, NULL, _V(0,0,0), NULL, 0);
+	runwayPath[9].Add(&runwaySubsection[55]);
+	
 	static char *points[RUNWAYENDPOINTS]=
 	{
 		"Launch",
@@ -270,6 +277,9 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 		"Runway 31L",
 		"Runway 31R",
 		"Airport",
+		"Static",
+		"Non-Static",
+		"Lead-In"
 	};
 
 	//Generated subsection table by Excel
@@ -299,8 +309,35 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	taxiways.Add(&taxiwayPath[22], points[7], points[1], true);
 	taxiways.Add(&taxiwayPath[23], points[7], points[3], true);
 	taxiways.Add(&taxiwayPath[24], points[7], points[8], true);
+	taxiways.Add(&runwayPath[0], points[4], points[9], false);
+	taxiways.Add(&runwayPath[2], points[4], points[10], false);
+	taxiways.Add(&runwayPath[3], points[4], points[11], false);
+	taxiways.Add(&runwayPath[1], points[5], points[9], false);
+	taxiways.Add(&runwayPath[4], points[5], points[10], false);
+	taxiways.Add(&runwayPath[5], points[5], points[11], false);
+	taxiways.Add(&runwayPath[1], points[6], points[9], false);
+	taxiways.Add(&runwayPath[6], points[6], points[10], false);
+	taxiways.Add(&runwayPath[7], points[6], points[11], false);
+	taxiways.Add(&runwayPath[0], points[7], points[9], false);
+	taxiways.Add(&runwayPath[8], points[7], points[10], false);
+	taxiways.Add(&runwayPath[9], points[7], points[11], false);
 	taxiways.Switch(true);
 
+	runways.Init(1.4, 0.8, 3, 0.2, -0.15);
+	runways.Add(&runwayPath[0], points[4], points[9], false);
+	runways.Add(&runwayPath[2], points[4], points[10], false);
+	runways.Add(&runwayPath[3], points[4], points[11], false);
+	runways.Add(&runwayPath[1], points[5], points[9], false);
+	runways.Add(&runwayPath[4], points[5], points[10], false);
+	runways.Add(&runwayPath[5], points[5], points[11], false);
+	runways.Add(&runwayPath[1], points[6], points[9], false);
+	runways.Add(&runwayPath[6], points[6], points[10], false);
+	runways.Add(&runwayPath[7], points[6], points[11], false);
+	runways.Add(&runwayPath[0], points[7], points[9], false);
+	runways.Add(&runwayPath[8], points[7], points[10], false);
+	runways.Add(&runwayPath[9], points[7], points[11], false);
+	runways.Switch(true);
+	
 	DefineAnimations();
 
 	cur_TurnAround=-1;
@@ -571,6 +608,8 @@ Hangar *AscensionUltra::GetHangar(HangarType type, int index)
 }
 
 Routes *AscensionUltra::GetTaxiways(){return &taxiways;}
+
+Routes *AscensionUltra::GetRunways(){return &runways;}
 
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
