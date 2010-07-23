@@ -302,6 +302,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Room.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Routes.cpp"
 				>
 			</File>
@@ -347,6 +351,10 @@
 			</File>
 			<File
 				RelativePath=".\meshres.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Room.h"
 				>
 			</File>
 			<File
