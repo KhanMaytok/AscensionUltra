@@ -17,16 +17,16 @@
 #include "resource.h"
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
-#include "BeaconLinks.h"
+#include "Routes.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
 #define TURNAROUNDHANGARS 5
 #define LIGHTSTORAGEHANGARS 12
 #define TAXIWAYSUBSECTIONS 32
-#define TAXIWAYPATHS 36
+#define TAXIWAYPATHS 25
 #define RUNWAYSUBSECTIONS 56
-#define RUNWAYPATHS 5
+#define RUNWAYPATHS 10
 
 class AscensionUltra: public VESSEL2 {
 public:
@@ -51,7 +51,8 @@ public:
 
 	virtual Hangar *GetHangar(HangarType type, int index);
 	virtual int GetHangars(HangarType type);
-	virtual BeaconLinks *GetTaxiways();
+	virtual Routes *GetTaxiways();
+	virtual Routes *GetRunways();
 	
 private:
 	void MoveGroup(int mesh, VECTOR3 v);
@@ -66,7 +67,8 @@ private:
 	BeaconPath taxiwayPath[TAXIWAYPATHS];
 	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
 	BeaconPath runwayPath[RUNWAYPATHS];
-	BeaconLinks taxiways;
+	Routes taxiways;
+	Routes runways;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

@@ -122,6 +122,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::DoorControl: return 3;
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
+	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
 	}
 	return 0;
 }
@@ -159,18 +160,27 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::TaxiRouteStartSelection:
 		item.Index=index;
 		{
-			BeaconLinks *t=ascension->GetTaxiways();
+			Routes *t=ascension->GetTaxiways();
 			item.Name=t->GetPoint(index);
-			sprintf(text, "%c %s", t->AnyOn(item.Name)?'*':' ', item.Name);
+			sprintf(text, "%c %s", t->AnyStrobing(item.Name)?'*':' ', item.Name);
 		}
 		item.Name=text;
 		return item;
 	case AscensionTowerState::TaxiRouteEndSelection:
 		item.Index=index;
 		{
-			BeaconLinks *t=ascension->GetTaxiways();
+			Routes *t=ascension->GetTaxiways();
 			item.Name=t->GetPoint(index, false, (char *)object[state]);
-			sprintf(text, "%c %s", t->On((char *)object[state], item.Name)?'*':' ', item.Name);
+			sprintf(text, "%c %s", t->Strobing((char *)object[state], item.Name)?'*':' ', item.Name);
+		}
+		item.Name=text;
+		return item;
+	case AscensionTowerState::LandingRunwaySelection:
+		item.Index=index;
+		{
+			Routes *t=ascension->GetRunways();
+			item.Name=t->GetPoint(index);
+			sprintf(text, "%c %s", t->AnyStrobing(item.Name)?'*':' ', item.Name);
 		}
 		item.Name=text;
 		return item;
@@ -197,6 +207,8 @@ void AscensionTowerData::Select()
 {
 	selectedIndex[state]=GetListItem(page[state]*6+selection[state]).Index;
 	int index;
+	char *start, *end;
+	Routes *t;
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect:
@@ -255,10 +267,21 @@ void AscensionTowerData::Select()
 		SetState(AscensionTowerState::TaxiRouteEndSelection);
 		break;
 	case AscensionTowerState::TaxiRouteEndSelection:
-		BeaconLinks *t=ascension->GetTaxiways();
-		char *start=(char *)object[AscensionTowerState::TaxiRouteEndSelection];
-		char *end=t->GetPoint(selectedIndex[state], false, start);
-		t->Switch(start, end, !t->On(start,end));
+		t=ascension->GetTaxiways();
+		start=(char *)object[AscensionTowerState::TaxiRouteEndSelection];
+		end=t->GetPoint(selectedIndex[state], false, start);
+		if (t->Strobing(start,end)) t->Strobe(start, end, false);
+		else
+		{
+			t->Strobe(false);
+			t->Strobe(start, end, true);
+		}
+		break;
+	case AscensionTowerState::LandingRunwaySelection:
+		t=ascension->GetRunways();
+		start=t->GetPoint(selectedIndex[state]);
+		for(int i=t->GetPoints(false, start)-1;i>=0;i--) if ((end=t->GetPoint(i, false, start))[0]=='L') break; //Search for endpoint starting with "L" => finding pointer for Lead-in
+		t->Strobe(start, end, !t->Strobing(start,end));		
 		break;
 	}
 }

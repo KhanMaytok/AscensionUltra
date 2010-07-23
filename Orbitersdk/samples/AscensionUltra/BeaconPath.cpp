@@ -16,7 +16,6 @@ void BeaconPath::Init(VESSEL *owner, VECTOR3 *arrays, VECTOR3 &color, int *beaco
 {
 	Clear();
 	offset=0;
-	on=false;
 	for(int i=0;i<length;i++)
 	{
 		BeaconArray *ba=new BeaconArray();
@@ -36,15 +35,13 @@ void BeaconPath::SetFallOff(double falloff){ for(std::list<BeaconArray *>::itera
 void BeaconPath::Switch(bool on)
 {
 	for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->Switch(on);
-	this->on=on;
 }
 
 void BeaconPath::GetColor(VECTOR3 &color) { if (arrays.empty()) color=_V(0,0,0); else arrays.front()->GetColor(color); }
 DWORD BeaconPath::GetShape() { return arrays.empty()?0:arrays.front()->GetShape(); }
 double BeaconPath::GetSize() { return arrays.empty()?0:arrays.front()->GetSize(); }
 double BeaconPath::GetFallOff() { return arrays.empty()?0:arrays.front()->GetFallOff(); }
-bool BeaconPath::On() { return on; }
-
+bool BeaconPath::On() { return arrays.empty()?0:arrays.front()->On(); }
 void BeaconPath::SetPeriod(double period){ CalculateStrobe(period, GetDuration(), GetPropagate()); }
 double BeaconPath::GetPeriod() { return arrays.empty()?0:arrays.front()->GetPeriod(); }
 void BeaconPath::SetDuration(double duration){ CalculateStrobe(GetPeriod(), duration, GetPropagate()); }
