@@ -9,6 +9,7 @@
 // ==============================================================
 #pragma once
 #include "Door.h"
+#include "Room.h"
 
 typedef enum HangarType
 {
@@ -32,6 +33,9 @@ public:
 	virtual Door *GetDoor(int index);
 	virtual bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 	virtual char *GetName();
+	virtual int GetRooms();
+	virtual Room *GetRoom(int index);
+	virtual VECTOR3 GetPosition();
 protected:
 	VESSEL* owner;
 	UINT meshIndex;

@@ -12,7 +12,11 @@
 TurnAroundHangar::TurnAroundHangar(void):Hangar()
 {
 	crane1.SetSpeed(_V(10,10,10));
-	crane1.SetCrawl(_V(1,1,1));	
+	crane1.SetCrawl(_V(1,1,1));
+
+	char *name[ROOMS]={"East Control","West Control"};
+	VECTOR3 room[ROOMS][2]={ {_V(-88,22,0),_V(1,0,0)} , {_V(88,22,0),_V(-1,0,0)} };
+	for(int i=0;i<ROOMS;i++) rooms[i].Init(this, name[i], room[i][0], room[i][1] );
 }
 
 HangarType TurnAroundHangar::GetType(){return HangarType::TurnAround;}
@@ -84,6 +88,13 @@ Crane *TurnAroundHangar::GetCrane(){return &crane1;}
 int TurnAroundHangar::GetDoors(){return DOORS;}
 
 Door *TurnAroundHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+
+int TurnAroundHangar::GetRooms(){return ROOMS;}
+
+Room *TurnAroundHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
+
+VECTOR3 TurnAroundHangar::GetPosition(){return position;}
+void TurnAroundHangar::SetPosition(VECTOR3 position){this->position=position;}
 
 bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {

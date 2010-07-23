@@ -24,9 +24,17 @@ void LightStorageHangar::DefineAnimations ()
 	doors[1].Init(owner, "Maintenance Door", prefix, 2,
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp, 1, _V(0,3.62,0)),
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp+1, 1, _V(0,1.81,0)));
-	Hangar::DefineAnimations();	
+	rooms[0].Init(this, "Main Control", _V(-20,10,0), _V(1,0,0));
+	Hangar::DefineAnimations();
 }
 
 int LightStorageHangar::GetDoors(){return DOORS;}
 
 Door *LightStorageHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+
+int LightStorageHangar::GetRooms(){return ROOMS;}
+
+Room *LightStorageHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
+
+VECTOR3 LightStorageHangar::GetPosition(){return position;}
+void LightStorageHangar::SetPosition(VECTOR3 position){this->position=position;}
