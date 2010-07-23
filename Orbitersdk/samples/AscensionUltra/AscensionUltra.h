@@ -53,6 +53,8 @@ public:
 	virtual int GetHangars(HangarType type);
 	virtual Routes *GetTaxiways();
 	virtual Routes *GetRunways();
+	virtual Room *GetControlRoom();
+	virtual void SwitchView(Room *room);
 	
 private:
 	void MoveGroup(int mesh, VECTOR3 v);
@@ -69,6 +71,7 @@ private:
 	BeaconPath runwayPath[RUNWAYPATHS];
 	Routes taxiways;
 	Routes runways;
+	Room *controlRoom;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

@@ -22,8 +22,6 @@
 #define TA1MATRIXOFFSET _V(266,0,0)
 #define TA1OFFSET _V(-2242,0,580)
 #define OFFSET _V(2700,0,-950)
-#define CTRLROOM1 _V(-88,22,0)
-#define CTRLROOM2 _V(-88,22,0)
 #define _V_(x,y,z) _V(-x,y,z)+OFFSET
 #define LS1OFFSET _V(-855,0,480)
 #define LS1MATRIXOFFSET _V(70,0,0)
@@ -78,6 +76,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 		if (i>8) name[0]=0x31;
 		lightStorage[i].Init(this, name, i+8, prefix);
 	}
+
+	controlRoom=turnAround[0].GetRoom(0);
 
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);
@@ -333,7 +333,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	cur_Path=0;
 	cur_Section=0;
-
 }
 
 // --------------------------------------------------------------
@@ -391,8 +390,18 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	
 	double curvoff[5]={-0.02,-0.05,-0.08,-0.12,-0.17};
 
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshHangar, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
-	for(int i=0;i<12;i++) SetMeshVisibilityMode (AddMesh (meshLightStorage, &(OFFSET+LS1OFFSET+LS1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
+	for(int i=0;i<5;i++)
+	{
+		VECTOR3 off=OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0);
+		SetMeshVisibilityMode (AddMesh (meshHangar, &off), MESHVIS_ALWAYS);
+		turnAround[i].SetPosition(off);
+	}
+	for(int i=0;i<12;i++)
+	{
+		VECTOR3 off=OFFSET+LS1OFFSET+LS1MATRIXOFFSET*i;
+		SetMeshVisibilityMode (AddMesh (meshLightStorage, &off), MESHVIS_ALWAYS);
+		lightStorage[i].SetPosition(off);
+	}
 	SetMeshVisibilityMode (AddMesh (meshLaunch = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC1"), &(OFFSET+LFMC1OFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 
@@ -501,8 +510,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
 {
-	SetCameraOffset (OFFSET+TA1OFFSET+CTRLROOM1);
-	SetCameraDefaultDirection(_V(1,0,0));
+	SwitchView(controlRoom);	
 	oapiSetDefNavDisplay (1);
 	oapiSetDefRCSDisplay (1);
 	campos = CAM_GENERIC;
@@ -598,6 +606,14 @@ Hangar *AscensionUltra::GetHangar(HangarType type, int index)
 Routes *AscensionUltra::GetTaxiways(){return &taxiways;}
 
 Routes *AscensionUltra::GetRunways(){return &runways;}
+
+Room *AscensionUltra::GetControlRoom(){return controlRoom;}
+void AscensionUltra::SwitchView(Room *room)
+{
+	SetCameraOffset (room->GetHangar()->GetPosition()+room->GetCameraPosition());
+	SetCameraDefaultDirection(room->GetViewDirection());
+	controlRoom=room;
+}
 
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
