@@ -149,6 +149,7 @@ void AscensionTower::Update (HDC hDC)
 	case AscensionTowerState::DoorSelection:
 	case AscensionTowerState::TaxiRouteStartSelection:
 	case AscensionTowerState::TaxiRouteEndSelection:
+	case AscensionTowerState::LandingRunwaySelection:
 		RenderSelectionPage();	
 		break;
 	case AscensionTowerState::DoorControl:
