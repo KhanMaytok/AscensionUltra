@@ -10,6 +10,7 @@
 #pragma once
 #include "Door.h"
 #include "Room.h"
+#include "UMmuSDK.h"
 
 typedef enum HangarType
 {

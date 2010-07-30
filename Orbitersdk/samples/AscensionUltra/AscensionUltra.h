@@ -18,6 +18,7 @@
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
 #include "Routes.h"
+#include "UMmuSDK.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -57,6 +58,7 @@ public:
 	virtual void SwitchView(Room *room);
 	
 private:
+	void InitSubObjects();
 	void MoveGroup(int mesh, VECTOR3 v);
 	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
 
@@ -72,6 +74,7 @@ private:
 	Routes taxiways;
 	Routes runways;
 	Room *controlRoom;
+	UMMUCREWMANAGMENT crew;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

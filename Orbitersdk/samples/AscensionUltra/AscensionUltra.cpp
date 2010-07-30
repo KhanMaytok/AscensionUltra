@@ -53,12 +53,29 @@ void UpdateCtrlDialog (AscensionUltra *au, HWND hWnd = 0);
 AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 : VESSEL2 (hObj, fmodel)
 {
-	int i, j;
-
 	modelidx = (fmodel ? 1 : 0);
 	visual            = NULL;
 	campos            = CAM_GENERIC;
 
+	cur_TurnAround=-1;
+	cur_LightStorage=-1;
+
+	cur_Path=0;
+	cur_Section=0;
+}
+
+// --------------------------------------------------------------
+// Destructor
+// --------------------------------------------------------------
+AscensionUltra::~AscensionUltra ()
+{
+}
+
+double AscensionUltra::GetVersion(){return 1.0;}
+
+void AscensionUltra::InitSubObjects()
+{
+	int i;
 	char prefix[14]="HANGARx";
 	char name[40]=" x. Turn-around Hangar";
 	for(i=0;i<5;i++)
@@ -66,7 +83,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 		prefix[6]=0x30+i;
 		name[1]=0x31+i;
 		turnAround[i].Init(this, name, i+3, prefix);
-	}	
+	}
 	strcpy(prefix, "LIGHTSTORAGEx");
 	strcpy(name, " x. Light Storage Hangar");
 	for(i=0;i<12;i++)
@@ -116,30 +133,30 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	for(int i=0;i<TAXIWAYPATHS;i++) taxiwayPath[i].Init(this, NULL, _V(0,0,0), 0, 0);
 
 	//Generated path table by Excel
-	taxiwayPath[0].Add(&taxiwaySubsection[0]);	taxiwayPath[0].Add(&taxiwaySubsection[1]);									
-	taxiwayPath[1].Add(&taxiwaySubsection[0]);	taxiwayPath[1].Add(&taxiwaySubsection[1]);	taxiwayPath[1].Add(&taxiwaySubsection[3]);	taxiwayPath[1].Add(&taxiwaySubsection[20]);	taxiwayPath[1].Add(&taxiwaySubsection[8]);	taxiwayPath[1].Add(&taxiwaySubsection[10]);					
-	taxiwayPath[2].Add(&taxiwaySubsection[0]);	taxiwayPath[2].Add(&taxiwaySubsection[26]);	taxiwayPath[2].Add(&taxiwaySubsection[27]);	taxiwayPath[2].Add(&taxiwaySubsection[28]);	taxiwayPath[2].Add(&taxiwaySubsection[29]);	taxiwayPath[2].Add(&taxiwaySubsection[31]);					
-	taxiwayPath[3].Add(&taxiwaySubsection[26]);	taxiwayPath[3].Add(&taxiwaySubsection[19]);	taxiwayPath[3].Add(&taxiwaySubsection[1]);	taxiwayPath[3].Add(&taxiwaySubsection[0]);							
-	taxiwayPath[4].Add(&taxiwaySubsection[1]);	taxiwayPath[4].Add(&taxiwaySubsection[3]);	taxiwayPath[4].Add(&taxiwaySubsection[19]);	taxiwayPath[4].Add(&taxiwaySubsection[20]);	taxiwayPath[4].Add(&taxiwaySubsection[8]);	taxiwayPath[4].Add(&taxiwaySubsection[10]);					
-	taxiwayPath[5].Add(&taxiwaySubsection[19]);	taxiwayPath[5].Add(&taxiwaySubsection[1]);	taxiwayPath[5].Add(&taxiwaySubsection[26]);	taxiwayPath[5].Add(&taxiwaySubsection[27]);	taxiwayPath[5].Add(&taxiwaySubsection[28]);	taxiwayPath[5].Add(&taxiwaySubsection[29]);	taxiwayPath[5].Add(&taxiwaySubsection[31]);				
-	taxiwayPath[6].Add(&taxiwaySubsection[10]);	taxiwayPath[6].Add(&taxiwaySubsection[8]);	taxiwayPath[6].Add(&taxiwaySubsection[20]);	taxiwayPath[6].Add(&taxiwaySubsection[19]);							
-	taxiwayPath[7].Add(&taxiwaySubsection[0]);	taxiwayPath[7].Add(&taxiwaySubsection[26]);	taxiwayPath[7].Add(&taxiwaySubsection[10]);	taxiwayPath[7].Add(&taxiwaySubsection[8]);	taxiwayPath[7].Add(&taxiwaySubsection[20]);	taxiwayPath[7].Add(&taxiwaySubsection[19]);					
-	taxiwayPath[8].Add(&taxiwaySubsection[10]);	taxiwayPath[8].Add(&taxiwaySubsection[8]);	taxiwayPath[8].Add(&taxiwaySubsection[20]);	taxiwayPath[8].Add(&taxiwaySubsection[19]);	taxiwayPath[8].Add(&taxiwaySubsection[27]);	taxiwayPath[8].Add(&taxiwaySubsection[28]);	taxiwayPath[8].Add(&taxiwaySubsection[29]);	taxiwayPath[8].Add(&taxiwaySubsection[31]);			
-	taxiwayPath[9].Add(&taxiwaySubsection[7]);	taxiwayPath[9].Add(&taxiwaySubsection[19]);	taxiwayPath[9].Add(&taxiwaySubsection[20]);	taxiwayPath[9].Add(&taxiwaySubsection[21]);	taxiwayPath[9].Add(&taxiwaySubsection[22]);	taxiwayPath[9].Add(&taxiwaySubsection[15]);	taxiwayPath[9].Add(&taxiwaySubsection[13]);				
-	taxiwayPath[10].Add(&taxiwaySubsection[7]);	taxiwayPath[10].Add(&taxiwaySubsection[0]);	taxiwayPath[10].Add(&taxiwaySubsection[26]);	taxiwayPath[10].Add(&taxiwaySubsection[19]);	taxiwayPath[10].Add(&taxiwaySubsection[20]);	taxiwayPath[10].Add(&taxiwaySubsection[21]);	taxiwayPath[10].Add(&taxiwaySubsection[22]);	taxiwayPath[10].Add(&taxiwaySubsection[15]);	taxiwayPath[10].Add(&taxiwaySubsection[13]);		
-	taxiwayPath[11].Add(&taxiwaySubsection[7]);	taxiwayPath[11].Add(&taxiwaySubsection[8]);	taxiwayPath[11].Add(&taxiwaySubsection[12]);	taxiwayPath[11].Add(&taxiwaySubsection[13]);							
-	taxiwayPath[12].Add(&taxiwaySubsection[7]);	taxiwayPath[12].Add(&taxiwaySubsection[21]);	taxiwayPath[12].Add(&taxiwaySubsection[22]);	taxiwayPath[12].Add(&taxiwaySubsection[15]);	taxiwayPath[12].Add(&taxiwaySubsection[13]);						
-	taxiwayPath[13].Add(&taxiwaySubsection[6]);	taxiwayPath[13].Add(&taxiwaySubsection[7]);	taxiwayPath[13].Add(&taxiwaySubsection[19]);	taxiwayPath[13].Add(&taxiwaySubsection[20]);	taxiwayPath[13].Add(&taxiwaySubsection[21]);	taxiwayPath[13].Add(&taxiwaySubsection[22]);	taxiwayPath[13].Add(&taxiwaySubsection[15]);	taxiwayPath[13].Add(&taxiwaySubsection[13]);	taxiwayPath[13].Add(&taxiwaySubsection[14]);		
+	taxiwayPath[0].Add(&taxiwaySubsection[0]);	taxiwayPath[0].Add(&taxiwaySubsection[1]);
+	taxiwayPath[1].Add(&taxiwaySubsection[0]);	taxiwayPath[1].Add(&taxiwaySubsection[1]);	taxiwayPath[1].Add(&taxiwaySubsection[3]);	taxiwayPath[1].Add(&taxiwaySubsection[20]);	taxiwayPath[1].Add(&taxiwaySubsection[8]);	taxiwayPath[1].Add(&taxiwaySubsection[10]);
+	taxiwayPath[2].Add(&taxiwaySubsection[0]);	taxiwayPath[2].Add(&taxiwaySubsection[26]);	taxiwayPath[2].Add(&taxiwaySubsection[27]);	taxiwayPath[2].Add(&taxiwaySubsection[28]);	taxiwayPath[2].Add(&taxiwaySubsection[29]);	taxiwayPath[2].Add(&taxiwaySubsection[31]);
+	taxiwayPath[3].Add(&taxiwaySubsection[26]);	taxiwayPath[3].Add(&taxiwaySubsection[19]);	taxiwayPath[3].Add(&taxiwaySubsection[1]);	taxiwayPath[3].Add(&taxiwaySubsection[0]);
+	taxiwayPath[4].Add(&taxiwaySubsection[1]);	taxiwayPath[4].Add(&taxiwaySubsection[3]);	taxiwayPath[4].Add(&taxiwaySubsection[19]);	taxiwayPath[4].Add(&taxiwaySubsection[20]);	taxiwayPath[4].Add(&taxiwaySubsection[8]);	taxiwayPath[4].Add(&taxiwaySubsection[10]);
+	taxiwayPath[5].Add(&taxiwaySubsection[19]);	taxiwayPath[5].Add(&taxiwaySubsection[1]);	taxiwayPath[5].Add(&taxiwaySubsection[26]);	taxiwayPath[5].Add(&taxiwaySubsection[27]);	taxiwayPath[5].Add(&taxiwaySubsection[28]);	taxiwayPath[5].Add(&taxiwaySubsection[29]);	taxiwayPath[5].Add(&taxiwaySubsection[31]);
+	taxiwayPath[6].Add(&taxiwaySubsection[10]);	taxiwayPath[6].Add(&taxiwaySubsection[8]);	taxiwayPath[6].Add(&taxiwaySubsection[20]);	taxiwayPath[6].Add(&taxiwaySubsection[19]);
+	taxiwayPath[7].Add(&taxiwaySubsection[0]);	taxiwayPath[7].Add(&taxiwaySubsection[26]);	taxiwayPath[7].Add(&taxiwaySubsection[10]);	taxiwayPath[7].Add(&taxiwaySubsection[8]);	taxiwayPath[7].Add(&taxiwaySubsection[20]);	taxiwayPath[7].Add(&taxiwaySubsection[19]);
+	taxiwayPath[8].Add(&taxiwaySubsection[10]);	taxiwayPath[8].Add(&taxiwaySubsection[8]);	taxiwayPath[8].Add(&taxiwaySubsection[20]);	taxiwayPath[8].Add(&taxiwaySubsection[19]);	taxiwayPath[8].Add(&taxiwaySubsection[27]);	taxiwayPath[8].Add(&taxiwaySubsection[28]);	taxiwayPath[8].Add(&taxiwaySubsection[29]);	taxiwayPath[8].Add(&taxiwaySubsection[31]);
+	taxiwayPath[9].Add(&taxiwaySubsection[7]);	taxiwayPath[9].Add(&taxiwaySubsection[19]);	taxiwayPath[9].Add(&taxiwaySubsection[20]);	taxiwayPath[9].Add(&taxiwaySubsection[21]);	taxiwayPath[9].Add(&taxiwaySubsection[22]);	taxiwayPath[9].Add(&taxiwaySubsection[15]);	taxiwayPath[9].Add(&taxiwaySubsection[13]);
+	taxiwayPath[10].Add(&taxiwaySubsection[7]);	taxiwayPath[10].Add(&taxiwaySubsection[0]);	taxiwayPath[10].Add(&taxiwaySubsection[26]);	taxiwayPath[10].Add(&taxiwaySubsection[19]);	taxiwayPath[10].Add(&taxiwaySubsection[20]);	taxiwayPath[10].Add(&taxiwaySubsection[21]);	taxiwayPath[10].Add(&taxiwaySubsection[22]);	taxiwayPath[10].Add(&taxiwaySubsection[15]);	taxiwayPath[10].Add(&taxiwaySubsection[13]);
+	taxiwayPath[11].Add(&taxiwaySubsection[7]);	taxiwayPath[11].Add(&taxiwaySubsection[8]);	taxiwayPath[11].Add(&taxiwaySubsection[12]);	taxiwayPath[11].Add(&taxiwaySubsection[13]);
+	taxiwayPath[12].Add(&taxiwaySubsection[7]);	taxiwayPath[12].Add(&taxiwaySubsection[21]);	taxiwayPath[12].Add(&taxiwaySubsection[22]);	taxiwayPath[12].Add(&taxiwaySubsection[15]);	taxiwayPath[12].Add(&taxiwaySubsection[13]);
+	taxiwayPath[13].Add(&taxiwaySubsection[6]);	taxiwayPath[13].Add(&taxiwaySubsection[7]);	taxiwayPath[13].Add(&taxiwaySubsection[19]);	taxiwayPath[13].Add(&taxiwaySubsection[20]);	taxiwayPath[13].Add(&taxiwaySubsection[21]);	taxiwayPath[13].Add(&taxiwaySubsection[22]);	taxiwayPath[13].Add(&taxiwaySubsection[15]);	taxiwayPath[13].Add(&taxiwaySubsection[13]);	taxiwayPath[13].Add(&taxiwaySubsection[14]);
 	taxiwayPath[14].Add(&taxiwaySubsection[6]);	taxiwayPath[14].Add(&taxiwaySubsection[7]);	taxiwayPath[14].Add(&taxiwaySubsection[0]);	taxiwayPath[14].Add(&taxiwaySubsection[26]);	taxiwayPath[14].Add(&taxiwaySubsection[19]);	taxiwayPath[14].Add(&taxiwaySubsection[20]);	taxiwayPath[14].Add(&taxiwaySubsection[21]);	taxiwayPath[14].Add(&taxiwaySubsection[22]);	taxiwayPath[14].Add(&taxiwaySubsection[15]);	taxiwayPath[14].Add(&taxiwaySubsection[13]);	taxiwayPath[14].Add(&taxiwaySubsection[14]);
-	taxiwayPath[15].Add(&taxiwaySubsection[6]);	taxiwayPath[15].Add(&taxiwaySubsection[7]);	taxiwayPath[15].Add(&taxiwaySubsection[8]);	taxiwayPath[15].Add(&taxiwaySubsection[12]);	taxiwayPath[15].Add(&taxiwaySubsection[13]);	taxiwayPath[15].Add(&taxiwaySubsection[14]);					
-	taxiwayPath[16].Add(&taxiwaySubsection[6]);	taxiwayPath[16].Add(&taxiwaySubsection[7]);	taxiwayPath[16].Add(&taxiwaySubsection[21]);	taxiwayPath[16].Add(&taxiwaySubsection[22]);	taxiwayPath[16].Add(&taxiwaySubsection[15]);	taxiwayPath[16].Add(&taxiwaySubsection[13]);	taxiwayPath[16].Add(&taxiwaySubsection[14]);				
-	taxiwayPath[17].Add(&taxiwaySubsection[15]);	taxiwayPath[17].Add(&taxiwaySubsection[16]);	taxiwayPath[17].Add(&taxiwaySubsection[18]);	taxiwayPath[17].Add(&taxiwaySubsection[19]);	taxiwayPath[17].Add(&taxiwaySubsection[1]);	taxiwayPath[17].Add(&taxiwaySubsection[3]);	taxiwayPath[17].Add(&taxiwaySubsection[4]);	taxiwayPath[17].Add(&taxiwaySubsection[5]);			
-	taxiwayPath[18].Add(&taxiwaySubsection[15]);	taxiwayPath[18].Add(&taxiwaySubsection[16]);	taxiwayPath[18].Add(&taxiwaySubsection[18]);	taxiwayPath[18].Add(&taxiwaySubsection[3]);	taxiwayPath[18].Add(&taxiwaySubsection[4]);	taxiwayPath[18].Add(&taxiwaySubsection[19]);	taxiwayPath[18].Add(&taxiwaySubsection[26]);	taxiwayPath[18].Add(&taxiwaySubsection[27]);	taxiwayPath[18].Add(&taxiwaySubsection[28]);		
+	taxiwayPath[15].Add(&taxiwaySubsection[6]);	taxiwayPath[15].Add(&taxiwaySubsection[7]);	taxiwayPath[15].Add(&taxiwaySubsection[8]);	taxiwayPath[15].Add(&taxiwaySubsection[12]);	taxiwayPath[15].Add(&taxiwaySubsection[13]);	taxiwayPath[15].Add(&taxiwaySubsection[14]);
+	taxiwayPath[16].Add(&taxiwaySubsection[6]);	taxiwayPath[16].Add(&taxiwaySubsection[7]);	taxiwayPath[16].Add(&taxiwaySubsection[21]);	taxiwayPath[16].Add(&taxiwaySubsection[22]);	taxiwayPath[16].Add(&taxiwaySubsection[15]);	taxiwayPath[16].Add(&taxiwaySubsection[13]);	taxiwayPath[16].Add(&taxiwaySubsection[14]);
+	taxiwayPath[17].Add(&taxiwaySubsection[15]);	taxiwayPath[17].Add(&taxiwaySubsection[16]);	taxiwayPath[17].Add(&taxiwaySubsection[18]);	taxiwayPath[17].Add(&taxiwaySubsection[19]);	taxiwayPath[17].Add(&taxiwaySubsection[1]);	taxiwayPath[17].Add(&taxiwaySubsection[3]);	taxiwayPath[17].Add(&taxiwaySubsection[4]);	taxiwayPath[17].Add(&taxiwaySubsection[5]);
+	taxiwayPath[18].Add(&taxiwaySubsection[15]);	taxiwayPath[18].Add(&taxiwaySubsection[16]);	taxiwayPath[18].Add(&taxiwaySubsection[18]);	taxiwayPath[18].Add(&taxiwaySubsection[3]);	taxiwayPath[18].Add(&taxiwaySubsection[4]);	taxiwayPath[18].Add(&taxiwaySubsection[19]);	taxiwayPath[18].Add(&taxiwaySubsection[26]);	taxiwayPath[18].Add(&taxiwaySubsection[27]);	taxiwayPath[18].Add(&taxiwaySubsection[28]);
 	taxiwayPath[19].Add(&taxiwaySubsection[15]);	taxiwayPath[19].Add(&taxiwaySubsection[16]);	taxiwayPath[19].Add(&taxiwaySubsection[18]);	taxiwayPath[19].Add(&taxiwaySubsection[19]);	taxiwayPath[19].Add(&taxiwaySubsection[20]);	taxiwayPath[19].Add(&taxiwaySubsection[8]);	taxiwayPath[19].Add(&taxiwaySubsection[10]);	taxiwayPath[19].Add(&taxiwaySubsection[3]);	taxiwayPath[19].Add(&taxiwaySubsection[4]);	taxiwayPath[19].Add(&taxiwaySubsection[27]);	taxiwayPath[19].Add(&taxiwaySubsection[28]);
-	taxiwayPath[20].Add(&taxiwaySubsection[15]);	taxiwayPath[20].Add(&taxiwaySubsection[16]);	taxiwayPath[20].Add(&taxiwaySubsection[18]);	taxiwayPath[20].Add(&taxiwaySubsection[19]);	taxiwayPath[20].Add(&taxiwaySubsection[20]);	taxiwayPath[20].Add(&taxiwaySubsection[21]);	taxiwayPath[20].Add(&taxiwaySubsection[3]);	taxiwayPath[20].Add(&taxiwaySubsection[4]);	taxiwayPath[20].Add(&taxiwaySubsection[27]);	taxiwayPath[20].Add(&taxiwaySubsection[28]);	
-	taxiwayPath[21].Add(&taxiwaySubsection[16]);	taxiwayPath[21].Add(&taxiwaySubsection[18]);	taxiwayPath[21].Add(&taxiwaySubsection[19]);	taxiwayPath[21].Add(&taxiwaySubsection[1]);	taxiwayPath[21].Add(&taxiwaySubsection[3]);	taxiwayPath[21].Add(&taxiwaySubsection[4]);					
-	taxiwayPath[22].Add(&taxiwaySubsection[16]);	taxiwayPath[22].Add(&taxiwaySubsection[18]);	taxiwayPath[22].Add(&taxiwaySubsection[3]);	taxiwayPath[22].Add(&taxiwaySubsection[4]);	taxiwayPath[22].Add(&taxiwaySubsection[19]);	taxiwayPath[22].Add(&taxiwaySubsection[26]);	taxiwayPath[22].Add(&taxiwaySubsection[27]);				
-	taxiwayPath[23].Add(&taxiwaySubsection[16]);	taxiwayPath[23].Add(&taxiwaySubsection[18]);	taxiwayPath[23].Add(&taxiwaySubsection[19]);	taxiwayPath[23].Add(&taxiwaySubsection[20]);	taxiwayPath[23].Add(&taxiwaySubsection[8]);	taxiwayPath[23].Add(&taxiwaySubsection[10]);	taxiwayPath[23].Add(&taxiwaySubsection[3]);	taxiwayPath[23].Add(&taxiwaySubsection[4]);	taxiwayPath[23].Add(&taxiwaySubsection[27]);		
+	taxiwayPath[20].Add(&taxiwaySubsection[15]);	taxiwayPath[20].Add(&taxiwaySubsection[16]);	taxiwayPath[20].Add(&taxiwaySubsection[18]);	taxiwayPath[20].Add(&taxiwaySubsection[19]);	taxiwayPath[20].Add(&taxiwaySubsection[20]);	taxiwayPath[20].Add(&taxiwaySubsection[21]);	taxiwayPath[20].Add(&taxiwaySubsection[3]);	taxiwayPath[20].Add(&taxiwaySubsection[4]);	taxiwayPath[20].Add(&taxiwaySubsection[27]);	taxiwayPath[20].Add(&taxiwaySubsection[28]);
+	taxiwayPath[21].Add(&taxiwaySubsection[16]);	taxiwayPath[21].Add(&taxiwaySubsection[18]);	taxiwayPath[21].Add(&taxiwaySubsection[19]);	taxiwayPath[21].Add(&taxiwaySubsection[1]);	taxiwayPath[21].Add(&taxiwaySubsection[3]);	taxiwayPath[21].Add(&taxiwaySubsection[4]);
+	taxiwayPath[22].Add(&taxiwaySubsection[16]);	taxiwayPath[22].Add(&taxiwaySubsection[18]);	taxiwayPath[22].Add(&taxiwaySubsection[3]);	taxiwayPath[22].Add(&taxiwaySubsection[4]);	taxiwayPath[22].Add(&taxiwaySubsection[19]);	taxiwayPath[22].Add(&taxiwaySubsection[26]);	taxiwayPath[22].Add(&taxiwaySubsection[27]);
+	taxiwayPath[23].Add(&taxiwaySubsection[16]);	taxiwayPath[23].Add(&taxiwaySubsection[18]);	taxiwayPath[23].Add(&taxiwaySubsection[19]);	taxiwayPath[23].Add(&taxiwaySubsection[20]);	taxiwayPath[23].Add(&taxiwaySubsection[8]);	taxiwayPath[23].Add(&taxiwaySubsection[10]);	taxiwayPath[23].Add(&taxiwaySubsection[3]);	taxiwayPath[23].Add(&taxiwaySubsection[4]);	taxiwayPath[23].Add(&taxiwaySubsection[27]);
 	taxiwayPath[24].Add(&taxiwaySubsection[16]);	taxiwayPath[24].Add(&taxiwaySubsection[18]);	taxiwayPath[24].Add(&taxiwaySubsection[19]);	taxiwayPath[24].Add(&taxiwaySubsection[20]);	taxiwayPath[24].Add(&taxiwaySubsection[21]);	taxiwayPath[24].Add(&taxiwaySubsection[3]);	taxiwayPath[24].Add(&taxiwaySubsection[4]);	taxiwayPath[24].Add(&taxiwaySubsection[27]);
 
 	VECTOR3 runwayLines[MAXSTATICRUNWAYLINES][2]=
@@ -238,34 +255,34 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	runwaySubsection[54].Init(this, _V_(5274,0,910), _V_(5584,0,910), _V(1,0,0), 20);
 	runwaySubsection[55].Init(this, _V_(6205,0,902.5), _V_(5429,0,902.5), _V(1,1,1), 25);
 
-	runwayPath[0].Init(this, (VECTOR3 *)runwayLines, _V(1,1,1), runwayBeacons, STATICRUNWAYLINESSPLIT);	
-	
-	runwayPath[1].Init(this, (VECTOR3 *)(runwayLines+STATICRUNWAYLINESSPLIT), _V(1,1,1), runwayBeacons+STATICRUNWAYLINESSPLIT, MAXSTATICRUNWAYLINES-STATICRUNWAYLINESSPLIT);	
-	
+	runwayPath[0].Init(this, (VECTOR3 *)runwayLines, _V(1,1,1), runwayBeacons, STATICRUNWAYLINESSPLIT);
+
+	runwayPath[1].Init(this, (VECTOR3 *)(runwayLines+STATICRUNWAYLINESSPLIT), _V(1,1,1), runwayBeacons+STATICRUNWAYLINESSPLIT, MAXSTATICRUNWAYLINES-STATICRUNWAYLINESSPLIT);
+
 	runwayPath[2].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=0;i<13;i++) runwayPath[2].Add(&runwaySubsection[i]);
-	
+
 	runwayPath[3].Init(this, NULL, _V(0,0,0), NULL, 0);
 	runwayPath[3].Add(&runwaySubsection[13]);
-	
+
 	runwayPath[4].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=14;i<27;i++) runwayPath[4].Add(&runwaySubsection[i]);
-	
+
 	runwayPath[5].Init(this, NULL, _V(0,0,0), NULL, 0);
 	runwayPath[5].Add(&runwaySubsection[27]);
-	
+
 	runwayPath[6].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=28;i<41;i++) runwayPath[6].Add(&runwaySubsection[i]);
-	
+
 	runwayPath[7].Init(this, NULL, _V(0,0,0), NULL, 0);
 	runwayPath[7].Add(&runwaySubsection[41]);
-	
+
 	runwayPath[8].Init(this, NULL, _V(0,0,0), NULL, 0);
 	for(int i=42;i<55;i++) runwayPath[8].Add(&runwaySubsection[i]);
-	
+
 	runwayPath[9].Init(this, NULL, _V(0,0,0), NULL, 0);
 	runwayPath[9].Add(&runwaySubsection[55]);
-	
+
 	static char *points[RUNWAYENDPOINTS]=
 	{
 		"Launch",
@@ -308,7 +325,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	taxiways.Add(&taxiwayPath[21], points[7], points[2], true);
 	taxiways.Add(&taxiwayPath[22], points[7], points[1], true);
 	taxiways.Add(&taxiwayPath[23], points[7], points[3], true);
-	taxiways.Add(&taxiwayPath[24], points[7], points[8], true);	
+	taxiways.Add(&taxiwayPath[24], points[7], points[8], true);
 	taxiways.Switch(true);
 
 	runways.Init(1.4, 0.8, 2, 0.03, 0);
@@ -325,25 +342,9 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	runways.Add(&runwayPath[8], points[7], points[10], false);
 	runways.Add(&runwayPath[9], points[7], points[11], true);
 	runways.Switch(true);
-	
+
 	DefineAnimations();
-
-	cur_TurnAround=-1;
-	cur_LightStorage=-1;
-
-	cur_Path=0;
-	cur_Section=0;
 }
-
-// --------------------------------------------------------------
-// Destructor
-// --------------------------------------------------------------
-AscensionUltra::~AscensionUltra ()
-{
-}
-
-double AscensionUltra::GetVersion(){return 1.0;}
-
 // --------------------------------------------------------------
 // Define animation sequences for moving parts
 // --------------------------------------------------------------
@@ -390,21 +391,20 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	
 	double curvoff[5]={-0.02,-0.05,-0.08,-0.12,-0.17};
 
+	InitSubObjects();
+
 	for(int i=0;i<5;i++)
 	{
 		VECTOR3 off=OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0);
 		SetMeshVisibilityMode (AddMesh (meshHangar, &off), MESHVIS_ALWAYS);
 		turnAround[i].SetPosition(off);
 	}
-	for(int i=0;i<12;i++)
-	{
-		VECTOR3 off=OFFSET+LS1OFFSET+LS1MATRIXOFFSET*i;
-		SetMeshVisibilityMode (AddMesh (meshLightStorage, &off), MESHVIS_ALWAYS);
-		lightStorage[i].SetPosition(off);
-	}
+	for(int i=0;i<12;i++){SetMeshVisibilityMode (AddMesh (meshLightStorage, &(OFFSET+LS1OFFSET+LS1MATRIXOFFSET*i)), MESHVIS_ALWAYS);}
 	SetMeshVisibilityMode (AddMesh (meshLaunch = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC1"), &(OFFSET+LFMC1OFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 
+	crew.InitUmmu(GetHandle());
+	crew.DefineAirLockShape(false, -1, 1, -1, 1, -1, 1);
 }
 
 // Read status from scenario file
@@ -506,6 +506,8 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
 	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
+
+	crew.WarnUserUMMUNotInstalled("Ascension Ultra");
 }
 
 bool AscensionUltra::clbkLoadGenericCockpit ()

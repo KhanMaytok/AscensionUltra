@@ -38,6 +38,8 @@ void Hangar::clbkPostStep (double simt, double simdt, double mjd)
 {
 	int k=GetDoors();
 	for(int i=0;i<k;i++) GetDoor(i)->PostStep(simt, simdt, mjd);	
+	k=GetRooms();
+	for(int i=0;i<k;i++) GetRoom(i)->PostStep(simt, simdt, mjd);	
 }
 
 bool Hangar::clbkLoadStateEx (char *line)

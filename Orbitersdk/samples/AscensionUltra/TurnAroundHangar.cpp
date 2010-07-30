@@ -12,11 +12,7 @@
 TurnAroundHangar::TurnAroundHangar(void):Hangar()
 {
 	crane1.SetSpeed(_V(10,10,10));
-	crane1.SetCrawl(_V(1,1,1));
-
-	char *name[ROOMS]={"East Control","West Control"};
-	VECTOR3 room[ROOMS][2]={ {_V(-88,22,0),_V(1,0,0)} , {_V(88,22,0),_V(-1,0,0)} };
-	for(int i=0;i<ROOMS;i++) rooms[i].Init(this, name[i], room[i][0], room[i][1] );
+	crane1.SetCrawl(_V(1,1,1));	
 }
 
 HangarType TurnAroundHangar::GetType(){return HangarType::TurnAround;}
@@ -44,6 +40,11 @@ void TurnAroundHangar::DefineAnimations ()
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1, _V(0,-CRANEREELLOWERPOINT,0)),
 		new MGROUP_SCALE(meshIndex, DoorGrp+2, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1)),
 		prefix);
+
+	char *name[ROOMS]={"East Control","West Control"};
+	VECTOR3 room[ROOMS][2]={ {_V(-88,22,0),_V(1,0,0)} , {_V(88,22,0),_V(-1,0,0)} };
+	for(int i=0;i<ROOMS;i++) rooms[i].Init(owner, this, name[i], room[i][0], room[i][1], _V(0,0,0) );
+
 	crane1.DefineAnimations();
 }
 

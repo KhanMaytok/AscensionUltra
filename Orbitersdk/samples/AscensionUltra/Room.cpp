@@ -1,25 +1,39 @@
 #include "Room.h"
+#include "Hangar.h"
 
 Room::Room()
 {
-	owner = NULL;
+	hangar = NULL;
 	name = NULL;
 }
 
-void Room::Init(Hangar *owner, const char *name, VECTOR3 cameraPosition, VECTOR3 viewDirection)
+void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraPosition, VECTOR3 viewDirection, VECTOR3 doorPosition)
 {
-	this->owner=owner;
+	crew.InitUmmu(owner->GetHandle());
+	doorPosition+=hangar->GetPosition();
+	VECTOR3 n=_V(-1,-1,-1)+doorPosition;
+	VECTOR3 p=_V(1,1,1)+doorPosition;
+	crew.DefineAirLockShape(true, n.x,p.x,n.y,p.y,n.z,p.z);
+	crew.SetMaxSeatAvailableInShip(4);
+	this->hangar=hangar;
 	strcpy(this->name=new char[strlen(name)+1], name);
 	this->cameraPosition=cameraPosition;
 	this->viewDirection=viewDirection;
 }
 
-Room::~Room()
+void Room::PostStep (double simt, double simdt, double mjd)
 {
-	delete [] name;
+	switch (crew.ProcessUniversalMMu())
+	{
+	case UMMU_RETURNED_TO_OUR_SHIP:
+	case UMMU_TRANSFERED_TO_OUR_SHIP:
+		sprintf(oapiDebugString(),"%s -> %d", crew.GetLastEnteredCrewName(), crew.GetCrewTotalNumber());
+		break;
+	}
 }
 
-Hangar *Room::GetHangar(){return owner;}
+Room::~Room(){delete [] name;}
+Hangar *Room::GetHangar(){return hangar;}
 char *Room::GetName(){return name;}
 VECTOR3 Room::GetCameraPosition(){return cameraPosition;}
 VECTOR3 Room::GetViewDirection(){return viewDirection;}
