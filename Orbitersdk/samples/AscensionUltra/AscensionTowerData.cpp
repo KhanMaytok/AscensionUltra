@@ -116,9 +116,9 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::MainMenu: return 3;
 	case AscensionTowerState::GroundMenu: return 4;
 	case AscensionTowerState::ATCMenu: return 3;
-	case AscensionTowerState::HangarForDoorSelection:
-	case AscensionTowerState::HangarForRoomSelection:
+	case AscensionTowerState::HangarForDoorSelection:	
 		return ascension->GetHangars(HangarType::TurnAround)+ascension->GetHangars(HangarType::LightStorage);
+	case AscensionTowerState::HangarForRoomSelection:
 	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HangarType::TurnAround);
 	case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();		
 	case AscensionTowerState::RoomSelection: return ((Hangar *)object[state])->GetRooms();
@@ -159,7 +159,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::HangarForRoomSelection:
 		item.Index=index;
 		{
-			Hangar *h=ascension->GetHangar(index<5?HangarType::TurnAround:HangarType::LightStorage, index<5?index:index-5);
+			Hangar *h=ascension->GetHangar(HangarType::TurnAround, index);
 			item.Name=h->GetName();
 			sprintf(text, "%c %s", ascension->GetControlRoom()->GetHangar()==h?'*':' ', item.Name);
 		}
@@ -268,7 +268,7 @@ void AscensionTowerData::Select()
 		break;
 	case AscensionTowerState::HangarForRoomSelection:
 		index=selectedIndex[state];
-		object[AscensionTowerState::RoomSelection]=ascension->GetHangar(index<5?HangarType::TurnAround:HangarType::LightStorage, index<5?index:index-5);
+		object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HangarType::TurnAround, index);
 		SetState(AscensionTowerState::RoomSelection);		
 		break;
 	case AscensionTowerState::RoomSelection:
