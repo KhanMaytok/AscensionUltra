@@ -11,8 +11,8 @@ void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraP
 {
 	crew.InitUmmu(owner->GetHandle());
 	doorPosition+=hangar->GetPosition();
-	VECTOR3 n=_V(-1,-1,-1)+doorPosition;
-	VECTOR3 p=_V(1,1,1)+doorPosition;
+	VECTOR3 n=_V(-10,-10,-10)+doorPosition;
+	VECTOR3 p=_V(10,10,10)+doorPosition;
 	crew.DefineAirLockShape(true, n.x,p.x,n.y,p.y,n.z,p.z);
 	crew.SetMaxSeatAvailableInShip(4);
 	this->hangar=hangar;
@@ -27,7 +27,7 @@ void Room::PostStep (double simt, double simdt, double mjd)
 	{
 	case UMMU_RETURNED_TO_OUR_SHIP:
 	case UMMU_TRANSFERED_TO_OUR_SHIP:
-		sprintf(oapiDebugString(),"%s -> %d", crew.GetLastEnteredCrewName(), crew.GetCrewTotalNumber());
+		sprintf(oapiDebugString(),"%s -> %s->%s(%d)", crew.GetLastEnteredCrewName(), hangar->GetName(), name, crew.GetCrewTotalNumber());
 		break;
 	}
 }

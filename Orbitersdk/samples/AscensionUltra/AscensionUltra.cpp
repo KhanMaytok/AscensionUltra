@@ -341,9 +341,7 @@ void AscensionUltra::InitSubObjects()
 	runways.Add(&runwayPath[0], points[7], points[9], false);
 	runways.Add(&runwayPath[8], points[7], points[10], false);
 	runways.Add(&runwayPath[9], points[7], points[11], true);
-	runways.Switch(true);
-
-	DefineAnimations();
+	runways.Switch(true);	
 }
 // --------------------------------------------------------------
 // Define animation sequences for moving parts
@@ -403,8 +401,10 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetMeshVisibilityMode (AddMesh (meshLaunch = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC1"), &(OFFSET+LFMC1OFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 
+	DefineAnimations();
+
 	crew.InitUmmu(GetHandle());
-	crew.DefineAirLockShape(false, -1, 1, -1, 1, -1, 1);
+	crew.DefineAirLockShape(true, -10, 10, -10, 10, -10, 10);
 }
 
 // Read status from scenario file
@@ -506,6 +506,14 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
 	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
+
+	switch (crew.ProcessUniversalMMu())
+	{
+	case UMMU_RETURNED_TO_OUR_SHIP:
+	case UMMU_TRANSFERED_TO_OUR_SHIP:
+		sprintf(oapiDebugString(),"%s -> Ascension(%d)", crew.GetLastEnteredCrewName(), crew.GetCrewTotalNumber());
+		break;
+	}
 
 	crew.WarnUserUMMUNotInstalled("Ascension Ultra");
 }
