@@ -8,7 +8,7 @@ class BeaconPath
 public:
 	~BeaconPath(void);
 	void Init(VESSEL *owner, VECTOR3 *arrays, VECTOR3 &color, int *beacons, int length);
-	void Add(BeaconArray *beaconArray);
+	void Add(BeaconArray *beaconArray, bool inverse=false);
 	void Clear();
 	void SetColor(VECTOR3 &color);
 	void SetShape(DWORD shape);
@@ -48,7 +48,13 @@ public:
 	double GetOffset();
 
 private:	
+	struct Item
+	{
+		bool inversed;
+		BeaconArray *beaconArray;
+	};
 	void CalculateStrobe(double period, double duration, double propagate);
-	std::list <BeaconArray *> arrays, selfCreated;
+	std::list <Item> arrays;
+	std::list <BeaconArray *> selfCreated;
 	double offset;	
 };

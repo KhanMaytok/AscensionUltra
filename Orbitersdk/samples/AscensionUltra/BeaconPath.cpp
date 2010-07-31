@@ -26,28 +26,29 @@ void BeaconPath::Init(VESSEL *owner, VECTOR3 *arrays, VECTOR3 &color, int *beaco
 	}
 }
 
-void BeaconPath::Add(BeaconArray *beaconArray){ arrays.push_back(beaconArray); }
-
-void BeaconPath::SetColor(VECTOR3 &color){ for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->SetColor(color); }
-void BeaconPath::SetShape(DWORD shape){ for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->SetShape(shape); }
-void BeaconPath::SetSize(double size){ for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->SetSize(size); }
-void BeaconPath::SetFallOff(double falloff){ for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->SetFallOff(falloff); }
-void BeaconPath::Switch(bool on)
+void BeaconPath::Add(BeaconArray *beaconArray, bool inverse)
 {
-	for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++) (*i)->Switch(on);
+	Item item={inverse, beaconArray};
+	arrays.push_back(item);
 }
 
-void BeaconPath::GetColor(VECTOR3 &color) { if (arrays.empty()) color=_V(0,0,0); else arrays.front()->GetColor(color); }
-DWORD BeaconPath::GetShape() { return arrays.empty()?0:arrays.front()->GetShape(); }
-double BeaconPath::GetSize() { return arrays.empty()?0:arrays.front()->GetSize(); }
-double BeaconPath::GetFallOff() { return arrays.empty()?0:arrays.front()->GetFallOff(); }
-bool BeaconPath::On() { return arrays.empty()?0:arrays.front()->On(); }
+void BeaconPath::SetColor(VECTOR3 &color){ for(std::list<Item>::iterator i=arrays.begin(); i!=arrays.end(); i++) i->beaconArray->SetColor(color); }
+void BeaconPath::SetShape(DWORD shape){ for(std::list<Item>::iterator i=arrays.begin(); i!=arrays.end(); i++) i->beaconArray->SetShape(shape); }
+void BeaconPath::SetSize(double size){ for(std::list<Item>::iterator i=arrays.begin(); i!=arrays.end(); i++) i->beaconArray->SetSize(size); }
+void BeaconPath::SetFallOff(double falloff){ for(std::list<Item>::iterator i=arrays.begin(); i!=arrays.end(); i++) i->beaconArray->SetFallOff(falloff); }
+void BeaconPath::Switch(bool on){ for(std::list<Item>::iterator i=arrays.begin(); i!=arrays.end(); i++) i->beaconArray->Switch(on); }
+
+void BeaconPath::GetColor(VECTOR3 &color) { if (arrays.empty()) color=_V(0,0,0); else arrays.front().beaconArray->GetColor(color); }
+DWORD BeaconPath::GetShape() { return arrays.empty()?0:arrays.front().beaconArray->GetShape(); }
+double BeaconPath::GetSize() { return arrays.empty()?0:arrays.front().beaconArray->GetSize(); }
+double BeaconPath::GetFallOff() { return arrays.empty()?0:arrays.front().beaconArray->GetFallOff(); }
+bool BeaconPath::On() { return arrays.empty()?0:arrays.front().beaconArray->On(); }
 void BeaconPath::SetPeriod(double period){ CalculateStrobe(period, GetDuration(), GetPropagate()); }
-double BeaconPath::GetPeriod() { return arrays.empty()?0:arrays.front()->GetPeriod(); }
+double BeaconPath::GetPeriod() { return arrays.empty()?0:arrays.front().beaconArray->GetPeriod(); }
 void BeaconPath::SetDuration(double duration){ CalculateStrobe(GetPeriod(), duration, GetPropagate()); }
-double BeaconPath::GetDuration() { return arrays.empty()?0:arrays.front()->GetDuration(); }
+double BeaconPath::GetDuration() { return arrays.empty()?0:arrays.front().beaconArray->GetDuration(); }
 void BeaconPath::SetPropagate(double propagate){ CalculateStrobe(GetPeriod(), GetDuration(), propagate); }
-double BeaconPath::GetPropagate() { return arrays.empty()?0:arrays.front()->GetPropagate(); }
+double BeaconPath::GetPropagate() { return arrays.empty()?0:arrays.front().beaconArray->GetPropagate(); }
 
 void BeaconPath::SetOffset(double offset)
 {
@@ -61,24 +62,26 @@ void BeaconPath::CalculateStrobe(double period, double duration, double propagat
 	double offset=this->offset;
 	if (period<0)
 	{
-		for(std::list<BeaconArray *>::reverse_iterator i=arrays.rbegin(); i!=arrays.rend(); i++)
+		for(std::list<Item>::reverse_iterator i=arrays.rbegin(); i!=arrays.rend(); i++)
 		{
-			(*i)->SetPeriod(period);
-			(*i)->SetDuration(duration);
-			(*i)->SetPropagate(propagate);
-			(*i)->SetOffset(offset);
-			offset=(*i)->GetOffsetPropagation();		
+			BeaconArray *b=i->beaconArray;
+			b->SetPeriod(period*(i->inversed?-1:1));
+			b->SetDuration(duration);
+			b->SetPropagate(propagate);
+			b->SetOffset(offset);
+			offset=b->GetOffsetPropagation();		
 		}	
 	}
 	else
 	{
-		for(std::list<BeaconArray *>::iterator i=arrays.begin(); i!=arrays.end(); i++)
+		for(std::list<Item>::iterator i=arrays.begin(); i!=arrays.end(); i++)
 		{
-			(*i)->SetPeriod(period);
-			(*i)->SetDuration(duration);
-			(*i)->SetPropagate(propagate);
-			(*i)->SetOffset(offset);
-			offset=(*i)->GetOffsetPropagation();		
+			BeaconArray *b=i->beaconArray;
+			b->SetPeriod(period*(i->inversed?-1:1));
+			b->SetDuration(duration);
+			b->SetPropagate(propagate);
+			b->SetOffset(offset);
+			offset=b->GetOffsetPropagation();		
 		}
 	}
 }
