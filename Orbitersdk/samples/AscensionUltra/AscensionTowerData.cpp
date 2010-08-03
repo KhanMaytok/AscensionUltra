@@ -116,9 +116,12 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::MainMenu: return 3;
 	case AscensionTowerState::GroundMenu: return 4;
 	case AscensionTowerState::ATCMenu: return 3;
-	case AscensionTowerState::HangarForDoorSelection: return ascension->GetHangars(HangarType::TurnAround)+ascension->GetHangars(HangarType::LightStorage);
+	case AscensionTowerState::HangarForDoorSelection:	
+		return ascension->GetHangars(HangarType::TurnAround)+ascension->GetHangars(HangarType::LightStorage);
+	case AscensionTowerState::HangarForRoomSelection:
 	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HangarType::TurnAround);
 	case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();		
+	case AscensionTowerState::RoomSelection: return ((Hangar *)object[state])->GetRooms();
 	case AscensionTowerState::DoorControl: return 3;
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
@@ -152,6 +155,24 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::DoorSelection:
 		item.Index=index;
 		item.Name=((Hangar *)object[state])->GetDoor(index)->GetName();
+		return item;
+	case AscensionTowerState::HangarForRoomSelection:
+		item.Index=index;
+		{
+			Hangar *h=ascension->GetHangar(HangarType::TurnAround, index);
+			item.Name=h->GetName();
+			sprintf(text, "%c %s", ascension->GetControlRoom()->GetHangar()==h?'*':' ', item.Name);
+		}
+		item.Name=text;
+		return item;
+	case AscensionTowerState::RoomSelection:
+		item.Index=index;
+		{
+			Room *r=((Hangar *)object[state])->GetRoom(index);
+			item.Name=r->GetName();
+			sprintf(text, "%c %s", ascension->GetControlRoom()==r?'*':' ', item.Name);
+		}
+		item.Name=text;
 		return item;
 	case AscensionTowerState::HangarForCraneSelection:
 		item.Index=index;
@@ -244,6 +265,15 @@ void AscensionTowerData::Select()
 		index=selectedIndex[state];
 		object[AscensionTowerState::DoorSelection]=ascension->GetHangar(index<5?HangarType::TurnAround:HangarType::LightStorage, index<5?index:index-5);
 		SetState(AscensionTowerState::DoorSelection);		
+		break;
+	case AscensionTowerState::HangarForRoomSelection:
+		index=selectedIndex[state];
+		object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HangarType::TurnAround, index);
+		SetState(AscensionTowerState::RoomSelection);		
+		break;
+	case AscensionTowerState::RoomSelection:
+		object[AscensionTowerState::DoorControl]=((Hangar *)object[state])->GetDoor(selectedIndex[state]);
+		ascension->SwitchView(((Hangar *)object[state])->GetRoom(selectedIndex[state]));
 		break;
 	case AscensionTowerState::DoorSelection:
 		object[AscensionTowerState::DoorControl]=((Hangar *)object[state])->GetDoor(selectedIndex[state]);

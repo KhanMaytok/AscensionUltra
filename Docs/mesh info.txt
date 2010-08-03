@@ -89,6 +89,10 @@ End Doors - 6m translation +Y axis
 -88,22,0
 Cameras point toward 0,0,0 as default
 
+** Crew lounge entrance area **
+**(relative to hangar origin)**
+72,0,-33
+-72,0,-33
 
 **************************************************************** LIGHT STORAGE HANGAR
 12 Hangars

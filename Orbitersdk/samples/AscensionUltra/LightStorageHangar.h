@@ -20,5 +20,5 @@ public:
 	int GetDoors();
 	Door *GetDoor(int index);	
 private:
-	Door doors[DOORS];
+	Door doors[DOORS];	
 };

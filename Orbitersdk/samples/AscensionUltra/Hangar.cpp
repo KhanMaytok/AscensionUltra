@@ -38,6 +38,8 @@ void Hangar::clbkPostStep (double simt, double simdt, double mjd)
 {
 	int k=GetDoors();
 	for(int i=0;i<k;i++) GetDoor(i)->PostStep(simt, simdt, mjd);	
+	k=GetRooms();
+	for(int i=0;i<k;i++) GetRoom(i)->PostStep(simt, simdt, mjd);	
 }
 
 bool Hangar::clbkLoadStateEx (char *line)
@@ -80,6 +82,11 @@ void Hangar::Init(VESSEL* owner, const char *name, UINT meshIndex, const char *e
 
 int Hangar::GetDoors(){return 0;}
 Door *Hangar::GetDoor(int index){throw "GetDoor(1) not allowed on abstract hangar class!";}
+
+int Hangar::GetRooms(){return 0;}
+Room *Hangar::GetRoom(int index){throw "GetRoom(1) not allowed on abstract hangar class!";}
+
+VECTOR3 Hangar::GetPosition(){return _V(0,0,0);}
 
 bool Hangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {

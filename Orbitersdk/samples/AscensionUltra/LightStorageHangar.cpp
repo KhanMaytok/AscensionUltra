@@ -24,7 +24,7 @@ void LightStorageHangar::DefineAnimations ()
 	doors[1].Init(owner, "Maintenance Door", prefix, 2,
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp, 1, _V(0,3.62,0)),
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp+1, 1, _V(0,1.81,0)));
-	Hangar::DefineAnimations();	
+	Hangar::DefineAnimations();
 }
 
 int LightStorageHangar::GetDoors(){return DOORS;}

@@ -18,6 +18,7 @@
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
 #include "Routes.h"
+#include "UMmuSDK.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -53,8 +54,11 @@ public:
 	virtual int GetHangars(HangarType type);
 	virtual Routes *GetTaxiways();
 	virtual Routes *GetRunways();
+	virtual Room *GetControlRoom();
+	virtual void SwitchView(Room *room);
 	
 private:
+	void InitSubObjects();
 	void MoveGroup(int mesh, VECTOR3 v);
 	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
 
@@ -69,6 +73,8 @@ private:
 	BeaconPath runwayPath[RUNWAYPATHS];
 	Routes taxiways;
 	Routes runways;
+	Room *controlRoom;
+	UMMUCREWMANAGMENT crew;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
@@ -79,6 +85,8 @@ private:
 
 	int cur_Path;
 	int cur_Section;
+
+	bool coords;
 
 };
 

@@ -40,6 +40,11 @@ void TurnAroundHangar::DefineAnimations ()
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1, _V(0,-CRANEREELLOWERPOINT,0)),
 		new MGROUP_SCALE(meshIndex, DoorGrp+2, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1)),
 		prefix);
+
+	char *name[ROOMS]={"East Control","West Control"};
+	VECTOR3 room[ROOMS][3]={ {_V(-88,22,0),_V(1,0,0),_V(-72,0,-33)} , {_V(88,22,0),_V(-1,0,0),_V(72,0,-33)} };
+	for(int i=0;i<ROOMS;i++) rooms[i].Init(owner, this, name[i], room[i][0], room[i][1], room[i][2] );
+
 	crane1.DefineAnimations();
 }
 
@@ -84,6 +89,13 @@ Crane *TurnAroundHangar::GetCrane(){return &crane1;}
 int TurnAroundHangar::GetDoors(){return DOORS;}
 
 Door *TurnAroundHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+
+int TurnAroundHangar::GetRooms(){return ROOMS;}
+
+Room *TurnAroundHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
+
+VECTOR3 TurnAroundHangar::GetPosition(){return position;}
+void TurnAroundHangar::SetPosition(VECTOR3 position){this->position=position;}
 
 bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
