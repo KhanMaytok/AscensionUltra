@@ -42,8 +42,8 @@ void TurnAroundHangar::DefineAnimations ()
 		prefix);
 
 	char *name[ROOMS]={"East Control","West Control"};
-	VECTOR3 room[ROOMS][2]={ {_V(-88,22,0),_V(1,0,0)} , {_V(88,22,0),_V(-1,0,0)} };
-	for(int i=0;i<ROOMS;i++) rooms[i].Init(owner, this, name[i], room[i][0], room[i][1], _V(0,0,0) );
+	VECTOR3 room[ROOMS][3]={ {_V(-88,22,0),_V(1,0,0),_V(-72,0,-33)} , {_V(88,22,0),_V(-1,0,0),_V(72,0,-33)} };
+	for(int i=0;i<ROOMS;i++) rooms[i].Init(owner, this, name[i], room[i][0], room[i][1], room[i][2] );
 
 	crane1.DefineAnimations();
 }
