@@ -62,6 +62,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	cur_Path=0;
 	cur_Section=0;
+
+	coords=false;
 }
 
 // --------------------------------------------------------------
@@ -516,6 +518,17 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 		break;
 	}
 
+	//DEBUG relative position to TA Hangar 1
+	if (coords)
+	{
+		VECTOR3 global, local;
+		oapiGetFocusInterface()->GetGlobalPos(global);
+		Global2Local(global, local);
+		local-=OFFSET;
+		sprintf(oapiDebugString(),"MAP coordinates: %f , %f , %f", -local.x, local.y, local.z);
+	}
+	
+
 	crew.WarnUserUMMUNotInstalled("Ascension Ultra");
 }
 
@@ -563,6 +576,9 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		case OAPI_KEY_Q:
 			if (--cur_Section<0) cur_Section=TAXIWAYSUBSECTIONS-1;
 			sprintf(oapiDebugString(), "[%d]%s [%d]%s", cur_Path, taxiwayPath[cur_Path].On()?"ON":"off", cur_Section, taxiwaySubsection[cur_Section].On()?"ON":"off");
+			return 1;
+		case OAPI_KEY_C:
+			coords=!coords;
 			return 1;
 		}
 	}

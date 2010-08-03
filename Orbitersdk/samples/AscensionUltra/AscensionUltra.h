@@ -86,6 +86,8 @@ private:
 	int cur_Path;
 	int cur_Section;
 
+	bool coords;
+
 };
 
 typedef struct {
