@@ -126,7 +126,7 @@ Access Door Upper 1.81m transition +Y axis
 TBC
 
 **Offset vector for hangar L1 (rightmost)
-1462.7,0,1260
+1463,0,1260
 
 ** Relevant Mesh Groups **
 0 - Main Door (entrance)
