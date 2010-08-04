@@ -119,20 +119,26 @@ Access Door Upper 1.81m transition +Y axis
 70m
 
 
-**************************************************************** Launch Facility & Mission Control
+******************************************************** Launch Facility & Mission Control
 1 mesh
 
 ** Y-axis curviture compensation adjustment **
 TBC
 
 **Offset vector for hangar L1 (rightmost)
-1462.7,0,1260.2
+1462.7,0,1260
 
 ** Relevant Mesh Groups **
-TBC
+0 - Main Door (entrance)
+1 - Exit Door (exit to launch tunnel)
+2 - Blast Shield
+3 - Tunnel Door
 
 ** Door Animations **
-TBC
+Main Door +45 degree Z axis rotation around -223,0,0
+Exit Door -45 degree Z axis rotation around 0,0,0
+Blast Shield -90 degree Y axis rotation around 189.3,0,47.5
+Tunnel Door 47m Translation -X axis 
 
 ** Spacing between hangars **
 N/A
