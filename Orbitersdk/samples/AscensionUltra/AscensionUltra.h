@@ -17,6 +17,7 @@
 #include "resource.h"
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
+#include "LaunchTunnelHangar.h"
 #include "Routes.h"
 #include "UMmuSDK.h"
 
@@ -67,6 +68,7 @@ private:
 	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLightStorage, meshLaunch, meshLaunchWindow;
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LightStorageHangar lightStorage[LIGHTSTORAGEHANGARS];
+	LaunchTunnelHangar launchTunnel;
 	BeaconArray taxiwaySubsection[TAXIWAYSUBSECTIONS];
 	BeaconPath taxiwayPath[TAXIWAYPATHS];
 	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
@@ -79,7 +81,7 @@ private:
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_LightStorage;
+	int cur_TurnAround, cur_LightStorage, cur_LaunchTunnel;
 
 	//DEBUG
 

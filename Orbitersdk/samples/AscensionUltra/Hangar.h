@@ -16,6 +16,7 @@ typedef enum HangarType
 {
 	TurnAround,
 	LightStorage,
+	LaunchTunnel,
 };
 
 class Hangar

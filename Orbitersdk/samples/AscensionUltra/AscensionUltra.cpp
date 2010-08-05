@@ -95,6 +95,9 @@ void AscensionUltra::InitSubObjects()
 		if (i>8) name[0]=0x31;
 		lightStorage[i].Init(this, name, i+8, prefix);
 	}
+	strcpy(prefix, "LAUNCHTUNNEL");
+	strcpy(name, "Launch Tunnel");
+	launchTunnel.Init(this, name, 20, prefix);
 
 	controlRoom=turnAround[0].GetRoom(0);
 
@@ -353,6 +356,7 @@ void AscensionUltra::DefineAnimations ()
 {
 	for(int i=0;i<5;i++) turnAround[i].DefineAnimations();
 	for(int i=0;i<12;i++) lightStorage[i].DefineAnimations();
+	launchTunnel.DefineAnimations();
 }
 
 void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
@@ -425,6 +429,10 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+12, "%X", &cur_LightStorage);
 		} else if (cur_LightStorage>=0 && cur_LightStorage<12) {
 			if (!lightStorage[cur_LightStorage].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (!strnicmp (line, "LAUNCHTUNNEL", 12)) {
+			sscanf (line+12, "%X", &cur_LaunchTunnel);
+		} else if (cur_LaunchTunnel>=0 && cur_LaunchTunnel<1) {
+			if (!launchTunnel.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else {
             ParseScenarioLineEx (line, vs);
 			// unrecognised option - pass to Orbiter's generic parser
@@ -457,8 +465,12 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 		oapiWriteScenario_string (scn, "LIGHTSTORAGE", cbuf);
 		lightStorage[i].clbkSaveState(scn);
 	}
-	sprintf (cbuf, "%d", i);
-	oapiWriteScenario_string (scn, "HANGAR", cbuf);
+	sprintf (cbuf, "%X", i);
+	oapiWriteScenario_string (scn, "LIGHTSTORAGE", cbuf);
+
+	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "0");
+	launchTunnel.clbkSaveState(scn);
+	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "1");
 	
 }
 
@@ -469,6 +481,7 @@ void AscensionUltra::clbkPostCreation ()
 
 	for(int i=0;i<5;i++) turnAround[i].clbkPostCreation();
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostCreation();
+	launchTunnel.clbkPostCreation();
 }
 
 // Respond to playback event
@@ -486,6 +499,11 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 		int hangar=(int)(event_type+12)[0]-0x30;
 		if (hangar>=0 && hangar<12) return lightStorage[hangar].clbkPlaybackEvent(simt, event_t, event_type+13, event);
 	}
+	if (!strnicmp (event_type, "LAUNCHTUNNEL", 12))
+	{
+		//Tunnel event
+		return launchTunnel.clbkPlaybackEvent(simt, event_t, event_type+12, event);
+	}
 	return false;
 }
 
@@ -495,6 +513,13 @@ void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 	visual = vis;
 	//Rotate light storage hangars
 	for(int i=0;i<12;i++) RotateGroup(i+5+3, PI, _V(0,1,0), _V(0,0,0));
+	//Close tunnel door
+	MESHGROUP_TRANSFORM mt;
+	mt.nmesh=20;
+	mt.ngrp=3;
+	mt.transform=mt.TRANSLATE;
+	mt.P.transparam.shift=_V(47,0,0);	
+	MeshgroupTransform(vis, mt);
 }
 
 // Destroy DG visual
@@ -510,6 +535,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
 	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
+	launchTunnel.clbkPostStep(simt, simdt, mjd);
 
 	switch (crew.ProcessUniversalMMu())
 	{
@@ -615,7 +641,8 @@ int AscensionUltra::GetHangars(HangarType type)
 	switch(type)
 	{
 	case HangarType::TurnAround: return 5;
-	case HangarType::LightStorage: return 12;	
+	case HangarType::LightStorage: return 12;
+	case HangarType::LaunchTunnel: return 1;
 	}
 	return 0;
 }
@@ -627,6 +654,7 @@ Hangar *AscensionUltra::GetHangar(HangarType type, int index)
 	{
 	case HangarType::TurnAround: return index<5?turnAround+index:NULL;
 	case HangarType::LightStorage: return index<12?lightStorage+index:NULL;	
+	case HangarType::LaunchTunnel: return &launchTunnel;	
 	}
 	return NULL;
 }

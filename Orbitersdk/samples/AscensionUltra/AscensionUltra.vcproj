@@ -298,6 +298,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LaunchTunnelHangar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\LightStorageHangar.cpp"
 				>
 			</File>
@@ -343,6 +347,10 @@
 			</File>
 			<File
 				RelativePath=".\KeyboardFilter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LaunchTunnelHangar.h"
 				>
 			</File>
 			<File
