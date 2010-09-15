@@ -101,3 +101,6 @@ bool Hangar::clbkPlaybackEvent (double simt, double event_t, const char *event_t
 }
 
 char *Hangar::GetName(){return name;}
+
+int Hangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index){return index;}
+bool Hangar::ActionAreaActivated(int action){return false;}

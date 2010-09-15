@@ -409,6 +409,11 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	crew.InitUmmu(GetHandle());
 	crew.DefineAirLockShape(true, -10, 10, -10, 10, -10, 10);
+
+	int index=0;
+
+	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(&crew, index);
+	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(&crew, index);
 }
 
 // Read status from scenario file
@@ -540,6 +545,11 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 		sprintf(oapiDebugString(),"%s -> Ascension(%d)", crew.GetLastEnteredCrewName(), crew.GetCrewTotalNumber());
 		break;
 	}
+
+	//Detect activated action area, iterate through sub-items for processing, break on first processor
+	int action=crew.DetectActionAreaActivated();
+	if (action>-1) for(int i=0;i<5;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
+	if (action>-1) for(int i=0;i<12;i++) if (lightStorage[i].ActionAreaActivated(action)) break;
 
 	//DEBUG relative position to TA Hangar 1
 	if (coords)
