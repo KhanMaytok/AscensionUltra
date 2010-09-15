@@ -18,6 +18,8 @@ Hangar::Hangar(void)
 	name=NULL;
 
 	cur_door=-1;
+
+	position=_V(0,0,0);
 }
 
 Hangar::~Hangar(void)
@@ -86,7 +88,7 @@ Door *Hangar::GetDoor(int index){throw "GetDoor(1) not allowed on abstract hanga
 int Hangar::GetRooms(){return 0;}
 Room *Hangar::GetRoom(int index){throw "GetRoom(1) not allowed on abstract hangar class!";}
 
-VECTOR3 Hangar::GetPosition(){return _V(0,0,0);}
+VECTOR3 Hangar::GetPosition(){return position;}
 
 bool Hangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
@@ -101,3 +103,6 @@ bool Hangar::clbkPlaybackEvent (double simt, double event_t, const char *event_t
 }
 
 char *Hangar::GetName(){return name;}
+
+int Hangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index){return index;}
+bool Hangar::ActionAreaActivated(int action){return false;}

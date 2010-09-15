@@ -20,7 +20,7 @@ typedef enum AscensionTowerState
 	HangarForCraneSelection,
 	PassengerTerminal,
 	Fueling,
-	LaunchTunnel,
+	LaunchPrepare,
 	Bearing,
 	LandingRunwaySelection,
 	Launch,

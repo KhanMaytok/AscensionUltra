@@ -22,6 +22,12 @@ const double AIRLOCK_OPERATING_SPEED = 0.1; // Opening/closing speed of outer ai
 #define CRANEREELUPPERPOINT 31.0
 #define CRANEREELLOWERPOINT 29.0
 #define CRANEREELHEIGHT (CRANEREELUPPERPOINT-CRANEREELLOWERPOINT)
+#define AREA_NORTH _V(45,0,-51.5)
+#define AREA_SOUTH _V(-45,0,51.5)
+#define AREA_EAST _V(-116,0,-15)
+#define AREA_WEST _V(116,0,15)
+#define ROOM_EAST {_V(-88,22,0),_V(1,0,0),_V(-72,0,-33)}
+#define ROOM_WEST {_V(88,22,0),_V(-1,0,0),_V(72,0,-33)}
 
 class TurnAroundHangar:public Hangar
 {
@@ -38,13 +44,13 @@ public:
 	Door *GetDoor(int index);
 	int GetRooms();
 	Room *GetRoom(int index);
-	VECTOR3 GetPosition();
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 	void SetPosition(VECTOR3 position);
+	int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
+	bool ActionAreaActivated(int action);
 private:
 	Crane crane1;
 	Door doors[DOORS];
 	int cur_crane;
 	Room rooms[ROOMS];
-	VECTOR3 position;
 };

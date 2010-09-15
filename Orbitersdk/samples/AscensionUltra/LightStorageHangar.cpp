@@ -30,3 +30,23 @@ void LightStorageHangar::DefineAnimations ()
 int LightStorageHangar::GetDoors(){return DOORS;}
 
 Door *LightStorageHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+
+void LightStorageHangar::SetPosition(VECTOR3 position){this->position=position;}
+
+int LightStorageHangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index)
+{
+	VECTOR3 areas[2]={AREA_MAIN, AREA_ACCESS};
+	areaStart=index;
+	for(int i=0;i<DOORS;i++) doors[i].LinkActionArea(crew, index++, position+areas[i], 5);
+	areaEnd=index-1;
+	return index;
+}
+
+bool LightStorageHangar::ActionAreaActivated(int action)
+{
+	if (action<areaStart || action>areaEnd) return false;
+	int door=action-areaStart;
+	if (doors[door].GetPosition()<=0) doors[door].Open();
+	else doors[door].Close();
+	return true;
+}

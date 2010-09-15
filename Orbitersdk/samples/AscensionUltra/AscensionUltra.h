@@ -17,6 +17,7 @@
 #include "resource.h"
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
+#include "LaunchTunnelHangar.h"
 #include "Routes.h"
 #include "UMmuSDK.h"
 
@@ -25,7 +26,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define TURNAROUNDHANGARS 5
 #define LIGHTSTORAGEHANGARS 12
 #define TAXIWAYSUBSECTIONS 32
-#define TAXIWAYPATHS 25
+#define TAXIWAYPATHS 22
 #define RUNWAYSUBSECTIONS 56
 #define RUNWAYPATHS 10
 
@@ -64,9 +65,10 @@ private:
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
-	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLightStorage, meshLaunch;
+	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLightStorage, meshLaunch, meshLaunchWindow;
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LightStorageHangar lightStorage[LIGHTSTORAGEHANGARS];
+	LaunchTunnelHangar launchTunnel;
 	BeaconArray taxiwaySubsection[TAXIWAYSUBSECTIONS];
 	BeaconPath taxiwayPath[TAXIWAYPATHS];
 	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
@@ -79,7 +81,7 @@ private:
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_LightStorage;
+	int cur_TurnAround, cur_LightStorage, cur_LaunchTunnel;
 
 	//DEBUG
 

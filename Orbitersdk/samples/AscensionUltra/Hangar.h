@@ -16,6 +16,7 @@ typedef enum HangarType
 {
 	TurnAround,
 	LightStorage,
+	LaunchTunnel,
 };
 
 class Hangar
@@ -37,9 +38,13 @@ public:
 	virtual int GetRooms();
 	virtual Room *GetRoom(int index);
 	virtual VECTOR3 GetPosition();
+	virtual int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
+	virtual bool ActionAreaActivated(int action);
 protected:
 	VESSEL* owner;
 	UINT meshIndex;
 	char *event_prefix, *name;
 	int cur_door;
+	int areaStart, areaEnd;
+	VECTOR3 position;
 };
