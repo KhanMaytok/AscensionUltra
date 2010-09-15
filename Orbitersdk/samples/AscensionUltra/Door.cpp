@@ -14,7 +14,8 @@ void Door::Init(VESSEL *owner, const char *name, const char *event_prefix, int t
 {
 	this->owner=owner;
 	sprintf(this->event_prefix=new char[strlen(event_prefix)+4], "%sCMD", event_prefix);
-	strcpy(this->name=new char[strlen(name)+1], name);	
+	sprintf(actionText=new char[strlen(name)+MAXACTIONLEN], "Opening %s...", name);
+	strcpy(this->name=new char[strlen(name)+1], name);
 	this->transforms=transforms;
 	door=new MGROUP_TRANSFORM*[transforms];
 	va_list doors;
@@ -24,12 +25,15 @@ void Door::Init(VESSEL *owner, const char *name, const char *event_prefix, int t
 	SetSpeed(0.1);
 	position=0;
 	command=0.0;
+	crew=NULL;
+	action=0;
 }
 
 Door::~Door(void)
 {
 	delete [] event_prefix;
 	delete [] name;
+	delete [] actionText;
 	for(int i=0;i<transforms;i++) delete door[i];
 	delete [] door;
 }
@@ -56,12 +60,17 @@ void Door::PostStep (double simt, double simdt, double mjd)
 	if (position<0)
 	{
 		position=0;
-		Stop();
+		Stop();		
 	}
 	if (position>1)
 	{
 		position=1;
 		Stop();
+	}
+	if (crew)
+	{
+		if (position<=0 && actionText[0]!='O') crew->SetActionAreaText(action, (char *)memcpy(actionText, "Open", 4));
+		if (position>0 && actionText[0]!='C') crew->SetActionAreaText(action, (char *)memcpy(actionText, "Clos", 4));
 	}
 	owner->SetAnimation (anim, position);
 }
@@ -100,13 +109,13 @@ void Door::clbkPostCreation ()
 	if (position<0)
 	{
 		position=0;
-		Stop();
+		Stop();		
 	}
 	if (position>1)
 	{
 		position=1;
 		Stop();
-	}
+	}	
 	owner->SetAnimation (anim, position);
 }
 
@@ -118,4 +127,11 @@ bool Door::clbkPlaybackEvent (double simt, double event_t, const char *event_typ
 		return true;
 	}
 	return false;
+}
+
+void Door::LinkActionArea(UMMUCREWMANAGMENT *crew, int action, VECTOR3 position, double radius)
+{
+	this->crew=crew;
+	this->action=action;
+	crew->DeclareActionArea(action, position, radius, true,	NULL, NULL);
 }

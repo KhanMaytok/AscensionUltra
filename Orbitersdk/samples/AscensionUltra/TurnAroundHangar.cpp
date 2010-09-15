@@ -42,7 +42,7 @@ void TurnAroundHangar::DefineAnimations ()
 		prefix);
 
 	char *name[ROOMS]={"East Control","West Control"};
-	VECTOR3 room[ROOMS][3]={ {_V(-88,22,0),_V(1,0,0),_V(-72,0,-33)} , {_V(88,22,0),_V(-1,0,0),_V(72,0,-33)} };
+	VECTOR3 room[ROOMS][3]={ ROOM_EAST , ROOM_WEST };
 	for(int i=0;i<ROOMS;i++) rooms[i].Init(owner, this, name[i], room[i][0], room[i][1], room[i][2] );
 
 	crane1.DefineAnimations();
@@ -106,4 +106,23 @@ bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const cha
 		if (crane>=0 && crane<1) return crane1.clbkPlaybackEvent(simt, event_t, event_type+6, event);
 	}
 	return Hangar::clbkPlaybackEvent(simt, event_t, event_type, event);
+}
+
+int TurnAroundHangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index)
+{
+	VECTOR3 areas[4]={AREA_SOUTH, AREA_NORTH, AREA_EAST, AREA_WEST};
+	areaStart=index;
+	for(int i=0;i<DOORS;i++) doors[i].LinkActionArea(crew, index++, position+areas[i], 5);
+	areaEnd=index-1;
+	return index;
+}
+
+bool TurnAroundHangar::ActionAreaActivated(int action)
+{
+	if (action<areaStart || action>areaEnd) return false;
+	int door=action-areaStart;
+	double pos=doors[door].GetPosition();
+	if (pos<=0) doors[door].Open();
+	else doors[door].Close();
+	return true;
 }

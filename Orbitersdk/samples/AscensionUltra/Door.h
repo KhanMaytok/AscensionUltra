@@ -10,6 +10,9 @@
 
 #pragma once
 #include "orbitersdk.h"
+#include "UMmuSDK.h"
+
+#define MAXACTIONLEN 80
 
 class Door
 {
@@ -27,15 +30,17 @@ public:
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
+	void LinkActionArea(UMMUCREWMANAGMENT *crew, int action, VECTOR3 position, double radius);
 	virtual char *GetName();
 
 private:
 	void RecordEvent(double command);
 	VESSEL* owner;
 	MGROUP_TRANSFORM **door;
-	int anim, transforms;
+	int anim, transforms, action;
 	double speed;
 	double command;
 	double position;
-	char *event_prefix, *name;
+	char *event_prefix, *name, *actionText;
+	UMMUCREWMANAGMENT *crew;	
 };
