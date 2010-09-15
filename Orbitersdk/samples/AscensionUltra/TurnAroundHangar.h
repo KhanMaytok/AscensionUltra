@@ -44,7 +44,6 @@ public:
 	Door *GetDoor(int index);
 	int GetRooms();
 	Room *GetRoom(int index);
-	VECTOR3 GetPosition();
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 	void SetPosition(VECTOR3 position);
 	int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
@@ -54,5 +53,4 @@ private:
 	Door doors[DOORS];
 	int cur_crane;
 	Room rooms[ROOMS];
-	VECTOR3 position;
 };

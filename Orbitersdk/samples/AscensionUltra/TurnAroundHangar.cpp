@@ -94,7 +94,6 @@ int TurnAroundHangar::GetRooms(){return ROOMS;}
 
 Room *TurnAroundHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
 
-VECTOR3 TurnAroundHangar::GetPosition(){return position;}
 void TurnAroundHangar::SetPosition(VECTOR3 position){this->position=position;}
 
 bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)

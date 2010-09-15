@@ -46,4 +46,5 @@ protected:
 	char *event_prefix, *name;
 	int cur_door;
 	int areaStart, areaEnd;
+	VECTOR3 position;
 };
