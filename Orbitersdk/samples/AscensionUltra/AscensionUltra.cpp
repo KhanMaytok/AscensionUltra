@@ -679,6 +679,7 @@ void AscensionUltra::SwitchView(Room *room)
 {
 	SetCameraOffset (room->GetHangar()->GetPosition()+room->GetCameraPosition());
 	SetCameraDefaultDirection(room->GetViewDirection());
+	if (oapiGetFocusObject()==GetHandle()) oapiCameraSetCockpitDir(0,0);
 	controlRoom=room;
 }
 
