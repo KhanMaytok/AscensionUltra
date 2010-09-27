@@ -39,3 +39,4 @@ Hangar *Room::GetHangar(){return hangar;}
 char *Room::GetName(){return name;}
 VECTOR3 Room::GetCameraPosition(){return cameraPosition;}
 VECTOR3 Room::GetViewDirection(){return viewDirection;}
+UMMUCREWMANAGMENT *Room::GetCrew(){return &crew;}

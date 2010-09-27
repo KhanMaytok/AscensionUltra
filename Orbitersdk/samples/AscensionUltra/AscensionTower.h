@@ -36,6 +36,7 @@ private:
 	void RenderSelectionPage();
 	void RenderDoorControlPage();
 	void RenderCraneControlPage();
+	void RenderPersonPage();
 };
 
 std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;

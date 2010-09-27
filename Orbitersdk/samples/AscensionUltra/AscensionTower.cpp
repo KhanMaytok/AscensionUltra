@@ -161,6 +161,9 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 	case AscensionTowerState::CraneControl:
 		RenderCraneControlPage();
 		break;
+	case AscensionTowerState::Person:
+		RenderPersonPage();
+		break;
 	}
 
 	skp->SetFont(GetDefaultFont(1));
@@ -216,6 +219,22 @@ void AscensionTower::RenderCraneControlPage()
 	WriteMFD(line, 8, 4);
 	sprintf(line, "Z: %f", pos.z);
 	WriteMFD(line, 10, 4);
+}
+
+void AscensionTower::RenderPersonPage()
+{
+	SetTextColor(hDC, RGB(255,255,255));
+	char line[40];
+	sprintf(line, "    Name: %s", "Charly");
+	WriteMFD(line, 6, 4);
+	sprintf(line, "Function: %s", "Captain");
+	WriteMFD(line, 8, 4);
+	sprintf(line, "     Age: %d", 25);
+	WriteMFD(line, 10, 4);
+	sprintf(line, "    Puls: %d", 67);
+	WriteMFD(line, 12, 4);
+	sprintf(line, "  Weight: %d", 70);
+	WriteMFD(line, 14, 4);
 }
 
 // MFD message parser

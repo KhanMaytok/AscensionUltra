@@ -3,7 +3,7 @@
 #include "AscensionUltra.h"
 #include "orbitersdk.h"
 
-#define STATES 19
+#define STATES 21
 
 typedef enum AscensionTowerState
 {
@@ -26,6 +26,8 @@ typedef enum AscensionTowerState
 	Launch,
 	DoorControl,
 	CraneControl,
+	Rooster,
+	Person,
 };
 
 typedef struct AscensionTowerListPair
