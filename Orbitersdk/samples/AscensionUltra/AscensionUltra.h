@@ -57,7 +57,9 @@ public:
 	virtual Routes *GetRunways();
 	virtual Room *GetControlRoom();
 	virtual void SwitchView(Room *room);
-	
+	virtual int GetPersons();
+	virtual int GetCrewForPerson(int index, UMMUCREWMANAGMENT **crew);
+
 private:
 	void InitSubObjects();
 	void MoveGroup(int mesh, VECTOR3 v);

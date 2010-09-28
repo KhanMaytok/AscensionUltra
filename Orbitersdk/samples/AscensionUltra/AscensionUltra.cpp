@@ -683,6 +683,38 @@ void AscensionUltra::SwitchView(Room *room)
 	controlRoom=room;
 }
 
+int AscensionUltra::GetPersons()
+{
+	int i, rooms, j, persons=0;
+		
+	for(i=0;i<TURNAROUNDHANGARS;i++)
+	{
+		rooms=turnAround[i].GetRooms();
+		for(j=0;j<rooms;j++) persons+=turnAround[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	}
+
+	return persons;	
+}
+
+int AscensionUltra::GetCrewForPerson(int index, UMMUCREWMANAGMENT **crew)
+{
+	int i, rooms, j, persons=0;
+			
+	for(i=0;i<TURNAROUNDHANGARS;i++)
+	{
+		rooms=turnAround[i].GetRooms();
+		for(j=0;j<rooms;j++)
+		{
+			*crew=turnAround[i].GetRoom(j)->GetCrew();
+			if ((*crew)->GetCrewTotalNumber()>index) return index;
+			index-=(*crew)->GetCrewTotalNumber();
+		}
+	}
+
+	*crew=NULL;
+	return -1;	
+}
+
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
 {

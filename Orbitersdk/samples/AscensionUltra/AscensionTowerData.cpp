@@ -110,9 +110,6 @@ void AscensionTowerData::Scan()
 
 int AscensionTowerData::GetListSize()
 {
-	int hangars, i, rooms, j, persons;
-	Hangar *hangar;
-
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect: return scanList.size();
@@ -129,16 +126,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
 	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
-	case AscensionTowerState::Rooster:
-		persons=0;
-		hangars=ascension->GetHangars(HangarType::TurnAround);
-		for(i=0;i<hangars;i++)
-		{
-			hangar=ascension->GetHangar(HangarType::TurnAround, i);
-			rooms=hangar->GetRooms();
-			//for(j=0;j<rooms;j++) persons+=hangar->GetRoom(j)->GetCrew()->GetCrewTotalNumber();
-		}
-		return persons;	
+	case AscensionTowerState::Rooster: return ascension->GetPersons();				
 	}
 	return 0;
 }

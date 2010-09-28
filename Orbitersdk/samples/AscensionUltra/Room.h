@@ -11,7 +11,7 @@ public:
 	void Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraPosition, VECTOR3 viewDirection, VECTOR3 doorPosition);
 	virtual char *GetName();
 	virtual Hangar *GetHangar();
-	virtual UMMUCREWMANAGMENT *GetCrew();
+	UMMUCREWMANAGMENT *GetCrew();
 	VECTOR3 GetCameraPosition();
 	VECTOR3 GetViewDirection();
 	void PostStep (double simt, double simdt, double mjd);
