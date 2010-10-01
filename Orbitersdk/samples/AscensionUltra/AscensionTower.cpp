@@ -152,6 +152,7 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 	case AscensionTowerState::TaxiRouteStartSelection:
 	case AscensionTowerState::TaxiRouteEndSelection:
 	case AscensionTowerState::LandingRunwaySelection:
+	case AscensionTowerState::Rooster:
 		RenderSelectionPage();	
 		break;
 	case AscensionTowerState::DoorControl:
@@ -161,7 +162,7 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 	case AscensionTowerState::CraneControl:
 		RenderCraneControlPage();
 		break;
-	case AscensionTowerState::Person:
+	case AscensionTowerState::PersonControl:
 		RenderPersonPage();
 		break;
 	}

@@ -696,23 +696,23 @@ int AscensionUltra::GetPersons()
 	return persons;	
 }
 
-int AscensionUltra::GetCrewForPerson(int index, UMMUCREWMANAGMENT **crew)
+Person AscensionUltra::GetPerson(int index)
 {
 	int i, rooms, j, persons=0;
+	UMMUCREWMANAGMENT *crew;
 			
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
 		rooms=turnAround[i].GetRooms();
 		for(j=0;j<rooms;j++)
 		{
-			*crew=turnAround[i].GetRoom(j)->GetCrew();
-			if ((*crew)->GetCrewTotalNumber()>index) return index;
-			index-=(*crew)->GetCrewTotalNumber();
+			crew=turnAround[i].GetRoom(j)->GetCrew();
+			if (crew->GetCrewTotalNumber()>index) return Person(crew, index);
+			index-=crew->GetCrewTotalNumber();
 		}
 	}
 
-	*crew=NULL;
-	return -1;	
+	return Person(NULL, 0);	
 }
 
 // Module initialisation

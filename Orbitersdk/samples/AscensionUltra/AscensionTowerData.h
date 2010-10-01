@@ -27,7 +27,7 @@ typedef enum AscensionTowerState
 	DoorControl,
 	CraneControl,
 	Rooster,
-	Person,
+	PersonControl,
 };
 
 typedef struct AscensionTowerListPair

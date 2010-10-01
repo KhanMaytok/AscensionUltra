@@ -306,6 +306,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Person.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Room.cpp"
 				>
 			</File>
@@ -359,6 +363,10 @@
 			</File>
 			<File
 				RelativePath=".\meshres.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Person.h"
 				>
 			</File>
 			<File

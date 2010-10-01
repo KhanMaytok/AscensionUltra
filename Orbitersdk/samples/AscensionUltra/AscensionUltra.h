@@ -19,6 +19,7 @@
 #include "LightStorageHangar.h"
 #include "LaunchTunnelHangar.h"
 #include "Routes.h"
+#include "Person.h"
 #include "UMmuSDK.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
@@ -58,7 +59,7 @@ public:
 	virtual Room *GetControlRoom();
 	virtual void SwitchView(Room *room);
 	virtual int GetPersons();
-	virtual int GetCrewForPerson(int index, UMMUCREWMANAGMENT **crew);
+	virtual Person GetPerson(int index);
 
 private:
 	void InitSubObjects();
