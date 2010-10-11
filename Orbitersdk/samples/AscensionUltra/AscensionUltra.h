@@ -31,6 +31,14 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define RUNWAYSUBSECTIONS 56
 #define RUNWAYPATHS 10
 
+#define PERSON_EVA		0x00
+#define PERSON_DELETE	0xFF
+#define PERSON_NAME		0x01
+#define PERSON_MISCID	0x02
+#define PERSON_AGE		0x04
+#define PERSON_PULS		0x08
+#define PERSON_WEIGHT	0x10
+
 class AscensionUltra: public VESSEL2 {
 public:
 	AscensionUltra (OBJHANDLE hObj, int fmodel);
@@ -60,11 +68,13 @@ public:
 	virtual void SwitchView(Room *room);
 	virtual int GetPersons();
 	virtual Person GetPerson(int index);
+	virtual int ChangePerson(int index, int flags, ...);
 
 private:
 	void InitSubObjects();
 	void MoveGroup(int mesh, VECTOR3 v);
 	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
+	Room *GetPersonLocation(int &index);
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 

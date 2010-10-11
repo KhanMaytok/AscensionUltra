@@ -229,6 +229,10 @@ void AscensionTowerData::SetState(AscensionTowerState state)
 	case AscensionTowerState::BaseSelect:
 		Scan();
 		break;
+	case AscensionTowerState::Rooster:
+		this->state=state;
+		if (GetListSize()<=0) state=AscensionTowerState::MainMenu;
+		break;
 	}
 	this->state=state;
 }
@@ -623,8 +627,12 @@ bool AscensionTowerData::SetKey(DWORD key)
 		case OAPI_KEY_L:
 			break;
 		case OAPI_KEY_E:
+			ascension->ChangePerson(selectedIndex[AscensionTowerState::Rooster], PERSON_EVA);
+			SetState(AscensionTowerState::Rooster);
 			break;
 		case OAPI_KEY_D:
+			ascension->ChangePerson(selectedIndex[AscensionTowerState::Rooster], PERSON_DELETE);
+			SetState(AscensionTowerState::Rooster);
 			break;
 		case OAPI_KEY_B:
 			Back();

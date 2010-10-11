@@ -696,7 +696,7 @@ int AscensionUltra::GetPersons()
 	return persons;	
 }
 
-Person AscensionUltra::GetPerson(int index)
+Room *AscensionUltra::GetPersonLocation(int &index)
 {
 	int i, rooms, j, persons=0;
 	UMMUCREWMANAGMENT *crew;
@@ -708,12 +708,60 @@ Person AscensionUltra::GetPerson(int index)
 		{
 			Room *room=turnAround[i].GetRoom(j);
 			crew=room->GetCrew();
-			if (crew->GetCrewTotalNumber()>index) return Person(room, index);
+			if (crew->GetCrewTotalNumber()>index) return room;
 			index-=crew->GetCrewTotalNumber();
 		}
 	}
+	
+	index=0;
+	return NULL;	
+}
 
-	return Person(NULL, 0);	
+Person AscensionUltra::GetPerson(int index)
+{
+	Room *room=GetPersonLocation(index);
+	return Person(room, index);
+}
+
+int AscensionUltra::ChangePerson(int index, int flags, ...)
+{
+	UMMUCREWMANAGMENT *crew=GetPersonLocation(index)->GetCrew();
+
+	switch (flags)
+	{
+	case PERSON_EVA:
+		crew->EvaCrewMember(crew->GetCrewNameBySlotNumber(index));
+		break;
+	case PERSON_DELETE:
+		crew->RemoveCrewMember(crew->GetCrewNameBySlotNumber(index));
+		break;
+	default:
+		va_list args;
+		va_start(args, flags);
+		if ((flags & PERSON_NAME)>0)
+		{
+			char *name=va_arg(args, char*);
+		}
+		if ((flags & PERSON_MISCID)>0)
+		{
+			char *miscId=va_arg(args, char*);
+		}
+		if ((flags & PERSON_AGE)>0)
+		{
+			int age=va_arg(args, int);
+		}
+		if ((flags & PERSON_PULS)>0)
+		{
+			char *name=va_arg(args, char*);
+		}
+		if ((flags & PERSON_WEIGHT)>0)
+		{
+			char *name=va_arg(args, char*);
+		}
+		va_end(args);
+		break;
+	}
+	return 0;
 }
 
 // Module initialisation
