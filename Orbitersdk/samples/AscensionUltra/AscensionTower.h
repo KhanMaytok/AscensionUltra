@@ -11,6 +11,10 @@
 #ifndef __ASCENSIONTOWER_H
 #define __ASCENSIONTOWER_H
 
+#define WRITEMFD_HALFLINES		0x01
+#define WRITEMFD_RIGHTALINED	0x04
+#define WRITEMFD_HIGHLIGHTED	0x08
+
 #include <map>
 #include "AscensionTowerData.h"
 
@@ -30,7 +34,7 @@ private:
 	float width, height;
 	int mfdWidth, mfdHeight;
 	HDC hDC;
-	void WriteMFD(char *text, int line=-1, int column=-1, bool halfLines=false, bool rightAligned=false, bool highlight=false);
+	void WriteMFD(char *text, int line=-1, int column=-1, int flags=0);
 	bool SelectionConsumeKeyBuffered(DWORD key);
 	bool SelectionConsumeButton(int bt);
 	void RenderSelectionPage();

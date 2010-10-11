@@ -79,7 +79,11 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 	return data->GetButtonMenu(mnu);	
 }
 
-void AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, bool rightAligned, bool highlight)
+#define HIGHLIGHTED(flags)	(flags & WRITEMFD_HIGHLIGHTED)>0
+#define HALFLINES(flags)	(flags & WRITEMFD_HALFLINES)>0
+#define RIGHTALINED(flags)	(flags & WRITEMFD_RIGHTALINED)>0
+
+void AscensionTower::WriteMFD(char *text, int line, int column, int flags)
 {
 	int l=strlen(text);
 	int x=0;
@@ -91,18 +95,18 @@ void AscensionTower::WriteMFD(char *text, int line, int column, bool halfLines, 
 	}
 	else
 	{
-		y=(int)(line*height) >> (halfLines?1:0);
-		if (column<0 && !rightAligned) x=(1+(36-l)/2)*width;
+		y=(int)(line*height) >> (HALFLINES(flags)?1:0);
+		if (column<0 && !(RIGHTALINED(flags))) x=(1+(36-l)/2)*width;
 		else
 		{
-			if (rightAligned) x=mfdWidth-(l+1)*width;
+			if (RIGHTALINED(flags)) x=(column<0?mfdWidth:column*width)-(l+1)*width;
 			else x=column*width;
 		}
 	}
-	if (highlight)
+	if (HIGHLIGHTED(flags))
 	{
 		SelectObject(hDC, g_Bar);
-		Rectangle(hDC, width-2, y-2, mfdWidth-width+2, y+height+6 );		
+		Rectangle(hDC, width-2, y-2, mfdWidth-width+2, y+height+6 );
 	}
 	TextOut(hDC, x, y, text, l);
 }
@@ -175,9 +179,10 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 	return true;
 }
 
+static int AT_BUTTON[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
+
 void AscensionTower::RenderSelectionPage()
 {
-	static int atButton[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
 	char line[40];
 	int size=data->GetListSize();
 	int page=data->GetPage();
@@ -190,11 +195,11 @@ void AscensionTower::RenderSelectionPage()
 	
 	SelectDefaultFont (hDC, 0);
 	int selection=data->GetSelection();
-	for(int i=0; i+page*6<size && i<6; i++) WriteMFD(data->GetListItem(i+page*6).Name, atButton[i], 1, true, false, i==selection);
+	for(int i=0; i+page*6<size && i<6; i++) WriteMFD(data->GetListItem(i+page*6).Name, AT_BUTTON[i], 1, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
 	if (pages>1)
 	{
 		sprintf(line, "p.%d/%d", page+1, pages);
-		WriteMFD(line, 27, NULL, false, true);
+		WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
 	}
 	else if (pages==0) WriteMFD("N O   B A S E S   A V A I L A B L E");
 }
