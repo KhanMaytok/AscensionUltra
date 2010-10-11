@@ -706,8 +706,9 @@ Person AscensionUltra::GetPerson(int index)
 		rooms=turnAround[i].GetRooms();
 		for(j=0;j<rooms;j++)
 		{
-			crew=turnAround[i].GetRoom(j)->GetCrew();
-			if (crew->GetCrewTotalNumber()>index) return Person(crew, index);
+			Room *room=turnAround[i].GetRoom(j);
+			crew=room->GetCrew();
+			if (crew->GetCrewTotalNumber()>index) return Person(room, index);
 			index-=crew->GetCrewTotalNumber();
 		}
 	}

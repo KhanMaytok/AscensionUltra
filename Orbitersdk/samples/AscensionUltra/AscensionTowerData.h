@@ -56,6 +56,7 @@ public:
 	char *GetTitle();
 	char *GetSubtitle();
 	void *GetObject();
+	int GetSelectedIndex();
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;

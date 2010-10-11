@@ -323,6 +323,9 @@ void AscensionTowerData::Select()
 		for(int i=t->GetPoints(false, start)-1;i>=0;i--) if ((end=t->GetPoint(i, false, start))[0]=='L') break; //Search for endpoint starting with "L" => finding pointer for Lead-in
 		t->Strobe(start, end, !t->Strobing(start,end));		
 		break;
+	case AscensionTowerState::Rooster:
+		SetState(AscensionTowerState::PersonControl);
+		break;
 	}
 }
 
@@ -356,8 +359,8 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 			case 2: return "AGE";
 			case 3: return "PUL";
 			case 4: return "WGT";
-			case 5: return "";
-			case 6: return "TX";
+			case 5: return "LOC";
+			case 6: return "";
 			case 7: return "EVA";
 			case 8: return "";
 			case 9: return "DEL";
@@ -407,8 +410,8 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		{personMenu[0].line1, "age", 'A'},
 		{personMenu[0].line1, "puls", 'P'},
 		{personMenu[0].line1, "weigth", 'W'},
+		{personMenu[0].line1, "location", 'L'},
 		{NULL, NULL, 0},
-		{"Transfer person", NULL, 'T'},
 		{"EVA person", NULL, 'E'},
 		{NULL, NULL, 0},
 		{"Remove person", "from rooster", 'D'},
@@ -535,7 +538,7 @@ bool AscensionTowerData::SetButton(int bt)
 		case 2: return SetKey(OAPI_KEY_A);
 		case 3: return SetKey(OAPI_KEY_P);
 		case 4: return SetKey(OAPI_KEY_W);		
-		case 6: return SetKey(OAPI_KEY_T);
+		case 5: return SetKey(OAPI_KEY_L);
 		case 7: return SetKey(OAPI_KEY_E);
 		case 9: return SetKey(OAPI_KEY_D);
 		case 11: return SetKey(OAPI_KEY_B);
@@ -617,7 +620,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 			break;
 		case OAPI_KEY_W:
 			break;
-		case OAPI_KEY_T:
+		case OAPI_KEY_L:
 			break;
 		case OAPI_KEY_E:
 			break;
@@ -830,3 +833,5 @@ void AscensionTowerData::Back()
 }
 
 void *AscensionTowerData::GetObject(){return object[state];}
+
+int AscensionTowerData::GetSelectedIndex(){return selectedIndex[state];}

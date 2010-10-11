@@ -229,18 +229,26 @@ void AscensionTower::RenderCraneControlPage()
 
 void AscensionTower::RenderPersonPage()
 {
+	SelectDefaultFont(hDC, 1);
+	WriteMFD("Name", AT_BUTTON[0], 1, WRITEMFD_HALFLINES);
+	WriteMFD("Function", AT_BUTTON[1], 1, WRITEMFD_HALFLINES);
+	WriteMFD("Age", AT_BUTTON[2], 1, WRITEMFD_HALFLINES);
+	WriteMFD("Puls", AT_BUTTON[3], 1, WRITEMFD_HALFLINES);
+	WriteMFD("Weight", AT_BUTTON[4], 1, WRITEMFD_HALFLINES);
+	WriteMFD("Location", AT_BUTTON[5], 1, WRITEMFD_HALFLINES);
+
+	SelectDefaultFont(hDC, 0);
 	SetTextColor(hDC, RGB(255,255,255));
-	char line[40];
-	sprintf(line, "    Name: %s", "Charly");
-	WriteMFD(line, 6, 4);
-	sprintf(line, "Function: %s", "Captain");
-	WriteMFD(line, 8, 4);
-	sprintf(line, "     Age: %d", 25);
-	WriteMFD(line, 10, 4);
-	sprintf(line, "    Puls: %d", 67);
-	WriteMFD(line, 12, 4);
-	sprintf(line, "  Weight: %d", 70);
-	WriteMFD(line, 14, 4);
+	char line[10];
+
+	Person person=ascension->GetPerson(data->GetSelectedIndex());
+	WriteMFD(person.Name, AT_BUTTON[0], 7, WRITEMFD_HALFLINES);
+	WriteMFD(person.MiscId, AT_BUTTON[1], 7, WRITEMFD_HALFLINES);
+	WriteMFD(itoa(person.Age, line, 10), AT_BUTTON[2], 7, WRITEMFD_HALFLINES);
+	WriteMFD(itoa(person.Puls, line, 10), AT_BUTTON[3], 7, WRITEMFD_HALFLINES);
+	WriteMFD(itoa(person.Weight, line, 10), AT_BUTTON[4], 7, WRITEMFD_HALFLINES);
+	WriteMFD(person.Location->GetHangar()->GetName(), AT_BUTTON[5]-1, 7, WRITEMFD_HALFLINES);
+	WriteMFD(person.Location->GetName(), AT_BUTTON[5]+1, 11, WRITEMFD_HALFLINES);
 }
 
 // MFD message parser
