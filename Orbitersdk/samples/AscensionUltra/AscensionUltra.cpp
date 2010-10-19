@@ -101,6 +101,13 @@ void AscensionUltra::InitSubObjects()
 
 	controlRoom=turnAround[0].GetRoom(0);
 
+	//Setup entrance room - this is the dummy place for putting new persons to
+	entrance.Init(this, &launchTunnel, "Entrance", _V(0,0,0), _V(0,0,1), _V(0,0,0));
+	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
+	crew->SetAirlockDoorState(FALSE);
+	crew->SetMaxSeatAvailableInShip(1);
+	crew->AddCrewMember("John Doe", 20, 60, 75);
+
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);
 	taxiwaySubsection[1].Init(this, _V_(980,0,395), _V_(2430,0,395), _V(0,1,0), 73);
@@ -412,13 +419,10 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	DefineAnimations();
 
-	crew.InitUmmu(GetHandle());
-	crew.DefineAirLockShape(true, -10, 10, -10, 10, -10, 10);
-
 	int index=0;
 
-	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(&crew, index);
-	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(&crew, index);
+	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(entrance.GetCrew(), index);
+	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(entrance.GetCrew(), index);
 }
 
 // Read status from scenario file
@@ -539,20 +543,13 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 // --------------------------------------------------------------
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
+	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
 	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
 
-	switch (crew.ProcessUniversalMMu())
-	{
-	case UMMU_RETURNED_TO_OUR_SHIP:
-	case UMMU_TRANSFERED_TO_OUR_SHIP:
-		sprintf(oapiDebugString(),"%s -> Ascension(%d)", crew.GetLastEnteredCrewName(), crew.GetCrewTotalNumber());
-		break;
-	}
-
 	//Detect activated action area, iterate through sub-items for processing, break on first processor
-	int action=crew.DetectActionAreaActivated();
+	int action=crew->DetectActionAreaActivated();
 	if (action>-1) for(int i=0;i<5;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
 	if (action>-1) for(int i=0;i<12;i++) if (lightStorage[i].ActionAreaActivated(action)) break;
 
@@ -567,7 +564,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	}
 	
 
-	crew.WarnUserUMMUNotInstalled("Ascension Ultra");
+	crew->WarnUserUMMUNotInstalled("Ascension Ultra");
 }
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
@@ -693,13 +690,16 @@ int AscensionUltra::GetPersons()
 		for(j=0;j<rooms;j++) persons+=turnAround[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
 	}
 
-	return persons;	
+	return ++persons;	//First entry is always the ADD PERSON entry
 }
 
 Room *AscensionUltra::GetPersonLocation(int &index)
 {
 	int i, rooms, j, persons=0;
 	UMMUCREWMANAGMENT *crew;
+
+	if (index==0) return &entrance;
+	index--;
 			
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{

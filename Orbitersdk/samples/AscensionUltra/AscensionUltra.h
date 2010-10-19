@@ -89,7 +89,7 @@ private:
 	Routes taxiways;
 	Routes runways;
 	Room *controlRoom;
-	UMMUCREWMANAGMENT crew;
+	Room entrance;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
