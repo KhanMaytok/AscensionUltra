@@ -1,0 +1,4 @@
+* Design of MFD pages is a bit unfortunate. Refactor with inheritance instead of ugly switch/case constructs.
+* Refactor various interfaces to be consistent. ATM there is a index-driven, class-based and struct-based approach.
+* Think about making sub-objects sub-vessels
+* Make coordinate system more generic. I.e. use files with ini-like structure to define e.g. beacon-arrays and hangar positions.
