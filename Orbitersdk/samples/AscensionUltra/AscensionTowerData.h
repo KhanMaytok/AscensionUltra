@@ -55,6 +55,7 @@ public:
 	int GetListSize();
 	AscensionTowerListPair GetListItem(int index);
 	int GetSelection();
+	void Select(int index=-1);
 	AscensionTowerState GetState();
 	char *GetButtonLabel (int bt);
 	int GetButtonMenu (MFDBUTTONMENU *mnu);
@@ -78,8 +79,7 @@ private:
 	int page[STATES], selectedIndex[STATES], selection[STATES];
 	void *object[STATES];
 	void Scan();
-	void SetAscension(int index);
-	void Select();
+	void SetAscension(int index);	
 	void Back();
 	char *GetNameSafeTitle(char *title, char *trailer);
 };

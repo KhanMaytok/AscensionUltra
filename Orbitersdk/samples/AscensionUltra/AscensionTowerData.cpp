@@ -236,10 +236,9 @@ void AscensionTowerData::SetState(AscensionTowerState state)
 	this->state=state;
 }
 
-void AscensionTowerData::Select()
+void AscensionTowerData::Select(int index)
 {
-	selectedIndex[state]=GetListItem(page[state]*6+selection[state]).Index;
-	int index;
+	selectedIndex[state]=index<0?GetListItem(page[state]*6+selection[state]).Index:index;
 	char *start, *end;
 	Routes *t;
 	switch(state)
