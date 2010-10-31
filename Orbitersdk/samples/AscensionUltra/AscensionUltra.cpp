@@ -723,6 +723,8 @@ Person AscensionUltra::GetPerson(int index)
 	return Person(room, index);
 }
 
+// Changes person properties according to flags (see header-file for PERSON_xxx macros)
+// Returns -2 on internal failure, -1 on UMmu failure, 0 on success of EVA or remove, new index otherwise
 int AscensionUltra::ChangePerson(int index, int flags, ...)
 {	
 	Person person=GetPerson(index);
@@ -738,29 +740,55 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		crew->RemoveCrewMember(person.Name);		
 		break;
 	default:
+		//Prepare removal of crew member - heap variables to preserve strings
+		char *name=new char[strlen(person.Name)+1];
+		char *miscId=new char[strlen(person.MiscId)+1];
+		strcpy(name, person.Name);
+		strcpy(miscId, person.MiscId);
+		person.Name=name;
+		person.MiscId=miscId;
+
+		//Remove crew member prior to adding new crew member with changes properties - important to stay withing max. crew member amount
+		crew->RemoveCrewMember(person.Name);
+
 		va_list args;
 		va_start(args, flags);
 		if ((flags & PERSON_NAME)>0)
 		{
-			char *name=va_arg(args, char*);
+			person.Name=va_arg(args, char*);
 		}
 		if ((flags & PERSON_MISCID)>0)
 		{
-			char *miscId=va_arg(args, char*);
+			person.MiscId=va_arg(args, char*);
 		}
 		if ((flags & PERSON_AGE)>0)
 		{
-			int age=va_arg(args, int);
+			person.Age=atoi(va_arg(args, char*));
 		}
 		if ((flags & PERSON_PULS)>0)
 		{
-			char *name=va_arg(args, char*);
+			person.Puls=atoi(va_arg(args, char*));
 		}
 		if ((flags & PERSON_WEIGHT)>0)
 		{
-			char *name=va_arg(args, char*);
+			person.Weight=atoi(va_arg(args, char*));
 		}
 		va_end(args);
+
+		crew->AddCrewMember(person.Name, person.Age, person.Puls, person.Weight, person.MiscId);
+		
+		//Get index of newly added person
+		index=GetPersons();
+		for(result=0;result<index;result++)
+		{
+			Person p=GetPerson(result);
+			if (p.Location->GetCrew()!=crew) continue;
+			if (strcmp(p.Name, person.Name)==0) break;
+		}
+		if (result==index) result=-2;
+		
+		delete [] name;
+		delete [] miscId;
 		break;
 	}
 	return result;

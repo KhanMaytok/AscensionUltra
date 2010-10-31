@@ -4,6 +4,7 @@
 #include "orbitersdk.h"
 
 #define STATES 21
+#define BUFFERLEN 256
 
 typedef enum AscensionTowerState
 {
@@ -68,7 +69,7 @@ public:
 	MFD *GetMfd();
 private:	
 	OBJHANDLE ascensionHandle;
-	char *ascensionName;
+	char *ascensionName, buffer[BUFFERLEN+1];
 	AscensionUltra *ascension;
 	std::vector<AscensionTowerListPair> scanList;
 	AscensionTowerState state;

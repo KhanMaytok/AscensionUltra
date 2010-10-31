@@ -574,6 +574,15 @@ bool AscensionTowerData::SetButton(int bt)
 	return false;
 }
 
+bool ChangePersonData(void *id, char *str, void *usrdata)
+{
+	AscensionTowerChangePerson *cp=(AscensionTowerChangePerson *)usrdata;
+	AscensionTowerData *data=cp->Data;
+	data->GetAscension()->ChangePerson(data->GetSelectedIndex(), cp->Flags, str);
+	data->GetMfd()->InvalidateDisplay();
+	return true;
+}
+
 // Handling shortcut keys
 bool AscensionTowerData::SetKey(DWORD key)
 {	
@@ -621,14 +630,27 @@ bool AscensionTowerData::SetKey(DWORD key)
 		switch(key)
 		{
 		case OAPI_KEY_N:
+			changePerson.Flags=PERSON_NAME;
+			oapiOpenInputBox("Change person name:", ChangePersonData, strncpy(buffer, ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).Name, BUFFERLEN), 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_F:
+			changePerson.Flags=PERSON_MISCID;
+			oapiOpenInputBox("Change function (Crew,Capt,Sek,Vip,Sci,Doc,Tech):", ChangePersonData, strncpy(buffer, ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).MiscId, BUFFERLEN), 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_A:
+			changePerson.Flags=PERSON_AGE;
+			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).Age);
+			oapiOpenInputBox("Change person age:", ChangePersonData, buffer, 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_P:
+			changePerson.Flags=PERSON_PULS;
+			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).Puls);
+			oapiOpenInputBox("Change person puls:", ChangePersonData, buffer, 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_W:
+			changePerson.Flags=PERSON_WEIGHT;
+			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).Weight);
+			oapiOpenInputBox("Change person weight:", ChangePersonData, buffer, 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_L:
 			break;
