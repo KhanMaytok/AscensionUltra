@@ -1,6 +1,6 @@
 #include "AscensionTowerData.h"
 
-AscensionTowerData::AscensionTowerData(void)
+AscensionTowerData::AscensionTowerData(MFD* mfd)
 {
 	ascensionHandle=NULL;
 	ascensionName=NULL;
@@ -13,6 +13,8 @@ AscensionTowerData::AscensionTowerData(void)
 		object[i]=NULL;
 	}
 	state=AscensionTowerState::MainMenu;
+	changePerson.Data=this;
+	this->mfd=mfd;
 }
 
 AscensionTowerData::~AscensionTowerData(void)
@@ -850,3 +852,5 @@ void AscensionTowerData::Back()
 void *AscensionTowerData::GetObject(){return object[state];}
 
 int AscensionTowerData::GetSelectedIndex(){return selectedIndex[state];}
+
+MFD *AscensionTowerData::GetMfd(){return mfd;}

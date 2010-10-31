@@ -59,7 +59,7 @@ AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
 		g_MFDData[obj]=mfds;
 	}
 	data=(*mfds)[mfd];
-	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData();	
+	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData(this);	
 }
 
 // Destructor

@@ -36,10 +36,18 @@ typedef struct AscensionTowerListPair
 	char *Name;
 };
 
+class AscensionTowerData;
+
+typedef struct AscensionTowerChangePerson
+{
+	int Flags;	
+	AscensionTowerData *Data;
+};
+
 class AscensionTowerData
 {
 public:
-	AscensionTowerData(void);
+	AscensionTowerData(MFD *mfd);
 	~AscensionTowerData(void);
 	AscensionUltra *GetAscension();	
 	int GetPage();
@@ -57,12 +65,15 @@ public:
 	char *GetSubtitle();
 	void *GetObject();
 	int GetSelectedIndex();
+	MFD *GetMfd();
 private:	
 	OBJHANDLE ascensionHandle;
 	char *ascensionName;
 	AscensionUltra *ascension;
 	std::vector<AscensionTowerListPair> scanList;
 	AscensionTowerState state;
+	AscensionTowerChangePerson changePerson;
+	MFD *mfd;
 	int page[STATES], selectedIndex[STATES], selection[STATES];
 	void *object[STATES];
 	void Scan();
