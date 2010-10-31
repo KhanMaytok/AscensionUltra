@@ -210,7 +210,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		item.Index=index;
 		{
 			Person person=ascension->GetPerson(index);
-			if (person.MiscId[0]!='\0') sprintf(text, "  %s %s", person.MiscId, person.Name);
+			if (index>0) sprintf(text, "  %s %s", person.MiscId, person.Name);
 			else sprintf(text, "  Add new person...");
 		}
 		item.Name=text;
@@ -229,11 +229,7 @@ void AscensionTowerData::SetState(AscensionTowerState state)
 	{
 	case AscensionTowerState::BaseSelect:
 		Scan();
-		break;
-	case AscensionTowerState::Rooster:
-		this->state=state;
-		if (GetListSize()<=0) state=AscensionTowerState::MainMenu;
-		break;
+		break;	
 	}
 	this->state=state;
 }
@@ -329,8 +325,8 @@ void AscensionTowerData::Select()
 		t->Strobe(start, end, !t->Strobing(start,end));		
 		break;
 	case AscensionTowerState::Rooster:
-		object[AscensionTowerState::PersonControl]=(void *)ascension->GetPerson(selectedIndex[state]).MiscId[0];
-		SetState(AscensionTowerState::PersonControl);		
+		selectedIndex[AscensionTowerState::PersonControl]=selectedIndex[state];
+		SetState(AscensionTowerState::PersonControl);
 		break;
 	}
 }
@@ -367,9 +363,9 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 			case 4: return "WGT";
 			case 5: return "LOC";
 			case 6: return "";
-			case 7: return object[state]!=NULL?"EVA":"";
+			case 7: return selectedIndex[AscensionTowerState::Rooster]>0?"EVA":"";
 			case 8: return "";
-			case 9: return object[state]!=NULL?"DEL":"";
+			case 9: return selectedIndex[AscensionTowerState::Rooster]>0?"DEL":"";
 			case 10: return "";
 			case 11: return "BCK";
 		}
@@ -445,7 +441,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		return 12;
 	case AscensionTowerState::PersonControl:
 		for(int i=0;i<12;i++) mnu[i]=personMenu[i];
-		if (object[state]==NULL)
+		if (selectedIndex[AscensionTowerState::Rooster]==0)
 		{
 			mnu[7]=personMenu[6];
 			mnu[9]=personMenu[6];
@@ -635,12 +631,12 @@ bool AscensionTowerData::SetKey(DWORD key)
 		case OAPI_KEY_L:
 			break;
 		case OAPI_KEY_E:
-			if (object[state]==NULL) return false;
+			if (selectedIndex[AscensionTowerState::Rooster]==0) return false;
 			ascension->ChangePerson(selectedIndex[AscensionTowerState::Rooster], PERSON_EVA);
 			SetState(AscensionTowerState::Rooster);
 			break;
 		case OAPI_KEY_D:
-			if (object[state]==NULL) return false;
+			if (selectedIndex[AscensionTowerState::Rooster]==0) return false;
 			ascension->ChangePerson(selectedIndex[AscensionTowerState::Rooster], PERSON_DELETE);
 			SetState(AscensionTowerState::Rooster);
 			break;
@@ -793,7 +789,7 @@ char *AscensionTowerData::GetSubtitle()
 	case AscensionTowerState::GroundMenu: return "Select ground request";
 	case AscensionTowerState::ATCMenu: return "Select ATC request";	
 	case AscensionTowerState::Rooster: return "Select Person";
-	case AscensionTowerState::PersonControl: return object[state]!=NULL?"Person Information":"Add new person";
+	case AscensionTowerState::PersonControl: return selectedIndex[AscensionTowerState::Rooster]>0?"Person Information":"Add new person";
 	case AscensionTowerState::HangarForDoorSelection: return "Select Hangar for Roll-in/Roll-out";	
 	case AscensionTowerState::DoorSelection: return "Select Door for Roll-in/Roll-out";	
 	case AscensionTowerState::TaxiRouteStartSelection: return "Select Taxi Route Start";

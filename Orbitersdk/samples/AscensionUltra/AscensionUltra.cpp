@@ -106,7 +106,7 @@ void AscensionUltra::InitSubObjects()
 	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
 	crew->SetAirlockDoorState(FALSE);
 	crew->SetMaxSeatAvailableInShip(1);
-	crew->AddCrewMember("John Doe", 20, 60, 75);
+	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
 
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);
@@ -724,16 +724,18 @@ Person AscensionUltra::GetPerson(int index)
 }
 
 int AscensionUltra::ChangePerson(int index, int flags, ...)
-{
-	UMMUCREWMANAGMENT *crew=GetPersonLocation(index)->GetCrew();
+{	
+	Person person=GetPerson(index);
+	UMMUCREWMANAGMENT *crew=person.Location->GetCrew();
+	int result=0;
 
 	switch (flags)
 	{
 	case PERSON_EVA:
-		crew->EvaCrewMember(crew->GetCrewNameBySlotNumber(index));
+		crew->EvaCrewMember(person.Name);
 		break;
 	case PERSON_DELETE:
-		crew->RemoveCrewMember(crew->GetCrewNameBySlotNumber(index));
+		crew->RemoveCrewMember(person.Name);		
 		break;
 	default:
 		va_list args;
@@ -761,7 +763,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		va_end(args);
 		break;
 	}
-	return 0;
+	return result;
 }
 
 // Module initialisation
