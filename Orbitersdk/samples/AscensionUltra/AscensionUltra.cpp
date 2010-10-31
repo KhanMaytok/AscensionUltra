@@ -766,7 +766,8 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		person.Name=name;
 		person.MiscId=miscId;
 
-		//Remove crew member prior to adding new crew member with changes properties - important to stay withing max. crew member amount
+		//Remove crew member prior to adding new crew member with changes properties - important to
+		//stay withing max. crew member amount
 		crew->RemoveCrewMember(person.Name);
 
 		//Set optionally changed crew and recreate add person if necessary

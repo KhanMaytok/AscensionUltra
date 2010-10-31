@@ -258,7 +258,13 @@ void AscensionTowerData::SetState(AscensionTowerState state)
 
 void AscensionTowerData::Select(int index)
 {
-	selectedIndex[state]=index<0?GetListItem(page[state]*6+selection[state]).Index:index;
+	if (index<0) selectedIndex[state]=GetListItem(page[state]*6+selection[state]).Index;
+	else
+	{
+		selectedIndex[state]=index;
+		page[state]=index / 6;
+		selection[state]=index % 6;
+	}
 	char *start, *end;
 	Routes *t;
 	switch(state)
@@ -608,7 +614,9 @@ bool ChangePersonData(void *id, char *str, void *usrdata)
 {
 	AscensionTowerChangePerson *cp=(AscensionTowerChangePerson *)usrdata;
 	AscensionTowerData *data=cp->Data;
-	data->GetAscension()->ChangePerson(data->GetSelectedIndex(), cp->Flags, str);
+	int index=data->GetAscension()->ChangePerson(data->GetSelectedIndex(), cp->Flags, str);
+	data->SetState(AscensionTowerState::Rooster);
+	data->Select(index);
 	data->GetMfd()->InvalidateDisplay();
 	return true;
 }
