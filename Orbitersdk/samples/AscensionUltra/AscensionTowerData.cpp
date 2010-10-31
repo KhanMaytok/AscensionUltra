@@ -120,9 +120,11 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::ATCMenu: return 3;
 	case AscensionTowerState::HangarForDoorSelection:	
 		return ascension->GetHangars(HangarType::TurnAround)+ascension->GetHangars(HangarType::LightStorage)+ascension->GetHangars(HangarType::LaunchTunnel);
+	case AscensionTowerState::HangarForPersonSelection:
 	case AscensionTowerState::HangarForRoomSelection:
 	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HangarType::TurnAround);
-	case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();		
+	case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();
+	case AscensionTowerState::RoomForPersonSelection:
 	case AscensionTowerState::RoomSelection: return ((Hangar *)object[state])->GetRooms();
 	case AscensionTowerState::DoorControl: return 3;
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
@@ -163,8 +165,27 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		item.Index=index;
 		{
 			Hangar *h=ascension->GetHangar(HangarType::TurnAround, index);
-			item.Name=h->GetName();
-			sprintf(text, "%c %s", ascension->GetControlRoom()->GetHangar()==h?'*':' ', item.Name);
+			sprintf(text, "%c %s", ascension->GetControlRoom()->GetHangar()==h?'*':' ', h->GetName());
+		}
+		item.Name=text;
+		return item;
+	case AscensionTowerState::HangarForPersonSelection:
+		item.Index=index;
+		{
+			Hangar *h=ascension->GetHangar(HangarType::TurnAround, index);
+			sprintf(text, "%c %s",
+				ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Location->GetHangar()==h?'*':' ',
+				h->GetName());
+		}
+		item.Name=text;
+		return item;
+	case AscensionTowerState::RoomForPersonSelection:
+		item.Index=index;
+		{			
+			Room *r=((Hangar *)object[state])->GetRoom(index);
+			sprintf(text, "%c %s",
+				ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Location==r?'*':' ',
+				r->GetName());
 		}
 		item.Name=text;
 		return item;
@@ -172,8 +193,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		item.Index=index;
 		{
 			Room *r=((Hangar *)object[state])->GetRoom(index);
-			item.Name=r->GetName();
-			sprintf(text, "%c %s", ascension->GetControlRoom()==r?'*':' ', item.Name);
+			sprintf(text, "%c %s", ascension->GetControlRoom()==r?'*':' ', r->GetName());
 		}
 		item.Name=text;
 		return item;
@@ -282,6 +302,16 @@ void AscensionTowerData::Select(int index)
 		index=selectedIndex[state];
 		object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HangarType::TurnAround, index);
 		SetState(AscensionTowerState::RoomSelection);		
+		break;
+	case AscensionTowerState::HangarForPersonSelection:
+		index=selectedIndex[state];
+		object[AscensionTowerState::RoomForPersonSelection]=ascension->GetHangar(HangarType::TurnAround, index);
+		SetState(AscensionTowerState::RoomForPersonSelection);		
+		break;
+	case AscensionTowerState::RoomForPersonSelection:
+		//index=selectedIndex[state];
+		//object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HangarType::TurnAround, index);
+		SetState(AscensionTowerState::PersonControl);		
 		break;
 	case AscensionTowerState::RoomSelection:
 		object[AscensionTowerState::DoorControl]=((Hangar *)object[state])->GetDoor(selectedIndex[state]);
@@ -435,6 +465,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	case AscensionTowerState::TaxiRouteStartSelection: target="route start"; break;
 	case AscensionTowerState::TaxiRouteEndSelection: target="route end"; break;
 	case AscensionTowerState::LandingRunwaySelection: target="runway"; break;
+	case AscensionTowerState::RoomForPersonSelection:
 	case AscensionTowerState::RoomSelection: target="room"; break;
 	case AscensionTowerState::DoorControl: target="command"; break;
 	case AscensionTowerState::CraneControl:
@@ -652,6 +683,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 			oapiOpenInputBox("Change person weight:", ChangePersonData, buffer, 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_L:
+			SetState(AscensionTowerState::HangarForPersonSelection);
 			break;
 		case OAPI_KEY_E:
 			if (selectedIndex[AscensionTowerState::Rooster]==0) return false;
@@ -789,6 +821,8 @@ char *AscensionTowerData::GetTitle()
 	case AscensionTowerState::Launch:
 		return GetNameSafeTitle(title, atc);	
 		break;
+	case AscensionTowerState::HangarForPersonSelection:
+	case AscensionTowerState::RoomForPersonSelection:
 	case AscensionTowerState::Rooster:
 	case AscensionTowerState::PersonControl:
 		return GetNameSafeTitle(title, rooster);
@@ -838,6 +872,15 @@ char *AscensionTowerData::GetSubtitle()
 		sprintf(subtitle, "%s -> Crane",
 			((Hangar *)object[AscensionTowerState::HangarForCraneSelection])->GetName());
 		return subtitle;
+	case AscensionTowerState::HangarForPersonSelection:
+		sprintf(subtitle, "%s -> Hangar Location",
+			ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Name);
+		return subtitle;
+	case AscensionTowerState::RoomForPersonSelection:
+		sprintf(subtitle, "%s -> %s -> Room Location",
+			ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Name,
+			((Hangar *)object[state])->GetName());
+		return subtitle;
 	}
 	return "";
 }
@@ -852,6 +895,8 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::ATCMenu: SetState(AscensionTowerState::MainMenu);break;
 	case AscensionTowerState::Rooster: SetState(AscensionTowerState::MainMenu);break;
 	case AscensionTowerState::PersonControl: SetState(AscensionTowerState::Rooster);break;
+	case AscensionTowerState::RoomForPersonSelection: SetState(AscensionTowerState::HangarForPersonSelection);break;
+	case AscensionTowerState::HangarForPersonSelection: SetState(AscensionTowerState::PersonControl);break;
 	case AscensionTowerState::HangarForDoorSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::DoorSelection: SetState(AscensionTowerState::HangarForDoorSelection);break;
 	case AscensionTowerState::DoorControl: SetState(AscensionTowerState::DoorSelection);break;

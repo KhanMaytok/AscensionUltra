@@ -157,6 +157,8 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 	case AscensionTowerState::TaxiRouteEndSelection:
 	case AscensionTowerState::LandingRunwaySelection:
 	case AscensionTowerState::Rooster:
+	case AscensionTowerState::RoomForPersonSelection:
+	case AscensionTowerState::HangarForPersonSelection:
 		RenderSelectionPage();	
 		break;
 	case AscensionTowerState::DoorControl:
