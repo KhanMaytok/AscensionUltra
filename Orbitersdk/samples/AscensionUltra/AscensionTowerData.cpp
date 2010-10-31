@@ -309,12 +309,12 @@ void AscensionTowerData::Select(int index)
 		SetState(AscensionTowerState::RoomForPersonSelection);		
 		break;
 	case AscensionTowerState::RoomForPersonSelection:
-		//index=selectedIndex[state];
-		//object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HangarType::TurnAround, index);
-		SetState(AscensionTowerState::PersonControl);		
+		index=ascension->ChangePerson(selectedIndex[AscensionTowerState::PersonControl], PERSON_LOCATION, ((Hangar *)object[state])->GetRoom(selectedIndex[state]));
+		if (index<0) break; //TODO: denial sound
+		SetState(AscensionTowerState::Rooster);
+		Select(index);
 		break;
-	case AscensionTowerState::RoomSelection:
-		object[AscensionTowerState::DoorControl]=((Hangar *)object[state])->GetDoor(selectedIndex[state]);
+	case AscensionTowerState::RoomSelection:		
 		ascension->SwitchView(((Hangar *)object[state])->GetRoom(selectedIndex[state]));
 		break;
 	case AscensionTowerState::DoorSelection:

@@ -38,6 +38,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define PERSON_AGE		0x04
 #define PERSON_PULS		0x08
 #define PERSON_WEIGHT	0x10
+#define PERSON_LOCATION	0x20
 
 class AscensionUltra: public VESSEL2 {
 public:

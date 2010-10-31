@@ -2,6 +2,8 @@
 #include "orbitersdk.h"
 #include "UMmuSDK.h"
 
+#define MAXPERSONS 4
+
 class Hangar;
 class Room
 {
@@ -14,6 +16,7 @@ public:
 	UMMUCREWMANAGMENT *GetCrew();
 	VECTOR3 GetCameraPosition();
 	VECTOR3 GetViewDirection();
+	int GetMaxPersons();
 	void PostStep (double simt, double simdt, double mjd);
 private:
 	Hangar *hangar;

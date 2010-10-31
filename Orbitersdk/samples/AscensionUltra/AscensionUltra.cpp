@@ -724,7 +724,8 @@ Person AscensionUltra::GetPerson(int index)
 }
 
 // Changes person properties according to flags (see header-file for PERSON_xxx macros)
-// Returns -2 on internal failure, -1 on UMmu failure, 0 on success of EVA or remove, new index otherwise
+// Returns -2 on internal failure, -1 if no more slots available on location change,
+// 0 on success of EVA or remove, new index otherwise
 int AscensionUltra::ChangePerson(int index, int flags, ...)
 {	
 	Person person=GetPerson(index);
@@ -740,6 +741,23 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		crew->RemoveCrewMember(person.Name);		
 		break;
 	default:
+		va_list args;
+		va_start(args, flags);
+
+		//Set new location if necessary
+		if ((flags & PERSON_LOCATION)>0)
+		{
+			person.Location=va_arg(args, Room*);
+			if (person.Location!=NULL)
+				if (person.Location->GetCrew()->GetCrewTotalNumber()>=person.Location->GetMaxPersons())
+					person.Location=NULL;			
+			if (person.Location==NULL)
+			{
+				va_end(args);
+				return -1;
+			}			
+		}
+
 		//Prepare removal of crew member - heap variables to preserve strings
 		char *name=new char[strlen(person.Name)+1];
 		char *miscId=new char[strlen(person.MiscId)+1];
@@ -751,28 +769,18 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		//Remove crew member prior to adding new crew member with changes properties - important to stay withing max. crew member amount
 		crew->RemoveCrewMember(person.Name);
 
-		va_list args;
-		va_start(args, flags);
-		if ((flags & PERSON_NAME)>0)
+		//Set optionally changed crew and recreate add person if necessary
+		if (crew!=person.Location->GetCrew())
 		{
-			person.Name=va_arg(args, char*);
+			if (crew==entrance.GetCrew()) crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
+			crew=person.Location->GetCrew();
 		}
-		if ((flags & PERSON_MISCID)>0)
-		{
-			person.MiscId=va_arg(args, char*);
-		}
-		if ((flags & PERSON_AGE)>0)
-		{
-			person.Age=atoi(va_arg(args, char*));
-		}
-		if ((flags & PERSON_PULS)>0)
-		{
-			person.Puls=atoi(va_arg(args, char*));
-		}
-		if ((flags & PERSON_WEIGHT)>0)
-		{
-			person.Weight=atoi(va_arg(args, char*));
-		}
+		
+		if ((flags & PERSON_NAME)>0) person.Name=va_arg(args, char*);
+		if ((flags & PERSON_MISCID)>0) person.MiscId=va_arg(args, char*);
+		if ((flags & PERSON_AGE)>0) person.Age=atoi(va_arg(args, char*));
+		if ((flags & PERSON_PULS)>0) person.Puls=atoi(va_arg(args, char*));
+		if ((flags & PERSON_WEIGHT)>0) person.Weight=atoi(va_arg(args, char*));
 		va_end(args);
 
 		crew->AddCrewMember(person.Name, person.Age, person.Puls, person.Weight, person.MiscId);

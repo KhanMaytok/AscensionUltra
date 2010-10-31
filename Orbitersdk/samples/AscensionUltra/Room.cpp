@@ -16,7 +16,7 @@ void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraP
 	crew.DefineAirLockShape(true, n.x,p.x,n.y,p.y,n.z,p.z);
 	VECTOR3 d=_V(0,0,1)-viewDirection;
 	crew.SetMembersPosRotOnEVA(_V(0,1,0)+doorPosition, _V(0,asin(length(d)/(d.x<0?2:-2))*2,0));
-	crew.SetMaxSeatAvailableInShip(4);
+	crew.SetMaxSeatAvailableInShip(GetMaxPersons());
 	this->hangar=hangar;
 	strcpy(this->name=new char[strlen(name)+1], name);
 	this->cameraPosition=cameraPosition;
@@ -42,3 +42,4 @@ char *Room::GetName(){return name;}
 VECTOR3 Room::GetCameraPosition(){return cameraPosition;}
 VECTOR3 Room::GetViewDirection(){return viewDirection;}
 UMMUCREWMANAGMENT *Room::GetCrew(){return &crew;}
+int Room::GetMaxPersons(){return MAXPERSONS;}
