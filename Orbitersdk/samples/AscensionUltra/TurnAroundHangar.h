@@ -51,6 +51,6 @@ public:
 private:
 	Crane crane1;
 	Door doors[DOORS];
-	int cur_crane;
+	int cur_crane, cur_room;
 	Room rooms[ROOMS];
 };

@@ -1,0 +1,9 @@
+* Design of MFD pages is a bit unfortunate. Refactor with inheritance instead of ugly switch/case constructs.
+* Refactor various interfaces to be consistent. ATM there is a index-driven, class-based and struct-based approach.
+* Think about making sub-objects sub-vessels
+* Make coordinate system more generic. I.e. use files with ini-like structure to define e.g. beacon-arrays and hangar positions.
+
+* Create shared lib for direct UMmu transfer - basically Init(), Exit(), SetDockStatus(2)
+* Create static lib for access to shared lib
+* Use in AscensionUltra rooster location change - if a vessel is in a hangar, show on room list
+* Add function to AscensionUltra rooms to accept vessel transfers - establish "transfer tunnel"... put into Ground menu

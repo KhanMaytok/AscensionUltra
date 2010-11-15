@@ -19,6 +19,7 @@
 #include "LightStorageHangar.h"
 #include "LaunchTunnelHangar.h"
 #include "Routes.h"
+#include "Person.h"
 #include "UMmuSDK.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
@@ -29,6 +30,15 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define TAXIWAYPATHS 22
 #define RUNWAYSUBSECTIONS 56
 #define RUNWAYPATHS 10
+
+#define PERSON_EVA		0x00
+#define PERSON_DELETE	0xFF
+#define PERSON_NAME		0x01
+#define PERSON_MISCID	0x02
+#define PERSON_AGE		0x04
+#define PERSON_PULS		0x08
+#define PERSON_WEIGHT	0x10
+#define PERSON_LOCATION	0x20
 
 class AscensionUltra: public VESSEL2 {
 public:
@@ -57,11 +67,15 @@ public:
 	virtual Routes *GetRunways();
 	virtual Room *GetControlRoom();
 	virtual void SwitchView(Room *room);
-	
+	virtual int GetPersons();
+	virtual Person GetPerson(int index);
+	virtual int ChangePerson(int index, int flags, ...);
+
 private:
 	void InitSubObjects();
 	void MoveGroup(int mesh, VECTOR3 v);
 	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
+	Room *GetPersonLocation(int &index);
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
@@ -76,7 +90,7 @@ private:
 	Routes taxiways;
 	Routes runways;
 	Room *controlRoom;
-	UMMUCREWMANAGMENT crew;
+	Room entrance;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

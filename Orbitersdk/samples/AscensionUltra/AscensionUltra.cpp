@@ -101,6 +101,13 @@ void AscensionUltra::InitSubObjects()
 
 	controlRoom=turnAround[0].GetRoom(0);
 
+	//Setup entrance room - this is the dummy place for putting new persons to
+	entrance.Init(this, &launchTunnel, "Entrance", _V(0,0,0), _V(0,0,1), _V(0,0,0));
+	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
+	crew->SetAirlockDoorState(FALSE);
+	crew->SetMaxSeatAvailableInShip(1);
+	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
+
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);
 	taxiwaySubsection[1].Init(this, _V_(980,0,395), _V_(2430,0,395), _V(0,1,0), 73);
@@ -412,13 +419,10 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	DefineAnimations();
 
-	crew.InitUmmu(GetHandle());
-	crew.DefineAirLockShape(true, -10, 10, -10, 10, -10, 10);
-
 	int index=0;
 
-	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(&crew, index);
-	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(&crew, index);
+	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(entrance.GetCrew(), index);
+	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(entrance.GetCrew(), index);
 }
 
 // Read status from scenario file
@@ -539,20 +543,13 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 // --------------------------------------------------------------
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
+	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
 	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
 
-	switch (crew.ProcessUniversalMMu())
-	{
-	case UMMU_RETURNED_TO_OUR_SHIP:
-	case UMMU_TRANSFERED_TO_OUR_SHIP:
-		sprintf(oapiDebugString(),"%s -> Ascension(%d)", crew.GetLastEnteredCrewName(), crew.GetCrewTotalNumber());
-		break;
-	}
-
 	//Detect activated action area, iterate through sub-items for processing, break on first processor
-	int action=crew.DetectActionAreaActivated();
+	int action=crew->DetectActionAreaActivated();
 	if (action>-1) for(int i=0;i<5;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
 	if (action>-1) for(int i=0;i<12;i++) if (lightStorage[i].ActionAreaActivated(action)) break;
 
@@ -567,7 +564,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	}
 	
 
-	crew.WarnUserUMMUNotInstalled("Ascension Ultra");
+	crew->WarnUserUMMUNotInstalled("Ascension Ultra");
 }
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
@@ -679,7 +676,131 @@ void AscensionUltra::SwitchView(Room *room)
 {
 	SetCameraOffset (room->GetHangar()->GetPosition()+room->GetCameraPosition());
 	SetCameraDefaultDirection(room->GetViewDirection());
+	if (oapiGetFocusObject()==GetHandle()) oapiCameraSetCockpitDir(0,0);
 	controlRoom=room;
+}
+
+int AscensionUltra::GetPersons()
+{
+	int i, rooms, j, persons=0;
+		
+	for(i=0;i<TURNAROUNDHANGARS;i++)
+	{
+		rooms=turnAround[i].GetRooms();
+		for(j=0;j<rooms;j++) persons+=turnAround[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	}
+
+	return ++persons;	//First entry is always the ADD PERSON entry
+}
+
+Room *AscensionUltra::GetPersonLocation(int &index)
+{
+	int i, rooms, j, persons=0;
+	UMMUCREWMANAGMENT *crew;
+
+	if (index==0) return &entrance;
+	index--;
+			
+	for(i=0;i<TURNAROUNDHANGARS;i++)
+	{
+		rooms=turnAround[i].GetRooms();
+		for(j=0;j<rooms;j++)
+		{
+			Room *room=turnAround[i].GetRoom(j);
+			crew=room->GetCrew();
+			if (crew->GetCrewTotalNumber()>index) return room;
+			index-=crew->GetCrewTotalNumber();
+		}
+	}
+	
+	index=0;
+	return NULL;	
+}
+
+Person AscensionUltra::GetPerson(int index)
+{
+	Room *room=GetPersonLocation(index);
+	return Person(room, index);
+}
+
+// Changes person properties according to flags (see header-file for PERSON_xxx macros)
+// Returns -2 on internal failure, -1 if no more slots available on location change,
+// 0 on success of EVA or remove, new index otherwise
+int AscensionUltra::ChangePerson(int index, int flags, ...)
+{	
+	Person person=GetPerson(index);
+	UMMUCREWMANAGMENT *crew=person.Location->GetCrew();
+	int result=0;
+
+	switch (flags)
+	{
+	case PERSON_EVA:
+		crew->EvaCrewMember(person.Name);
+		break;
+	case PERSON_DELETE:
+		crew->RemoveCrewMember(person.Name);		
+		break;
+	default:
+		va_list args;
+		va_start(args, flags);
+
+		//Set new location if necessary
+		if ((flags & PERSON_LOCATION)>0)
+		{
+			person.Location=va_arg(args, Room*);
+			if (person.Location!=NULL)
+				if (person.Location->GetCrew()->GetCrewTotalNumber()>=person.Location->GetMaxPersons())
+					person.Location=NULL;			
+			if (person.Location==NULL)
+			{
+				va_end(args);
+				return -1;
+			}			
+		}
+
+		//Prepare removal of crew member - heap variables to preserve strings
+		char *name=new char[strlen(person.Name)+1];
+		char *miscId=new char[strlen(person.MiscId)+1];
+		strcpy(name, person.Name);
+		strcpy(miscId, person.MiscId);
+		person.Name=name;
+		person.MiscId=miscId;
+
+		//Remove crew member prior to adding new crew member with changes properties - important to
+		//stay withing max. crew member amount
+		crew->RemoveCrewMember(person.Name);
+
+		//Set optionally changed crew and recreate add person if necessary
+		if (crew!=person.Location->GetCrew())
+		{
+			if (crew==entrance.GetCrew()) crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
+			crew=person.Location->GetCrew();
+		}
+		
+		if ((flags & PERSON_NAME)>0) person.Name=va_arg(args, char*);
+		if ((flags & PERSON_MISCID)>0) person.MiscId=va_arg(args, char*);
+		if ((flags & PERSON_AGE)>0) person.Age=atoi(va_arg(args, char*));
+		if ((flags & PERSON_PULS)>0) person.Puls=atoi(va_arg(args, char*));
+		if ((flags & PERSON_WEIGHT)>0) person.Weight=atoi(va_arg(args, char*));
+		va_end(args);
+
+		crew->AddCrewMember(person.Name, person.Age, person.Puls, person.Weight, person.MiscId);
+		
+		//Get index of newly added person
+		index=GetPersons();
+		for(result=0;result<index;result++)
+		{
+			Person p=GetPerson(result);
+			if (p.Location->GetCrew()!=crew) continue;
+			if (strcmp(p.Name, person.Name)==0) break;
+		}
+		if (result==index) result=-2;
+		
+		delete [] name;
+		delete [] miscId;
+		break;
+	}
+	return result;
 }
 
 // Module initialisation

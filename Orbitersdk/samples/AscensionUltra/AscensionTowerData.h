@@ -3,7 +3,8 @@
 #include "AscensionUltra.h"
 #include "orbitersdk.h"
 
-#define STATES 19
+#define STATES 23
+#define BUFFERLEN 256
 
 typedef enum AscensionTowerState
 {
@@ -26,6 +27,10 @@ typedef enum AscensionTowerState
 	Launch,
 	DoorControl,
 	CraneControl,
+	Rooster,
+	PersonControl,
+	RoomForPersonSelection,
+	HangarForPersonSelection,
 };
 
 typedef struct AscensionTowerListPair
@@ -34,16 +39,25 @@ typedef struct AscensionTowerListPair
 	char *Name;
 };
 
+class AscensionTowerData;
+
+typedef struct AscensionTowerChangePerson
+{
+	int Flags;	
+	AscensionTowerData *Data;
+};
+
 class AscensionTowerData
 {
 public:
-	AscensionTowerData(void);
+	AscensionTowerData(MFD *mfd);
 	~AscensionTowerData(void);
 	AscensionUltra *GetAscension();	
 	int GetPage();
 	int GetListSize();
 	AscensionTowerListPair GetListItem(int index);
 	int GetSelection();
+	void Select(int index=-1);
 	AscensionTowerState GetState();
 	char *GetButtonLabel (int bt);
 	int GetButtonMenu (MFDBUTTONMENU *mnu);
@@ -54,17 +68,20 @@ public:
 	char *GetTitle();
 	char *GetSubtitle();
 	void *GetObject();
+	int GetSelectedIndex();
+	MFD *GetMfd();
 private:	
 	OBJHANDLE ascensionHandle;
-	char *ascensionName;
+	char *ascensionName, buffer[BUFFERLEN+1];
 	AscensionUltra *ascension;
 	std::vector<AscensionTowerListPair> scanList;
 	AscensionTowerState state;
+	AscensionTowerChangePerson changePerson;
+	MFD *mfd;
 	int page[STATES], selectedIndex[STATES], selection[STATES];
 	void *object[STATES];
 	void Scan();
-	void SetAscension(int index);
-	void Select();
+	void SetAscension(int index);	
 	void Back();
 	char *GetNameSafeTitle(char *title, char *trailer);
 };
