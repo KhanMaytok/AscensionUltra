@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VirtualDockingTunnel", "VirtualDockingTunnel.vcproj", "{D767E08F-67E9-411F-84B7-0A66684CF3D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -30,6 +32,10 @@ Global
 		{B427E97E-56A3-48A6-A361-FB38F2D6F899}.Debug|Win32.Build.0 = Debug|Win32
 		{B427E97E-56A3-48A6-A361-FB38F2D6F899}.Release|Win32.ActiveCfg = Release|Win32
 		{B427E97E-56A3-48A6-A361-FB38F2D6F899}.Release|Win32.Build.0 = Release|Win32
+		{D767E08F-67E9-411F-84B7-0A66684CF3D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D767E08F-67E9-411F-84B7-0A66684CF3D2}.Debug|Win32.Build.0 = Debug|Win32
+		{D767E08F-67E9-411F-84B7-0A66684CF3D2}.Release|Win32.ActiveCfg = Release|Win32
+		{D767E08F-67E9-411F-84B7-0A66684CF3D2}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
