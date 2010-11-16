@@ -14,11 +14,13 @@
 // ==============================================================
 // Global variables
 
+#include "orbitersdk.h"
 #include <map>
 
-std::map<void *, void *> g_DockLink;
-std::map<void *, int> g_Handles;
+std::map<VESSEL *, OBJHANDLE> g_DockLink;
+std::map<VESSEL *, int> g_Handles;
 
+DWORD g_Hook;
 byte g_original[10]={0x8b,0x44,0x24,0x04,0x8b,0x40,0x48,0xc2,0x04,0x00};
 //The following array is:
 //_asm
@@ -31,13 +33,13 @@ byte g_original[10]={0x8b,0x44,0x24,0x04,0x8b,0x40,0x48,0xc2,0x04,0x00};
 //}
 byte g_code[10] = {0x58, 0x51, 0x50, 0xff, 0x25, 0, 0, 0, 0, 0x90};
 
-void *_stdcall GetDockStatus(void *vessel, void *dock)
+OBJHANDLE _stdcall GetDockStatus(VESSEL *vessel, DOCKHANDLE dock)
 {
 	//Do my own GetDockStatus
-	std::map<void *, void *>::iterator el=g_DockLink.find(vessel);
+	std::map<VESSEL *, OBJHANDLE>::iterator el=g_DockLink.find(vessel);
 	if (el!=g_DockLink.end()) return el->second;
 	//Original function content
-	return *(void *)((char *)dock+DOCKSTRUCTOFFSET_CURRENTDOCKOBJECT);
+	return *(OBJHANDLE *)(void *)((char *)dock+DOCKSTRUCTOFFSET_CURRENTDOCKOBJECT);
 }
 
 int WriteCode(void *address, void *code, DWORD len)
@@ -76,7 +78,7 @@ int WriteCode(void *address, void *code, DWORD len)
 //         1 if already hooked
 //        -1 if already initialized by handle
 //        -2 if already hooked by some other system
-int Init(void *handle)
+extern int Init(VESSEL *handle)
 {
 	if (g_Handles.find(handle)!=g_Handles.end()) return -1;
 	g_Handles[handle]=1;
@@ -103,7 +105,7 @@ int Init(void *handle)
 //         1 if still hooked, but handles unregistered
 //        -1 if handle already unregistered
 //        -2 if hook already released by some other system
-int Exit(void *handle)
+extern int Exit(VESSEL *handle)
 {
 	if (g_Handles.find(handle)==g_Handles.end()) return -1;
 	g_Handles.erase(handle);
