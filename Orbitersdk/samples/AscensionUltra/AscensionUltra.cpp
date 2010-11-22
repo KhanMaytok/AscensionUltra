@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "KeyboardFilter.h"
+#include "VirtualDockingTunnel.h"
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
 #define TA1MATRIXOFFSET _V(266,0,0)
@@ -107,6 +108,9 @@ void AscensionUltra::InitSubObjects()
 	crew->SetAirlockDoorState(FALSE);
 	crew->SetMaxSeatAvailableInShip(1);
 	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
+
+	//Initialize virtual docking tunnel
+	vdtInit(this);
 
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);

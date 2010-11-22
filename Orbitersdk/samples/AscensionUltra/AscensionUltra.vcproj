@@ -247,6 +247,14 @@
 				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib"
 				>
 			</File>
+			<File
+				RelativePath=".\VirtualDockingTunnel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VirtualDockingTunnel.lib"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Source"
