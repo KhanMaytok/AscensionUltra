@@ -4,8 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AscensionUltraConfigurator", "AscensionUltraConfigurator.vcproj", "{5F7FE97C-3677-4FFE-80CF-F8D89B6EC460}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AscensionUltra", "AscensionUltra.vcproj", "{289C4462-1F37-46FF-AA15-2EDE4AEA5D56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5F7FE97C-3677-4FFE-80CF-F8D89B6EC460} = {5F7FE97C-3677-4FFE-80CF-F8D89B6EC460}
+		{D767E08F-67E9-411F-84B7-0A66684CF3D2} = {D767E08F-67E9-411F-84B7-0A66684CF3D2}
+		{C53852EA-B625-4CCD-A4F9-E0045C47EDFB} = {C53852EA-B625-4CCD-A4F9-E0045C47EDFB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AscensionTower", "AscensionTower.vcproj", "{B427E97E-56A3-48A6-A361-FB38F2D6F899}"
+	ProjectSection(ProjectDependencies) = postProject
+		{289C4462-1F37-46FF-AA15-2EDE4AEA5D56} = {289C4462-1F37-46FF-AA15-2EDE4AEA5D56}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{F575913F-C8B4-41B2-83E0-59452056384C}"
 	ProjectSection(SolutionItems) = preProject
