@@ -35,10 +35,11 @@ int vdtInit(VESSEL *handle)
 {
 	HMODULE g_Module=LoadLibrary("Modules\\VirtualDockingTunnel.dll");
 	if (g_Module==NULL) return -3;
-	g_Init=(VESSELFUNC)GetProcAddress(g_Module, "Init");
-	g_Exit=(VESSELFUNC)GetProcAddress(g_Module, "Exit");
-	g_SetDockState=(MAPFUNC)GetProcAddress(g_Module, "SetDockState");
-	g_GetVersion=(FLOATGETTER)GetProcAddress(g_Module, "GetVersion");
+	FARPROC x=GetProcAddress(g_Module, "vdtInit");
+	g_Init=(VESSELFUNC)GetProcAddress(g_Module, "vdtInit");
+	g_Exit=(VESSELFUNC)GetProcAddress(g_Module, "vdtExit");
+	g_SetDockState=(MAPFUNC)GetProcAddress(g_Module, "vdtSetDockState");
+	g_GetVersion=(FLOATGETTER)GetProcAddress(g_Module, "vdtGetVersion");
 	if (((DWORD)g_Init | (DWORD)g_Exit | (DWORD)g_SetDockState | (DWORD)g_GetVersion)==NULL) return -4;
 	return g_Init(handle);
 }
