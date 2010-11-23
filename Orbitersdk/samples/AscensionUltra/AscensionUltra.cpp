@@ -72,6 +72,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 // --------------------------------------------------------------
 AscensionUltra::~AscensionUltra ()
 {
+	OrbiterExtensions::Exit(this);
 }
 
 double AscensionUltra::GetVersion(){return 1.0;}
@@ -567,8 +568,8 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 		sprintf(oapiDebugString(),"MAP coordinates: %f , %f , %f", -local.x, local.y, local.z);
 	}
 	
-
-	crew->WarnUserUMMUNotInstalled("Ascension Ultra");
+	if (orbiterExtensionResult<0) sprintf(oapiDebugString(), "WARNING! Orbiter extensions not loaded. Error %d", orbiterExtensionResult);
+	else crew->WarnUserUMMUNotInstalled("Ascension Ultra");
 }
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
