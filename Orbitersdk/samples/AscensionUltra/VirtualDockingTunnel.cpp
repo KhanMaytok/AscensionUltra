@@ -17,6 +17,10 @@
 #include "orbitersdk.h"
 #include <map>
 
+namespace OrbiterExtensions
+
+{
+
 std::map<VESSEL *, OBJHANDLE> g_DockLink;
 std::map<VESSEL *, int> g_Handles;
 
@@ -83,7 +87,7 @@ extern "C"
 //         1 if already hooked
 //        -1 if already initialized by handle
 //        -2 if already hooked by some other system
-__declspec(dllexport) int __cdecl vdtInit(VESSEL *handle)
+__declspec(dllexport) int __cdecl Init(VESSEL *handle)
 {
 	if (g_Handles.find(handle)!=g_Handles.end()) return -1;
 	g_Handles[handle]=1;
@@ -110,7 +114,7 @@ __declspec(dllexport) int __cdecl vdtInit(VESSEL *handle)
 //         1 if still hooked, but handles unregistered
 //        -1 if handle already unregistered
 //        -2 if hook already released by some other system
-__declspec(dllexport) int __cdecl vdtExit(VESSEL *handle)
+__declspec(dllexport) int __cdecl Exit(VESSEL *handle)
 {
 	if (g_Handles.find(handle)==g_Handles.end()) return -1;
 	g_Handles.erase(handle);
@@ -124,7 +128,7 @@ __declspec(dllexport) int __cdecl vdtExit(VESSEL *handle)
 // If the object is NULL, a previous dock state is cleared.
 // Returns 0 if successful
 //        -1 if clearing was not necessary
-__declspec(dllexport) int __cdecl vdtSetDockState(VESSEL *handle, OBJHANDLE obj)
+__declspec(dllexport) int __cdecl SetDockState(VESSEL *handle, OBJHANDLE obj)
 {
 	if (obj==NULL)
 	{
@@ -136,5 +140,7 @@ __declspec(dllexport) int __cdecl vdtSetDockState(VESSEL *handle, OBJHANDLE obj)
 	return 0;
 }
 
-__declspec(dllexport) float __cdecl vdtGetVersion(){return (float)0.1;}
+__declspec(dllexport) float __cdecl GetVersion(){return (float)0.1;}
+}
+
 }

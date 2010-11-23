@@ -109,8 +109,8 @@ void AscensionUltra::InitSubObjects()
 	crew->SetMaxSeatAvailableInShip(1);
 	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
 
-	//Initialize virtual docking tunnel
-	vdtInit(this);
+	//Initialize Orbiter extensions
+	orbiterExtensionResult=OrbiterExtensions::Init(this);
 
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);

@@ -91,6 +91,7 @@ private:
 	Routes runways;
 	Room *controlRoom;
 	Room entrance;
+	int orbiterExtensionResult;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

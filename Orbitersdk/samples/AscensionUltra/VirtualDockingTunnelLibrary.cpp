@@ -18,11 +18,14 @@ typedef float (* FLOATGETTER) (void);
 // ==============================================================
 // Global variables
 
+namespace OrbiterExtensions
+{
 HMODULE g_Module;
 VESSELFUNC g_Init;
 VESSELFUNC g_Exit;
 MAPFUNC g_SetDockState;
 FLOATGETTER g_GetVersion;
+}
 
 // Initializes the virtual docking hook.
 // Returns 0 if hooked
@@ -31,16 +34,19 @@ FLOATGETTER g_GetVersion;
 //        -2 if already hooked by some other system
 //		  -3 if library not found
 //		  -4 internal error
-int vdtInit(VESSEL *handle)
+int OrbiterExtensions::Init(VESSEL *handle)
 {
-	HMODULE g_Module=LoadLibrary("Modules\\VirtualDockingTunnel.dll");
+	g_Module=LoadLibrary("Modules\\VirtualDockingTunnel.dll");
 	if (g_Module==NULL) return -3;
-	FARPROC x=GetProcAddress(g_Module, "vdtInit");
-	g_Init=(VESSELFUNC)GetProcAddress(g_Module, "vdtInit");
-	g_Exit=(VESSELFUNC)GetProcAddress(g_Module, "vdtExit");
-	g_SetDockState=(MAPFUNC)GetProcAddress(g_Module, "vdtSetDockState");
-	g_GetVersion=(FLOATGETTER)GetProcAddress(g_Module, "vdtGetVersion");
-	if (((DWORD)g_Init | (DWORD)g_Exit | (DWORD)g_SetDockState | (DWORD)g_GetVersion)==NULL) return -4;
+	g_Init=(VESSELFUNC)GetProcAddress(g_Module, "Init");
+	g_Exit=(VESSELFUNC)GetProcAddress(g_Module, "Exit");
+	g_SetDockState=(MAPFUNC)GetProcAddress(g_Module, "SetDockState");
+	g_GetVersion=(FLOATGETTER)GetProcAddress(g_Module, "GetVersion");
+	if (((DWORD)g_Init & (DWORD)g_Exit & (DWORD)g_SetDockState & (DWORD)g_GetVersion)==NULL)
+	{
+		FreeLibrary(g_Module);
+		return -4;
+	}
 	return g_Init(handle);
 }
 
@@ -49,10 +55,12 @@ int vdtInit(VESSEL *handle)
 //         1 if still hooked, but handles unregistered
 //        -1 if handle already unregistered
 //        -2 if hook already released by some other system
-int vdtExit(VESSEL *handle)
+//		  -3 if library not found
+int OrbiterExtensions::Exit(VESSEL *handle)
 {
+	if (!g_Exit) return -3;
 	int result=g_Exit(handle);
-	if (result!=1) FreeLibrary(g_Module);
+	FreeLibrary(g_Module);
 	return result;
 }
 
@@ -60,6 +68,9 @@ int vdtExit(VESSEL *handle)
 // If the object is NULL, a previous dock state is cleared.
 // Returns 0 if successful
 //        -1 if clearing was not necessary
-int vdtSetDockState(VESSEL *handle, OBJHANDLE obj){return g_SetDockState(handle, obj);}
+//		  -3 if library not found
+int OrbiterExtensions::SetDockState(VESSEL *handle, OBJHANDLE obj){if (!g_SetDockState) return -3; return g_SetDockState(handle, obj);}
 
-float vdtGetVersion(){return g_GetVersion();}
+// Returns the version of the loaded library if successful
+//		  -3 if library not found
+float OrbiterExtensions::GetVersion(){if (!g_GetVersion) return -3; return g_GetVersion();}

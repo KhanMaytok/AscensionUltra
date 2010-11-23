@@ -10,27 +10,34 @@
 // ==============================================================
 #include "orbitersdk.h"
 
-// ==============================================================
-// Global variables
+namespace OrbiterExtensions
+{
 
 // Initializes the virtual docking hook.
 // Returns 0 if hooked
 //         1 if already hooked
 //        -1 if already initialized by handle
 //        -2 if already hooked by some other system
-int vdtInit(VESSEL *handle);
+//		  -3 if library not found
+//		  -4 internal error
+int Init(VESSEL *handle);
 
 // Removes the virtual docking hook.
 // Returns 0 if unhooked
 //         1 if still hooked, but handles unregistered
 //        -1 if handle already unregistered
 //        -2 if hook already released by some other system
-int vdtExit(VESSEL *handle);
+//		  -3 if library not found
+int Exit(VESSEL *handle);
 
 // Sets the docking state of the given vessel handle to the specified object.
 // If the object is NULL, a previous dock state is cleared.
 // Returns 0 if successful
 //        -1 if clearing was not necessary
-int vdtSetDockState(VESSEL *handle, OBJHANDLE obj);
+//		  -3 if library not found
+int SetDockState(VESSEL *handle, OBJHANDLE obj);
 
-float vdtGetVersion();
+// Returns version of Orbiter extensions DLL or -3 if library was not found
+float GetVersion();
+
+}
