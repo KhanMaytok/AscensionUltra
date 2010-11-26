@@ -111,7 +111,10 @@ void AscensionUltra::InitSubObjects()
 	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
 
 	//Initialize Orbiter extensions
-	orbiterExtensionResult=OrbiterExtensions::Init(this);
+	orbiterExtensionsResult=OrbiterExtensions::Init(this);
+
+	if (orbiterExtensionsResult<0) orbiterExtensionsVersion=OrbiterExtensions::GetVersion();
+	else orbiterExtensionsVersion=0.0;
 
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);
@@ -568,7 +571,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 		sprintf(oapiDebugString(),"MAP coordinates: %f , %f , %f", -local.x, local.y, local.z);
 	}
 	
-	if (orbiterExtensionResult<0) sprintf(oapiDebugString(), "WARNING! Orbiter extensions not loaded. Error %d", orbiterExtensionResult);
+	if (orbiterExtensionsResult<0) sprintf(oapiDebugString(), "WARNING! Orbiter extensions not loaded. Error %d", orbiterExtensionsResult);
 	else crew->WarnUserUMMUNotInstalled("Ascension Ultra");
 }
 
