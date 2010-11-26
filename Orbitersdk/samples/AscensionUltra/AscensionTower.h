@@ -43,7 +43,7 @@ private:
 	void RenderPersonPage();
 };
 
-std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;
+std::map<VESSEL *, std::map<UINT, AscensionTowerData *> *> g_MFDData;
 HBRUSH g_Bar;
 COLORREF g_MiddleGreen;
 

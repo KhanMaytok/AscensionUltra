@@ -49,14 +49,13 @@ AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
 	width=(int)w/36;
 	height=(int)h/28;
 	mfdWidth=w;
-	mfdHeight=h;
-
-	OBJHANDLE obj=vessel->GetHandle();
-	std::map<UINT, AscensionTowerData *> *mfds=g_MFDData[obj];
+	mfdHeight=h;	
+	
+	std::map<UINT, AscensionTowerData *> *mfds=g_MFDData[vessel];
 	if (mfds==NULL)
 	{
 		mfds=new std::map<UINT, AscensionTowerData *>;
-		g_MFDData[obj]=mfds;
+		g_MFDData[vessel]=mfds;
 	}
 	data=(*mfds)[mfd];
 	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData(this, vessel);	
