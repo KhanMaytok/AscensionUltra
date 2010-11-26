@@ -50,7 +50,7 @@ typedef struct AscensionTowerChangePerson
 class AscensionTowerData
 {
 public:
-	AscensionTowerData(MFD *mfd);
+	AscensionTowerData(MFD *mfd, VESSEL *vessel);
 	~AscensionTowerData(void);
 	AscensionUltra *GetAscension();	
 	int GetPage();
@@ -71,6 +71,7 @@ public:
 	int GetSelectedIndex();
 	MFD *GetMfd();
 private:	
+	VESSEL *vessel;
 	OBJHANDLE ascensionHandle;
 	char *ascensionName, buffer[BUFFERLEN+1];
 	AscensionUltra *ascension;

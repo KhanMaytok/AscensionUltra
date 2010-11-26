@@ -1,7 +1,8 @@
 #include "AscensionTowerData.h"
 
-AscensionTowerData::AscensionTowerData(MFD* mfd)
+AscensionTowerData::AscensionTowerData(MFD* mfd, VESSEL *vessel)
 {
+	this->vessel=vessel;
 	ascensionHandle=NULL;
 	ascensionName=NULL;
 	ascension=NULL;
