@@ -39,6 +39,16 @@ DLLCLBK void opcDLLExit (HINSTANCE hDLL)
 	oapiUnregisterMFDMode (g_MFDmode);
 }
 
+DLLCLBK void opcCloseRenderViewport (void)
+{
+	for(std::map<VESSEL *, std::map<UINT, AscensionTowerData *> *>::iterator i=g_MFDData.begin();i!=g_MFDData.end();i++)
+	{
+		for (std::map<UINT, AscensionTowerData *>::iterator j=i->second->begin();j!=i->second->end();j++) delete j->second;
+		i->second->clear();
+	}
+	g_MFDData.clear();
+}
+
 // ==============================================================
 // MFD class implementation
 
