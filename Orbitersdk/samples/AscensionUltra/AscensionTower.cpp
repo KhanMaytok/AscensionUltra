@@ -22,7 +22,7 @@ int g_MFDmode; // identifier for new MFD mode
 // ==============================================================
 // API interface
 
-DLLCLBK void opcDLLInit (HINSTANCE hDLL)
+DLLCLBK void InitModule (HINSTANCE hDLL)
 {
 	static char *name = "Ascension Tower";
 	MFDMODESPEC spec;
@@ -33,7 +33,7 @@ DLLCLBK void opcDLLInit (HINSTANCE hDLL)
 	g_Bar=NULL;
 }
 
-DLLCLBK void opcDLLExit (HINSTANCE hDLL)
+DLLCLBK void ExitModule (HINSTANCE hDLL)
 {
 	if (g_Bar!=NULL) DeleteObject(g_Bar);
 	oapiUnregisterMFDMode (g_MFDmode);
