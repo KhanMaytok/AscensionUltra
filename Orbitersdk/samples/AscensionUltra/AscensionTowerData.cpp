@@ -117,7 +117,7 @@ int AscensionTowerData::GetListSize()
 	{
 	case AscensionTowerState::BaseSelect: return scanList.size();
 	case AscensionTowerState::MainMenu: return 4;
-	case AscensionTowerState::GroundMenu: return 4;
+	case AscensionTowerState::GroundMenu: return ascension->GetNearestHangar(HangarType::TurnAround, vessel, NEARESTRADIUS)==NULL?4:5;
 	case AscensionTowerState::ATCMenu: return 3;
 	case AscensionTowerState::HangarForDoorSelection:	
 		return ascension->GetHangars(HangarType::TurnAround)+ascension->GetHangars(HangarType::LightStorage)+ascension->GetHangars(HangarType::LaunchTunnel);
@@ -131,7 +131,14 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
 	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
-	case AscensionTowerState::Rooster: return ascension->GetPersons();				
+	case AscensionTowerState::Rooster: return ascension->GetPersons();
+	case AscensionTowerState::PassengerTransfer:
+		if (ascension->GetNearestHangar(HangarType::TurnAround, vessel, NEARESTRADIUS)!=(Hangar *)object[state])
+		{
+			SetState(AscensionTowerState::GroundMenu);
+			return 0;
+		}
+		return ((Hangar *)object[state])->GetRooms();
 	}
 	return 0;
 }
@@ -139,7 +146,7 @@ int AscensionTowerData::GetListSize()
 AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 {
 	static AscensionTowerListPair mainMenu[4]={{0," Ground Operations"},{1," Air Traffic Control"},{2," Control Rooms"}, {3, " Rooster"}};
-	static AscensionTowerListPair groundMenu[4]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"}};
+	static AscensionTowerListPair groundMenu[5]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"},{4," Request Passenger Transfer"}};
 	static AscensionTowerListPair atcMenu[3]={{0," Request Bearing"},{1," Request Clearance to Land"},{2," Request Launch Clearance"}};
 	static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};	
 	static char text[57];
@@ -237,7 +244,16 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 			else sprintf(text, "  Add new person...");
 		}
 		item.Name=text;
-		return item;	
+		return item;
+	case AscensionTowerState::PassengerTransfer:
+		item.Index=index;
+		{
+			Room *r=((Hangar *)object[state])->GetRoom(index);
+			VESSEL *v=ascension->GetDockedVessel(r);
+			sprintf(text, "%c %s", v==vessel?'*':v==NULL?' ':'o', r->GetName());
+		}
+		item.Name=text;
+		return item;
 	}
 	return nullItem;
 }
@@ -290,6 +306,10 @@ void AscensionTowerData::Select(int index)
 		case 1: SetState(AscensionTowerState::TaxiRouteStartSelection); break;
 		case 2: SetState(AscensionTowerState::HangarForCraneSelection); break;
 		case 3: SetState(AscensionTowerState::PassengerTerminal); break;
+		case 4:
+			object[AscensionTowerState::PassengerTransfer]=ascension->GetNearestHangar(HangarType::TurnAround, vessel, NEARESTRADIUS);
+			SetState(AscensionTowerState::PassengerTransfer);
+			break;
 		}		
 		break;
 	case AscensionTowerState::ATCMenu:
@@ -365,6 +385,12 @@ void AscensionTowerData::Select(int index)
 	case AscensionTowerState::Rooster:
 		selectedIndex[AscensionTowerState::PersonControl]=selectedIndex[state];
 		SetState(AscensionTowerState::PersonControl);
+		break;
+	case AscensionTowerState::PassengerTransfer:
+		Room *r=((Hangar *)object[state])->GetRoom(selectedIndex[state]);
+		VESSEL *v=ascension->GetDockedVessel(r);
+		if (v==NULL) ascension->DockVessel(r, vessel);
+		else if (v==vessel) ascension->DockVessel(r, NULL);
 		break;
 	}
 }
@@ -473,6 +499,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	case AscensionTowerState::TaxiRouteEndSelection: target="route end"; break;
 	case AscensionTowerState::LandingRunwaySelection: target="runway"; break;
 	case AscensionTowerState::RoomForPersonSelection:
+	case AscensionTowerState::PassengerTransfer:
 	case AscensionTowerState::RoomSelection: target="room"; break;
 	case AscensionTowerState::DoorControl: target="command"; break;
 	case AscensionTowerState::CraneControl:
@@ -823,6 +850,7 @@ char *AscensionTowerData::GetTitle()
 	case AscensionTowerState::LaunchPrepare:
 	case AscensionTowerState::DoorControl:
 	case AscensionTowerState::CraneControl:
+	case AscensionTowerState::PassengerTransfer:
 		return GetNameSafeTitle(title, ground);	
 	case AscensionTowerState::ATCMenu:
 	case AscensionTowerState::Bearing:
@@ -868,6 +896,7 @@ char *AscensionTowerData::GetSubtitle()
 	case AscensionTowerState::Launch: return "Request Launch Clearance";	
 	case AscensionTowerState::HangarForRoomSelection: return "Select Hangar for Control Room";
 	case AscensionTowerState::RoomSelection: return "Select Control Room";
+	case AscensionTowerState::PassengerTransfer: return "Select Destination for PAX";
 	case AscensionTowerState::TaxiRouteEndSelection:
 		sprintf(subtitle, "Taxi from %s to",
 			(char *)object[state]);
@@ -914,6 +943,7 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::HangarForCraneSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::CraneControl: SetState(AscensionTowerState::HangarForCraneSelection);break;
 	case AscensionTowerState::PassengerTerminal: SetState(AscensionTowerState::GroundMenu);break;
+	case AscensionTowerState::PassengerTransfer: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::Fueling: SetState(AscensionTowerState::PassengerTerminal);break;
 	case AscensionTowerState::LaunchPrepare: SetState(AscensionTowerState::Fueling);break;
 	case AscensionTowerState::Bearing: SetState(AscensionTowerState::ATCMenu);break;

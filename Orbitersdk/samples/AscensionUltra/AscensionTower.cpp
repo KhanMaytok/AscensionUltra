@@ -168,6 +168,7 @@ void AscensionTower::Update (HDC hDC)
 	case AscensionTowerState::Rooster:
 	case AscensionTowerState::RoomForPersonSelection:
 	case AscensionTowerState::HangarForPersonSelection:
+	case AscensionTowerState::PassengerTransfer:
 		RenderSelectionPage();	
 		break;
 	case AscensionTowerState::DoorControl:
