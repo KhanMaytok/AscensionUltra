@@ -811,6 +811,21 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 	return result;
 }
 
+Hangar *AscensionUltra::GetNearestHangar(HangarType type, VESSEL *vessel, double radius)
+{
+	if (!vessel->GroundContact()) return NULL;
+	return NULL;
+}
+
+void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
+{
+}
+
+VESSEL *AscensionUltra::GetDockedVessel(Room *room)
+{
+	return NULL;
+}
+
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
 {
