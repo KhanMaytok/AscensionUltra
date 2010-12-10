@@ -566,7 +566,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 		VECTOR3 global, local;
 		oapiGetFocusInterface()->GetGlobalPos(global);
 		Global2Local(global, local);
-		local-=OFFSET;
+		local-=OFFSET+LFMCOFFSET;
 		sprintf(oapiDebugString(),"MAP coordinates: %f , %f , %f", -local.x, local.y, local.z);
 	}
 	
@@ -817,6 +817,26 @@ Hangar *AscensionUltra::GetNearestHangar(HangarType type, VESSEL *vessel, double
 
 	//Check vessel landed
 	if (!vessel->GroundContact()) return NULL;
+
+	VECTOR3 global, local;
+	vessel->GetGlobalPos(global);
+	Global2Local(global, local);
+	local-=OFFSET;
+	
+	//Check base vincinity
+	if (local.x<-6000 || local.x>0 || local.z<0 || local.z>1300) return NULL;
+	
+	//Check launch facility vincinity
+	global=LFMCOFFSET;
+	if (local.x>global.x+85 && local.x<global.x+145 && local.z<global.z+30 && local.z>global.z-30) return &launchTunnel;
+
+	//Check TA hangar vincinity
+	for(int i=0;i<TURNAROUNDHANGARS;i++)
+	{
+		global=TA1OFFSET+TA1MATRIXOFFSET*i;
+		if (local.x>global.x-45 && local.x<global.x+45 && local.z<global.z+40 && local.z>global.z-40) return &turnAround[i];
+	}	
+	
 	return NULL;
 }
 
