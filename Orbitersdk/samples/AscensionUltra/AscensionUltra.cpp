@@ -113,8 +113,7 @@ void AscensionUltra::InitSubObjects()
 	//Initialize Orbiter extensions
 	orbiterExtensionsResult=OrbiterExtensions::Init(this);
 
-	if (orbiterExtensionsResult<0) orbiterExtensionsVersion=OrbiterExtensions::GetVersion();
-	else orbiterExtensionsVersion=0.0;
+	if ((orbiterExtensionsVersion=OrbiterExtensions::GetVersion())<0) orbiterExtensionsVersion=0.0;
 
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);
@@ -813,16 +812,25 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 
 Hangar *AscensionUltra::GetNearestHangar(HangarType type, VESSEL *vessel, double radius)
 {
+	//Check Orbiter extensions version
+	if (orbiterExtensionsVersion<0.1) return NULL;
+
+	//Check vessel landed
 	if (!vessel->GroundContact()) return NULL;
 	return NULL;
 }
 
 void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 {
+	//Check Orbiter extensions version
+	if (orbiterExtensionsVersion<0.1) return;
 }
 
 VESSEL *AscensionUltra::GetDockedVessel(Room *room)
 {
+	//Check Orbiter extensions version
+	if (orbiterExtensionsVersion<0.1) return NULL;
+
 	return NULL;
 }
 
