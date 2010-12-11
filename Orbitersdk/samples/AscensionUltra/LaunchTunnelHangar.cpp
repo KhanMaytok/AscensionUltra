@@ -9,7 +9,7 @@
 // ==============================================================
 #include "LaunchTunnelHangar.h"
 
-HangarType LaunchTunnelHangar::GetType(){return HangarType::LaunchTunnel;}
+int LaunchTunnelHangar::GetType(){return HANGARTYPELFMC;}
 
 void LaunchTunnelHangar::DefineAnimations ()
 {

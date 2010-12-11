@@ -651,25 +651,32 @@ void AscensionUltra::RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref)
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }
 
-int AscensionUltra::GetHangars(HangarType type)
+int AscensionUltra::GetHangars(int type)
 {
-	switch(type)
-	{
-	case HangarType::TurnAround: return 5;
-	case HangarType::LightStorage: return 12;
-	case HangarType::LaunchTunnel: return 1;
-	}
-	return 0;
+	int count=0;
+	if ((type & HANGARTYPETA)>0) count+=5;
+	if ((type & HANGARTYPELS)>0) count+=12;
+	if ((type & HANGARTYPELFMC)>0) count+=1;	
+	return count;
 }
 
-Hangar *AscensionUltra::GetHangar(HangarType type, int index)
+Hangar *AscensionUltra::GetHangar(int type, int index)
 {
 	if (index<0) return NULL;
-	switch(type)
+	if ((type & HANGARTYPETA)>0)
 	{
-	case HangarType::TurnAround: return index<5?turnAround+index:NULL;
-	case HangarType::LightStorage: return index<12?lightStorage+index:NULL;	
-	case HangarType::LaunchTunnel: return &launchTunnel;	
+		if (index<TURNAROUNDHANGARS) return turnAround+index;
+		else index-=TURNAROUNDHANGARS;
+	}
+	if ((type & HANGARTYPELS)>0)
+	{
+		if (index<LIGHTSTORAGEHANGARS) return lightStorage+index;
+		else index-=LIGHTSTORAGEHANGARS;
+	}
+	if ((type & HANGARTYPELFMC)>0)
+	{
+		if (index<1) return &launchTunnel;
+		else index-=1;
 	}
 	return NULL;
 }
@@ -810,7 +817,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 	return result;
 }
 
-Hangar *AscensionUltra::GetNearestHangar(HangarType type, VESSEL *vessel, double radius)
+Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel, double radius)
 {
 	//Check Orbiter extensions version
 	if (orbiterExtensionsVersion<0.1) return NULL;
@@ -925,10 +932,10 @@ BOOL CALLBACK EdPg1Proc (HWND hTab, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiOpenHelp (&g_hc);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			GetDG(hTab)->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Close();
+			GetDG(hTab)->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->Close();
 			return TRUE;
 		case IDC_OLOCK_OPEN:
-			GetDG(hTab)->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Open();
+			GetDG(hTab)->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->Open();
 			return TRUE;
 		}
 		break;
@@ -997,10 +1004,10 @@ BOOL CALLBACK Ctrl_DlgProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiCloseDialog (hWnd);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Close();
+			dg->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->Close();
 			return 0;
 		case IDC_OLOCK_OPEN:
-			dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Open();
+			dg->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->Open();
 			return 0;
 		}
 		break;
@@ -1017,7 +1024,7 @@ void UpdateCtrlDialog (AscensionUltra *dg, HWND hWnd)
 
 	int op;
 
-	op = dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->GetPosition()==0.0?0:1;
+	op = dg->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->GetPosition()==0.0?0:1;
 	SendDlgItemMessage (hWnd, IDC_OLOCK_OPEN, BM_SETCHECK, bstatus[op], 0);
 	SendDlgItemMessage (hWnd, IDC_OLOCK_CLOSE, BM_SETCHECK, bstatus[1-op], 0);	
 }

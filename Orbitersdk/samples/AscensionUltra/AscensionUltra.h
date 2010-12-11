@@ -61,8 +61,8 @@ public:
 	int  clbkConsumeBufferedKey (DWORD key, bool down, char *kstate);	
 	bool clbkLoadGenericCockpit ();
 
-	virtual Hangar *GetHangar(HangarType type, int index);
-	virtual int GetHangars(HangarType type);
+	virtual Hangar *GetHangar(int type, int index);
+	virtual int GetHangars(int type);
 	virtual Routes *GetTaxiways();
 	virtual Routes *GetRunways();
 	virtual Room *GetControlRoom();
@@ -70,7 +70,7 @@ public:
 	virtual int GetPersons();
 	virtual Person GetPerson(int index);
 	virtual int ChangePerson(int index, int flags, ...);
-	virtual Hangar *GetNearestHangar(HangarType type, VESSEL *vessel, double radius);
+	virtual Hangar *GetNearestHangar(int type, VESSEL *vessel, double radius);
 	virtual void DockVessel(Room *room, VESSEL *vessel);
 	virtual VESSEL *GetDockedVessel(Room *room);
 

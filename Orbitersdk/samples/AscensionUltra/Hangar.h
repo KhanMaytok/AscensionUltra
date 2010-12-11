@@ -12,19 +12,16 @@
 #include "Room.h"
 #include "UMmuSDK.h"
 
-typedef enum HangarType
-{
-	TurnAround,
-	LightStorage,
-	LaunchTunnel,
-};
+#define HANGARTYPETA 0x01
+#define HANGARTYPELS 0x02
+#define HANGARTYPELFMC 0x04
 
 class Hangar
 {
 public:
 	Hangar(void);
 	~Hangar(void);	
-	virtual HangarType GetType();
+	virtual int GetType();
 	virtual void DefineAnimations ();
 	virtual void clbkPostStep (double simt, double simdt, double mjd);
 	virtual bool clbkLoadStateEx (char *line);

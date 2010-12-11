@@ -117,13 +117,13 @@ int AscensionTowerData::GetListSize()
 	{
 	case AscensionTowerState::BaseSelect: return scanList.size();
 	case AscensionTowerState::MainMenu: return 4;
-	case AscensionTowerState::GroundMenu: return ascension->GetNearestHangar(HangarType::TurnAround, vessel, NEARESTRADIUS)==NULL?4:5;
+	case AscensionTowerState::GroundMenu: return ascension->GetNearestHangar(HANGARTYPETA, vessel, NEARESTRADIUS)==NULL?4:5;
 	case AscensionTowerState::ATCMenu: return 3;
 	case AscensionTowerState::HangarForDoorSelection:	
-		return ascension->GetHangars(HangarType::TurnAround)+ascension->GetHangars(HangarType::LightStorage)+ascension->GetHangars(HangarType::LaunchTunnel);
+		return ascension->GetHangars(HANGARTYPETA | HANGARTYPELS | HANGARTYPELFMC);
 	case AscensionTowerState::HangarForPersonSelection:
 	case AscensionTowerState::HangarForRoomSelection:
-	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HangarType::TurnAround);
+	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HANGARTYPETA);
 	case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();
 	case AscensionTowerState::RoomForPersonSelection:
 	case AscensionTowerState::RoomSelection: return ((Hangar *)object[state])->GetRooms();
@@ -133,7 +133,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
 	case AscensionTowerState::Rooster: return ascension->GetPersons();
 	case AscensionTowerState::PassengerTransfer:
-		if (ascension->GetNearestHangar(HangarType::TurnAround, vessel, NEARESTRADIUS)!=(Hangar *)object[state])
+		if (ascension->GetNearestHangar(HANGARTYPETA, vessel, NEARESTRADIUS)!=(Hangar *)object[state])
 		{
 			SetState(AscensionTowerState::GroundMenu);
 			return 0;
@@ -163,7 +163,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::DoorControl: return doorMenu[index];
 	case AscensionTowerState::HangarForDoorSelection:
 		item.Index=index;
-		item.Name=ascension->GetHangar(index<17?(index<5?HangarType::TurnAround:HangarType::LightStorage):HangarType::LaunchTunnel, index<17?(index<5?index:index-5):index-17)->GetName();
+		item.Name=ascension->GetHangar(HANGARTYPETA | HANGARTYPELS | HANGARTYPELFMC, index)->GetName();
 		return item;
 	case AscensionTowerState::DoorSelection:
 		item.Index=index;
@@ -172,7 +172,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::HangarForRoomSelection:
 		item.Index=index;
 		{
-			Hangar *h=ascension->GetHangar(HangarType::TurnAround, index);
+			Hangar *h=ascension->GetHangar(HANGARTYPETA, index);
 			sprintf(text, "%c %s", ascension->GetControlRoom()->GetHangar()==h?'*':' ', h->GetName());
 		}
 		item.Name=text;
@@ -180,7 +180,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::HangarForPersonSelection:
 		item.Index=index;
 		{
-			Hangar *h=ascension->GetHangar(HangarType::TurnAround, index);
+			Hangar *h=ascension->GetHangar(HANGARTYPETA, index);
 			sprintf(text, "%c %s",
 				ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Location->GetHangar()==h?'*':' ',
 				h->GetName());
@@ -207,7 +207,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		return item;
 	case AscensionTowerState::HangarForCraneSelection:
 		item.Index=index;
-		item.Name=ascension->GetHangar(HangarType::TurnAround, index)->GetName();
+		item.Name=ascension->GetHangar(HANGARTYPETA, index)->GetName();
 		return item;
 	case AscensionTowerState::TaxiRouteStartSelection:
 		item.Index=index;
@@ -307,7 +307,7 @@ void AscensionTowerData::Select(int index)
 		case 2: SetState(AscensionTowerState::HangarForCraneSelection); break;
 		case 3: SetState(AscensionTowerState::PassengerTerminal); break;
 		case 4:
-			object[AscensionTowerState::PassengerTransfer]=ascension->GetNearestHangar(HangarType::TurnAround, vessel, NEARESTRADIUS);
+			object[AscensionTowerState::PassengerTransfer]=ascension->GetNearestHangar(HANGARTYPETA, vessel, NEARESTRADIUS);
 			SetState(AscensionTowerState::PassengerTransfer);
 			break;
 		}		
@@ -322,17 +322,17 @@ void AscensionTowerData::Select(int index)
 		break;
 	case AscensionTowerState::HangarForDoorSelection:
 		index=selectedIndex[state];
-		object[AscensionTowerState::DoorSelection]=ascension->GetHangar(index<17?(index<5?HangarType::TurnAround:HangarType::LightStorage):HangarType::LaunchTunnel, index<17?(index<5?index:index-5):index-17);
+		object[AscensionTowerState::DoorSelection]=ascension->GetHangar(HANGARTYPETA | HANGARTYPELS | HANGARTYPELFMC, index);
 		SetState(AscensionTowerState::DoorSelection);		
 		break;
 	case AscensionTowerState::HangarForRoomSelection:
 		index=selectedIndex[state];
-		object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HangarType::TurnAround, index);
+		object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HANGARTYPETA, index);
 		SetState(AscensionTowerState::RoomSelection);		
 		break;
 	case AscensionTowerState::HangarForPersonSelection:
 		index=selectedIndex[state];
-		object[AscensionTowerState::RoomForPersonSelection]=ascension->GetHangar(HangarType::TurnAround, index);
+		object[AscensionTowerState::RoomForPersonSelection]=ascension->GetHangar(HANGARTYPETA, index);
 		SetState(AscensionTowerState::RoomForPersonSelection);		
 		break;
 	case AscensionTowerState::RoomForPersonSelection:
@@ -349,7 +349,7 @@ void AscensionTowerData::Select(int index)
 		SetState(AscensionTowerState::DoorControl);
 		break;
 	case AscensionTowerState::HangarForCraneSelection:
-		object[state]=ascension->GetHangar(HangarType::TurnAround, selectedIndex[state]);
+		object[state]=ascension->GetHangar(HANGARTYPETA, selectedIndex[state]);
 		object[AscensionTowerState::CraneControl]=((TurnAroundHangar *)object[state])->GetCrane();
 		SetState(AscensionTowerState::CraneControl);
 		break;

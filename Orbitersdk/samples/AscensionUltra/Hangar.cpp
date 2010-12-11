@@ -28,7 +28,7 @@ Hangar::~Hangar(void)
 	delete [] name;
 }
 
-HangarType Hangar::GetType(){throw "GetType() not allowed on abstract hangar class!";}
+int Hangar::GetType(){throw "GetType() not allowed on abstract hangar class!";}
 
 void Hangar::DefineAnimations ()
 {	
