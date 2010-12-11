@@ -79,6 +79,7 @@ private:
 	void MoveGroup(int mesh, VECTOR3 v);
 	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
 	Room *GetPersonLocation(int &index);
+	Room* GetPersonLocationFromHangar(int &index, Hangar *hangar);
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 

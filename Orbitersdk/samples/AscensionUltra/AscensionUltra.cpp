@@ -704,28 +704,42 @@ int AscensionUltra::GetPersons()
 		for(j=0;j<rooms;j++) persons+=turnAround[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
 	}
 
+	for(i=0;i<LIGHTSTORAGEHANGARS;i++)
+	{
+		rooms=lightStorage[i].GetRooms();
+		for(j=0;j<rooms;j++) persons+=lightStorage[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	}
+
+	rooms=launchTunnel.GetRooms();
+	for(j=0;j<rooms;j++) persons+=launchTunnel.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
+
 	return ++persons;	//First entry is always the ADD PERSON entry
+}
+
+Room* AscensionUltra::GetPersonLocationFromHangar(int &index, Hangar *hangar)
+{	
+	UMMUCREWMANAGMENT *crew;
+	int rooms=hangar->GetRooms();
+	for(int j=0;j<rooms;j++)
+	{
+		Room *room=hangar->GetRoom(j);
+		crew=room->GetCrew();
+		if (crew->GetCrewTotalNumber()>index) return room;
+		index-=crew->GetCrewTotalNumber();
+	}
+	return NULL;
 }
 
 Room *AscensionUltra::GetPersonLocation(int &index)
 {
-	int i, rooms, j, persons=0;
-	UMMUCREWMANAGMENT *crew;
-
 	if (index==0) return &entrance;
 	index--;
+
+	Room *room;
 			
-	for(i=0;i<TURNAROUNDHANGARS;i++)
-	{
-		rooms=turnAround[i].GetRooms();
-		for(j=0;j<rooms;j++)
-		{
-			Room *room=turnAround[i].GetRoom(j);
-			crew=room->GetCrew();
-			if (crew->GetCrewTotalNumber()>index) return room;
-			index-=crew->GetCrewTotalNumber();
-		}
-	}
+	for(int i=0;i<TURNAROUNDHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &turnAround[i]))!=NULL) return room;
+	//for(int i=0;i<LIGHTSTORAGEHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &lightStorage[i]))!=NULL) return room;
+	if ((room = GetPersonLocationFromHangar(index, &launchTunnel))!=NULL) return room;
 	
 	index=0;
 	return NULL;	
