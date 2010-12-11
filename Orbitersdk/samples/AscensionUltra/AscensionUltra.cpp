@@ -104,7 +104,7 @@ void AscensionUltra::InitSubObjects()
 	controlRoom=turnAround[0].GetRoom(0);
 
 	//Setup entrance room - this is the dummy place for putting new persons to
-	entrance.Init(this, &launchTunnel, "Entrance", _V(0,0,0), _V(0,0,1), _V(0,0,0));
+	entrance.Init(this, &launchTunnel, "Entrance", _V(0,0,0), _V(0,0,1), _V(0,0,0), 1);
 	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
 	crew->SetAirlockDoorState(FALSE);
 	crew->SetMaxSeatAvailableInShip(1);
