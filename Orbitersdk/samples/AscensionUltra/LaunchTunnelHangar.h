@@ -10,7 +10,9 @@
 #pragma once
 #include "Hangar.h"
 #include "Door.h"
+#include "Room.h"
 #define DOORS 4
+#define ROOMS 1
 
 class LaunchTunnelHangar:public Hangar
 {
@@ -19,6 +21,9 @@ public:
 	void DefineAnimations ();
 	int GetDoors();
 	Door *GetDoor(int index);	
+	int GetRooms();
+	Room *GetRoom(int index);	
 private:
 	Door doors[DOORS];	
+	Room rooms[ROOMS];	
 };
