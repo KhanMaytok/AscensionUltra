@@ -569,6 +569,32 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
 	airport.clbkPostStep(simt, simdt, mjd);
 
+	//Check all virtual docks
+	VECTOR3 global, local;
+	std::map<Room*, VESSEL*> toBeDeleted;
+	for(std::map<Room*, VESSEL*>::iterator i=roomVessel.begin();i!=roomVessel.end();i++)
+	{	
+		//Check ground contact
+		if (!i->second->GroundContact())
+		{
+			toBeDeleted[i->first]=i->second;
+			continue;
+		}
+
+		//Check vincinity
+		i->second->GetGlobalPos(global);
+		Global2Local(global, local);
+		local-=OFFSET;
+		if (!i->first->GetHangar()->CheckVincinity(&local)) toBeDeleted[i->first]=i->second;
+	}
+	for(std::map<Room*, VESSEL*>::iterator i=toBeDeleted.begin();i!=toBeDeleted.end();i++)
+	{
+		roomVessel.erase(i->first);
+		vesselRoom.erase(i->second);
+		OrbiterExtensions::SetDockState(i->second, NULL);
+		i->first->SetDock(NULL);
+	}
+
 	//Detect activated action area, iterate through sub-items for processing, break on first processor
 	int action=crew->DetectActionAreaActivated();
 	if (action>-1) for(int i=0;i<5;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
