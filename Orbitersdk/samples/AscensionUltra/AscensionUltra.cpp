@@ -695,7 +695,8 @@ int AscensionUltra::GetHangars(int type)
 	int count=0;
 	if ((type & HANGARTYPETA)>0) count+=5;
 	if ((type & HANGARTYPELS)>0) count+=12;
-	if ((type & HANGARTYPELFMC)>0) count+=1;	
+	if ((type & HANGARTYPELFMC)>0) count+=1;
+	if ((type & HANGARTYPEPORT)>0) count+=1;
 	return count;
 }
 
