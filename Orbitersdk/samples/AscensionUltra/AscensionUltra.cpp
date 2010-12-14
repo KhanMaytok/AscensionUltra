@@ -584,7 +584,6 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 		//Check vincinity
 		i->second->GetGlobalPos(global);
 		Global2Local(global, local);
-		local-=OFFSET;
 		if (!i->first->GetHangar()->CheckVincinity(&local)) toBeDeleted[i->first]=i->second;
 	}
 	for(std::map<Room*, VESSEL*>::iterator i=toBeDeleted.begin();i!=toBeDeleted.end();i++)
@@ -891,9 +890,9 @@ Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel, double radius
 	VECTOR3 global, local;
 	vessel->GetGlobalPos(global);
 	Global2Local(global, local);
-	local-=OFFSET;
+	global=local-OFFSET;
 	
-	if (local.x<-6000 || local.x>0 || local.z<0 || local.z>1300) return NULL; //Check base vincinity
+	if (global.x<-6000 || global.x>0 || global.z<0 || global.z>1300) return NULL; //Check base vincinity
 	
 	if (launchTunnel.CheckVincinity(&local)) return &launchTunnel;	
 	if (airport.CheckVincinity(&local)) return &airport;
