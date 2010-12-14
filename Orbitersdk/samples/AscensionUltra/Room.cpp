@@ -46,10 +46,15 @@ void Room::PostStep (double simt, double simdt, double mjd)
 		VESSEL *vessel=oapiGetFocusInterface();
 		if (vessel!=NULL && vessel==GetDock())
 		{
-			sprintf(oapiDebugString(),"%s \"%s\" aged %i transfered to %s at %s",
-			crew.GetCrewMiscIdByName(crew.GetLastEnteredCrewName()),crew.GetLastEnteredCrewName()
-			,crew.GetCrewAgeByName(crew.GetLastEnteredCrewName()), name, hangar->GetName());
-			SetTransfered(true);
+			//Additional checking the crew member availability, because out-of-slots will still cause transfer flag
+			int age=crew.GetCrewAgeByName(crew.GetLastEnteredCrewName());
+			if (age>0)
+			{
+				sprintf(oapiDebugString(),"%s \"%s\" aged %i transfered to %s at %s",
+				crew.GetCrewMiscIdByName(crew.GetLastEnteredCrewName()),crew.GetLastEnteredCrewName()
+				,age, name, hangar->GetName());
+				SetTransfered(true);
+			}
 		}
 		else crew.RemoveCrewMember(crew.GetLastEnteredCrewName()); //Redundant transfer, we need to remove it
 		break;
