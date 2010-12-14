@@ -22,7 +22,8 @@ public:
 	int GetDoors();
 	Door *GetDoor(int index);	
 	int GetRooms();
-	Room *GetRoom(int index);	
+	Room *GetRoom(int index);
+	bool CheckVincinity(VECTOR3 *pos);
 private:
 	Door doors[DOORS];	
 	Room rooms[ROOMS];	

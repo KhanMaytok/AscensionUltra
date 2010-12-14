@@ -135,3 +135,5 @@ bool TurnAroundHangar::ActionAreaActivated(int action)
 	else doors[door].Close();
 	return true;
 }
+
+bool TurnAroundHangar::CheckVincinity(VECTOR3 *pos){return pos->x>position.x-45 && pos->x<position.x+45 && pos->z<position.z+40 && pos->z>position.z-40;}

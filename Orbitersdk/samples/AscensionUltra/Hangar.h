@@ -38,6 +38,7 @@ public:
 	virtual VECTOR3 GetPosition();
 	virtual int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	virtual bool ActionAreaActivated(int action);
+	virtual bool CheckVincinity(VECTOR3 *pos);
 protected:
 	VESSEL* owner;
 	UINT meshIndex;

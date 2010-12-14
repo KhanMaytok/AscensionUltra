@@ -48,6 +48,7 @@ public:
 	void SetPosition(VECTOR3 position);
 	int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	bool ActionAreaActivated(int action);
+	bool CheckVincinity(VECTOR3 *pos);
 private:
 	Crane crane1;
 	Door doors[DOORS];
