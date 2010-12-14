@@ -107,7 +107,7 @@ void AscensionUltra::InitSubObjects()
 	entrance.Init(this, &launchTunnel, "Entrance", _V(0,0,0), _V(0,0,1), _V(0,0,0), 1);
 	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
 	crew->SetAirlockDoorState(FALSE);
-	crew->SetMaxSeatAvailableInShip(1);
+	crew->SetMaxSeatAvailableInShip(2);
 	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
 
 	//Initialize Orbiter extensions
@@ -551,16 +551,24 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
 	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
+
+	//Call post steps of all sub-elements
 	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
+
+	//Detect UMMU transfers
+	if (crew->ProcessUniversalMMu()==UMMU_TRANSFERED_TO_OUR_SHIP)
+	{
+		
+	}
 
 	//Detect activated action area, iterate through sub-items for processing, break on first processor
 	int action=crew->DetectActionAreaActivated();
 	if (action>-1) for(int i=0;i<5;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
 	if (action>-1) for(int i=0;i<12;i++) if (lightStorage[i].ActionAreaActivated(action)) break;
 
-	//DEBUG relative position to TA Hangar 1
+	//DEBUG relative position
 	if (coords)
 	{
 		VECTOR3 global, local;
@@ -865,14 +873,55 @@ void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 {
 	//Check Orbiter extensions version
 	if (orbiterExtensionsVersion<0.1) return;
-}
 
-VESSEL *AscensionUltra::GetDockedVessel(Room *room)
-{
-	//Check Orbiter extensions version
-	if (orbiterExtensionsVersion<0.1) return NULL;
+	VESSEL *oldVessel;
+	Room *oldRoom;
+	if (roomVessel.find(room)==roomVessel.end()) oldVessel=NULL;
+	else oldVessel=roomVessel[room];
+	if (vesselRoom.find(vessel)==vesselRoom.end()) oldRoom=NULL;
+	else oldRoom=vesselRoom[vessel];
 
-	return NULL;
+	if (room==NULL && oldRoom!=NULL)
+	{
+		//Undock vessel
+		oldRoom->SetDock(NULL);
+		roomVessel.erase(oldRoom);
+		vesselRoom.erase(vessel);
+		OrbiterExtensions::SetDockState(vessel, NULL);
+	}
+
+	if (vessel==NULL && oldVessel!=NULL)
+	{
+		//Undock room
+		room->SetDock(NULL);
+		roomVessel.erase(room);
+		vesselRoom.erase(oldVessel);
+		OrbiterExtensions::SetDockState(oldVessel, NULL);
+	}
+
+	if (vessel!=NULL && room!=NULL)
+	{
+		if (oldRoom!=NULL)
+		{
+			//Undock old room occupation
+			oldRoom->SetDock(NULL);
+			vesselRoom.erase(vessel);
+			roomVessel.erase(oldRoom);			
+		}
+		if (oldVessel!=NULL)
+		{
+			//Undock old vessel occupation
+			room->SetDock(NULL);
+			roomVessel.erase(room);
+			vesselRoom.erase(oldVessel);
+			OrbiterExtensions::SetDockState(oldVessel, NULL);
+		}
+		//Dock vessel to room
+		room->SetDock(vessel);
+		roomVessel[room]=vessel;
+		vesselRoom[vessel]=room;
+		OrbiterExtensions::SetDockState(vessel, GetHandle());
+	}
 }
 
 // Module initialisation

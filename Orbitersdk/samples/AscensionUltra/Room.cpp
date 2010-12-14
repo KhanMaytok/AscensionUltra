@@ -5,6 +5,7 @@ Room::Room()
 {
 	hangar = NULL;
 	name = NULL;
+	docked = NULL;
 }
 
 void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraPosition, VECTOR3 viewDirection, VECTOR3 doorPosition, int capacity)
@@ -29,10 +30,19 @@ void Room::PostStep (double simt, double simdt, double mjd)
 	switch (crew.ProcessUniversalMMu())
 	{
 	case UMMU_RETURNED_TO_OUR_SHIP:
-	case UMMU_TRANSFERED_TO_OUR_SHIP:
 		sprintf(oapiDebugString(),"%s \"%s\" aged %i entered %s through %s",
 		crew.GetCrewMiscIdByName(crew.GetLastEnteredCrewName()),crew.GetLastEnteredCrewName()
 		,crew.GetCrewAgeByName(crew.GetLastEnteredCrewName()),hangar->GetName(), name);
+		break;
+	case UMMU_TRANSFERED_TO_OUR_SHIP:
+		VESSEL *vessel=oapiGetFocusInterface();
+		if (vessel!=NULL && vessel==GetDock())
+		{
+			sprintf(oapiDebugString(),"%s \"%s\" aged %i transfered to %s at %s",
+			crew.GetCrewMiscIdByName(crew.GetLastEnteredCrewName()),crew.GetLastEnteredCrewName()
+			,crew.GetCrewAgeByName(crew.GetLastEnteredCrewName()), name, hangar->GetName());
+		}
+		else crew.RemoveCrewMember(crew.GetLastEnteredCrewName()); //Redundant transfer, we need to remove it
 		break;
 	}
 }
@@ -44,3 +54,5 @@ VECTOR3 Room::GetCameraPosition(){return cameraPosition;}
 VECTOR3 Room::GetViewDirection(){return viewDirection;}
 UMMUCREWMANAGMENT *Room::GetCrew(){return &crew;}
 int Room::GetMaxPersons(){return capacity;}
+void Room::SetDock(VESSEL *vessel){docked = vessel;}
+VESSEL *Room::GetDock(){return docked;}

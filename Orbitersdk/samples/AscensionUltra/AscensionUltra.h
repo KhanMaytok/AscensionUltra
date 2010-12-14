@@ -21,6 +21,7 @@
 #include "Routes.h"
 #include "Person.h"
 #include "UMmuSDK.h"
+#include <map>
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -72,8 +73,7 @@ public:
 	virtual int ChangePerson(int index, int flags, ...);
 	virtual Hangar *GetNearestHangar(int type, VESSEL *vessel, double radius);
 	virtual void DockVessel(Room *room, VESSEL *vessel);
-	virtual VESSEL *GetDockedVessel(Room *room);
-
+	
 private:
 	void InitSubObjects();
 	void MoveGroup(int mesh, VECTOR3 v);
@@ -97,6 +97,8 @@ private:
 	Room entrance;
 	int orbiterExtensionsResult;
 	float orbiterExtensionsVersion;
+	std::map<Room*,VESSEL*> roomVessel;
+	std::map<VESSEL*, Room*> vesselRoom;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

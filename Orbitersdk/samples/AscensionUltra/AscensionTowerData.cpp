@@ -249,7 +249,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		item.Index=index;
 		{
 			Room *r=((Hangar *)object[state])->GetRoom(index);
-			VESSEL *v=ascension->GetDockedVessel(r);
+			VESSEL *v=r->GetDock();
 			sprintf(text, "%c %s", v==vessel?'*':v==NULL?' ':'o', r->GetName());
 		}
 		item.Name=text;
@@ -310,7 +310,7 @@ void AscensionTowerData::Select(int index)
 			object[AscensionTowerState::PassengerTransfer]=ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC, vessel, NEARESTRADIUS);
 			SetState(AscensionTowerState::PassengerTransfer);
 			break;
-		}		
+		}
 		break;
 	case AscensionTowerState::ATCMenu:
 		switch(selection[state])
@@ -388,7 +388,7 @@ void AscensionTowerData::Select(int index)
 		break;
 	case AscensionTowerState::PassengerTransfer:
 		Room *r=((Hangar *)object[state])->GetRoom(selectedIndex[state]);
-		VESSEL *v=ascension->GetDockedVessel(r);
+		VESSEL *v=r->GetDock();
 		if (v==NULL) ascension->DockVessel(r, vessel);
 		else if (v==vessel) ascension->DockVessel(r, NULL);
 		break;
