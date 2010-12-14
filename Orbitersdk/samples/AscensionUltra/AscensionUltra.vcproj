@@ -326,6 +326,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TransferDefaultRoom.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TurnAroundHangar.cpp"
 				>
 			</File>
@@ -383,6 +387,10 @@
 			</File>
 			<File
 				RelativePath=".\Routes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TransferDefaultRoom.h"
 				>
 			</File>
 			<File
