@@ -18,6 +18,7 @@
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
 #include "LaunchTunnelHangar.h"
+#include "AirportHangar.h"
 #include "Routes.h"
 #include "Person.h"
 #include "UMmuSDK.h"
@@ -87,6 +88,7 @@ private:
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LightStorageHangar lightStorage[LIGHTSTORAGEHANGARS];
 	LaunchTunnelHangar launchTunnel;
+	AirportHangar airport;
 	BeaconArray taxiwaySubsection[TAXIWAYSUBSECTIONS];
 	BeaconPath taxiwayPath[TAXIWAYPATHS];
 	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
@@ -94,7 +96,7 @@ private:
 	Routes taxiways;
 	Routes runways;
 	Room *controlRoom;
-	Room entrance;
+	UMMUCREWMANAGMENT *crew;
 	int orbiterExtensionsResult;
 	float orbiterExtensionsVersion;
 	std::map<Room*,VESSEL*> roomVessel;
@@ -103,7 +105,7 @@ private:
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_LightStorage, cur_LaunchTunnel;
+	int cur_TurnAround, cur_LightStorage, cur_LaunchTunnel, cur_Airport;
 
 	//DEBUG
 

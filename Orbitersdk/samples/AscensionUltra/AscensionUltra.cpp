@@ -101,14 +101,12 @@ void AscensionUltra::InitSubObjects()
 	strcpy(name, "Launch Tunnel");
 	launchTunnel.Init(this, name, 20, prefix);
 
-	controlRoom=turnAround[0].GetRoom(0);
+	strcpy(prefix, "AIRPORT");
+	strcpy(name, "Airport");
+	airport.Init(this, name, -1, prefix); //TODO: mesh index currently not set
+	crew=airport.GetEntrance()->GetCrew();
 
-	//Setup entrance room - this is the dummy place for putting new persons to
-	entrance.Init(this, &launchTunnel, "Entrance", _V(0,0,0), _V(0,0,1), _V(0,0,0), 1);
-	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
-	crew->SetAirlockDoorState(FALSE);
-	crew->SetMaxSeatAvailableInShip(2);
-	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
+	controlRoom=turnAround[0].GetRoom(0);
 
 	//Initialize Orbiter extensions
 	orbiterExtensionsResult=OrbiterExtensions::Init(this);
@@ -367,6 +365,7 @@ void AscensionUltra::DefineAnimations ()
 	for(int i=0;i<5;i++) turnAround[i].DefineAnimations();
 	for(int i=0;i<12;i++) lightStorage[i].DefineAnimations();
 	launchTunnel.DefineAnimations();
+	airport.DefineAnimations();
 }
 
 void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
@@ -428,8 +427,8 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	int index=0;
 
-	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(entrance.GetCrew(), index);
-	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(entrance.GetCrew(), index);
+	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(crew, index);
+	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(crew, index);
 }
 
 // Read status from scenario file
@@ -450,6 +449,10 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+12, "%X", &cur_LaunchTunnel);
 		} else if (cur_LaunchTunnel>=0 && cur_LaunchTunnel<1) {
 			if (!launchTunnel.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (!strnicmp (line, "AIRPORT", 7)) {
+			sscanf (line+7, "%X", &cur_Airport);
+		} else if (cur_Airport>=0 && cur_Airport<1) {
+			if (!airport.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else {
             ParseScenarioLineEx (line, vs);
 			// unrecognised option - pass to Orbiter's generic parser
@@ -488,6 +491,10 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "0");
 	launchTunnel.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "1");
+
+	oapiWriteScenario_string (scn, "AIRPORT", "0");
+	airport.clbkSaveState(scn);
+	oapiWriteScenario_string (scn, "AIRPORT", "1");
 	
 }
 
@@ -499,6 +506,7 @@ void AscensionUltra::clbkPostCreation ()
 	for(int i=0;i<5;i++) turnAround[i].clbkPostCreation();
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostCreation();
 	launchTunnel.clbkPostCreation();
+	airport.clbkPostCreation();
 }
 
 // Respond to playback event
@@ -520,6 +528,11 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 	{
 		//Tunnel event
 		return launchTunnel.clbkPlaybackEvent(simt, event_t, event_type+12, event);
+	}
+	if (!strnicmp (event_type, "AIRPORT", 7))
+	{
+		//Airport event
+		return airport.clbkPlaybackEvent(simt, event_t, event_type+7, event);
 	}
 	return false;
 }
@@ -550,18 +563,11 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 // --------------------------------------------------------------
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
-	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
-
 	//Call post steps of all sub-elements
 	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
-
-	//Detect UMMU transfers
-	if (crew->ProcessUniversalMMu()==UMMU_TRANSFERED_TO_OUR_SHIP)
-	{
-		
-	}
+	airport.clbkPostStep(simt, simdt, mjd);
 
 	//Detect activated action area, iterate through sub-items for processing, break on first processor
 	int action=crew->DetectActionAreaActivated();
@@ -686,6 +692,11 @@ Hangar *AscensionUltra::GetHangar(int type, int index)
 		if (index<1) return &launchTunnel;
 		else index-=1;
 	}
+	if ((type & HANGARTYPEPORT)>0)
+	{
+		if (index<1) return &airport;
+		else index-=1;
+	}
 	return NULL;
 }
 
@@ -721,6 +732,9 @@ int AscensionUltra::GetPersons()
 	rooms=launchTunnel.GetRooms();
 	for(j=0;j<rooms;j++) persons+=launchTunnel.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
 
+	rooms=airport.GetRooms();
+	for(j=0;j<rooms;j++) persons+=airport.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
+
 	return ++persons;	//First entry is always the ADD PERSON entry
 }
 
@@ -740,7 +754,7 @@ Room* AscensionUltra::GetPersonLocationFromHangar(int &index, Hangar *hangar)
 
 Room *AscensionUltra::GetPersonLocation(int &index)
 {
-	if (index==0) return &entrance;
+	if (index==0) return airport.GetEntrance();
 	index--;
 
 	Room *room;
@@ -748,6 +762,7 @@ Room *AscensionUltra::GetPersonLocation(int &index)
 	for(int i=0;i<TURNAROUNDHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &turnAround[i]))!=NULL) return room;
 	//for(int i=0;i<LIGHTSTORAGEHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &lightStorage[i]))!=NULL) return room;
 	if ((room = GetPersonLocationFromHangar(index, &launchTunnel))!=NULL) return room;
+	if ((room = GetPersonLocationFromHangar(index, &airport))!=NULL) return room;
 	
 	index=0;
 	return NULL;	
@@ -809,7 +824,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		//Set optionally changed crew and recreate add person if necessary
 		if (crew!=person.Location->GetCrew())
 		{
-			if (crew==entrance.GetCrew()) crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
+			if (crew==this->crew) crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
 			crew=person.Location->GetCrew();
 		}
 		
@@ -858,6 +873,10 @@ Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel, double radius
 	//Check launch facility vincinity
 	global=LFMCOFFSET;
 	if (local.x>global.x+85 && local.x<global.x+145 && local.z<global.z+30 && local.z>global.z-30) return &launchTunnel;
+
+	//TODO: Check airport vincinity
+	//global=LFMCOFFSET;
+	//if (local.x>global.x+85 && local.x<global.x+145 && local.z<global.z+30 && local.z>global.z-30) return &launchTunnel;
 
 	//Check TA hangar vincinity
 	for(int i=0;i<TURNAROUNDHANGARS;i++)

@@ -15,6 +15,7 @@
 #define HANGARTYPETA 0x01
 #define HANGARTYPELS 0x02
 #define HANGARTYPELFMC 0x04
+#define HANGARTYPEPORT 0x08
 
 class Hangar
 {

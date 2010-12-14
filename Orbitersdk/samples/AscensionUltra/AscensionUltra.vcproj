@@ -260,6 +260,10 @@
 			Name="Source"
 			>
 			<File
+				RelativePath=".\AirportHangar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\AscensionUltra.cpp"
 				>
 				<FileConfiguration
@@ -337,6 +341,10 @@
 		<Filter
 			Name="Header"
 			>
+			<File
+				RelativePath=".\AirportHangar.h"
+				>
+			</File>
 			<File
 				RelativePath=".\AscensionUltra.h"
 				>
