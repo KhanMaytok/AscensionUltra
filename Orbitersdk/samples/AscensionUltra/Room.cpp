@@ -1,8 +1,14 @@
 #include "Room.h"
 #include "Hangar.h"
+#include <map>
+
+//Static member holds transfer process per vessel
+//  This is a workaround for UMMU lack of multi-crew support 
+static std::map<VESSEL *, bool> vesselRoomTransfered;
 
 Room::Room()
 {
+	owner = NULL;
 	hangar = NULL;
 	name = NULL;
 	docked = NULL;
@@ -10,6 +16,7 @@ Room::Room()
 
 void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraPosition, VECTOR3 viewDirection, VECTOR3 doorPosition, int capacity)
 {
+	this->owner=owner;
 	crew.InitUmmu(owner->GetHandle());
 	doorPosition+=hangar->GetPosition();
 	VECTOR3 n=_V(-1,0,-1)+doorPosition;
@@ -23,6 +30,7 @@ void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraP
 	strcpy(this->name=new char[strlen(name)+1], name);
 	this->cameraPosition=cameraPosition;
 	this->viewDirection=viewDirection;
+	SetTransfered(false);
 }
 
 void Room::PostStep (double simt, double simdt, double mjd)
@@ -41,6 +49,7 @@ void Room::PostStep (double simt, double simdt, double mjd)
 			sprintf(oapiDebugString(),"%s \"%s\" aged %i transfered to %s at %s",
 			crew.GetCrewMiscIdByName(crew.GetLastEnteredCrewName()),crew.GetLastEnteredCrewName()
 			,crew.GetCrewAgeByName(crew.GetLastEnteredCrewName()), name, hangar->GetName());
+			SetTransfered(true);
 		}
 		else crew.RemoveCrewMember(crew.GetLastEnteredCrewName()); //Redundant transfer, we need to remove it
 		break;
@@ -56,3 +65,5 @@ UMMUCREWMANAGMENT *Room::GetCrew(){return &crew;}
 int Room::GetMaxPersons(){return capacity;}
 void Room::SetDock(VESSEL *vessel){docked = vessel;}
 VESSEL *Room::GetDock(){return docked;}
+bool Room::GetTransfered(){return vesselRoomTransfered[owner];}
+void Room::SetTransfered(bool transfer){vesselRoomTransfered[owner]=transfer;}

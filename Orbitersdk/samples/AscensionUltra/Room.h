@@ -15,14 +15,18 @@ public:
 	VECTOR3 GetCameraPosition();
 	VECTOR3 GetViewDirection();
 	int GetMaxPersons();
-	void PostStep (double simt, double simdt, double mjd);
+	virtual void PostStep (double simt, double simdt, double mjd);
 	void SetDock(VESSEL *vessel); //Not virtual for a reason! Should not be used outside AU, because AU keeps central hook information
 	virtual VESSEL *GetDock();
 private:
+	VESSEL *owner;
 	Hangar *hangar;
 	char *name;
-	VECTOR3 cameraPosition, viewDirection;
 	UMMUCREWMANAGMENT crew;
+	VECTOR3 cameraPosition, viewDirection;	
 	int capacity;
 	VESSEL *docked;
+protected:
+	bool GetTransfered();
+	void SetTransfered(bool transfer);
 };
