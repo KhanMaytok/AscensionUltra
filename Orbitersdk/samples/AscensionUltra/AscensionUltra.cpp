@@ -867,23 +867,12 @@ Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel, double radius
 	Global2Local(global, local);
 	local-=OFFSET;
 	
-	//Check base vincinity
-	if (local.x<-6000 || local.x>0 || local.z<0 || local.z>1300) return NULL;
+	if (local.x<-6000 || local.x>0 || local.z<0 || local.z>1300) return NULL; //Check base vincinity
 	
-	//Check launch facility vincinity
-	global=LFMCOFFSET;
-	if (local.x>global.x+85 && local.x<global.x+145 && local.z<global.z+30 && local.z>global.z-30) return &launchTunnel;
-
-	//TODO: Check airport vincinity
-	//global=LFMCOFFSET;
-	//if (local.x>global.x+85 && local.x<global.x+145 && local.z<global.z+30 && local.z>global.z-30) return &launchTunnel;
-
-	//Check TA hangar vincinity
-	for(int i=0;i<TURNAROUNDHANGARS;i++)
-	{
-		global=TA1OFFSET+TA1MATRIXOFFSET*i;
-		if (local.x>global.x-45 && local.x<global.x+45 && local.z<global.z+40 && local.z>global.z-40) return &turnAround[i];
-	}	
+	if (launchTunnel.CheckVincinity(&local)) return &launchTunnel;	
+	if (airport.CheckVincinity(&local)) return &airport;
+	for(int i=0;i<TURNAROUNDHANGARS;i++) if (turnAround[i].CheckVincinity(&local)) return &turnAround[i];
+	for(int i=0;i<LIGHTSTORAGEHANGARS;i++) if (lightStorage[i].CheckVincinity(&local)) return &lightStorage[i];
 	
 	return NULL;
 }
