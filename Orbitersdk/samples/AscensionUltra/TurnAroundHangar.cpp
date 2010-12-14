@@ -59,8 +59,6 @@ bool TurnAroundHangar::clbkLoadStateEx (char *line)
 	if (Hangar::clbkLoadStateEx(line)) return true;
 	else if (!strnicmp (line, "CRANE", 5)) sscanf (line+5, "%d", &cur_crane);
 	else if (cur_crane>=0 && cur_crane<1) return crane1.clbkLoadStateEx(line);
-	else if (!strnicmp (line, "ROOM", 4)) sscanf (line+4, "%d", &cur_room);
-	else if (cur_room>=0 && cur_room<ROOMS) return rooms[cur_room].GetCrew()->LoadAllMembersFromOrbiterScenario(line);	
 	else return false;	
 }
 
@@ -78,14 +76,6 @@ void TurnAroundHangar::clbkSaveState (FILEHANDLE scn)
 	}
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "\tCRANE", cbuf);
-	for(i=0;i<ROOMS;i++)
-	{
-		sprintf (cbuf, "%d", i);
-		oapiWriteScenario_string (scn, "\tROOM", cbuf);		
-		rooms[i].GetCrew()->SaveAllMembersInOrbiterScenarios(scn);
-	}
-	sprintf (cbuf, "%d", i);
-	oapiWriteScenario_string (scn, "\tROOM", cbuf);
 }
 
 void TurnAroundHangar::clbkPostCreation ()

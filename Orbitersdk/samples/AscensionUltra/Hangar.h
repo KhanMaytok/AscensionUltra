@@ -43,7 +43,7 @@ protected:
 	VESSEL* owner;
 	UINT meshIndex;
 	char *event_prefix, *name;
-	int cur_door;
+	int cur_door, cur_room;
 	int areaStart, areaEnd;
 	VECTOR3 position;
 };
