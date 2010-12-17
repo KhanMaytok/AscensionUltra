@@ -60,6 +60,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	cur_TurnAround=-1;
 	cur_LightStorage=-1;
+	cur_Airport=-1;
+	cur_LaunchTunnel=-1;
 
 	cur_Path=0;
 	cur_Section=0;
