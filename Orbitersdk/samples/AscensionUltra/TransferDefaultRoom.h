@@ -4,5 +4,5 @@
 class TransferDefaultRoom:public Room
 {
 public:
-	virtual void PostStep (double simt, double simdt, double mjd);
+	virtual void PostPostStep();
 };
