@@ -109,7 +109,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="del ..\..\..\Modules\VirtualDockingTunnel.exp&#x0D;&#x0A;del ..\..\..\Modules\VirtualDockingTunnel.lib&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
