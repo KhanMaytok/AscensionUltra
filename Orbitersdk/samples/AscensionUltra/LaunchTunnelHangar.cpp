@@ -9,7 +9,7 @@
 // ==============================================================
 #include "LaunchTunnelHangar.h"
 
-HangarType LaunchTunnelHangar::GetType(){return HangarType::LaunchTunnel;}
+int LaunchTunnelHangar::GetType(){return HANGARTYPELFMC;}
 
 void LaunchTunnelHangar::DefineAnimations ()
 {
@@ -28,9 +28,18 @@ void LaunchTunnelHangar::DefineAnimations ()
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);	
 	doors[3].Init(owner, "Tunnel Door", prefix, 1,
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1,	_V(-47,0,0)));
+
+	rooms[0].Init(owner, this, "Launch Gate", _V(-115,5,60), _V(0,0,-1), _V(-115,0,50), 20);
+
 	Hangar::DefineAnimations();
 }
 
 int LaunchTunnelHangar::GetDoors(){return DOORS;}
 
 Door *LaunchTunnelHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+
+int LaunchTunnelHangar::GetRooms(){return ROOMS;}
+
+Room *LaunchTunnelHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
+
+bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos){return pos->x>position.x+85 && pos->x<position.x+145 && pos->z<position.z+30 && pos->z>position.z-30;}

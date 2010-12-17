@@ -3,7 +3,7 @@
 #include "AscensionUltra.h"
 #include "orbitersdk.h"
 
-#define STATES 23
+#define STATES 24
 #define BUFFERLEN 256
 
 typedef enum AscensionTowerState
@@ -31,6 +31,7 @@ typedef enum AscensionTowerState
 	PersonControl,
 	RoomForPersonSelection,
 	HangarForPersonSelection,
+	PassengerTransfer,
 };
 
 typedef struct AscensionTowerListPair
@@ -50,7 +51,7 @@ typedef struct AscensionTowerChangePerson
 class AscensionTowerData
 {
 public:
-	AscensionTowerData(MFD *mfd);
+	AscensionTowerData(MFD *mfd, VESSEL *vessel);
 	~AscensionTowerData(void);
 	AscensionUltra *GetAscension();	
 	int GetPage();
@@ -71,6 +72,7 @@ public:
 	int GetSelectedIndex();
 	MFD *GetMfd();
 private:	
+	VESSEL *vessel;
 	OBJHANDLE ascensionHandle;
 	char *ascensionName, buffer[BUFFERLEN+1];
 	AscensionUltra *ascension;

@@ -18,9 +18,11 @@
 #include "TurnAroundHangar.h"
 #include "LightStorageHangar.h"
 #include "LaunchTunnelHangar.h"
+#include "AirportHangar.h"
 #include "Routes.h"
 #include "Person.h"
 #include "UMmuSDK.h"
+#include <map>
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -31,6 +33,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define RUNWAYSUBSECTIONS 56
 #define RUNWAYPATHS 10
 
+//Defines for person change API
 #define PERSON_EVA		0x00
 #define PERSON_DELETE	0xFF
 #define PERSON_NAME		0x01
@@ -39,6 +42,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define PERSON_PULS		0x08
 #define PERSON_WEIGHT	0x10
 #define PERSON_LOCATION	0x20
+#define ERROR_CHANGE_FAIL	-7
 
 class AscensionUltra: public VESSEL2 {
 public:
@@ -61,8 +65,8 @@ public:
 	int  clbkConsumeBufferedKey (DWORD key, bool down, char *kstate);	
 	bool clbkLoadGenericCockpit ();
 
-	virtual Hangar *GetHangar(HangarType type, int index);
-	virtual int GetHangars(HangarType type);
+	virtual Hangar *GetHangar(int type, int index);
+	virtual int GetHangars(int type);
 	virtual Routes *GetTaxiways();
 	virtual Routes *GetRunways();
 	virtual Room *GetControlRoom();
@@ -70,12 +74,15 @@ public:
 	virtual int GetPersons();
 	virtual Person GetPerson(int index);
 	virtual int ChangePerson(int index, int flags, ...);
-
+	virtual Hangar *GetNearestHangar(int type, VESSEL *vessel);	
+	virtual void DockVessel(Room *room, VESSEL *vessel);
+	
 private:
 	void InitSubObjects();
 	void MoveGroup(int mesh, VECTOR3 v);
 	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
 	Room *GetPersonLocation(int &index);
+	Room* GetPersonLocationFromHangar(int &index, Hangar *hangar);
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
@@ -83,6 +90,7 @@ private:
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LightStorageHangar lightStorage[LIGHTSTORAGEHANGARS];
 	LaunchTunnelHangar launchTunnel;
+	AirportHangar airport;
 	BeaconArray taxiwaySubsection[TAXIWAYSUBSECTIONS];
 	BeaconPath taxiwayPath[TAXIWAYPATHS];
 	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
@@ -90,12 +98,16 @@ private:
 	Routes taxiways;
 	Routes runways;
 	Room *controlRoom;
-	Room entrance;
+	UMMUCREWMANAGMENT *crew;
+	int orbiterExtensionsResult;
+	float orbiterExtensionsVersion;
+	std::map<Room*,VESSEL*> roomVessel;
+	std::map<VESSEL*, Room*> vesselRoom;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_LightStorage, cur_LaunchTunnel;
+	int cur_TurnAround, cur_LightStorage, cur_LaunchTunnel, cur_Airport;
 
 	//DEBUG
 

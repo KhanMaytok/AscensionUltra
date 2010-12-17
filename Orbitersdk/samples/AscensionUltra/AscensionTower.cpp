@@ -22,7 +22,7 @@ int g_MFDmode; // identifier for new MFD mode
 // ==============================================================
 // API interface
 
-DLLCLBK void opcDLLInit (HINSTANCE hDLL)
+DLLCLBK void InitModule (HINSTANCE hDLL)
 {
 	static char *name = "Ascension Tower";
 	MFDMODESPEC spec;
@@ -33,10 +33,20 @@ DLLCLBK void opcDLLInit (HINSTANCE hDLL)
 	g_Bar=NULL;
 }
 
-DLLCLBK void opcDLLExit (HINSTANCE hDLL)
+DLLCLBK void ExitModule (HINSTANCE hDLL)
 {
 	if (g_Bar!=NULL) DeleteObject(g_Bar);
 	oapiUnregisterMFDMode (g_MFDmode);
+}
+
+DLLCLBK void opcCloseRenderViewport (void)
+{
+	for(std::map<VESSEL *, std::map<UINT, AscensionTowerData *> *>::iterator i=g_MFDData.begin();i!=g_MFDData.end();i++)
+	{
+		for (std::map<UINT, AscensionTowerData *>::iterator j=i->second->begin();j!=i->second->end();j++) delete j->second;
+		i->second->clear();
+	}
+	g_MFDData.clear();
 }
 
 // ==============================================================
@@ -44,22 +54,21 @@ DLLCLBK void opcDLLExit (HINSTANCE hDLL)
 
 // Constructor
 AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
-: MFD2 (w, h, vessel)
+: MFD (w, h, vessel)
 {	
 	width=(int)w/36;
 	height=(int)h/28;
 	mfdWidth=w;
-	mfdHeight=h;
-
-	OBJHANDLE obj=vessel->GetHandle();
-	std::map<UINT, AscensionTowerData *> *mfds=g_MFDData[obj];
+	mfdHeight=h;	
+	
+	std::map<UINT, AscensionTowerData *> *mfds=g_MFDData[vessel];
 	if (mfds==NULL)
 	{
 		mfds=new std::map<UINT, AscensionTowerData *>;
-		g_MFDData[obj]=mfds;
+		g_MFDData[vessel]=mfds;
 	}
 	data=(*mfds)[mfd];
-	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData(this);	
+	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData(this, vessel);	
 }
 
 // Destructor
@@ -112,9 +121,9 @@ void AscensionTower::WriteMFD(char *text, int line, int column, int flags)
 }
 
 // Repaint the MFD
-bool AscensionTower::Update (oapi::Sketchpad *skp)
+void AscensionTower::Update (HDC hDC)
 {
-	hDC=skp->GetDC();
+	this->hDC=hDC;
 
 	//
 	//Creating the pen for drawing the progress bar
@@ -159,6 +168,7 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 	case AscensionTowerState::Rooster:
 	case AscensionTowerState::RoomForPersonSelection:
 	case AscensionTowerState::HangarForPersonSelection:
+	case AscensionTowerState::PassengerTransfer:
 		RenderSelectionPage();	
 		break;
 	case AscensionTowerState::DoorControl:
@@ -173,12 +183,11 @@ bool AscensionTower::Update (oapi::Sketchpad *skp)
 		break;
 	}
 
-	skp->SetFont(GetDefaultFont(1));
+	SelectDefaultFont(hDC, 1);
 	
-	Title (skp, data->GetTitle());	
+	Title (hDC, data->GetTitle());	
 	WriteMFD(data->GetSubtitle(), 2, 2);
 
-	return true;
 }
 
 static int AT_BUTTON[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
@@ -282,4 +291,3 @@ bool AscensionTower::ConsumeButton(int bt, int event)
 	InvalidateDisplay();
 	return true;
 }
-

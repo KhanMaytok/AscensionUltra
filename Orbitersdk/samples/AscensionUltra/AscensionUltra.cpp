@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "KeyboardFilter.h"
+#include "VirtualDockingTunnel.h"
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
 #define TA1MATRIXOFFSET _V(266,0,0)
@@ -59,6 +60,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	cur_TurnAround=-1;
 	cur_LightStorage=-1;
+	cur_Airport=-1;
+	cur_LaunchTunnel=-1;
 
 	cur_Path=0;
 	cur_Section=0;
@@ -71,6 +74,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 // --------------------------------------------------------------
 AscensionUltra::~AscensionUltra ()
 {
+	OrbiterExtensions::Exit(this);
 }
 
 double AscensionUltra::GetVersion(){return 1.0;}
@@ -99,14 +103,17 @@ void AscensionUltra::InitSubObjects()
 	strcpy(name, "Launch Tunnel");
 	launchTunnel.Init(this, name, 20, prefix);
 
+	strcpy(prefix, "AIRPORT");
+	strcpy(name, "Airport");
+	airport.Init(this, name, -1, prefix); //TODO: mesh index currently not set
+	crew=airport.GetEntrance()->GetCrew();
+
 	controlRoom=turnAround[0].GetRoom(0);
 
-	//Setup entrance room - this is the dummy place for putting new persons to
-	entrance.Init(this, &launchTunnel, "Entrance", _V(0,0,0), _V(0,0,1), _V(0,0,0));
-	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
-	crew->SetAirlockDoorState(FALSE);
-	crew->SetMaxSeatAvailableInShip(1);
-	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
+	//Initialize Orbiter extensions
+	orbiterExtensionsResult=OrbiterExtensions::Init(this);
+
+	if ((orbiterExtensionsVersion=OrbiterExtensions::GetVersion())<0) orbiterExtensionsVersion=0.0;
 
 	//Generated subsection table by Excel
 	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);
@@ -360,6 +367,7 @@ void AscensionUltra::DefineAnimations ()
 	for(int i=0;i<5;i++) turnAround[i].DefineAnimations();
 	for(int i=0;i<12;i++) lightStorage[i].DefineAnimations();
 	launchTunnel.DefineAnimations();
+	airport.DefineAnimations();
 }
 
 void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
@@ -421,8 +429,8 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	int index=0;
 
-	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(entrance.GetCrew(), index);
-	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(entrance.GetCrew(), index);
+	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(crew, index);
+	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(crew, index);
 }
 
 // Read status from scenario file
@@ -443,6 +451,10 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+12, "%X", &cur_LaunchTunnel);
 		} else if (cur_LaunchTunnel>=0 && cur_LaunchTunnel<1) {
 			if (!launchTunnel.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (!strnicmp (line, "AIRPORT", 7)) {
+			sscanf (line+7, "%X", &cur_Airport);
+		} else if (cur_Airport>=0 && cur_Airport<1) {
+			if (!airport.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else {
             ParseScenarioLineEx (line, vs);
 			// unrecognised option - pass to Orbiter's generic parser
@@ -481,6 +493,10 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "0");
 	launchTunnel.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "1");
+
+	oapiWriteScenario_string (scn, "AIRPORT", "0");
+	airport.clbkSaveState(scn);
+	oapiWriteScenario_string (scn, "AIRPORT", "1");
 	
 }
 
@@ -492,6 +508,7 @@ void AscensionUltra::clbkPostCreation ()
 	for(int i=0;i<5;i++) turnAround[i].clbkPostCreation();
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostCreation();
 	launchTunnel.clbkPostCreation();
+	airport.clbkPostCreation();
 }
 
 // Respond to playback event
@@ -513,6 +530,11 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 	{
 		//Tunnel event
 		return launchTunnel.clbkPlaybackEvent(simt, event_t, event_type+12, event);
+	}
+	if (!strnicmp (event_type, "AIRPORT", 7))
+	{
+		//Airport event
+		return airport.clbkPlaybackEvent(simt, event_t, event_type+7, event);
 	}
 	return false;
 }
@@ -543,28 +565,54 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 // --------------------------------------------------------------
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
-	UMMUCREWMANAGMENT *crew=entrance.GetCrew();
+	//Call post steps of all sub-elements
 	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
+	airport.clbkPostStep(simt, simdt, mjd);
+
+	//Check all virtual docks
+	VECTOR3 global, local;
+	std::map<Room*, VESSEL*> toBeDeleted;
+	for(std::map<Room*, VESSEL*>::iterator i=roomVessel.begin();i!=roomVessel.end();i++)
+	{	
+		//Check ground contact
+		if (!i->second->GroundContact())
+		{
+			toBeDeleted[i->first]=i->second;
+			continue;
+		}
+
+		//Check vincinity
+		i->second->GetGlobalPos(global);
+		Global2Local(global, local);
+		if (!i->first->GetHangar()->CheckVincinity(&local)) toBeDeleted[i->first]=i->second;
+	}
+	for(std::map<Room*, VESSEL*>::iterator i=toBeDeleted.begin();i!=toBeDeleted.end();i++)
+	{
+		roomVessel.erase(i->first);
+		vesselRoom.erase(i->second);
+		OrbiterExtensions::SetDockState(i->second, NULL);
+		i->first->SetDock(NULL);
+	}
 
 	//Detect activated action area, iterate through sub-items for processing, break on first processor
 	int action=crew->DetectActionAreaActivated();
 	if (action>-1) for(int i=0;i<5;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
 	if (action>-1) for(int i=0;i<12;i++) if (lightStorage[i].ActionAreaActivated(action)) break;
 
-	//DEBUG relative position to TA Hangar 1
+	//DEBUG relative position
 	if (coords)
 	{
 		VECTOR3 global, local;
 		oapiGetFocusInterface()->GetGlobalPos(global);
 		Global2Local(global, local);
-		local-=OFFSET;
+		local-=OFFSET+LFMCOFFSET;
 		sprintf(oapiDebugString(),"MAP coordinates: %f , %f , %f", -local.x, local.y, local.z);
 	}
 	
-
-	crew->WarnUserUMMUNotInstalled("Ascension Ultra");
+	if (orbiterExtensionsResult<0) sprintf(oapiDebugString(), "WARNING! Orbiter extensions not loaded. Error %d", orbiterExtensionsResult);
+	else crew->WarnUserUMMUNotInstalled("Ascension Ultra");
 }
 
 bool AscensionUltra::clbkLoadGenericCockpit ()
@@ -644,25 +692,38 @@ void AscensionUltra::RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref)
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }
 
-int AscensionUltra::GetHangars(HangarType type)
+int AscensionUltra::GetHangars(int type)
 {
-	switch(type)
-	{
-	case HangarType::TurnAround: return 5;
-	case HangarType::LightStorage: return 12;
-	case HangarType::LaunchTunnel: return 1;
-	}
-	return 0;
+	int count=0;
+	if ((type & HANGARTYPETA)>0) count+=5;
+	if ((type & HANGARTYPELS)>0) count+=12;
+	if ((type & HANGARTYPELFMC)>0) count+=1;
+	if ((type & HANGARTYPEPORT)>0) count+=1;
+	return count;
 }
 
-Hangar *AscensionUltra::GetHangar(HangarType type, int index)
+Hangar *AscensionUltra::GetHangar(int type, int index)
 {
 	if (index<0) return NULL;
-	switch(type)
+	if ((type & HANGARTYPETA)>0)
 	{
-	case HangarType::TurnAround: return index<5?turnAround+index:NULL;
-	case HangarType::LightStorage: return index<12?lightStorage+index:NULL;	
-	case HangarType::LaunchTunnel: return &launchTunnel;	
+		if (index<TURNAROUNDHANGARS) return turnAround+index;
+		else index-=TURNAROUNDHANGARS;
+	}
+	if ((type & HANGARTYPELS)>0)
+	{
+		if (index<LIGHTSTORAGEHANGARS) return lightStorage+index;
+		else index-=LIGHTSTORAGEHANGARS;
+	}
+	if ((type & HANGARTYPELFMC)>0)
+	{
+		if (index<1) return &launchTunnel;
+		else index-=1;
+	}
+	if ((type & HANGARTYPEPORT)>0)
+	{
+		if (index<1) return &airport;
+		else index-=1;
 	}
 	return NULL;
 }
@@ -690,28 +751,46 @@ int AscensionUltra::GetPersons()
 		for(j=0;j<rooms;j++) persons+=turnAround[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
 	}
 
+	for(i=0;i<LIGHTSTORAGEHANGARS;i++)
+	{
+		rooms=lightStorage[i].GetRooms();
+		for(j=0;j<rooms;j++) persons+=lightStorage[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	}
+
+	rooms=launchTunnel.GetRooms();
+	for(j=0;j<rooms;j++) persons+=launchTunnel.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
+
+	rooms=airport.GetRooms();
+	for(j=0;j<rooms;j++) persons+=airport.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
+
 	return ++persons;	//First entry is always the ADD PERSON entry
+}
+
+Room* AscensionUltra::GetPersonLocationFromHangar(int &index, Hangar *hangar)
+{	
+	UMMUCREWMANAGMENT *crew;
+	int rooms=hangar->GetRooms();
+	for(int j=0;j<rooms;j++)
+	{
+		Room *room=hangar->GetRoom(j);
+		crew=room->GetCrew();
+		if (crew->GetCrewTotalNumber()>index) return room;
+		index-=crew->GetCrewTotalNumber();
+	}
+	return NULL;
 }
 
 Room *AscensionUltra::GetPersonLocation(int &index)
 {
-	int i, rooms, j, persons=0;
-	UMMUCREWMANAGMENT *crew;
-
-	if (index==0) return &entrance;
+	if (index==0) return airport.GetEntrance();
 	index--;
+
+	Room *room;
 			
-	for(i=0;i<TURNAROUNDHANGARS;i++)
-	{
-		rooms=turnAround[i].GetRooms();
-		for(j=0;j<rooms;j++)
-		{
-			Room *room=turnAround[i].GetRoom(j);
-			crew=room->GetCrew();
-			if (crew->GetCrewTotalNumber()>index) return room;
-			index-=crew->GetCrewTotalNumber();
-		}
-	}
+	for(int i=0;i<TURNAROUNDHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &turnAround[i]))!=NULL) return room;
+	//for(int i=0;i<LIGHTSTORAGEHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &lightStorage[i]))!=NULL) return room;
+	if ((room = GetPersonLocationFromHangar(index, &launchTunnel))!=NULL) return room;
+	if ((room = GetPersonLocationFromHangar(index, &airport))!=NULL) return room;
 	
 	index=0;
 	return NULL;	
@@ -724,8 +803,12 @@ Person AscensionUltra::GetPerson(int index)
 }
 
 // Changes person properties according to flags (see header-file for PERSON_xxx macros)
-// Returns -2 on internal failure, -1 if no more slots available on location change,
-// 0 on success of EVA or remove, new index otherwise
+// Returns values:
+// -7 .. internal failure
+// -3 .. no more slots available on location change (or ERROR_DOCKED_SHIP_IS_FULL on transfer)
+// <0 .. negative results from UMmuSDK.h
+//  0 .. success of EVA or remove
+// >0 .. new index of modified person
 int AscensionUltra::ChangePerson(int index, int flags, ...)
 {	
 	Person person=GetPerson(index);
@@ -735,8 +818,25 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 	switch (flags)
 	{
 	case PERSON_EVA:
-		crew->EvaCrewMember(person.Name);
-		break;
+		{
+			VESSEL *vessel=person.Location->GetDock();
+			if (vessel!=NULL)
+			{
+				CreateDock(_V(0,0,0), _V(0,1,0), _V(0,1,0));
+				OrbiterExtensions::SetDockState(this, vessel->GetHandle());
+			}
+			result=crew->EvaCrewMember(person.Name);
+			if (result==ERROR_NO_ONE_ON_BOARD ||
+				(result==EVA_OK && vessel!=NULL) ||
+				(result==TRANSFER_TO_DOCKED_SHIP_OK && vessel==NULL)) result=ERROR_CHANGE_FAIL;
+			if (result>EVA_OK) result=EVA_OK;
+			if (vessel!=NULL)
+			{
+				OrbiterExtensions::SetDockState(this, NULL);
+				ClearDockDefinitions();
+			}
+			break;
+		}
 	case PERSON_DELETE:
 		crew->RemoveCrewMember(person.Name);		
 		break;
@@ -754,7 +854,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 			if (person.Location==NULL)
 			{
 				va_end(args);
-				return -1;
+				return ERROR_DOCKED_SHIP_IS_FULL;
 			}			
 		}
 
@@ -773,7 +873,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		//Set optionally changed crew and recreate add person if necessary
 		if (crew!=person.Location->GetCrew())
 		{
-			if (crew==entrance.GetCrew()) crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
+			if (crew==this->crew) crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
 			crew=person.Location->GetCrew();
 		}
 		
@@ -794,13 +894,91 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 			if (p.Location->GetCrew()!=crew) continue;
 			if (strcmp(p.Name, person.Name)==0) break;
 		}
-		if (result==index) result=-2;
+		if (result==index) result=ERROR_CHANGE_FAIL;
 		
 		delete [] name;
 		delete [] miscId;
 		break;
 	}
 	return result;
+}
+
+Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel)
+{
+	//Check Orbiter extensions version
+	if (orbiterExtensionsVersion<0.1) return NULL;
+
+	//Check vessel landed
+	if (!vessel->GroundContact()) return NULL;
+
+	VECTOR3 global, local;
+	vessel->GetGlobalPos(global);
+	Global2Local(global, local);
+	global=local-OFFSET;
+	
+	if (global.x<-6000 || global.x>0 || global.z<0 || global.z>1300) return NULL; //Check base vincinity
+	
+	if (launchTunnel.CheckVincinity(&local)) return &launchTunnel;	
+	if (airport.CheckVincinity(&local)) return &airport;
+	for(int i=0;i<TURNAROUNDHANGARS;i++) if (turnAround[i].CheckVincinity(&local)) return &turnAround[i];
+	for(int i=0;i<LIGHTSTORAGEHANGARS;i++) if (lightStorage[i].CheckVincinity(&local)) return &lightStorage[i];
+	
+	return NULL;
+}
+
+void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
+{
+	//Check Orbiter extensions version
+	if (orbiterExtensionsVersion<0.1) return;
+
+	VESSEL *oldVessel;
+	Room *oldRoom;
+	if (roomVessel.find(room)==roomVessel.end()) oldVessel=NULL;
+	else oldVessel=roomVessel[room];
+	if (vesselRoom.find(vessel)==vesselRoom.end()) oldRoom=NULL;
+	else oldRoom=vesselRoom[vessel];
+
+	if (room==NULL && oldRoom!=NULL)
+	{
+		//Undock vessel
+		oldRoom->SetDock(NULL);
+		roomVessel.erase(oldRoom);
+		vesselRoom.erase(vessel);
+		OrbiterExtensions::SetDockState(vessel, NULL);
+	}
+
+	if (vessel==NULL && oldVessel!=NULL)
+	{
+		//Undock room
+		room->SetDock(NULL);
+		roomVessel.erase(room);
+		vesselRoom.erase(oldVessel);
+		OrbiterExtensions::SetDockState(oldVessel, NULL);
+	}
+
+	if (vessel!=NULL && room!=NULL)
+	{
+		if (oldRoom!=NULL)
+		{
+			//Undock old room occupation
+			oldRoom->SetDock(NULL);
+			vesselRoom.erase(vessel);
+			roomVessel.erase(oldRoom);			
+		}
+		if (oldVessel!=NULL)
+		{
+			//Undock old vessel occupation
+			room->SetDock(NULL);
+			roomVessel.erase(room);
+			vesselRoom.erase(oldVessel);
+			OrbiterExtensions::SetDockState(oldVessel, NULL);
+		}
+		//Dock vessel to room
+		room->SetDock(vessel);
+		roomVessel[room]=vessel;
+		vesselRoom[vessel]=room;
+		OrbiterExtensions::SetDockState(vessel, GetHandle());
+	}
 }
 
 // Module initialisation
@@ -874,10 +1052,10 @@ BOOL CALLBACK EdPg1Proc (HWND hTab, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiOpenHelp (&g_hc);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			GetDG(hTab)->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Close();
+			GetDG(hTab)->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->Close();
 			return TRUE;
 		case IDC_OLOCK_OPEN:
-			GetDG(hTab)->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Open();
+			GetDG(hTab)->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->Open();
 			return TRUE;
 		}
 		break;
@@ -946,10 +1124,10 @@ BOOL CALLBACK Ctrl_DlgProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			oapiCloseDialog (hWnd);
 			return TRUE;
 		case IDC_OLOCK_CLOSE:
-			dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Close();
+			dg->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->Close();
 			return 0;
 		case IDC_OLOCK_OPEN:
-			dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->Open();
+			dg->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->Open();
 			return 0;
 		}
 		break;
@@ -966,7 +1144,7 @@ void UpdateCtrlDialog (AscensionUltra *dg, HWND hWnd)
 
 	int op;
 
-	op = dg->GetHangar(HangarType::TurnAround, 0)->GetDoor(0)->GetPosition()==0.0?0:1;
+	op = dg->GetHangar(HANGARTYPETA, 0)->GetDoor(0)->GetPosition()==0.0?0:1;
 	SendDlgItemMessage (hWnd, IDC_OLOCK_OPEN, BM_SETCHECK, bstatus[op], 0);
 	SendDlgItemMessage (hWnd, IDC_OLOCK_CLOSE, BM_SETCHECK, bstatus[1-op], 0);	
 }

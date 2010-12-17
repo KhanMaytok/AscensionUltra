@@ -18,13 +18,13 @@
 #include <map>
 #include "AscensionTowerData.h"
 
-class AscensionTower: public MFD2 {
+class AscensionTower: public MFD {
 public:
 	AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel);
 	~AscensionTower ();
 	char *ButtonLabel (int bt);
 	int ButtonMenu (const MFDBUTTONMENU **menu) const;
-	bool Update (oapi::Sketchpad *skp);
+	void Update (HDC hDC);
 	bool AscensionTower::ConsumeKeyBuffered(DWORD key);
 	bool AscensionTower::ConsumeButton(int bt, int event);
 	static int MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
@@ -43,7 +43,7 @@ private:
 	void RenderPersonPage();
 };
 
-std::map<OBJHANDLE, std::map<UINT, AscensionTowerData *> *> g_MFDData;
+std::map<VESSEL *, std::map<UINT, AscensionTowerData *> *> g_MFDData;
 HBRUSH g_Bar;
 COLORREF g_MiddleGreen;
 

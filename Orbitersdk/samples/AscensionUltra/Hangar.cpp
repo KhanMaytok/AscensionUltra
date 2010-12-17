@@ -18,6 +18,7 @@ Hangar::Hangar(void)
 	name=NULL;
 
 	cur_door=-1;
+	cur_room=-1;
 
 	position=_V(0,0,0);
 }
@@ -28,7 +29,7 @@ Hangar::~Hangar(void)
 	delete [] name;
 }
 
-HangarType Hangar::GetType(){throw "GetType() not allowed on abstract hangar class!";}
+int Hangar::GetType(){throw "GetType() not allowed on abstract hangar class!";}
 
 void Hangar::DefineAnimations ()
 {	
@@ -47,8 +48,11 @@ void Hangar::clbkPostStep (double simt, double simdt, double mjd)
 bool Hangar::clbkLoadStateEx (char *line)
 {
 	int k=GetDoors();
+	int l=GetRooms();
     if (!strnicmp (line, "DOOR", 4)) sscanf (line+4, "%d", &cur_door);
 	else if (cur_door>=0 && cur_door<k) return GetDoor(cur_door)->clbkLoadStateEx(line);
+	else if (!strnicmp (line, "ROOM", 4)) sscanf (line+4, "%d", &cur_room);
+	else if (cur_room>=0 && cur_room<l) return GetRoom(cur_room)->GetCrew()->LoadAllMembersFromOrbiterScenario(line);	
 	else return false;	
 }
 
@@ -56,6 +60,7 @@ void Hangar::clbkSaveState (FILEHANDLE scn)
 {
 	char cbuf[256];
 	int k=GetDoors();
+	int l=GetRooms();
 	int i;
 	// Write custom parameters
 	for(i=0;i<k;i++)
@@ -66,6 +71,14 @@ void Hangar::clbkSaveState (FILEHANDLE scn)
 	}
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "\tDOOR", cbuf);	
+	for(i=0;i<l;i++)
+	{
+		sprintf (cbuf, "%d", i);
+		oapiWriteScenario_string (scn, "\tROOM", cbuf);		
+		GetRoom(i)->GetCrew()->SaveAllMembersInOrbiterScenarios(scn);
+	}
+	sprintf (cbuf, "%d", i);
+	oapiWriteScenario_string (scn, "\tROOM", cbuf);
 }
 
 void Hangar::clbkPostCreation ()
@@ -106,3 +119,5 @@ char *Hangar::GetName(){return name;}
 
 int Hangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index){return index;}
 bool Hangar::ActionAreaActivated(int action){return false;}
+
+bool Hangar::CheckVincinity(VECTOR3 *pos){return false;}

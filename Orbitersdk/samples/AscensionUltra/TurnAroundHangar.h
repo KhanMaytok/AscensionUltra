@@ -33,7 +33,7 @@ class TurnAroundHangar:public Hangar
 {
 public:
 	TurnAroundHangar(void);
-	HangarType GetType();
+	int GetType();
 	void DefineAnimations ();
 	void clbkPostStep (double simt, double simdt, double mjd);
 	bool clbkLoadStateEx (char *line);
@@ -48,6 +48,7 @@ public:
 	void SetPosition(VECTOR3 position);
 	int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	bool ActionAreaActivated(int action);
+	bool CheckVincinity(VECTOR3 *pos);
 private:
 	Crane crane1;
 	Door doors[DOORS];

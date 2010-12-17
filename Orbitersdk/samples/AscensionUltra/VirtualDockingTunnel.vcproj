@@ -2,10 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="AscensionUltra"
-	ProjectGUID="{289C4462-1F37-46FF-AA15-2EDE4AEA5D56}"
-	RootNamespace="DeltaGlider"
-	TargetFrameworkVersion="0"
+	Name="VirtualDockingTunnel"
+	ProjectGUID="{D767E08F-67E9-411F-84B7-0A66684CF3D2}"
+	RootNamespace="VirtualDockingTunnel"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -42,7 +42,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\..\..\..\Modules/AscensionUltra.tlb"
+				TypeLibraryName=".\..\..\..\Modules\VirtualDockingTunnel.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -54,7 +54,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/AscensionUltra.pch"
+				PrecompiledHeaderFile=".\Release/VirtualDockingTunnel.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -75,15 +75,16 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\..\..\..\Modules/AscensionUltra.dll"
+				OutputFile="..\..\..\Modules\VirtualDockingTunnel.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="msvcirt.lib"
-				ProgramDatabaseFile=".\Release/AscensionUltra.pdb"
+				ModuleDefinitionFile=""
+				ProgramDatabaseFile=".\Release/VirtualDockingTunnel.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary=".\..\..\..\Modules/AscensionUltra.lib"
+				ImportLibrary=".\..\..\..\Modules\VirtualDockingTunnel.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -98,7 +99,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\..\..\..\Modules/AscensionUltra.bsc"
+				OutputFile=".\..\..\..\Modules\VirtualDockingTunnel.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -108,6 +109,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -138,7 +140,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\..\..\..\Modules/AscensionUltra.tlb"
+				TypeLibraryName=".\..\..\..\Modules\VirtualDockingTunnel.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -149,7 +151,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\Debug/AscensionUltra.pch"
+				PrecompiledHeaderFile=".\Debug/VirtualDockingTunnel.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -170,18 +172,18 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\..\..\..\Modules/AscensionUltra.dll"
+				OutputFile=".\..\..\..\Modules\VirtualDockingTunnel.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="msvcrt.lib, msvcirt.lib"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\..\..\..\Modules/AscensionUltra.pdb"
-				SubSystem="2"
+				ProgramDatabaseFile=".\..\..\..\Modules\VirtualDockingTunnel.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary=".\..\..\..\Modules/AscensionUltra.lib"
+				ImportLibrary=".\..\..\..\Modules\VirtualDockingTunnel.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -196,7 +198,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\..\..\..\Modules/AscensionUltra.bsc"
+				OutputFile=".\..\..\..\Modules\VirtualDockingTunnel.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -216,14 +218,6 @@
 			Name="SDK"
 			>
 			<File
-				RelativePath="..\..\include\DlgCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\lib\DlgCtrl.lib"
-				>
-			</File>
-			<File
 				RelativePath="..\..\lib\orbiter.lib"
 				>
 			</File>
@@ -235,205 +229,11 @@
 				RelativePath="..\..\lib\Orbitersdk.lib"
 				>
 			</File>
-			<File
-				RelativePath="..\..\include\ScnEditorAPI.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib"
-				>
-			</File>
-			<File
-				RelativePath=".\VirtualDockingTunnel.h"
-				>
-			</File>
-			<File
-				RelativePath=".\VirtualDockingTunnel.lib"
-				>
-			</File>
 		</Filter>
-		<Filter
-			Name="Source"
+		<File
+			RelativePath=".\VirtualDockingTunnel.cpp"
 			>
-			<File
-				RelativePath=".\AirportHangar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\AscensionUltra.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\BeaconArray.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\BeaconPath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Crane.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Door.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Hangar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\KeyboardFilter.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LaunchTunnelHangar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LightStorageHangar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Person.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Room.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Routes.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TransferDefaultRoom.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TurnAroundHangar.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header"
-			>
-			<File
-				RelativePath=".\AirportHangar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\AscensionUltra.h"
-				>
-			</File>
-			<File
-				RelativePath=".\BeaconArray.h"
-				>
-			</File>
-			<File
-				RelativePath=".\BeaconPath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Crane.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Door.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Hangar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\KeyboardFilter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LaunchTunnelHangar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LightStorageHangar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\meshres.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Person.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Room.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Routes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TransferDefaultRoom.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TurnAroundHangar.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource"
-			>
-			<File
-				RelativePath=".\AscensionUltra.rc"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="resource.h"
-				>
-			</File>
-		</Filter>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -9,7 +9,7 @@
 // ==============================================================
 #include "LightStorageHangar.h"
 
-HangarType LightStorageHangar::GetType(){return HangarType::LightStorage;}
+int LightStorageHangar::GetType(){return HANGARTYPELS;}
 
 void LightStorageHangar::DefineAnimations ()
 {
