@@ -723,8 +723,17 @@ bool AscensionTowerData::SetKey(DWORD key)
 			break;
 		case OAPI_KEY_E:
 			if (selectedIndex[AscensionTowerState::Rooster]==0) return false;
-			ascension->ChangePerson(selectedIndex[AscensionTowerState::Rooster], PERSON_EVA);
-			SetState(AscensionTowerState::Rooster);
+			switch (ascension->ChangePerson(selectedIndex[AscensionTowerState::Rooster], PERSON_EVA))
+			{
+			case ERROR_DOCKEDSHIP_DONOT_USE_UMMU:
+			case ERROR_DOCKED_SHIP_HAVE_AIRLOCK_CLOSED:
+			case ERROR_DOCKED_SHIP_IS_FULL:
+				//TODO: denial sound				
+				break;
+			case EVA_OK:
+				SetState(AscensionTowerState::Rooster);
+				break;
+			}			
 			break;
 		case OAPI_KEY_D:
 			if (selectedIndex[AscensionTowerState::Rooster]==0) return false;

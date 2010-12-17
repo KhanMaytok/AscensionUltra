@@ -801,8 +801,12 @@ Person AscensionUltra::GetPerson(int index)
 }
 
 // Changes person properties according to flags (see header-file for PERSON_xxx macros)
-// Returns -2 on internal failure, -1 if no more slots available on location change,
-// 0 on success of EVA or remove, new index otherwise
+// Returns values:
+// -7 .. internal failure
+// -3 .. no more slots available on location change (or ERROR_DOCKED_SHIP_IS_FULL on transfer)
+// <0 .. negative results from UMmuSDK.h
+//  0 .. success of EVA or remove
+// >0 .. new index of modified person
 int AscensionUltra::ChangePerson(int index, int flags, ...)
 {	
 	Person person=GetPerson(index);
@@ -812,8 +816,25 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 	switch (flags)
 	{
 	case PERSON_EVA:
-		crew->EvaCrewMember(person.Name);
-		break;
+		{
+			VESSEL *vessel=person.Location->GetDock();
+			if (vessel!=NULL)
+			{
+				CreateDock(_V(0,0,0), _V(0,1,0), _V(0,1,0));
+				OrbiterExtensions::SetDockState(this, vessel->GetHandle());
+			}
+			result=crew->EvaCrewMember(person.Name);
+			if (result==ERROR_NO_ONE_ON_BOARD ||
+				(result==EVA_OK && vessel!=NULL) ||
+				(result==TRANSFER_TO_DOCKED_SHIP_OK && vessel==NULL)) result=ERROR_CHANGE_FAIL;
+			if (result>EVA_OK) result=EVA_OK;
+			if (vessel!=NULL)
+			{
+				OrbiterExtensions::SetDockState(this, NULL);
+				ClearDockDefinitions();
+			}
+			break;
+		}
 	case PERSON_DELETE:
 		crew->RemoveCrewMember(person.Name);		
 		break;
@@ -831,7 +852,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 			if (person.Location==NULL)
 			{
 				va_end(args);
-				return -1;
+				return ERROR_DOCKED_SHIP_IS_FULL;
 			}			
 		}
 
@@ -871,7 +892,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 			if (p.Location->GetCrew()!=crew) continue;
 			if (strcmp(p.Name, person.Name)==0) break;
 		}
-		if (result==index) result=-2;
+		if (result==index) result=ERROR_CHANGE_FAIL;
 		
 		delete [] name;
 		delete [] miscId;

@@ -33,6 +33,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define RUNWAYSUBSECTIONS 56
 #define RUNWAYPATHS 10
 
+//Defines for person change API
 #define PERSON_EVA		0x00
 #define PERSON_DELETE	0xFF
 #define PERSON_NAME		0x01
@@ -41,6 +42,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define PERSON_PULS		0x08
 #define PERSON_WEIGHT	0x10
 #define PERSON_LOCATION	0x20
+#define ERROR_CHANGE_FAIL	-7
 
 class AscensionUltra: public VESSEL2 {
 public:
