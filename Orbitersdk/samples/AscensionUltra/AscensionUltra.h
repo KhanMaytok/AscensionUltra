@@ -72,7 +72,7 @@ public:
 	virtual int GetPersons();
 	virtual Person GetPerson(int index);
 	virtual int ChangePerson(int index, int flags, ...);
-	virtual Hangar *GetNearestHangar(int type, VESSEL *vessel, double radius);
+	virtual Hangar *GetNearestHangar(int type, VESSEL *vessel);	
 	virtual void DockVessel(Room *room, VESSEL *vessel);
 	
 private:

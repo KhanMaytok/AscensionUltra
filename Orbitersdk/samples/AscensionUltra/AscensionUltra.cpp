@@ -880,7 +880,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 	return result;
 }
 
-Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel, double radius)
+Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel)
 {
 	//Check Orbiter extensions version
 	if (orbiterExtensionsVersion<0.1) return NULL;

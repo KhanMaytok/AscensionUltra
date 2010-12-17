@@ -117,7 +117,7 @@ int AscensionTowerData::GetListSize()
 	{
 	case AscensionTowerState::BaseSelect: return scanList.size();
 	case AscensionTowerState::MainMenu: return 4;
-	case AscensionTowerState::GroundMenu: return ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel, NEARESTRADIUS)==NULL?4:5;
+	case AscensionTowerState::GroundMenu: return ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)==NULL?4:5;
 	case AscensionTowerState::ATCMenu: return 3;
 	case AscensionTowerState::HangarForDoorSelection:	
 		return ascension->GetHangars(HANGARTYPETA | HANGARTYPELS | HANGARTYPELFMC);
@@ -133,7 +133,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
 	case AscensionTowerState::Rooster: return ascension->GetPersons();
 	case AscensionTowerState::PassengerTransfer:
-		if (ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel, NEARESTRADIUS)!=(Hangar *)object[state])
+		if (ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)!=(Hangar *)object[state])
 		{
 			SetState(AscensionTowerState::GroundMenu);
 			return 0;
@@ -307,7 +307,7 @@ void AscensionTowerData::Select(int index)
 		case 2: SetState(AscensionTowerState::HangarForCraneSelection); break;
 		case 3: SetState(AscensionTowerState::PassengerTerminal); break;
 		case 4:
-			object[AscensionTowerState::PassengerTransfer]=ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel, NEARESTRADIUS);
+			object[AscensionTowerState::PassengerTransfer]=ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel);
 			SetState(AscensionTowerState::PassengerTransfer);
 			break;
 		}

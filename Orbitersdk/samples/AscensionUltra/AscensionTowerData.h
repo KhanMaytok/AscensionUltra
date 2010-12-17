@@ -5,7 +5,6 @@
 
 #define STATES 24
 #define BUFFERLEN 256
-#define NEARESTRADIUS 80
 
 typedef enum AscensionTowerState
 {
