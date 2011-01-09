@@ -9,7 +9,7 @@
 // ==============================================================
 
 #define DOCKSTRUCTOFFSET_CURRENTDOCKOBJECT 0x48
-#define ADDRESS_GETDOCKSTATUS 0x004217E0
+#define ADDRESS_GETDOCKSTATUS 0x00476210
 
 // ==============================================================
 // Global variables
