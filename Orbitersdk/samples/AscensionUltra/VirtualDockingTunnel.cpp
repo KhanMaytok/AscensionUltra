@@ -292,7 +292,7 @@ __declspec(dllexport) int __cdecl GetVesselEvents(VESSEL *handle, double *mjds, 
 {
 	EnterCriticalSection(&g_EventsAccess);
 	std::map<VESSEL *, EventQueue>::iterator el=g_Events.find(handle);	
-	if (el!=g_Events.end())
+	if (el==g_Events.end())
 	{
 		LeaveCriticalSection(&g_EventsAccess);
 		return -1;
