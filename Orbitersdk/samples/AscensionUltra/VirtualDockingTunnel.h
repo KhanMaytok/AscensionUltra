@@ -66,4 +66,9 @@ int DeleteVesselEvents(VESSEL *handle);
 //		  -4 if library not found
 int GetVesselEvents(VESSEL *handle, double *mjds, char **event_types, char **events, int size);
 
+// Cleans the specified recorded events.
+// Returns 0 if successfull
+//		  -4 if library not found
+int CleanVesselEvents(char **event_types, char **events, int size);
+
 }

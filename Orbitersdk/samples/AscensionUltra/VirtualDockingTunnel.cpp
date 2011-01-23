@@ -310,5 +310,17 @@ __declspec(dllexport) int __cdecl GetVesselEvents(VESSEL *handle, double *mjds, 
 	return i;
 }
 
+// Cleans the specified recorded events.
+// Returns 0
+__declspec(dllexport) int __cdecl CleanVesselEvents(char **event_types, char **events, int size)
+{
+	for(int i=0;i<size;i++)
+	{
+		delete [] event_types[i];
+		delete [] events[i];
+	}	
+	return 0;
+}
+
 }
 }

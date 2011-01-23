@@ -16,6 +16,7 @@ typedef int (* VESSELFUNC) (VESSEL *);
 typedef int (* MAPFUNC) (VESSEL *, OBJHANDLE);
 typedef float (* FLOATGETTER) (void);
 typedef int (* GETEVENTFUNC) (VESSEL *, double *, char **, char **, int);
+typedef int (* CLEANFUNC) (char **, char **, int);
 
 // ==============================================================
 // Global variables
@@ -32,6 +33,7 @@ FLOATGETTER g_GetVersion;
 HOOKFUNC g_RecordVesselEvents;
 VESSELFUNC g_DeleteVesselEvents;
 GETEVENTFUNC g_GetVesselEvents;
+CLEANFUNC g_CleanVesselEvents;
 }
 
 // Initializes the virtual docking hook.
@@ -55,9 +57,10 @@ int OrbiterExtensions::Init(VESSEL *handle, int hook)
 	g_RecordVesselEvents=(HOOKFUNC)GetProcAddress(g_Module, "RecordVesselEvents");
 	g_DeleteVesselEvents=(VESSELFUNC)GetProcAddress(g_Module, "DeleteVesselEvents");
 	g_GetVesselEvents=(GETEVENTFUNC)GetProcAddress(g_Module, "GetVesselEvents");
+	g_CleanVesselEvents=(CLEANFUNC)GetProcAddress(g_Module, "CleanVesselEvents");
 	float version=GetVersion();
 	if (((DWORD)g_Init & (DWORD)g_Exit & (DWORD)g_SetDockState & (DWORD)g_GetVersion)==NULL ||
-		(((DWORD)g_InitHook & (DWORD)g_ExitHook & (DWORD)g_RecordVesselEvents & (DWORD)g_DeleteVesselEvents & (DWORD)g_GetVesselEvents)==NULL && version>0.1f))
+		(((DWORD)g_InitHook & (DWORD)g_ExitHook & (DWORD)g_RecordVesselEvents & (DWORD)g_DeleteVesselEvents & (DWORD)g_GetVesselEvents & (DWORD)g_CleanVesselEvents)==NULL && version>0.1f))
 	{
 		FreeLibrary(g_Module);
 		g_GetVersion=(FLOATGETTER)NULL;
@@ -125,3 +128,8 @@ int OrbiterExtensions::DeleteVesselEvents(VESSEL *handle){if (!g_DeleteVesselEve
 //        -1 if vessel was not registered
 //		  -4 if library not found
 int OrbiterExtensions::GetVesselEvents(VESSEL *handle, double *mjds, char **event_types, char **events, int size){if (!g_GetVesselEvents) return -4; return g_GetVesselEvents(handle, mjds, event_types, events, size);}
+
+// Cleans the specified recorded events.
+// Returns 0 if successfull
+//		  -4 if library not found
+int OrbiterExtensions::CleanVesselEvents(char **event_types, char **events, int size){if (!g_CleanVesselEvents) return -4; return g_CleanVesselEvents(event_types, events, size);}
