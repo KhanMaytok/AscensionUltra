@@ -119,14 +119,15 @@ void _stdcall RecordEvent(VESSEL *vessel, const char *event_type, const char *ev
 int WriteCode(void *address, void *code, DWORD len)
 {
 	//Get process information
-	HANDLE hSelf = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ::GetCurrentProcessId());
+	HANDLE hSelf = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION, FALSE, ::GetCurrentProcessId());
+	if (hSelf==NULL) return -1;
 	MEMORY_BASIC_INFORMATION mbi;
 
-	//Open up page of linked address
-	if(VirtualQueryEx(hSelf, (LPVOID)address, &mbi, sizeof(mbi)) != sizeof(mbi)) return -1;
+	//Open up page of linked address	
+	if(VirtualQueryEx(hSelf, (LPVOID)address, &mbi, sizeof(mbi)) != sizeof(mbi)) return -2;
 	PVOID pvRgnBaseAddress = mbi.BaseAddress;
 	DWORD dwOldProtect1, dwOldProtect2, dwFake;
-	if(!::VirtualProtectEx(hSelf, pvRgnBaseAddress, 4, PAGE_EXECUTE_READWRITE, &dwOldProtect1)) return -2;
+	if(!::VirtualProtectEx(hSelf, pvRgnBaseAddress, 4, PAGE_EXECUTE_READWRITE, &dwOldProtect1)) return -3;
 	BOOL bStridePage = FALSE;
 	LPBYTE lpByte = (LPBYTE)pvRgnBaseAddress;
 	lpByte += 4096;
@@ -136,7 +137,7 @@ int WriteCode(void *address, void *code, DWORD len)
 	   if(!::VirtualProtectEx(hSelf, pvRgnBaseAddress2, 4, PAGE_EXECUTE_READWRITE, &dwOldProtect2))
 	   {
 		   ::VirtualProtectEx(hSelf, pvRgnBaseAddress, 4, dwOldProtect1, &dwFake);
-			return -3;
+			return -4;
 	   }
 	
 	//Write code
@@ -191,9 +192,8 @@ __declspec(dllexport) int __cdecl InitHook(VESSEL *handle, int hook)
 
 	if (memcmp((void *)g_Original[hook], g_Addresses[hook], 9)!=0) return -2;
 	for(int i=0;i<4;i++) g_Code[hook][5+i] = p.bytes[i];	
-	WriteCode(g_Addresses[hook], (void *)g_Code[hook], 9);
 
-	return 0;
+	return WriteCode(g_Addresses[hook], (void *)g_Code[hook], 9)*10;
 }
 __declspec(dllexport) int __cdecl Init(VESSEL *handle){return InitHook(handle, 0);}
 
