@@ -108,7 +108,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="del ..\..\..\Modules\Startup\AscensionUltraConfigurator.exp&#x0D;&#x0A;del ..\..\..\Modules\Startup\AscensionUltraConfigurator.lib&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration

@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AscensionTower", "Ascension
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{F575913F-C8B4-41B2-83E0-59452056384C}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\Docs\coordinates.xls = ..\..\..\Docs\coordinates.xls
+		..\..\..\Docs\mesh info.txt = ..\..\..\Docs\mesh info.txt
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
