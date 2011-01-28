@@ -116,6 +116,9 @@ private:
 
 	bool coords;
 
+	double disx, disy, disz, stp;
+	int mnr;
+
 };
 
 typedef struct {

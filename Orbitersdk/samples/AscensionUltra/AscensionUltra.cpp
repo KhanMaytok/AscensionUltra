@@ -358,6 +358,13 @@ void AscensionUltra::InitSubObjects()
 	runways.Switch(points[5],points[11],true);
 	runways.Switch(points[6],points[11],true);
 	runways.Switch(points[7],points[11],true);
+
+	//DEBUG
+	disx=0.0;
+	disy=0.0;
+	disz=0.0;
+	stp=10.0;
+	mnr=0;
 }
 // --------------------------------------------------------------
 // Define animation sequences for moving parts
@@ -624,9 +631,40 @@ bool AscensionUltra::clbkLoadGenericCockpit ()
 	return true;
 }
 
+bool clbkBeaconSizeInput (void *id, char *str, void *usrdata)
+{
+	double value1, value2;
+	sscanf(str, "%lf %lf", &value1, &value2);	
+	if (value1<=0.0 || value2<0) return false;
+	BeaconPath *bp=(BeaconPath *)usrdata;
+	for(int i=0;i<TAXIWAYPATHS;i++)
+	{
+		bp[i].SetSize(value1);
+		bp[i].SetFallOff(value2);	
+	}
+	return true;
+}
+
+bool clbkBeaconFallOffInput (void *id, char *str, void *usrdata)
+{
+	double value1, value2, value3, value4;
+	sscanf(str, "%lf %lf %lf %lf", &value1, &value2, &value3, &value4);
+	BeaconPath *bp=(BeaconPath *)usrdata;
+	for(int i=0;i<RUNWAYPATHS;i++)
+	{
+		bp[i].SetPeriod(value1);
+		bp[i].SetDuration(value2);
+		bp[i].SetPropagate(value3);
+		bp[i].SetOffset(value4);
+	}
+	return true;
+}
+
 // Process buffered key events
 int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 {
+	char inputBoxBuffer[81], inputBoxTitle[81];
+	
 	if (!down) return 0; // only process keydown events
 	if (Playback()) return 0; // don't allow manual user input during a playback
 
@@ -636,29 +674,62 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		}
 	} else {
 		switch (key) {
-		case OAPI_KEY_SPACE: // dummy key
-			taxiwayPath[cur_Path].Switch(!taxiwayPath[cur_Path].On());
-			sprintf(oapiDebugString(), "[%d]%s [%d]%s", cur_Path, taxiwayPath[cur_Path].On()?"ON":"off", cur_Section, taxiwaySubsection[cur_Section].On()?"ON":"off");
+		//DEBUG		
+		case OAPI_KEY_1:
+			MoveGroup(mnr, _V(stp, 0, 0));
+			disx+=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
-		case OAPI_KEY_D:
-			if (++cur_Path>=TAXIWAYPATHS) cur_Path=0;
-			sprintf(oapiDebugString(), "[%d]%s [%d]%s", cur_Path, taxiwayPath[cur_Path].On()?"ON":"off", cur_Section, taxiwaySubsection[cur_Section].On()?"ON":"off");
+		case OAPI_KEY_2:
+			MoveGroup(mnr, _V(-stp, 0, 0));
+			disx-=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
-		case OAPI_KEY_S:
-			taxiwayPath[cur_Path].SetPeriod(-taxiwayPath[cur_Path].GetPeriod());
-			sprintf(oapiDebugString(), "[%d]%s [%d]%s", cur_Path, taxiwayPath[cur_Path].On()?"ON":"off", cur_Section, taxiwaySubsection[cur_Section].On()?"ON":"off");
+		case OAPI_KEY_3:
+			MoveGroup(mnr, _V(0, stp, 0));
+			disy+=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
-		case OAPI_KEY_W: // dummy key
-			taxiwaySubsection[cur_Section].Switch(!taxiwaySubsection[cur_Section].On());
-			sprintf(oapiDebugString(), "[%d]%s [%d]%s", cur_Path, taxiwayPath[cur_Path].On()?"ON":"off", cur_Section, taxiwaySubsection[cur_Section].On()?"ON":"off");
+		case OAPI_KEY_4:
+			MoveGroup(mnr, _V(0, -stp, 0));
+			disy-=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
-		case OAPI_KEY_E:
-			if (++cur_Section>=TAXIWAYSUBSECTIONS) cur_Section=0;
-			sprintf(oapiDebugString(), "[%d]%s [%d]%s", cur_Path, taxiwayPath[cur_Path].On()?"ON":"off", cur_Section, taxiwaySubsection[cur_Section].On()?"ON":"off");
+		case OAPI_KEY_5:
+			MoveGroup(mnr, _V(0, 0, stp));
+			disz+=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
 			return 1;
-		case OAPI_KEY_Q:
-			if (--cur_Section<0) cur_Section=TAXIWAYSUBSECTIONS-1;
-			sprintf(oapiDebugString(), "[%d]%s [%d]%s", cur_Path, taxiwayPath[cur_Path].On()?"ON":"off", cur_Section, taxiwaySubsection[cur_Section].On()?"ON":"off");
+		case OAPI_KEY_6:
+			MoveGroup(mnr, _V(0, 0, -stp));
+			disz-=stp;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			return 1;
+		case OAPI_KEY_7:
+			stp/=10.0;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			return 1;
+		case OAPI_KEY_8:
+			stp*=10.0;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			return 1;
+		case OAPI_KEY_9:
+			if (mnr>0) mnr--;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			return 1;
+		case OAPI_KEY_0:
+			mnr++;
+			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
+			return 1;	
+		case OAPI_KEY_U:
+			sprintf(inputBoxTitle, "Taxiway beacon (size,falloff):");
+			sprintf(inputBoxBuffer, "%f  %f", taxiwayPath[0].GetSize(),taxiwayPath[0].GetFallOff());
+			oapiOpenInputBox(inputBoxTitle, clbkBeaconSizeInput, inputBoxBuffer, 80, taxiwayPath);
+			return 1;
+		case OAPI_KEY_I:
+			sprintf(inputBoxTitle, "Runway beacon (period, duration, propagate, offset):");
+			sprintf(inputBoxBuffer, "%f  %f  %f  %f", runwayPath[9].GetPeriod(), runwayPath[9].GetDuration(), runwayPath[9].GetPropagate(), runwayPath[9].GetOffset());
+			oapiOpenInputBox(inputBoxTitle, clbkBeaconFallOffInput, inputBoxBuffer, 80, runwayPath);
 			return 1;
 		case OAPI_KEY_C:
 			coords=!coords;
