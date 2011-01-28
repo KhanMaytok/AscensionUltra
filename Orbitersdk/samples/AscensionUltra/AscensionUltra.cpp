@@ -340,7 +340,7 @@ void AscensionUltra::InitSubObjects()
 
 	taxiways.Switch(true);
 
-	runways.Init(1.4, 0.8, 2, 0.03, 0);
+	runways.Init(1.4, 0.8, 2, 0.12, -0.07);
 	runways.Add(&runwayPath[0], points[4], points[11], false);
 	runways.Add(&runwayPath[2], points[4], points[12], false);
 	runways.Add(&runwayPath[3], points[4], points[13], true);
@@ -349,11 +349,15 @@ void AscensionUltra::InitSubObjects()
 	runways.Add(&runwayPath[5], points[5], points[13], true);
 	runways.Add(&runwayPath[1], points[6], points[11], false);
 	runways.Add(&runwayPath[6], points[6], points[12], false);
-	runways.Add(&runwayPath[7], points[6], points[13], true);
+	runways.Add(&runwayPath[7], points[6], points[13], false);
 	runways.Add(&runwayPath[0], points[7], points[11], false);
 	runways.Add(&runwayPath[8], points[7], points[12], false);
-	runways.Add(&runwayPath[9], points[7], points[13], true);
-	runways.Switch(true);
+	runways.Add(&runwayPath[9], points[7], points[13], false);
+	runways.Switch(false);
+	runways.Switch(points[4],points[11],true);
+	runways.Switch(points[5],points[11],true);
+	runways.Switch(points[6],points[11],true);
+	runways.Switch(points[7],points[11],true);
 }
 // --------------------------------------------------------------
 // Define animation sequences for moving parts

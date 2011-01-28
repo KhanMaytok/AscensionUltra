@@ -379,8 +379,20 @@ void AscensionTowerData::Select(int index)
 	case AscensionTowerState::LandingRunwaySelection:
 		t=ascension->GetRunways();
 		start=t->GetPoint(selectedIndex[state]);
-		for(int i=t->GetPoints(false, start)-1;i>=0;i--) if ((end=t->GetPoint(i, false, start))[0]=='L') break; //Search for endpoint starting with "L" => finding pointer for Lead-in
-		t->Strobe(start, end, !t->Strobing(start,end));		
+		for(int i=t->GetPoints(false, start)-1;i>=0;i--)
+		{
+			end=t->GetPoint(i, false, start);
+			switch (end[0])
+			{
+			case 'L': //pointer for Lead-in
+				t->Switch(start,end, !t->On(start, end));
+				t->Strobe(start, end, !t->Strobing(start,end));
+				break;
+			case 'N': //pointer for Non-static
+				t->Switch(start,end, !t->On(start, end));
+				break;
+			}			
+		}		
 		break;
 	case AscensionTowerState::Rooster:
 		selectedIndex[AscensionTowerState::PersonControl]=selectedIndex[state];
