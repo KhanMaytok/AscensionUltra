@@ -100,7 +100,7 @@ void AscensionUltra::InitSubObjects()
 		lightStorage[i].Init(this, name, i+8, prefix);
 	}
 	strcpy(prefix, "LAUNCHTUNNEL");
-	strcpy(name, "Launch Tunnel");
+	strcpy(name, "Launch Facility");
 	launchTunnel.Init(this, name, 20, prefix);
 
 	strcpy(prefix, "AIRPORT");
@@ -108,7 +108,7 @@ void AscensionUltra::InitSubObjects()
 	airport.Init(this, name, -1, prefix); //TODO: mesh index currently not set
 	crew=airport.GetEntrance()->GetCrew();
 
-	controlRoom=turnAround[0].GetRoom(0);
+	controlRoom=launchTunnel.GetRoom(1); //Tower
 
 	//Initialize Orbiter extensions
 	orbiterExtensionsResult=OrbiterExtensions::Init(this);
@@ -431,6 +431,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetMeshVisibilityMode (AddMesh (meshLaunch = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC_NW"), &(OFFSET+LFMCOFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshLaunchWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC_WO"), &(OFFSET+LFMCOFFSET)), MESHVIS_ALWAYS);
+	launchTunnel.SetPosition(OFFSET+LFMCOFFSET);
 
 	DefineAnimations();
 

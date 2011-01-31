@@ -25,11 +25,12 @@ void LaunchTunnelHangar::DefineAnimations ()
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);	
 	doors[2].Init(owner, "Blast Shield", prefix, 1,
 		new MGROUP_ROTATE(meshIndex, DoorGrp+2, 1,	_V(-189.3,0,47.5), _V(0,1,0), (float)(-90*RAD)));
-	sprintf(prefix, "%sDOOR%d", event_prefix, i++);	
+	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
 	doors[3].Init(owner, "Tunnel Door", prefix, 1,
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1,	_V(-47,0,0)));
 
-	rooms[0].Init(owner, this, "Launch Gate", _V(-115,5,60), _V(0,0,-1), _V(-115,0,50), 20);
+	rooms[0].Init(owner, this, "Control", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
+	rooms[1].Init(owner, this, "Tower", _V(111,218,70), _V(0,0,-1));
 
 	Hangar::DefineAnimations();
 }
@@ -43,3 +44,5 @@ int LaunchTunnelHangar::GetRooms(){return ROOMS;}
 Room *LaunchTunnelHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
 
 bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos){return pos->x>position.x+85 && pos->x<position.x+145 && pos->z<position.z+30 && pos->z>position.z-30;}
+
+void LaunchTunnelHangar::SetPosition(VECTOR3 position){this->position=position;}

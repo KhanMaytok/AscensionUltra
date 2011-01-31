@@ -12,7 +12,7 @@
 #include "Door.h"
 #include "Room.h"
 #define DOORS 4
-#define ROOMS 1
+#define ROOMS 2
 
 class LaunchTunnelHangar:public Hangar
 {
@@ -24,6 +24,7 @@ public:
 	int GetRooms();
 	Room *GetRoom(int index);
 	bool CheckVincinity(VECTOR3 *pos);
+	void SetPosition(VECTOR3 position);
 private:
 	Door doors[DOORS];	
 	Room rooms[ROOMS];	
