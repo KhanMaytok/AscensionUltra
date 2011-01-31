@@ -21,7 +21,7 @@ class Room
 public:
 	Room(void);
 	~Room(void);
-	void Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraPosition, VECTOR3 viewDirection, VECTOR3 doorPosition, int capacity);
+	void Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraPosition, VECTOR3 viewDirection, VECTOR3 doorPosition=_V(0,0,0), int capacity=0);
 	virtual char *GetName();
 	virtual Hangar *GetHangar();
 	UMMUCREWMANAGMENT *GetCrew();
