@@ -30,8 +30,8 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define LIGHTSTORAGEHANGARS 12
 #define TAXIWAYSUBSECTIONS 32
 #define TAXIWAYPATHS 22
-#define RUNWAYSUBSECTIONS 52
-#define RUNWAYPATHS 10
+#define RUNWAYSUBSECTIONS 92
+#define RUNWAYPATHS 16
 
 //Defines for person change API
 #define PERSON_EVA		0x00
