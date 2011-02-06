@@ -175,142 +175,143 @@ void AscensionUltra::InitSubObjects()
 	taxiwayPath[20].Add(&taxiwaySubsection[21]);	taxiwayPath[20].Add(&taxiwaySubsection[13]);	taxiwayPath[20].Add(&taxiwaySubsection[14]);																			
 	taxiwayPath[21].Add(&taxiwaySubsection[21]);	taxiwayPath[21].Add(&taxiwaySubsection[13]);																				
 
-	VECTOR3 runwayLines[MAXSTATICRUNWAYLINES][2]=
-	{
-		//Generated lines by Excel - last comma removed
-		{_V_(1010,0,880), _V_(2410,0,880)},
-		{_V_(2500,0,880), _V_(4415,0,880)},
-		{_V_(4505,0,880), _V_(5275,0,880)},
-		{_V_(1010,0,925), _V_(2410,0,925)},
-		{_V_(2500,0,925), _V_(4415,0,925)},
-		{_V_(4505,0,925), _V_(5275,0,925)},
-		{_V_(1010,0,902.5), _V_(5275,0,902.5)},
-		{_V_(1010,0,1015), _V_(2410,0,1015)},
-		{_V_(2500,0,1015), _V_(4415,0,1015)},
-		{_V_(4505,0,1015), _V_(5275,0,1015)},
-		{_V_(1010,0,1095), _V_(2410,0,1095)},
-		{_V_(2500,0,1095), _V_(4415,0,1095)},
-		{_V_(4505,0,1095), _V_(5275,0,1095)},
-		{_V_(1010,0,1055), _V_(5275,0,1055)}
-	};
-
-	int runwayBeacons[MAXSTATICRUNWAYLINES]=
-	{
-		//Generated lines by Excel - last comma removed
-		70,
-		96,
-		40,
-		70,
-		96,
-		40,
-		285,
-		70,
-		96,
-		40,
-		70,
-		96,
-		40,
-		285
-	};
-
 	//Generated subsection table by Excel
-	runwaySubsection[0].Init(this, _V_(5060,0,890), _V_(5365,0,890), _V(1,1,0), 16);
-	runwaySubsection[1].Init(this, _V_(5060,0,915), _V_(5365,0,915), _V(1,1,0), 16);
-	runwaySubsection[2].Init(this, _V_(920,0,880), _V_(920,0,925), _V(0,0,1), 18);
-	runwaySubsection[3].Init(this, _V_(5365,0,880), _V_(5365,0,925), _V(1,0,0), 9);
-	runwaySubsection[4].Init(this, _V_(5545,0,880), _V_(5545,0,925), _V(1,0,0), 18);
-	runwaySubsection[5].Init(this, _V_(740,0,880), _V_(920,0,880), _V(1,1,0), 18);
-	runwaySubsection[6].Init(this, _V_(740,0,925), _V_(920,0,925), _V(1,1,0), 18);
-	runwaySubsection[7].Init(this, _V_(740,0,902.5), _V_(920,0,902.5), _V(1,1,0), 18);
-	runwaySubsection[8].Init(this, _V_(740,0,895), _V_(920,0,895), _V(1,0,0), 18);
-	runwaySubsection[9].Init(this, _V_(740,0,898), _V_(920,0,898), _V(1,0,0), 18);
-	runwaySubsection[10].Init(this, _V_(740,0,907), _V_(920,0,907), _V(1,0,0), 18);
-	runwaySubsection[11].Init(this, _V_(740,0,910), _V_(920,0,910), _V(1,0,0), 18);
-	runwaySubsection[12].Init(this, _V_(0,0,902.5), _V_(740,0,902.5), _V(1,1,1), 25);
-	runwaySubsection[13].Init(this, _V_(5060,0,1035), _V_(5365,0,1035), _V(1,1,0), 16);
-	runwaySubsection[14].Init(this, _V_(5060,0,1075), _V_(5365,0,1075), _V(1,1,0), 16);
-	runwaySubsection[15].Init(this, _V_(920,0,1015), _V_(920,0,1095), _V(0,0,1), 18);
-	runwaySubsection[16].Init(this, _V_(5365,0,1015), _V_(5365,0,1095), _V(1,0,0), 9);
-	runwaySubsection[17].Init(this, _V_(5545,0,1015), _V_(5545,0,1095), _V(1,0,0), 18);
-	runwaySubsection[18].Init(this, _V_(740,0,1015), _V_(920,0,1015), _V(1,1,0), 18);
-	runwaySubsection[19].Init(this, _V_(740,0,1095), _V_(920,0,1095), _V(1,1,0), 18);
-	runwaySubsection[20].Init(this, _V_(740,0,1055), _V_(920,0,1055), _V(1,1,0), 18);
-	runwaySubsection[21].Init(this, _V_(740,0,1035), _V_(920,0,1035), _V(1,0,0), 18);
-	runwaySubsection[22].Init(this, _V_(740,0,1040), _V_(920,0,1040), _V(1,0,0), 18);
-	runwaySubsection[23].Init(this, _V_(740,0,1070), _V_(920,0,1070), _V(1,0,0), 18);
-	runwaySubsection[24].Init(this, _V_(740,0,1075), _V_(920,0,1075), _V(1,0,0), 18);
-	runwaySubsection[25].Init(this, _V_(0,0,1055), _V_(740,0,1055), _V(1,1,1), 25);
-	runwaySubsection[26].Init(this, _V_(920,0,1025), _V_(1225,0,1025), _V(1,1,0), 16);
-	runwaySubsection[27].Init(this, _V_(920,0,1075), _V_(1225,0,1075), _V(1,1,0), 16);
-	runwaySubsection[28].Init(this, _V_(5365,0,1015), _V_(5365,0,1095), _V(0,0,1), 18);
-	runwaySubsection[29].Init(this, _V_(920,0,1015), _V_(920,0,1095), _V(1,0,0), 9);
-	runwaySubsection[30].Init(this, _V_(740,0,1015), _V_(740,0,1095), _V(1,0,0), 18);
-	runwaySubsection[31].Init(this, _V_(5365,0,1015), _V_(5545,0,1015), _V(1,1,0), 18);
-	runwaySubsection[32].Init(this, _V_(5365,0,1095), _V_(5545,0,1095), _V(1,1,0), 18);
-	runwaySubsection[33].Init(this, _V_(5365,0,1055), _V_(5545,0,1055), _V(1,1,0), 18);
-	runwaySubsection[34].Init(this, _V_(5365,0,1035), _V_(5545,0,1035), _V(1,0,0), 18);
-	runwaySubsection[35].Init(this, _V_(5365,0,1040), _V_(5545,0,1040), _V(1,0,0), 18);
-	runwaySubsection[36].Init(this, _V_(5365,0,1070), _V_(5545,0,1070), _V(1,0,0), 18);
-	runwaySubsection[37].Init(this, _V_(5365,0,1075), _V_(5545,0,1075), _V(1,0,0), 18);
-	runwaySubsection[38].Init(this, _V_(5365,0,1055), _V_(6105,0,1055), _V(1,1,1), 25);
-	runwaySubsection[39].Init(this, _V_(920,0,890), _V_(1225,0,890), _V(1,1,0), 16);
-	runwaySubsection[40].Init(this, _V_(920,0,915), _V_(1225,0,915), _V(1,1,0), 16);
-	runwaySubsection[41].Init(this, _V_(5365,0,880), _V_(5365,0,925), _V(0,0,1), 18);
-	runwaySubsection[42].Init(this, _V_(920,0,880), _V_(920,0,925), _V(1,0,0), 9);
-	runwaySubsection[43].Init(this, _V_(740,0,880), _V_(740,0,925), _V(1,0,0), 18);
-	runwaySubsection[44].Init(this, _V_(5365,0,880), _V_(5545,0,880), _V(1,1,0), 18);
-	runwaySubsection[45].Init(this, _V_(5365,0,925), _V_(5545,0,925), _V(1,1,0), 18);
-	runwaySubsection[46].Init(this, _V_(5365,0,902.5), _V_(5545,0,902.5), _V(1,1,0), 18);
-	runwaySubsection[47].Init(this, _V_(5365,0,895), _V_(5545,0,895), _V(1,0,0), 18);
-	runwaySubsection[48].Init(this, _V_(5365,0,898), _V_(5545,0,898), _V(1,0,0), 18);
-	runwaySubsection[49].Init(this, _V_(5365,0,907), _V_(5545,0,907), _V(1,0,0), 18);
-	runwaySubsection[50].Init(this, _V_(5365,0,910), _V_(5545,0,910), _V(1,0,0), 18);
-	runwaySubsection[51].Init(this, _V_(5365,0,902.5), _V_(6105,0,902.5), _V(1,1,1), 25);
+	runwaySubsection[0].Init(this, _V_(1010,0,880), _V_(2410,0,880), _V(1,1,1), 70);
+	runwaySubsection[1].Init(this, _V_(2500,0,880), _V_(4415,0,880), _V(1,1,1), 96);
+	runwaySubsection[2].Init(this, _V_(4505,0,880), _V_(5275,0,880), _V(1,1,1), 40);
+	runwaySubsection[3].Init(this, _V_(1010,0,925), _V_(2410,0,925), _V(1,1,1), 70);
+	runwaySubsection[4].Init(this, _V_(2500,0,925), _V_(4415,0,925), _V(1,1,1), 96);
+	runwaySubsection[5].Init(this, _V_(4505,0,925), _V_(5275,0,925), _V(1,1,1), 40);
+	runwaySubsection[6].Init(this, _V_(1010,0,902.5), _V_(5275,0,902.5), _V(1,1,1), 300);
+	runwaySubsection[7].Init(this, _V_(1010,0,880), _V_(1010,0,925), _V(0,0,1), 8);
+	runwaySubsection[8].Init(this, _V_(5365,0,880), _V_(5365,0,925), _V(1,0,0), 8);
+	runwaySubsection[9].Init(this, _V_(1010,0,1015), _V_(1010,0,1095), _V(0,0,1), 15);
+	runwaySubsection[10].Init(this, _V_(5365,0,1015), _V_(5365,0,1095), _V(1,0,0), 15);
+	runwaySubsection[11].Init(this, _V_(1010,0,1015), _V_(2410,0,1015), _V(1,1,1), 70);
+	runwaySubsection[12].Init(this, _V_(2500,0,1015), _V_(4415,0,1015), _V(1,1,1), 96);
+	runwaySubsection[13].Init(this, _V_(4505,0,1015), _V_(5275,0,1015), _V(1,1,1), 40);
+	runwaySubsection[14].Init(this, _V_(1010,0,1095), _V_(2410,0,1095), _V(1,1,1), 70);
+	runwaySubsection[15].Init(this, _V_(2500,0,1095), _V_(4415,0,1095), _V(1,1,1), 96);
+	runwaySubsection[16].Init(this, _V_(4505,0,1095), _V_(5275,0,1095), _V(1,1,1), 40);
+	runwaySubsection[17].Init(this, _V_(1010,0,1055), _V_(5275,0,1055), _V(1,1,1), 300);
+	runwaySubsection[18].Init(this, _V_(5275,0,1015), _V_(5275,0,1095), _V(0,0,1), 15);
+	runwaySubsection[19].Init(this, _V_(920,0,1015), _V_(920,0,1095), _V(1,0,0), 15);
+	runwaySubsection[20].Init(this, _V_(5275,0,880), _V_(5275,0,925), _V(0,0,1), 8);
+	runwaySubsection[21].Init(this, _V_(920,0,880), _V_(920,0,925), _V(1,0,0), 8);
+	runwaySubsection[22].Init(this, _V_(5060,0,885), _V_(5365,0,885), _V(1,1,0), 16);
+	runwaySubsection[23].Init(this, _V_(5060,0,920), _V_(5365,0,920), _V(1,1,0), 16);
+	runwaySubsection[24].Init(this, _V_(5545,0,880), _V_(5545,0,925), _V(1,0,0), 13);
+	runwaySubsection[25].Init(this, _V_(740,0,880), _V_(1010,0,880), _V(1,1,0), 18);
+	runwaySubsection[26].Init(this, _V_(740,0,925), _V_(1010,0,925), _V(1,1,0), 18);
+	runwaySubsection[27].Init(this, _V_(740,0,902.5), _V_(1010,0,902.5), _V(1,1,0), 18);
+	runwaySubsection[28].Init(this, _V_(740,0,895), _V_(1010,0,895), _V(1,0,0), 18);
+	runwaySubsection[29].Init(this, _V_(740,0,898), _V_(1010,0,898), _V(1,0,0), 18);
+	runwaySubsection[30].Init(this, _V_(740,0,907), _V_(1010,0,907), _V(1,0,0), 18);
+	runwaySubsection[31].Init(this, _V_(740,0,910), _V_(1010,0,910), _V(1,0,0), 18);
+	runwaySubsection[32].Init(this, _V_(0,0,902.5), _V_(740,0,902.5), _V(1,1,1), 25);
+	runwaySubsection[33].Init(this, _V_(4970,0,1030), _V_(5275,0,1030), _V(1,1,0), 16);
+	runwaySubsection[34].Init(this, _V_(4970,0,1080), _V_(5275,0,1080), _V(1,1,0), 16);
+	runwaySubsection[35].Init(this, _V_(5545,0,1015), _V_(5545,0,1095), _V(1,0,0), 25);
+	runwaySubsection[36].Init(this, _V_(740,0,1015), _V_(1010,0,1015), _V(1,1,0), 18);
+	runwaySubsection[37].Init(this, _V_(740,0,1095), _V_(1010,0,1095), _V(1,1,0), 18);
+	runwaySubsection[38].Init(this, _V_(740,0,1055), _V_(1010,0,1055), _V(1,1,0), 18);
+	runwaySubsection[39].Init(this, _V_(740,0,1035), _V_(1010,0,1035), _V(1,0,0), 18);
+	runwaySubsection[40].Init(this, _V_(740,0,1040), _V_(1010,0,1040), _V(1,0,0), 18);
+	runwaySubsection[41].Init(this, _V_(740,0,1070), _V_(1010,0,1070), _V(1,0,0), 18);
+	runwaySubsection[42].Init(this, _V_(740,0,1075), _V_(1010,0,1075), _V(1,0,0), 18);
+	runwaySubsection[43].Init(this, _V_(0,0,1055), _V_(740,0,1055), _V(1,1,1), 25);
+	runwaySubsection[44].Init(this, _V_(920,0,1030), _V_(1225,0,1030), _V(1,1,0), 16);
+	runwaySubsection[45].Init(this, _V_(920,0,1080), _V_(1225,0,1080), _V(1,1,0), 16);
+	runwaySubsection[46].Init(this, _V_(740,0,1015), _V_(740,0,1095), _V(1,0,0), 25);
+	runwaySubsection[47].Init(this, _V_(5275,0,1015), _V_(5545,0,1015), _V(1,1,0), 18);
+	runwaySubsection[48].Init(this, _V_(5275,0,1095), _V_(5545,0,1095), _V(1,1,0), 18);
+	runwaySubsection[49].Init(this, _V_(5275,0,1055), _V_(5545,0,1055), _V(1,1,0), 18);
+	runwaySubsection[50].Init(this, _V_(5275,0,1035), _V_(5545,0,1035), _V(1,0,0), 18);
+	runwaySubsection[51].Init(this, _V_(5275,0,1040), _V_(5545,0,1040), _V(1,0,0), 18);
+	runwaySubsection[52].Init(this, _V_(5275,0,1070), _V_(5545,0,1070), _V(1,0,0), 18);
+	runwaySubsection[53].Init(this, _V_(5275,0,1075), _V_(5545,0,1075), _V(1,0,0), 18);
+	runwaySubsection[54].Init(this, _V_(5275,0,1055), _V_(6105,0,1055), _V(1,1,1), 25);
+	runwaySubsection[55].Init(this, _V_(1010,0,890), _V_(1315,0,890), _V(1,1,0), 16);
+	runwaySubsection[56].Init(this, _V_(1010,0,915), _V_(1315,0,915), _V(1,1,0), 16);
+	runwaySubsection[57].Init(this, _V_(740,0,880), _V_(740,0,925), _V(1,0,0), 13);
+	runwaySubsection[58].Init(this, _V_(5275,0,880), _V_(5545,0,880), _V(1,1,0), 18);
+	runwaySubsection[59].Init(this, _V_(5275,0,925), _V_(5545,0,925), _V(1,1,0), 18);
+	runwaySubsection[60].Init(this, _V_(5275,0,902.5), _V_(5545,0,902.5), _V(1,1,0), 18);
+	runwaySubsection[61].Init(this, _V_(5275,0,895), _V_(5545,0,895), _V(1,0,0), 18);
+	runwaySubsection[62].Init(this, _V_(5275,0,898), _V_(5545,0,898), _V(1,0,0), 18);
+	runwaySubsection[63].Init(this, _V_(5275,0,907), _V_(5545,0,907), _V(1,0,0), 18);
+	runwaySubsection[64].Init(this, _V_(5275,0,910), _V_(5545,0,910), _V(1,0,0), 18);
+	runwaySubsection[65].Init(this, _V_(5545,0,902.5), _V_(6105,0,902.5), _V(1,1,1), 25);
+	runwaySubsection[66].Init(this, _V_(1145,0,1235), _V_(5733,0,1235), _V(1,1,1), 230);
+	runwaySubsection[67].Init(this, _V_(1145,0,1285), _V_(5733,0,1285), _V(1,1,1), 230);
+	runwaySubsection[68].Init(this, _V_(1145,0,1260), _V_(1735,0,1260), _V(1,1,1), 30);
+	runwaySubsection[69].Init(this, _V_(1145,0,1235), _V_(1145,0,1285), _V(1,0,0), 7);
+	runwaySubsection[70].Init(this, _V_(1282,0,1235), _V_(1282,0,1285), _V(1,0,0), 7);
+	runwaySubsection[71].Init(this, _V_(1389,0,1235), _V_(1389,0,1285), _V(1,0,0), 7);
+	runwaySubsection[72].Init(this, _V_(1502,0,1235), _V_(1502,0,1285), _V(1,0,0), 7);
+	runwaySubsection[73].Init(this, _V_(1738,0,1235), _V_(1738,0,1285), _V(1,0,0), 10);
+	runwaySubsection[74].Init(this, _V_(5738,0,1235), _V_(5738,0,1285), _V(1,0,0), 7);
+	runwaySubsection[75].Init(this, _V_(5744,0,1235), _V_(5744,0,1285), _V(1,0,0), 10);
+	runwaySubsection[76].Init(this, _V_(5430,0,1245), _V_(5738,0,1245), _V(1,1,0), 16);
+	runwaySubsection[77].Init(this, _V_(5430,0,1275), _V_(5738,0,1275), _V(1,1,0), 16);
+	runwaySubsection[78].Init(this, _V_(1145,0,1260), _V_(1502,0,1260), _V(0,1,0), 18);
+	runwaySubsection[79].Init(this, _V_(1502,0,1260), _V_(1738,0,1260), _V(0,1,0), 12);
+	runwaySubsection[80].Init(this, _V_(1738,0,1235), _V_(1738,0,1285), _V(1,0,0), 20);
+	runwaySubsection[81].Init(this, _V_(1738,0,1215), _V_(1738,30,1215), _V(1,0,0), 15);
+	runwaySubsection[82].Init(this, _V_(1738,0,1305), _V_(1738,30,1305), _V(1,0,0), 15);
+	runwaySubsection[83].Init(this, _V_(1738,0,1235), _V_(1738,0,1285), _V(1,0.549019607843137,0), 20);
+	runwaySubsection[84].Init(this, _V_(1738,0,1215), _V_(1738,30,1215), _V(1,0.549019607843137,0), 15);
+	runwaySubsection[85].Init(this, _V_(1738,0,1305), _V_(1738,30,1305), _V(1,0.549019607843137,0), 15);
+	runwaySubsection[86].Init(this, _V_(1511,0,1235), _V_(1511,0,1285), _V(1,0.549019607843137,0), 10);
+	runwaySubsection[87].Init(this, _V_(1738,0,1235), _V_(1738,0,1285), _V(0,1,0), 20);
+	runwaySubsection[88].Init(this, _V_(1738,0,1215), _V_(1738,30,1215), _V(0,1,0), 15);
+	runwaySubsection[89].Init(this, _V_(1738,0,1305), _V_(1738,30,1305), _V(0,1,0), 15);
+	runwaySubsection[90].Init(this, _V_(1738,0,1260), _V_(5738,0,1260), _V(0,1,0), 200);
+	runwaySubsection[91].Init(this, _V_(1189,0,1235), _V_(1189,0,1285), _V(1,0.549019607843137,0), 10);
 
-	runwayPath[0].Init(this, (VECTOR3 *)runwayLines, _V(1,1,1), runwayBeacons, STATICRUNWAYLINESSPLIT);
+	int offsets[RUNWAYPATHS]=
+	{
+		11,					//0		13L/31R Static
+		22,					//1		13R/31L Static
+		25,					//2		13L Take-Off
+		33,					//3		13L Landing
+		36,					//4		13R Take-Off
+		44,					//5		13R Landing
+		47,					//6		31L Take-Off
+		55,					//7		31L Landing
+		58,					//8		31R Take-Off
+		66,					//9		31R Landing
+		78,					//10	Launch Static
+		79,					//11	Launch S2
+		83,					//12	Launch S5
+		87,					//13	Launch S3
+		91,					//14	Launch S4
+		RUNWAYSUBSECTIONS	//15	Launch S1
+	};
 
-	runwayPath[1].Init(this, (VECTOR3 *)(runwayLines+STATICRUNWAYLINESSPLIT), _V(1,1,1), runwayBeacons+STATICRUNWAYLINESSPLIT, MAXSTATICRUNWAYLINES-STATICRUNWAYLINESSPLIT);
-
-	runwayPath[2].Init(this, NULL, _V(0,0,0), NULL, 0);
-	for(int i=0;i<12;i++) runwayPath[2].Add(&runwaySubsection[i]);
-
-	runwayPath[3].Init(this, NULL, _V(0,0,0), NULL, 0);
-	runwayPath[3].Add(&runwaySubsection[12]);
-
-	runwayPath[4].Init(this, NULL, _V(0,0,0), NULL, 0);
-	for(int i=13;i<25;i++) runwayPath[4].Add(&runwaySubsection[i]);
-
-	runwayPath[5].Init(this, NULL, _V(0,0,0), NULL, 0);
-	runwayPath[5].Add(&runwaySubsection[25]);
-
-	runwayPath[6].Init(this, NULL, _V(0,0,0), NULL, 0);
-	for(int i=26;i<38;i++) runwayPath[6].Add(&runwaySubsection[i]);
-
-	runwayPath[7].Init(this, NULL, _V(0,0,0), NULL, 0);
-	runwayPath[7].Add(&runwaySubsection[38]);
-
-	runwayPath[8].Init(this, NULL, _V(0,0,0), NULL, 0);
-	for(int i=39;i<51;i++) runwayPath[8].Add(&runwaySubsection[i]);
-
-	runwayPath[9].Init(this, NULL, _V(0,0,0), NULL, 0);
-	runwayPath[9].Add(&runwaySubsection[51]);
+	int j=0;
+	for(int i=0;i<RUNWAYPATHS;i++)
+	{
+		runwayPath[i].Init(this, NULL, _V(0,0,0), NULL, 0);
+		for(;j<offsets[i];j++) runwayPath[i].Add(&runwaySubsection[j]);
+	}	
 
 	static char *points[RUNWAYENDPOINTS]=
 	{
-		"Launch",
-		"Storage Hangars",
-		"TA Hangars",
-		"Aux Hangars",
-		"Runway 13L",
-		"Runway 13R",
-		"Runway 31L",
-		"Runway 31R",
-		"Airport",
-		"Runway 13L/31R",
-		"Runway 31L/13R",
-		"Static",
-		"Non-Static",
-		"Lead-In"
+		"Launch",			//0
+		"Storage Hangars",	//1
+		"TA Hangars",		//2
+		"Aux Hangars",		//3
+		"Runway 13L",		//4
+		"Runway 13R",		//5
+		"Runway 31L",		//6
+		"Runway 31R",		//7
+		"Airport",			//8
+		"Runway 13L/31R",	//9
+		"Runway 31L/13R",	//10
+		"Static",			//11
+		"Take-Off",			//12
+		"Landing"			//13
 	};
 
 	//Generated subsection table by Excel
@@ -343,21 +344,36 @@ void AscensionUltra::InitSubObjects()
 	runways.Init(0.7, 0.4, 2, 0.12, -0.07);
 	runways.Add(&runwayPath[0], points[4], points[11], false);
 	runways.Add(&runwayPath[2], points[4], points[12], false);
-	runways.Add(&runwayPath[3], points[4], points[13], true);
+	runways.Add(&runwayPath[3], points[4], points[13], false);
 	runways.Add(&runwayPath[1], points[5], points[11], false);
 	runways.Add(&runwayPath[4], points[5], points[12], false);
-	runways.Add(&runwayPath[5], points[5], points[13], true);
+	runways.Add(&runwayPath[5], points[5], points[13], false);
 	runways.Add(&runwayPath[1], points[6], points[11], false);
 	runways.Add(&runwayPath[6], points[6], points[12], false);
 	runways.Add(&runwayPath[7], points[6], points[13], false);
 	runways.Add(&runwayPath[0], points[7], points[11], false);
 	runways.Add(&runwayPath[8], points[7], points[12], false);
 	runways.Add(&runwayPath[9], points[7], points[13], false);
+	runways.Add(&runwayPath[10], points[0], points[11], false);
+	runways.Add(&runwayPath[11], points[0], points[2], false);
+	runways.Add(&runwayPath[12], points[0], points[5], false);
+	runways.Add(&runwayPath[13], points[0], points[3], false);
+	runways.Add(&runwayPath[14], points[0], points[4], false);
+	runways.Add(&runwayPath[15], points[0], points[1], false);
 	runways.Switch(false);
 	runways.Switch(points[4],points[11],true);
 	runways.Switch(points[5],points[11],true);
 	runways.Switch(points[6],points[11],true);
 	runways.Switch(points[7],points[11],true);
+	runways.Switch(points[0],points[11],true);
+
+	int landingStrobes[7]={32,43,54,65,78,79,90};
+	for(int i=0;i<4;i++)
+	{
+		runwaySubsection[landingStrobes[i]].SetPeriod(2);
+		runwaySubsection[landingStrobes[i]].SetDuration(0.12);
+		runwaySubsection[landingStrobes[i]].SetPropagate(-0.07);
+	}
 
 	//DEBUG
 	disx=0.0;
