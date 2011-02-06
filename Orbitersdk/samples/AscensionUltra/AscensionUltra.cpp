@@ -375,12 +375,12 @@ void AscensionUltra::InitSubObjects()
 	runways.Switch(points[7],points[11],true);
 	runways.Switch(points[0],points[11],true);
 
-	int landingStrobes[7]={32,43,54,65,78,79,90};
+	double landingStrobes[7][2]={{32,-2},{43,-2},{54,2},{65,2},{78,2},{79,2},{90,2}};	
 	for(int i=0;i<4;i++)
 	{
-		runwaySubsection[landingStrobes[i]].SetPeriod(2);
-		runwaySubsection[landingStrobes[i]].SetDuration(0.12);
-		runwaySubsection[landingStrobes[i]].SetPropagate(-0.07);
+		runwaySubsection[(int)landingStrobes[i][0]].SetPeriod(landingStrobes[i][1]);
+		runwaySubsection[(int)landingStrobes[i][0]].SetDuration(0.12);
+		runwaySubsection[(int)landingStrobes[i][0]].SetPropagate(-0.07);
 	}
 
 	//DEBUG

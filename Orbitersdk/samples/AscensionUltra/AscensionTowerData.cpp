@@ -232,7 +232,17 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		{
 			Routes *t=ascension->GetRunways();
 			item.Name=t->GetPoint(index);
-			sprintf(text, "%c %s", t->AnyStrobing(item.Name)?'*':' ', item.Name);
+			bool on=false;			
+			for(int i=t->GetPoints(false, item.Name)-1;i>=0;i--)
+			{
+				char *end=t->GetPoint(i, false, item.Name);
+				if (end[0]=='L')
+				{
+					on=t->On(item.Name, end);					
+					break;
+				}
+			}			
+			sprintf(text, "%c %s", on?'*':' ', item.Name);
 		}
 		item.Name=text;
 		return item;
@@ -379,20 +389,31 @@ void AscensionTowerData::Select(int index)
 	case AscensionTowerState::LandingRunwaySelection:
 		t=ascension->GetRunways();
 		start=t->GetPoint(selectedIndex[state]);
-		for(int i=t->GetPoints(false, start)-1;i>=0;i--)
 		{
-			end=t->GetPoint(i, false, start);
-			switch (end[0])
+			int k=t->GetPoints(false, start)-1;
+			for(int i=k;i>=0;i--)
 			{
-			case 'L': //pointer for Lead-in
-				t->Switch(start,end, !t->On(start, end));
-				t->Strobe(start, end, !t->Strobing(start,end));
-				break;
-			case 'N': //pointer for Non-static
-				t->Switch(start,end, !t->On(start, end));
-				break;
-			}			
-		}		
+				end=t->GetPoint(i, false, start);
+				if (end[0]=='L')
+				{
+					bool on=!t->On(start, end);
+					t->Switch(start,end, on);
+					if (on)
+					{
+						for(int i=k;i>=0;i--)
+						{
+							end=t->GetPoint(i, false, start);
+							if (end[0]=='T')
+							{
+								t->Switch(start,end, false);
+								break;
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
 		break;
 	case AscensionTowerState::Roster:
 		selectedIndex[AscensionTowerState::PersonControl]=selectedIndex[state];
