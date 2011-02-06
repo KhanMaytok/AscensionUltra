@@ -131,7 +131,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
 	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
-	case AscensionTowerState::Rooster: return ascension->GetPersons();
+	case AscensionTowerState::Roster: return ascension->GetPersons();
 	case AscensionTowerState::PassengerTransfer:
 		if (ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)!=(Hangar *)object[state])
 		{
@@ -145,7 +145,7 @@ int AscensionTowerData::GetListSize()
 
 AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 {
-	static AscensionTowerListPair mainMenu[4]={{0," Ground Operations"},{1," Air Traffic Control"},{2," Control Rooms"}, {3, " Rooster"}};
+	static AscensionTowerListPair mainMenu[4]={{0," Ground Operations"},{1," Air Traffic Control"},{2," Control Rooms"}, {3, " Roster"}};
 	static AscensionTowerListPair groundMenu[5]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"},{4," Request Passenger Transfer"}};
 	static AscensionTowerListPair atcMenu[3]={{0," Request Bearing"},{1," Request Clearance to Land"},{2," Request Launch Clearance"}};
 	static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};	
@@ -236,7 +236,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		}
 		item.Name=text;
 		return item;
-	case AscensionTowerState::Rooster:
+	case AscensionTowerState::Roster:
 		item.Index=index;
 		{
 			Person person=ascension->GetPerson(index);
@@ -296,7 +296,7 @@ void AscensionTowerData::Select(int index)
 		case 0: SetState(AscensionTowerState::GroundMenu); break;
 		case 1: SetState(AscensionTowerState::ATCMenu); break;
 		case 2: SetState(AscensionTowerState::HangarForRoomSelection); break;
-		case 3: SetState(AscensionTowerState::Rooster); break;
+		case 3: SetState(AscensionTowerState::Roster); break;
 		}		
 		break;
 	case AscensionTowerState::GroundMenu:
@@ -338,7 +338,7 @@ void AscensionTowerData::Select(int index)
 	case AscensionTowerState::RoomForPersonSelection:
 		index=ascension->ChangePerson(selectedIndex[AscensionTowerState::PersonControl], PERSON_LOCATION, ((Hangar *)object[state])->GetRoom(selectedIndex[state]));
 		if (index<0) break; //TODO: denial sound
-		SetState(AscensionTowerState::Rooster);
+		SetState(AscensionTowerState::Roster);
 		Select(index);
 		break;
 	case AscensionTowerState::RoomSelection:		
@@ -394,7 +394,7 @@ void AscensionTowerData::Select(int index)
 			}			
 		}		
 		break;
-	case AscensionTowerState::Rooster:
+	case AscensionTowerState::Roster:
 		selectedIndex[AscensionTowerState::PersonControl]=selectedIndex[state];
 		SetState(AscensionTowerState::PersonControl);
 		break;
@@ -439,9 +439,9 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 			case 4: return "WGT";
 			case 5: return "LOC";
 			case 6: return "";
-			case 7: return selectedIndex[AscensionTowerState::Rooster]>0?"EVA":"";
+			case 7: return selectedIndex[AscensionTowerState::Roster]>0?"EVA":"";
 			case 8: return "";
-			case 9: return selectedIndex[AscensionTowerState::Rooster]>0?"DEL":"";
+			case 9: return selectedIndex[AscensionTowerState::Roster]>0?"DEL":"";
 			case 10: return "";
 			case 11: return "BCK";
 		}
@@ -502,7 +502,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	case AscensionTowerState::GroundMenu: 
 	case AscensionTowerState::ATCMenu:
 	case AscensionTowerState::MainMenu:  target="request"; break;
-	case AscensionTowerState::Rooster: target="person"; break;
+	case AscensionTowerState::Roster: target="person"; break;
 	case AscensionTowerState::HangarForCraneSelection:
 	case AscensionTowerState::HangarForRoomSelection:
 	case AscensionTowerState::HangarForDoorSelection: target="hangar"; break;
@@ -519,7 +519,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		return 12;
 	case AscensionTowerState::PersonControl:
 		for(int i=0;i<12;i++) mnu[i]=personMenu[i];
-		if (selectedIndex[AscensionTowerState::Rooster]==0)
+		if (selectedIndex[AscensionTowerState::Roster]==0)
 		{
 			mnu[7]=personMenu[6];
 			mnu[9]=personMenu[6];
@@ -655,7 +655,7 @@ bool ChangePersonData(void *id, char *str, void *usrdata)
 	AscensionTowerChangePerson *cp=(AscensionTowerChangePerson *)usrdata;
 	AscensionTowerData *data=cp->Data;
 	int index=data->GetAscension()->ChangePerson(data->GetSelectedIndex(), cp->Flags, str);
-	data->SetState(AscensionTowerState::Rooster);
+	data->SetState(AscensionTowerState::Roster);
 	data->Select(index);
 	data->GetMfd()->InvalidateDisplay();
 	return true;
@@ -709,33 +709,33 @@ bool AscensionTowerData::SetKey(DWORD key)
 		{
 		case OAPI_KEY_N:
 			changePerson.Flags=PERSON_NAME;
-			oapiOpenInputBox("Change person name:", ChangePersonData, strncpy(buffer, ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).Name, BUFFERLEN), 26, (void *)&changePerson);
+			oapiOpenInputBox("Change person name:", ChangePersonData, strncpy(buffer, ascension->GetPerson(selectedIndex[AscensionTowerState::Roster]).Name, BUFFERLEN), 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_F:
 			changePerson.Flags=PERSON_MISCID;
-			oapiOpenInputBox("Change function (Crew,Capt,Sek,Vip,Sci,Doc,Tech):", ChangePersonData, strncpy(buffer, ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).MiscId, BUFFERLEN), 26, (void *)&changePerson);
+			oapiOpenInputBox("Change function (Crew,Capt,Sek,Vip,Sci,Doc,Tech):", ChangePersonData, strncpy(buffer, ascension->GetPerson(selectedIndex[AscensionTowerState::Roster]).MiscId, BUFFERLEN), 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_A:
 			changePerson.Flags=PERSON_AGE;
-			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).Age);
+			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Roster]).Age);
 			oapiOpenInputBox("Change person age:", ChangePersonData, buffer, 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_P:
 			changePerson.Flags=PERSON_PULS;
-			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).Puls);
+			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Roster]).Puls);
 			oapiOpenInputBox("Change person puls:", ChangePersonData, buffer, 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_W:
 			changePerson.Flags=PERSON_WEIGHT;
-			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Rooster]).Weight);
+			sprintf(buffer, "%d", ascension->GetPerson(selectedIndex[AscensionTowerState::Roster]).Weight);
 			oapiOpenInputBox("Change person weight:", ChangePersonData, buffer, 26, (void *)&changePerson);
 			break;
 		case OAPI_KEY_L:
 			SetState(AscensionTowerState::HangarForPersonSelection);
 			break;
 		case OAPI_KEY_E:
-			if (selectedIndex[AscensionTowerState::Rooster]==0) return false;
-			switch (ascension->ChangePerson(selectedIndex[AscensionTowerState::Rooster], PERSON_EVA))
+			if (selectedIndex[AscensionTowerState::Roster]==0) return false;
+			switch (ascension->ChangePerson(selectedIndex[AscensionTowerState::Roster], PERSON_EVA))
 			{
 			case ERROR_DOCKEDSHIP_DONOT_USE_UMMU:
 			case ERROR_DOCKED_SHIP_HAVE_AIRLOCK_CLOSED:
@@ -743,14 +743,14 @@ bool AscensionTowerData::SetKey(DWORD key)
 				//TODO: denial sound				
 				break;
 			case EVA_OK:
-				SetState(AscensionTowerState::Rooster);
+				SetState(AscensionTowerState::Roster);
 				break;
 			}			
 			break;
 		case OAPI_KEY_D:
-			if (selectedIndex[AscensionTowerState::Rooster]==0) return false;
-			ascension->ChangePerson(selectedIndex[AscensionTowerState::Rooster], PERSON_DELETE);
-			SetState(AscensionTowerState::Rooster);
+			if (selectedIndex[AscensionTowerState::Roster]==0) return false;
+			ascension->ChangePerson(selectedIndex[AscensionTowerState::Roster], PERSON_DELETE);
+			SetState(AscensionTowerState::Roster);
 			break;
 		case OAPI_KEY_B:
 			Back();
@@ -853,7 +853,7 @@ char *AscensionTowerData::GetTitle()
 	static char *tower=" Tower";
 	static char *ground=" Ground";
 	static char *atc=" ATC";
-	static char *rooster=" Rooster";
+	static char *rooster=" Roster";
 	static char title[57];
 	switch(state)
 	{
@@ -881,7 +881,7 @@ char *AscensionTowerData::GetTitle()
 		break;
 	case AscensionTowerState::HangarForPersonSelection:
 	case AscensionTowerState::RoomForPersonSelection:
-	case AscensionTowerState::Rooster:
+	case AscensionTowerState::Roster:
 	case AscensionTowerState::PersonControl:
 		return GetNameSafeTitle(title, rooster);
 		break;
@@ -903,8 +903,8 @@ char *AscensionTowerData::GetSubtitle()
 	case AscensionTowerState::MainMenu: return "Select request";
 	case AscensionTowerState::GroundMenu: return "Select ground request";
 	case AscensionTowerState::ATCMenu: return "Select ATC request";	
-	case AscensionTowerState::Rooster: return "Select Person";
-	case AscensionTowerState::PersonControl: return selectedIndex[AscensionTowerState::Rooster]>0?"Person Information":"Add new person";
+	case AscensionTowerState::Roster: return "Select Person";
+	case AscensionTowerState::PersonControl: return selectedIndex[AscensionTowerState::Roster]>0?"Person Information":"Add new person";
 	case AscensionTowerState::HangarForDoorSelection: return "Select Hangar for Roll-in/Roll-out";	
 	case AscensionTowerState::DoorSelection: return "Select Door for Roll-in/Roll-out";	
 	case AscensionTowerState::TaxiRouteStartSelection: return "Select Taxi Route Start";
@@ -952,8 +952,8 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::BaseSelect: SetState(AscensionTowerState::BaseSelect);break;	
 	case AscensionTowerState::GroundMenu: SetState(AscensionTowerState::MainMenu);break;
 	case AscensionTowerState::ATCMenu: SetState(AscensionTowerState::MainMenu);break;
-	case AscensionTowerState::Rooster: SetState(AscensionTowerState::MainMenu);break;
-	case AscensionTowerState::PersonControl: SetState(AscensionTowerState::Rooster);break;
+	case AscensionTowerState::Roster: SetState(AscensionTowerState::MainMenu);break;
+	case AscensionTowerState::PersonControl: SetState(AscensionTowerState::Roster);break;
 	case AscensionTowerState::RoomForPersonSelection: SetState(AscensionTowerState::HangarForPersonSelection);break;
 	case AscensionTowerState::HangarForPersonSelection: SetState(AscensionTowerState::PersonControl);break;
 	case AscensionTowerState::HangarForDoorSelection: SetState(AscensionTowerState::GroundMenu);break;

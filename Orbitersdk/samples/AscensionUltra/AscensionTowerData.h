@@ -27,7 +27,7 @@ typedef enum AscensionTowerState
 	Launch,
 	DoorControl,
 	CraneControl,
-	Rooster,
+	Roster,
 	PersonControl,
 	RoomForPersonSelection,
 	HangarForPersonSelection,

@@ -165,7 +165,7 @@ void AscensionTower::Update (HDC hDC)
 	case AscensionTowerState::TaxiRouteStartSelection:
 	case AscensionTowerState::TaxiRouteEndSelection:
 	case AscensionTowerState::LandingRunwaySelection:
-	case AscensionTowerState::Rooster:
+	case AscensionTowerState::Roster:
 	case AscensionTowerState::RoomForPersonSelection:
 	case AscensionTowerState::HangarForPersonSelection:
 	case AscensionTowerState::PassengerTransfer:
