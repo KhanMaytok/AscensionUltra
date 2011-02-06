@@ -21,14 +21,14 @@
 
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
 #define TA1MATRIXOFFSET _V(266,0,0)
-#define TA1OFFSET _V(-2242,0,580)
+#define TA1OFFSET _V(-1710,0,580)
 #define OFFSET _V(2700,0,-950)
 #define _V_(x,y,z) _V(-x,y,z)+OFFSET
-#define LS1OFFSET _V(-855,0,480)
+#define LS1OFFSET _V(-2330,0,670)
 #define LS1MATRIXOFFSET _V(70,0,0)
 #define MAXSTATICRUNWAYLINES 14
 #define STATICRUNWAYLINESSPLIT 7
-#define RUNWAYENDPOINTS 14
+#define RUNWAYENDPOINTS 15
 #define LFMCOFFSET _V(-1463,0,1260)
 
 // ==============================================================
@@ -84,7 +84,7 @@ void AscensionUltra::InitSubObjects()
 	int i;
 	char prefix[14]="HANGARx";
 	char name[40]=" x. Turn-around Hangar";
-	for(i=0;i<5;i++)
+	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
 		prefix[6]=0x30+i;
 		name[1]=0x31+i;
@@ -92,12 +92,12 @@ void AscensionUltra::InitSubObjects()
 	}
 	strcpy(prefix, "LIGHTSTORAGEx");
 	strcpy(name, " x. Light Storage Hangar");
-	for(i=0;i<12;i++)
+	for(i=0;i<LIGHTSTORAGEHANGARS;i++)
 	{
 		prefix[12]=0x30+i;
 		name[1]=0x30+((i+1) % 10);
 		if (i>8) name[0]=0x31;
-		lightStorage[i].Init(this, name, i+8, prefix);
+		lightStorage[i].Init(this, name, i+3+TURNAROUNDHANGARS, prefix);
 	}
 	strcpy(prefix, "LAUNCHTUNNEL");
 	strcpy(name, "Launch Facility");
@@ -116,7 +116,7 @@ void AscensionUltra::InitSubObjects()
 	if ((orbiterExtensionsVersion=OrbiterExtensions::GetVersion())<0) orbiterExtensionsVersion=0.0;
 
 	//Generated subsection table by Excel
-	taxiwaySubsection[0].Init(this, _V_(110,0,395), _V_(940,0,395), _V(0,1,0), 42);
+	taxiwaySubsection[0].Init(this, _V_(254,0,395), _V_(940,0,395), _V(0,1,0), 34);
 	taxiwaySubsection[1].Init(this, _V_(980,0,395), _V_(2430,0,395), _V(0,1,0), 73);
 	taxiwaySubsection[2].Init(this, _V_(2442,0,398), _V_(2452,0,408), _V(0,1,0), 2);
 	taxiwaySubsection[3].Init(this, _V_(2455,0,420), _V_(2455,0,740), _V(0,1,0), 16);
@@ -311,11 +311,12 @@ void AscensionUltra::InitSubObjects()
 		"Runway 31L/13R",	//10
 		"Static",			//11
 		"Take-Off",			//12
-		"Landing"			//13
+		"Landing",			//13
+		"Lease Hangars"		//14
 	};
 
-	//Generated subsection table by Excel
 	taxiways.Init(0.7, 0.4, 2, 0.3, -0.2);
+	//Generated subsection table by Excel
 	taxiways.Add(&taxiwayPath[0], points[1], points[2], true);
 	taxiways.Add(&taxiwayPath[1], points[1], points[3], true);
 	taxiways.Add(&taxiwayPath[2], points[1], points[0], true);
@@ -338,6 +339,13 @@ void AscensionUltra::InitSubObjects()
 	taxiways.Add(&taxiwayPath[19], points[8], points[5], true);
 	taxiways.Add(&taxiwayPath[20], points[8], points[6], true);
 	taxiways.Add(&taxiwayPath[21], points[8], points[7], true);
+	taxiways.Add(&taxiwayPath[0], points[1], points[14], true);
+	taxiways.Add(&taxiwayPath[3], points[14], points[1], true);
+	taxiways.Add(&taxiwayPath[4], points[14], points[3], true);
+	taxiways.Add(&taxiwayPath[5], points[14], points[0], true);
+	taxiways.Add(&taxiwayPath[6], points[3], points[14], true);
+	taxiways.Add(&taxiwayPath[9], points[9], points[14], true);
+	taxiways.Add(&taxiwayPath[13], points[10], points[14], true);
 
 	taxiways.Switch(true);
 
@@ -387,8 +395,8 @@ void AscensionUltra::InitSubObjects()
 // --------------------------------------------------------------
 void AscensionUltra::DefineAnimations ()
 {
-	for(int i=0;i<5;i++) turnAround[i].DefineAnimations();
-	for(int i=0;i<12;i++) lightStorage[i].DefineAnimations();
+	for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].DefineAnimations();
+	for(int i=0;i<LIGHTSTORAGEHANGARS;i++) lightStorage[i].DefineAnimations();
 	launchTunnel.DefineAnimations();
 	airport.DefineAnimations();
 }
@@ -428,24 +436,24 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\TA1-WO");
 	meshLightStorage = oapiLoadMeshGlobal ("AscensionUltra\\LS1-1");
 	
-	double curvoff[5]={-0.02,-0.05,-0.08,-0.12,-0.17};
+	double curvoff[TURNAROUNDHANGARS]={-0.08,-0.12,-0.17};
 
 	InitSubObjects();
 
-	for(int i=0;i<5;i++)
+	for(int i=0;i<TURNAROUNDHANGARS;i++)
 	{
 		VECTOR3 off=OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0);
 		SetMeshVisibilityMode (AddMesh (meshHangar, &off), MESHVIS_ALWAYS);
 		turnAround[i].SetPosition(off);
 	}
-	for(int i=0;i<12;i++)
+	for(int i=0;i<LIGHTSTORAGEHANGARS;i++)
 	{
 		VECTOR3 off=OFFSET+LS1OFFSET+LS1MATRIXOFFSET*i;
 		SetMeshVisibilityMode (AddMesh (meshLightStorage, &off), MESHVIS_ALWAYS);
 		lightStorage[i].SetPosition(off);
 	}
 	SetMeshVisibilityMode (AddMesh (meshLaunch = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC_NW"), &(OFFSET+LFMCOFFSET)), MESHVIS_ALWAYS);
-	for(int i=0;i<5;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
+	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshLaunchWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC_WO"), &(OFFSET+LFMCOFFSET)), MESHVIS_ALWAYS);
 	launchTunnel.SetPosition(OFFSET+LFMCOFFSET);
 
@@ -453,8 +461,8 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 
 	int index=0;
 
-	for(int i=0;i<5;i++) index=turnAround[i].InitActionAreas(crew, index);
-	for(int i=0;i<12;i++) index=lightStorage[i].InitActionAreas(crew, index);
+	for(int i=0;i<TURNAROUNDHANGARS;i++) index=turnAround[i].InitActionAreas(crew, index);
+	for(int i=0;i<LIGHTSTORAGEHANGARS;i++) index=lightStorage[i].InitActionAreas(crew, index);
 }
 
 // Read status from scenario file
@@ -465,11 +473,11 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 	while (oapiReadScenario_nextline (scn, line)) {		
 		if (!strnicmp (line, "HANGAR", 6)) {
 			sscanf (line+6, "%d", &cur_TurnAround);
-		} else if (cur_TurnAround>=0 && cur_TurnAround<5) {
+		} else if (cur_TurnAround>=0 && cur_TurnAround<TURNAROUNDHANGARS) {
 			if (!turnAround[cur_TurnAround].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else if (!strnicmp (line, "LIGHTSTORAGE", 12)) {
 			sscanf (line+12, "%X", &cur_LightStorage);
-		} else if (cur_LightStorage>=0 && cur_LightStorage<12) {
+		} else if (cur_LightStorage>=0 && cur_LightStorage<LIGHTSTORAGEHANGARS) {
 			if (!lightStorage[cur_LightStorage].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else if (!strnicmp (line, "LAUNCHTUNNEL", 12)) {
 			sscanf (line+12, "%X", &cur_LaunchTunnel);
@@ -496,7 +504,7 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	VESSEL2::clbkSaveState (scn);
 
 	// Write custom parameters
-	for(i=0;i<5;i++)
+	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
 		sprintf (cbuf, "%d", i);
 		oapiWriteScenario_string (scn, "HANGAR", cbuf);
@@ -505,7 +513,7 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "HANGAR", cbuf);
 
-	for(i=0;i<12;i++)
+	for(i=0;i<LIGHTSTORAGEHANGARS;i++)
 	{
 		sprintf (cbuf, "%X", i);
 		oapiWriteScenario_string (scn, "LIGHTSTORAGE", cbuf);
@@ -529,8 +537,8 @@ void AscensionUltra::clbkPostCreation ()
 {
 	SetEmptyMass (EMPTY_MASS);
 
-	for(int i=0;i<5;i++) turnAround[i].clbkPostCreation();
-	for(int i=0;i<12;i++) lightStorage[i].clbkPostCreation();
+	for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].clbkPostCreation();
+	for(int i=0;i<LIGHTSTORAGEHANGARS;i++) lightStorage[i].clbkPostCreation();
 	launchTunnel.clbkPostCreation();
 	airport.clbkPostCreation();
 }
@@ -542,13 +550,13 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 	{
 		//Hangar event
 		int hangar=(int)(event_type+6)[0]-0x30;
-		if (hangar>=0 && hangar<5) return turnAround[hangar].clbkPlaybackEvent(simt, event_t, event_type+7, event);
+		if (hangar>=0 && hangar<TURNAROUNDHANGARS) return turnAround[hangar].clbkPlaybackEvent(simt, event_t, event_type+7, event);
 	}
 	if (!strnicmp (event_type, "LIGHTSTORAGE", 12))
 	{
 		//Hangar event
 		int hangar=(int)(event_type+12)[0]-0x30;
-		if (hangar>=0 && hangar<12) return lightStorage[hangar].clbkPlaybackEvent(simt, event_t, event_type+13, event);
+		if (hangar>=0 && hangar<LIGHTSTORAGEHANGARS) return lightStorage[hangar].clbkPlaybackEvent(simt, event_t, event_type+13, event);
 	}
 	if (!strnicmp (event_type, "LAUNCHTUNNEL", 12))
 	{
@@ -567,8 +575,6 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
-	//Rotate light storage hangars
-	for(int i=0;i<12;i++) RotateGroup(i+5+3, PI, _V(0,1,0), _V(0,0,0));
 	//Close tunnel door
 	MESHGROUP_TRANSFORM mt;
 	mt.nmesh=20;
@@ -590,8 +596,8 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
 	//Call post steps of all sub-elements
-	for(int i=0;i<5;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
-	for(int i=0;i<12;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
+	for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
+	for(int i=0;i<LIGHTSTORAGEHANGARS;i++) lightStorage[i].clbkPostStep(simt, simdt, mjd);
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
 	airport.clbkPostStep(simt, simdt, mjd);
 
@@ -622,8 +628,8 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 
 	//Detect activated action area, iterate through sub-items for processing, break on first processor
 	int action=crew->DetectActionAreaActivated();
-	if (action>-1) for(int i=0;i<5;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
-	if (action>-1) for(int i=0;i<12;i++) if (lightStorage[i].ActionAreaActivated(action)) break;
+	if (action>-1) for(int i=0;i<TURNAROUNDHANGARS;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
+	if (action>-1) for(int i=0;i<LIGHTSTORAGEHANGARS;i++) if (lightStorage[i].ActionAreaActivated(action)) break;
 
 	//DEBUG relative position
 	if (coords)
@@ -783,8 +789,8 @@ void AscensionUltra::RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref)
 int AscensionUltra::GetHangars(int type)
 {
 	int count=0;
-	if ((type & HANGARTYPETA)>0) count+=5;
-	if ((type & HANGARTYPELS)>0) count+=12;
+	if ((type & HANGARTYPETA)>0) count+=TURNAROUNDHANGARS;
+	if ((type & HANGARTYPELS)>0) count+=LIGHTSTORAGEHANGARS;
 	if ((type & HANGARTYPELFMC)>0) count+=1;
 	if ((type & HANGARTYPEPORT)>0) count+=1;
 	return count;
