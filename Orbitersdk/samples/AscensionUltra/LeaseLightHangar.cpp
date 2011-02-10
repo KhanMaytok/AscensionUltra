@@ -4,14 +4,14 @@
 //          Copyright (C) 2010 Friedrich Kastner-Masilko
 //                   All rights reserved
 //
-// LightStorageHangar.cpp
-// Class implementation of light storage hangar building.
+// LeaseLightHangar.cpp
+// Class implementation of light lease hangar building.
 // ==============================================================
-#include "LightStorageHangar.h"
+#include "LeaseLightHangar.h"
 
-int LightStorageHangar::GetType(){return HANGARTYPELS;}
+int LeaseLightHangar::GetType(){return HANGARTYPELL;}
 
-void LightStorageHangar::DefineAnimations ()
+void LeaseLightHangar::DefineAnimations ()
 {
 	static UINT DoorGrp[4] = {0,1,2,3};
 	char prefix[20]="";
@@ -27,13 +27,13 @@ void LightStorageHangar::DefineAnimations ()
 	Hangar::DefineAnimations();
 }
 
-int LightStorageHangar::GetDoors(){return DOORS;}
+int LeaseLightHangar::GetDoors(){return DOORS;}
 
-Door *LightStorageHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+Door *LeaseLightHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
 
-void LightStorageHangar::SetPosition(VECTOR3 position){this->position=position;}
+void LeaseLightHangar::SetPosition(VECTOR3 position){this->position=position;}
 
-int LightStorageHangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index)
+int LeaseLightHangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index)
 {
 	VECTOR3 areas[2]={AREA_MAIN, AREA_ACCESS};
 	areaStart=index;
@@ -42,7 +42,7 @@ int LightStorageHangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index)
 	return index;
 }
 
-bool LightStorageHangar::ActionAreaActivated(int action)
+bool LeaseLightHangar::ActionAreaActivated(int action)
 {
 	if (action<areaStart || action>areaEnd) return false;
 	int door=action-areaStart;

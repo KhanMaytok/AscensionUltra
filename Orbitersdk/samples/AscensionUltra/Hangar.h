@@ -12,10 +12,11 @@
 #include "Room.h"
 #include "UMmuSDK.h"
 
-#define HANGARTYPETA 0x01
-#define HANGARTYPELS 0x02
-#define HANGARTYPELFMC 0x04
-#define HANGARTYPEPORT 0x08
+#define HANGARTYPETA	0x01
+#define HANGARTYPELL	0x02
+#define HANGARTYPELFMC	0x04
+#define HANGARTYPEPORT	0x08
+#define HANGARTYPELH	0x10
 
 class Hangar
 {

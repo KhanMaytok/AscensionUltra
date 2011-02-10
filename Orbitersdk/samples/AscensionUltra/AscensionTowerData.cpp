@@ -120,7 +120,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::GroundMenu: return ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)==NULL?4:5;
 	case AscensionTowerState::ATCMenu: return 3;
 	case AscensionTowerState::HangarForDoorSelection:	
-		return ascension->GetHangars(HANGARTYPETA | HANGARTYPELS | HANGARTYPELFMC);
+		return ascension->GetHangars(HANGARTYPETA | HANGARTYPELL | HANGARTYPELFMC | HANGARTYPELH);
 	case AscensionTowerState::HangarForPersonSelection:
 	case AscensionTowerState::HangarForRoomSelection: return ascension->GetHangars(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT);
 	case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HANGARTYPETA);
@@ -163,7 +163,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::DoorControl: return doorMenu[index];
 	case AscensionTowerState::HangarForDoorSelection:
 		item.Index=index;
-		item.Name=ascension->GetHangar(HANGARTYPETA | HANGARTYPELS | HANGARTYPELFMC, index)->GetName();
+		item.Name=ascension->GetHangar(HANGARTYPETA | HANGARTYPELL | HANGARTYPELFMC | HANGARTYPELH, index)->GetName();
 		return item;
 	case AscensionTowerState::DoorSelection:
 		item.Index=index;
@@ -332,7 +332,7 @@ void AscensionTowerData::Select(int index)
 		break;
 	case AscensionTowerState::HangarForDoorSelection:
 		index=selectedIndex[state];
-		object[AscensionTowerState::DoorSelection]=ascension->GetHangar(HANGARTYPETA | HANGARTYPELS | HANGARTYPELFMC, index);
+		object[AscensionTowerState::DoorSelection]=ascension->GetHangar(HANGARTYPETA | HANGARTYPELL | HANGARTYPELFMC | HANGARTYPELH, index);
 		SetState(AscensionTowerState::DoorSelection);		
 		break;
 	case AscensionTowerState::HangarForRoomSelection:

@@ -16,7 +16,8 @@
 #include "orbitersdk.h"
 #include "resource.h"
 #include "TurnAroundHangar.h"
-#include "LightStorageHangar.h"
+#include "LeaseLightHangar.h"
+#include "LeaseHeavyHangar.h"
 #include "LaunchTunnelHangar.h"
 #include "AirportHangar.h"
 #include "Routes.h"
@@ -27,7 +28,8 @@
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
 #define TURNAROUNDHANGARS 3
-#define LIGHTSTORAGEHANGARS 6
+#define LEASELIGHTHANGARS 6
+#define LEASEHEAVYHANGARS 3
 #define TAXIWAYSUBSECTIONS 32
 #define TAXIWAYPATHS 22
 #define RUNWAYSUBSECTIONS 92
@@ -86,9 +88,10 @@ private:
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
-	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLightStorage, meshLaunch, meshLaunchWindow;
+	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLeaseLight, meshLeaseHeavy, meshLaunch, meshLaunchWindow, meshLeaseLightWindow, meshLeaseHeavyWindow;
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
-	LightStorageHangar lightStorage[LIGHTSTORAGEHANGARS];
+	LeaseLightHangar leaseLight[LEASELIGHTHANGARS];
+	LeaseHeavyHangar leaseHeavy[LEASEHEAVYHANGARS];
 	LaunchTunnelHangar launchTunnel;
 	AirportHangar airport;
 	BeaconArray taxiwaySubsection[TAXIWAYSUBSECTIONS];
@@ -107,7 +110,7 @@ private:
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_LightStorage, cur_LaunchTunnel, cur_Airport;
+	int cur_TurnAround, cur_LeaseLight, cur_LeaseHeavy, cur_LaunchTunnel, cur_Airport;
 
 	//DEBUG
 

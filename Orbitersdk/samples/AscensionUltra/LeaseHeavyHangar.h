@@ -4,17 +4,16 @@
 //          Copyright (C) 2010 Friedrich Kastner-Masilko
 //                   All rights reserved
 //
-// LightStorageHangar.h
-// Class definition of light storage hangar building.
+// LeaseHeavyHangar.h
+// Class definition of heavy lease hangar building.
 // ==============================================================
 #pragma once
 #include "Hangar.h"
 #include "Door.h"
-#define DOORS 2
-#define AREA_MAIN _V(14,0,-13.5)
-#define AREA_ACCESS _V(-5.5,0,18.5)
+#define DOORS 1
+#define AREA_MAIN _V(43,0,-49.5)
 
-class LightStorageHangar:public Hangar
+class LeaseHeavyHangar:public Hangar
 {
 public:
 	int GetType();
@@ -25,5 +24,5 @@ public:
 	int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	bool ActionAreaActivated(int action);
 private:
-	Door doors[DOORS];	
+	Door doors[DOORS];
 };

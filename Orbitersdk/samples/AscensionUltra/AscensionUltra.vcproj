@@ -314,7 +314,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LightStorageHangar.cpp"
+				RelativePath=".\LeaseHeavyHangar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LeaseLightHangar.cpp"
 				>
 			</File>
 			<File
@@ -378,7 +382,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LightStorageHangar.h"
+				RelativePath=".\LeaseHeavyHangar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LeaseLightHangar.h"
 				>
 			</File>
 			<File
