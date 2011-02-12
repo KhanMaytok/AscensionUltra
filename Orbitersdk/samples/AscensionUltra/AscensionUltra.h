@@ -109,7 +109,7 @@ private:
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_LeaseLight, cur_LeaseHeavy, cur_LaunchTunnel, cur_Airport;
+	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport;
 
 	//DEBUG
 

@@ -61,8 +61,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	campos            = CAM_GENERIC;
 
 	cur_TurnAround=-1;
-	cur_LeaseLight=-1;
-	cur_LeaseHeavy=-1;
+	cur_Lease=-1;
 	cur_Airport=-1;
 	cur_LaunchTunnel=-1;
 
@@ -93,23 +92,21 @@ void AscensionUltra::InitSubObjects()
 		name[1]=0x31+i;
 		turnAround[i].Init(this, name, i+3, prefix);
 	}
-	strcpy(prefix, "LEASELIGHTx");
-	strcpy(name, " x. Light Lease Hangar");
+	strcpy(prefix, "LEASEx");
+	strcpy(name, " x. Lease Hangar");
 	for(i=0;i<LEASELIGHTHANGARS;i++)
 	{
 		prefix[10]=0x30+i;
 		name[1]=0x30+((i+1) % 10);
 		if (i>8) name[0]=0x31;
 		leaseLight[i].Init(this, name, i+3+TURNAROUNDHANGARS, prefix);
-	}
-	strcpy(prefix, "LEASEHEAVYx");
-	strcpy(name, " x. Heavy Lease Hangar");
-	for(i=0;i<LEASEHEAVYHANGARS;i++)
+	}	
+	for(;i<LEASELIGHTHANGARS+LEASEHEAVYHANGARS;i++)
 	{
 		prefix[10]=0x30+i;
 		name[1]=0x30+((i+1) % 10);
 		if (i>8) name[0]=0x31;
-		leaseHeavy[i].Init(this, name, i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS, prefix);
+		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+3+TURNAROUNDHANGARS, prefix);
 	}
 	strcpy(prefix, "LAUNCHTUNNEL");
 	strcpy(name, "Launch Facility");
@@ -535,14 +532,12 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+6, "%d", &cur_TurnAround);
 		} else if (cur_TurnAround>=0 && cur_TurnAround<TURNAROUNDHANGARS) {
 			if (!turnAround[cur_TurnAround].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "LEASELIGHT", 10)) {
-			sscanf (line+10, "%X", &cur_LeaseLight);
-		} else if (cur_LeaseLight>=0 && cur_LeaseLight<LEASELIGHTHANGARS) {
-			if (!leaseLight[cur_LeaseLight].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "LEASEHEAVY", 10)) {
-			sscanf (line+10, "%X", &cur_LeaseHeavy);
-		} else if (cur_LeaseHeavy>=0 && cur_LeaseHeavy<LEASEHEAVYHANGARS) {
-			if (!leaseHeavy[cur_LeaseHeavy].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (!strnicmp (line, "LEASE", 5)) {
+			sscanf (line+5, "%X", &cur_Lease);
+		} else if (cur_Lease>=0 && cur_Lease<LEASELIGHTHANGARS) {
+			if (!leaseLight[cur_Lease].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (cur_Lease>=LEASELIGHTHANGARS && cur_Lease<LEASELIGHTHANGARS+LEASEHEAVYHANGARS) {
+			if (!leaseHeavy[cur_Lease-LEASELIGHTHANGARS].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else if (!strnicmp (line, "LAUNCHTUNNEL", 12)) {
 			sscanf (line+12, "%X", &cur_LaunchTunnel);
 		} else if (cur_LaunchTunnel>=0 && cur_LaunchTunnel<1) {
@@ -577,23 +572,15 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "HANGAR", cbuf);
 
-	for(i=0;i<LEASELIGHTHANGARS;i++)
+	for(i=0;i<LEASEHEAVYHANGARS+LEASELIGHTHANGARS;i++)
 	{
 		sprintf (cbuf, "%X", i);
-		oapiWriteScenario_string (scn, "LEASELIGHT", cbuf);
-		leaseLight[i].clbkSaveState(scn);
-	}
+		oapiWriteScenario_string (scn, "LEASE", cbuf);
+		if (i<LEASELIGHTHANGARS) leaseLight[i].clbkSaveState(scn);
+		else leaseHeavy[i-LEASELIGHTHANGARS].clbkSaveState(scn);
+	}	
 	sprintf (cbuf, "%X", i);
-	oapiWriteScenario_string (scn, "LEASELIGHT", cbuf);
-
-	for(i=0;i<LEASEHEAVYHANGARS;i++)
-	{
-		sprintf (cbuf, "%X", i);
-		oapiWriteScenario_string (scn, "LEASEHEAVY", cbuf);
-		leaseHeavy[i].clbkSaveState(scn);
-	}
-	sprintf (cbuf, "%X", i);
-	oapiWriteScenario_string (scn, "LEASEHEAVY", cbuf);
+	oapiWriteScenario_string (scn, "LEASE", cbuf);
 
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "0");
 	launchTunnel.clbkSaveState(scn);
@@ -626,18 +613,13 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 		int hangar=(int)(event_type+6)[0]-0x30;
 		if (hangar>=0 && hangar<TURNAROUNDHANGARS) return turnAround[hangar].clbkPlaybackEvent(simt, event_t, event_type+7, event);
 	}
-	if (!strnicmp (event_type, "LEASELIGHT", 10))
+	if (!strnicmp (event_type, "LEASE", 5))
 	{
 		//Hangar event
-		int hangar=(int)(event_type+10)[0]-0x30;
-		if (hangar>=0 && hangar<LEASELIGHTHANGARS) return leaseLight[hangar].clbkPlaybackEvent(simt, event_t, event_type+11, event);
-	}
-	if (!strnicmp (event_type, "LEASEHEAVY", 10))
-	{
-		//Hangar event
-		int hangar=(int)(event_type+10)[0]-0x30;
-		if (hangar>=0 && hangar<LEASEHEAVYHANGARS) return leaseHeavy[hangar].clbkPlaybackEvent(simt, event_t, event_type+11, event);
-	}
+		int hangar=(int)(event_type+5)[0]-0x30;
+		if (hangar>=0 && hangar<LEASELIGHTHANGARS) return leaseLight[hangar].clbkPlaybackEvent(simt, event_t, event_type+6, event);
+		if (hangar>=LEASELIGHTHANGARS && hangar<LEASEHEAVYHANGARS) return leaseHeavy[hangar-LEASELIGHTHANGARS].clbkPlaybackEvent(simt, event_t, event_type+6, event);
+	}	
 	if (!strnicmp (event_type, "LAUNCHTUNNEL", 12))
 	{
 		//Tunnel event
@@ -859,10 +841,10 @@ int AscensionUltra::GetHangars(int type)
 {
 	int count=0;
 	if ((type & HANGARTYPETA)>0) count+=TURNAROUNDHANGARS;
-	if ((type & HANGARTYPELL)>0) count+=LEASELIGHTHANGARS;
+	if ((type & HANGARTYPELL)>0) count+=LEASELIGHTHANGARS;	
+	if ((type & HANGARTYPELH)>0) count+=LEASEHEAVYHANGARS;
 	if ((type & HANGARTYPELFMC)>0) count+=1;
 	if ((type & HANGARTYPEPORT)>0) count+=1;
-	if ((type & HANGARTYPELH)>0) count+=LEASEHEAVYHANGARS;
 	return count;
 }
 
@@ -878,6 +860,11 @@ Hangar *AscensionUltra::GetHangar(int type, int index)
 	{
 		if (index<LEASELIGHTHANGARS) return leaseLight+index;
 		else index-=LEASELIGHTHANGARS;
+	}	
+	if ((type & HANGARTYPELH)>0)
+	{
+		if (index<LEASEHEAVYHANGARS) return leaseHeavy+index;
+		else index-=LEASEHEAVYHANGARS;
 	}
 	if ((type & HANGARTYPELFMC)>0)
 	{
@@ -888,11 +875,6 @@ Hangar *AscensionUltra::GetHangar(int type, int index)
 	{
 		if (index<1) return &airport;
 		else index-=1;
-	}
-	if ((type & HANGARTYPELH)>0)
-	{
-		if (index<LEASEHEAVYHANGARS) return leaseHeavy+index;
-		else index-=LEASEHEAVYHANGARS;
 	}
 	return NULL;
 }
@@ -926,18 +908,18 @@ int AscensionUltra::GetPersons()
 		for(j=0;j<rooms;j++) persons+=leaseLight[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
 	}
 
-	rooms=launchTunnel.GetRooms();
-	for(j=0;j<rooms;j++) persons+=launchTunnel.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
-
-	rooms=airport.GetRooms();
-	for(j=0;j<rooms;j++) persons+=airport.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
-
 	for(i=0;i<LEASEHEAVYHANGARS;i++)
 	{
 		rooms=leaseHeavy[i].GetRooms();
 		for(j=0;j<rooms;j++) persons+=leaseHeavy[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
 	}
 
+	rooms=launchTunnel.GetRooms();
+	for(j=0;j<rooms;j++) persons+=launchTunnel.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
+
+	rooms=airport.GetRooms();
+	for(j=0;j<rooms;j++) persons+=airport.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	
 	return ++persons;	//First entry is always the ADD PERSON entry
 }
 
@@ -963,7 +945,6 @@ Room *AscensionUltra::GetPersonLocation(int &index)
 	Room *room;
 			
 	for(int i=0;i<TURNAROUNDHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &turnAround[i]))!=NULL) return room;
-	//for(int i=0;i<LIGHTSTORAGEHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &lightStorage[i]))!=NULL) return room;
 	if ((room = GetPersonLocationFromHangar(index, &launchTunnel))!=NULL) return room;
 	if ((room = GetPersonLocationFromHangar(index, &airport))!=NULL) return room;
 	
