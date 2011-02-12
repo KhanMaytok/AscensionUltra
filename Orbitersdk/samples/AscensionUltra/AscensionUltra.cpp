@@ -26,7 +26,7 @@
 #define _V_(x,y,z) _V(-x,y,z)+OFFSET
 #define LL1OFFSET _V(-2330,0,670)
 #define LL1MATRIXOFFSET _V(70,0,0)
-#define LH1OFFSET _V(-2315,0,560)
+#define LH1OFFSET _V(-2315,0,577.5)
 #define LH1MATRIXOFFSET _V(160,0,0)
 #define MAXSTATICRUNWAYLINES 14
 #define STATICRUNWAYLINESSPLIT 7
@@ -422,6 +422,41 @@ void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
 	// TODO: draw vessel status	
 }
 
+void RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref)
+{
+	//Rotate all mesh groups of the mesh handle
+	double c=cos(angle);
+	double s=sin(angle);
+	double c1=1-c;
+	MATRIX3 M=_M(	c+v.x*v.x*c1	, v.x*v.y*c1-v.z*s	, v.x*v.z*c1+v.y*s,
+					v.y*v.x*c1+v.z*s, c+v.y*v.y*c1		, v.y*v.z*c1-v.x*s,
+					v.z*v.x*c1-v.y*s, v.z*v.y*c1+v.x*s	, c+v.z*v.z*c1		);
+	int k=oapiMeshGroupCount(mesh);
+	for (int i=0;i<k;i++)
+	{
+		MESHGROUP *m=oapiMeshGroup(mesh, i);
+		DWORD l=m->nVtx;
+		for(DWORD j=0;j<l;j++)
+		{
+			VECTOR3 p=_V(m->Vtx[j].x, m->Vtx[j].y, m->Vtx[j].z);
+			VECTOR3 n=_V(m->Vtx[j].nx, m->Vtx[j].ny, m->Vtx[j].nz);
+			p=mul(M, (p-ref))+ref;
+			n=mul(M, (n-ref))+ref;
+			m->Vtx[j].x=p.x;
+			m->Vtx[j].y=p.y;
+			m->Vtx[j].z=p.z;
+			m->Vtx[j].nx=n.x;
+			m->Vtx[j].ny=n.y;
+			m->Vtx[j].nz=n.z;
+		}
+	}	
+}
+
+void OnLeaseHeavyLoad(MESHHANDLE hMesh, bool firstload)
+{
+	if (firstload) RotateMesh(hMesh, PI, _V(0,1,0), _V(0,0,0));
+}
+
 // Set vessel class parameters
 void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 {
@@ -449,8 +484,8 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_TA-WO");
 	meshLeaseLight = oapiLoadMeshGlobal ("AscensionUltra\\AU_LH-NW");
 	meshLeaseLightWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_LH-WO");
-	meshLeaseHeavy = oapiLoadMeshGlobal ("AscensionUltra\\AU_HH-NW");
-	meshLeaseHeavyWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_HH-WO");
+	meshLeaseHeavy = oapiLoadMeshGlobal ("AscensionUltra\\AU_HH-NW", OnLeaseHeavyLoad);
+	meshLeaseHeavyWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_HH-WO", OnLeaseHeavyLoad);
 	
 	double curvoff[TURNAROUNDHANGARS]={-0.08,-0.12,-0.17};
 
@@ -620,8 +655,6 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
-	//Rotate heavy storage hangars
-	for(int i=0;i<LEASEHEAVYHANGARS;i++) RotateGroup(i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS, PI, _V(0,1,0), _V(0,0,0));
 	//Close tunnel door
 	MESHGROUP_TRANSFORM mt;
 	mt.nmesh=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS;
@@ -818,32 +851,6 @@ void AscensionUltra::MoveGroup(int mesh, VECTOR3 v)
 	mt.nmesh=mesh;
 	mt.transform=mt.TRANSLATE;
 	mt.P.transparam.shift=v;
-	int k=oapiMeshGroupCount(GetMesh(visual, mesh));
-	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
-}
-
-void AscensionUltra::RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref)
-{
-	//Rotate all mesh groups of the mesh handle
-	MATRIX3 m=_M(
-	int k=oapiMeshGroupCount(mesh);
-	for (int i=0;i<k;i++)
-	{
-		MESHGROUP *m=oapiMeshGroup(mesh, i);
-		DWORD l=m->nVtx;
-		for(DWORD j=0;j<l;j++)
-		{
-			VECTOR3 p=_V(m->Vtx[j].x, m->Vtx[j].y, m->Vtx[j].z);
-			VECTOR3 n=_V(m->Vtx[j].nx, m->Vtx[j].ny, m->Vtx[j].nz);
-		}
-
-	}
-	MESHGROUP_TRANSFORM mt;
-	mt.nmesh=mesh;
-	mt.transform=mt.ROTATE;
-	mt.P.rotparam.angle=angle;
-	mt.P.rotparam.axis=v;
-	mt.P.rotparam.ref=ref;
 	int k=oapiMeshGroupCount(GetMesh(visual, mesh));
 	for(mt.ngrp=0;mt.ngrp<k;mt.ngrp++) MeshgroupTransform(visual, mt);	
 }

@@ -81,8 +81,7 @@ public:
 	
 private:
 	void InitSubObjects();
-	void MoveGroup(int mesh, VECTOR3 v);
-	void RotateGroup(int mesh, float angle, VECTOR3 v, VECTOR3 ref);
+	void MoveGroup(int mesh, VECTOR3 v);	
 	Room *GetPersonLocation(int &index);
 	Room* GetPersonLocationFromHangar(int &index, Hangar *hangar);
 
