@@ -324,7 +324,7 @@ void AscensionUltra::InitSubObjects()
 		"Lease Hangars"		//14
 	};
 
-	taxiways.Init(0.7, 0.4, 2, 0.3, -0.2);
+	taxiways.Init(1.4, 0.4, 2, 0.3, -0.2);
 	//Generated subsection table by Excel
 	taxiways.Add(&taxiwayPath[0], points[1], points[2], true);
 	taxiways.Add(&taxiwayPath[1], points[1], points[3], true);
@@ -358,7 +358,7 @@ void AscensionUltra::InitSubObjects()
 
 	taxiways.Switch(true);
 
-	runways.Init(0.7, 0.4, 2, 0.12, -0.07);
+	runways.Init(1.4, 0.4, 2, 0.12, -0.07);
 	runways.Add(&runwayPath[0], points[4], points[11], false);
 	runways.Add(&runwayPath[2], points[4], points[12], false);
 	runways.Add(&runwayPath[3], points[4], points[13], false);

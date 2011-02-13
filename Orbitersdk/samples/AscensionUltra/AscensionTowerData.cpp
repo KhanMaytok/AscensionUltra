@@ -398,18 +398,16 @@ void AscensionTowerData::Select(int index)
 				{
 					bool on=!t->On(start, end);
 					t->Switch(start,end, on);
-					if (on)
+					//Switch landing section, too
+					for(int i=k;i>=0;i--)
 					{
-						for(int i=k;i>=0;i--)
+						end=t->GetPoint(i, false, start);
+						if (end[0]=='T')
 						{
-							end=t->GetPoint(i, false, start);
-							if (end[0]=='T')
-							{
-								t->Switch(start,end, false);
-								break;
-							}
+							t->Switch(start,end, on);
+							break;
 						}
-					}
+					}					
 					break;
 				}
 			}
