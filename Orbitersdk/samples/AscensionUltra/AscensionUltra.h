@@ -31,7 +31,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define LEASELIGHTHANGARS 6
 #define LEASEHEAVYHANGARS 3
 #define TAXIWAYSUBSECTIONS 32
-#define TAXIWAYPATHS 22
+#define TAXIWAYPATHS 24
 #define RUNWAYSUBSECTIONS 92
 #define RUNWAYPATHS 16
 
