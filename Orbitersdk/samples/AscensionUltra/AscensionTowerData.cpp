@@ -130,7 +130,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::DoorControl: return 3;
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
-	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
+	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints()-1; //Do not show launch runway
 	case AscensionTowerState::Roster: return ascension->GetPersons();
 	case AscensionTowerState::PassengerTransfer:
 		if (ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)!=(Hangar *)object[state])
@@ -232,17 +232,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		{
 			Routes *t=ascension->GetRunways();
 			item.Name=t->GetPoint(index);
-			bool on=false;			
-			for(int i=t->GetPoints(false, item.Name)-1;i>=0;i--)
-			{
-				char *end=t->GetPoint(i, false, item.Name);
-				if (end[0]=='L')
-				{
-					on=t->On(item.Name, end);					
-					break;
-				}
-			}			
-			sprintf(text, "%c %s", on?'*':' ', item.Name);
+			sprintf(text, "%c %s", t->On(item.Name, t->GetPoint(2, false, item.Name))?'*':' ', item.Name);
 		}
 		item.Name=text;
 		return item;
@@ -389,28 +379,11 @@ void AscensionTowerData::Select(int index)
 	case AscensionTowerState::LandingRunwaySelection:
 		t=ascension->GetRunways();
 		start=t->GetPoint(selectedIndex[state]);
+		end=t->GetPoint(2, false, start);
 		{
-			int k=t->GetPoints(false, start)-1;
-			for(int i=k;i>=0;i--)
-			{
-				end=t->GetPoint(i, false, start);
-				if (end[0]=='L')
-				{
-					bool on=!t->On(start, end);
-					t->Switch(start,end, on);
-					//Switch landing section, too
-					for(int i=k;i>=0;i--)
-					{
-						end=t->GetPoint(i, false, start);
-						if (end[0]=='T')
-						{
-							t->Switch(start,end, on);
-							break;
-						}
-					}					
-					break;
-				}
-			}
+			bool on=!t->On(start, end);
+			t->Switch(start, end, on);
+			t->Switch(start, t->GetPoint(1, false, start), on);
 		}
 		break;
 	case AscensionTowerState::Roster:
