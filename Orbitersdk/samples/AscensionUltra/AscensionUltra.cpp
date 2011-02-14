@@ -396,6 +396,10 @@ void AscensionUltra::InitSubObjects()
 		runwaySubsection[(int)landingStrobes[i][0]].SetPropagate(-0.07);
 	}
 
+	//Finalize routes with priorities
+	taxiways.PriorityFinalize();
+	runways.PriorityFinalize();
+
 	//DEBUG
 	disx=0.0;
 	disy=0.0;

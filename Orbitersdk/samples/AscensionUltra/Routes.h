@@ -1,6 +1,7 @@
 #pragma once
 #include "orbitersdk.h"
 #include <map>
+#include <vector>
 #include "BeaconPath.h"
 
 struct Route
@@ -9,16 +10,20 @@ struct Route
 	bool Inversed;
 	bool On;
 	bool Strobing;
+	int Priority;
 };
 
 class Routes
 {
 public:
 	~Routes(void);
-	void Add(BeaconPath *beaconPath, const char *start, const char *end, bool inversed);
+	void Add(BeaconPath *beaconPath, const char *start, const char *end, bool inversed, int priority=0);
 	void Clear();
 
 	void Init(double size, double fallOff, double period, double duration, double propagate);
+
+	// Finalize priorities - this will show enumeration sorted according to priority settings
+	void PriorityFinalize();
 
 	// Turn all routes on and off
 	virtual void Switch(bool on);
@@ -56,11 +61,15 @@ public:
 	virtual char *GetPoint(int index, bool isEnd=false, char *fromPoint=NULL);
 	
 private:	
-	std::map<const char *, std::map<const char *, Route *>> links;
-	std::map<const char *, std::map<const char *, Route *>> reverse;
+	std::map<const char *, std::map<const char *, Route *> > links, reverse;
+	const char **starts, **ends;
+	std::map<const char *, const char ** > endsForStarts, startsForEnds;
 	std::map<const char *, Route *> *GetEnds(char const*start);
 	std::map<const char *, Route *> *GetStarts(char const*end);
 	Route *Routes::GetLink(char const*start, char const*end);
 	void Strobe(Route *link, bool on);
 	double size, fallOff, period, duration, propagate;
+	bool prioritiesFinalized;
+	void ClearPriorities();
+	void LinkPriorityFinalize(std::map<const char *, std::map<const char *, Route *>> &links, const char **&starts, std::map<const char *, const char ** > &endsForStarts);
 };

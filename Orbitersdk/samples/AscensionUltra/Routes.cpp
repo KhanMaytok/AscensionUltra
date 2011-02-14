@@ -15,6 +15,18 @@ void Routes::Clear()
 	links.clear();
 	for (std::map<const char *, std::map<const char *, Route *>>::iterator i=reverse.begin();i!=reverse.end();i++) i->second.clear();
 	reverse.clear();
+	ClearPriorities();
+}
+
+void Routes::ClearPriorities()
+{	
+	delete [] starts;
+	delete [] ends;
+	for (std::map<const char *, const char ** >::iterator i=endsForStarts.begin();i!=endsForStarts.end();i++) delete [] i->second;
+	endsForStarts.clear();
+	for (std::map<const char *, const char ** >::iterator i=startsForEnds.begin();i!=startsForEnds.end();i++) delete [] i->second;
+	startsForEnds.clear();
+	prioritiesFinalized=false;
 }
 
 void Routes::Init(double size, double fallOff, double period, double duration, double propagate)
@@ -24,6 +36,9 @@ void Routes::Init(double size, double fallOff, double period, double duration, d
 	this->period=period;
 	this->duration=duration;
 	this->propagate=propagate;
+	this->prioritiesFinalized=false;
+	starts=NULL;
+	ends=NULL;
 }
 
 void Routes::Switch(bool on)
@@ -40,12 +55,13 @@ void Routes::Strobe(bool on)
 			Strobe(j->second, on);
 }
 
-void Routes::Add(BeaconPath *beaconPath, const char *start, const char *end, bool inversed)
+void Routes::Add(BeaconPath *beaconPath, const char *start, const char *end, bool inversed, int priority)
 {
 	Route *link=new Route;
 	link->Path=beaconPath;
 	link->Inversed=inversed;
-	link->Strobing=false;
+	link->Strobing=false;	
+	link->Priority=priority;
 	reverse[end][start]=links[start][end]=link;
 	beaconPath->SetSize(size);
 	beaconPath->SetFallOff(0);
@@ -135,6 +151,11 @@ char *Routes::GetPoint(int index, bool isEnd, char *fromPoint)
 {
 	int points=GetPoints(isEnd, fromPoint);
 	if (index<0 || index>=points) return NULL;
+	if (prioritiesFinalized)
+	{
+		if (fromPoint==NULL) return (char *)(isEnd?ends[index]:starts[index]);
+		return (char *)(isEnd?startsForEnds[fromPoint][index]:endsForStarts[fromPoint][index]);
+	}	
 	if (fromPoint==NULL)
 	{
 		if (index<points/2)
@@ -156,4 +177,46 @@ char *Routes::GetPoint(int index, bool isEnd, char *fromPoint)
 	std::map<const char *, Route *>::reverse_iterator i;		
 	for(i=isEnd?GetStarts(fromPoint)->rbegin():GetEnds(fromPoint)->rbegin();index<points-1;index++) i++;
 	return (char *)i->first;		
+}
+
+void Routes::LinkPriorityFinalize(std::map<const char *, std::map<const char *, Route *>> &links, const char **&starts, std::map<const char *, const char ** > &endsForStarts)
+{
+	struct sortblock
+	{
+		const char *text;
+		int priority;
+	};
+
+	std::vector<sortblock> s;
+	for (std::map<const char *, std::map<const char *, Route *>>::iterator i=links.begin();i!=links.end();i++)
+	{
+		sortblock b;
+		b.priority=i->second.begin()->second->Priority;
+		b.text=i->first;
+		int j=0;
+		for(;j<s.size();j++) if (s[j].priority<b.priority) break;
+		s.insert(s.begin()+j, b);
+		std::vector<sortblock> e;
+		for(std::map<const char *, Route *>::iterator j=i->second.begin();j!=i->second.end();j++)
+		{
+			sortblock b;
+			b.priority=j->second->Priority;
+			b.text=j->first;
+			int k=0;
+			for(;k<e.size();k++) if (e[k].priority<b.priority) break;
+			e.insert(e.begin()+k, b);
+		}
+		const char **l=endsForStarts[b.text]=new const char*[e.size()];
+		for(int j=0;j<e.size();j++) l[j]=e[j].text;
+	}
+	starts=new const char*[s.size()];
+	for(int j=0;j<s.size();j++) starts[j]=s[j].text;
+}
+
+void Routes::PriorityFinalize()
+{
+	ClearPriorities();	
+	LinkPriorityFinalize(links, starts, endsForStarts);	
+	LinkPriorityFinalize(reverse, ends, startsForEnds);	
+	prioritiesFinalized=true;
 }
