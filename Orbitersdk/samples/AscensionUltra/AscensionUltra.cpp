@@ -196,10 +196,10 @@ void AscensionUltra::InitSubObjects()
 	runwaySubsection[6].Init(this, _V_(1010,0,902.5), _V_(5275,0,902.5), _V(1,1,1), 300);
 	runwaySubsection[7].Init(this, _V_(1010,0,880), _V_(1010,0,925), _V(0,0,1), 8);
 	runwaySubsection[8].Init(this, _V_(5365,0,880), _V_(5365,0,925), _V(1,0,0), 8);
-	runwaySubsection[9].Init(this, _V_(1010,0,1015), _V_(1010,0,1095), _V(0,0,1), 15);
-	runwaySubsection[10].Init(this, _V_(5365,0,1015), _V_(5365,0,1095), _V(1,0,0), 15);
-	runwaySubsection[11].Init(this, _V_(5545,0,880), _V_(5545,0,925), _V(1,0,0), 13);
-	runwaySubsection[12].Init(this, _V_(740,0,880), _V_(740,0,925), _V(1,0,0), 13);
+	runwaySubsection[9].Init(this, _V_(5545,0,880), _V_(5545,0,925), _V(1,0,0), 13);
+	runwaySubsection[10].Init(this, _V_(1010,0,1015), _V_(1010,0,1095), _V(0,0,1), 15);
+	runwaySubsection[11].Init(this, _V_(5365,0,1015), _V_(5365,0,1095), _V(1,0,0), 15);
+	runwaySubsection[12].Init(this, _V_(5545,0,1015), _V_(5545,0,1095), _V(1,0,0), 25);
 	runwaySubsection[13].Init(this, _V_(1010,0,1015), _V_(2410,0,1015), _V(1,1,1), 70);
 	runwaySubsection[14].Init(this, _V_(2500,0,1015), _V_(4415,0,1015), _V(1,1,1), 96);
 	runwaySubsection[15].Init(this, _V_(4505,0,1015), _V_(5275,0,1015), _V(1,1,1), 40);
@@ -209,10 +209,10 @@ void AscensionUltra::InitSubObjects()
 	runwaySubsection[19].Init(this, _V_(1010,0,1055), _V_(5275,0,1055), _V(1,1,1), 300);
 	runwaySubsection[20].Init(this, _V_(5275,0,1015), _V_(5275,0,1095), _V(0,0,1), 15);
 	runwaySubsection[21].Init(this, _V_(920,0,1015), _V_(920,0,1095), _V(1,0,0), 15);
-	runwaySubsection[22].Init(this, _V_(5275,0,880), _V_(5275,0,925), _V(0,0,1), 8);
-	runwaySubsection[23].Init(this, _V_(920,0,880), _V_(920,0,925), _V(1,0,0), 8);
-	runwaySubsection[24].Init(this, _V_(5545,0,1015), _V_(5545,0,1095), _V(1,0,0), 25);
-	runwaySubsection[25].Init(this, _V_(740,0,1015), _V_(740,0,1095), _V(1,0,0), 25);
+	runwaySubsection[22].Init(this, _V_(740,0,1015), _V_(740,0,1095), _V(1,0,0), 25);
+	runwaySubsection[23].Init(this, _V_(5275,0,880), _V_(5275,0,925), _V(0,0,1), 8);
+	runwaySubsection[24].Init(this, _V_(920,0,880), _V_(920,0,925), _V(1,0,0), 8);
+	runwaySubsection[25].Init(this, _V_(740,0,880), _V_(740,0,925), _V(1,0,0), 13);
 	runwaySubsection[26].Init(this, _V_(5060,0,885), _V_(5365,0,885), _V(1,1,0), 16);
 	runwaySubsection[27].Init(this, _V_(5060,0,920), _V_(5365,0,920), _V(1,1,0), 16);
 	runwaySubsection[28].Init(this, _V_(740,0,880), _V_(1010,0,880), _V(1,1,0), 18);
@@ -282,22 +282,26 @@ void AscensionUltra::InitSubObjects()
 
 	int offsets[RUNWAYPATHS]=
 	{
-		13,					//0		13L/31R Static
-		26,					//1		13R/31L Static
-		28,					//2		13L Take-Off
-		36,					//3		13L Landing
-		38,					//4		13R Take-Off
-		46,					//5		13R Landing
-		48,					//6		31L Take-Off
-		56,					//7		31L Landing
-		58,					//8		31R Take-Off
-		66,					//9		31R Landing
-		78,					//10	Launch Static
-		79,					//11	Launch S2
-		83,					//12	Launch S5
-		87,					//13	Launch S3
-		91,					//14	Launch S4
-		RUNWAYSUBSECTIONS	//15	Launch S1
+		7,					//0		13L/31R Static
+		10,					//1		13L Static
+		13,					//2		13R Static
+		20,					//3		13R/31L Static
+		23,					//4		31L Static
+		26,					//5		31R Static
+		28,					//6		13L Take-Off
+		36,					//7		13L Landing
+		38,					//8		13R Take-Off
+		46,					//9		13R Landing
+		48,					//10	31L Take-Off
+		56,					//11	31L Landing
+		58,					//12	31R Take-Off
+		66,					//13	31R Landing
+		78,					//14	Launch Static
+		79,					//15	Launch S2
+		83,					//16	Launch S5
+		87,					//17	Launch S3
+		91,					//18	Launch S4
+		RUNWAYSUBSECTIONS	//19	Launch S1
 	};
 
 	int j=0;
@@ -363,30 +367,36 @@ void AscensionUltra::InitSubObjects()
 	taxiways.Switch(true);
 
 	runways.Init(1.4, 0.4, 2, 0.12, -0.07);
-	runways.Add(&runwayPath[0], points[4], points[11], false, 99);
-	runways.Add(&runwayPath[2], points[4], points[12], false, 98);
-	runways.Add(&runwayPath[3], points[4], points[13], false, 97);
-	runways.Add(&runwayPath[1], points[5], points[11], false, 89);
-	runways.Add(&runwayPath[4], points[5], points[12], false, 88);
-	runways.Add(&runwayPath[5], points[5], points[13], false, 87);
-	runways.Add(&runwayPath[1], points[6], points[11], false, 79);
-	runways.Add(&runwayPath[6], points[6], points[12], false, 78);
-	runways.Add(&runwayPath[7], points[6], points[13], false, 77);
-	runways.Add(&runwayPath[0], points[7], points[11], false, 69);
-	runways.Add(&runwayPath[8], points[7], points[12], false, 68);
-	runways.Add(&runwayPath[9], points[7], points[13], false, 67);
-	runways.Add(&runwayPath[10], points[0], points[11], false, 54);
-	runways.Add(&runwayPath[11], points[0], points[1], false, 58);
-	runways.Add(&runwayPath[12], points[0], points[4], false, 55);
-	runways.Add(&runwayPath[13], points[0], points[2], false, 57);
-	runways.Add(&runwayPath[14], points[0], points[3], false, 56);
-	runways.Add(&runwayPath[15], points[0], points[0], false, 59);
+	runways.Add(&runwayPath[0], points[9], points[11], false, 49);
+	runways.Add(&runwayPath[1], points[4], points[11], false, 99);
+	runways.Add(&runwayPath[6], points[4], points[12], false, 98);
+	runways.Add(&runwayPath[7], points[4], points[13], false, 97);
+	runways.Add(&runwayPath[3], points[10], points[11], false, 48);
+	runways.Add(&runwayPath[2], points[5], points[11], false, 89);
+	runways.Add(&runwayPath[8], points[5], points[12], false, 88);
+	runways.Add(&runwayPath[9], points[5], points[13], false, 87);
+	runways.Add(&runwayPath[3], points[10], points[11], false, 47);
+	runways.Add(&runwayPath[4], points[6], points[11], false, 79);
+	runways.Add(&runwayPath[10], points[6], points[12], false, 78);
+	runways.Add(&runwayPath[11], points[6], points[13], false, 77);
+	runways.Add(&runwayPath[0], points[9], points[11], false, 46);
+	runways.Add(&runwayPath[5], points[7], points[11], false, 69);
+	runways.Add(&runwayPath[12], points[7], points[12], false, 68);
+	runways.Add(&runwayPath[13], points[7], points[13], false, 67);
+	runways.Add(&runwayPath[14], points[0], points[11], false, 54);
+	runways.Add(&runwayPath[15], points[0], points[1], false, 58);
+	runways.Add(&runwayPath[16], points[0], points[4], false, 55);
+	runways.Add(&runwayPath[17], points[0], points[2], false, 57);
+	runways.Add(&runwayPath[18], points[0], points[3], false, 56);
+	runways.Add(&runwayPath[19], points[0], points[0], false, 59);
 	runways.Switch(false);
-	runways.Switch(points[4],points[11],true);
-	runways.Switch(points[5],points[11],true);
-	runways.Switch(points[6],points[11],true);
-	runways.Switch(points[7],points[11],true);
-	runways.Switch(points[0],points[11],true);
+	runways.Switch(points[0],points[11],true); //Launch static
+	runways.Switch(points[4],points[11],true); //Runway 13L static
+	runways.Switch(points[5],points[11],true); //Runway 13R static
+	runways.Switch(points[6],points[11],true); //Runway 31L static
+	runways.Switch(points[7],points[11],true); //Runway 31R static
+	runways.Switch(points[9],points[11],true); //Runway 13L/31R static
+	runways.Switch(points[10],points[11],true);//Runway 31L/13R static
 
 	double landingStrobes[7][2]={{35,-2},{45,-2},{55,2},{65,2},{78,2},{79,2},{90,2}};	
 	for(int i=0;i<4;i++)

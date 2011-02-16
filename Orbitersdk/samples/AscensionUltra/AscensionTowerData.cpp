@@ -130,7 +130,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::DoorControl: return 3;
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
-	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints()-1; //Do not show launch runway
+	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints()-3; //Do not show launch runway and statics
 	case AscensionTowerState::Roster: return ascension->GetPersons();
 	case AscensionTowerState::PassengerTransfer:
 		if (ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)!=(Hangar *)object[state])
