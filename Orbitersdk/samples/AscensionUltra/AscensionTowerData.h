@@ -34,7 +34,7 @@ typedef enum AscensionTowerState
 	PassengerTransfer,
 };
 
-typedef struct AscensionTowerListPair
+struct AscensionTowerListPair
 {
 	UINT Index;
 	char *Name;
