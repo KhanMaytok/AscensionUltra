@@ -327,7 +327,7 @@ void AscensionTowerData::Select(int index)
 		break;
 	case AscensionTowerState::HangarForRoomSelection:
 		index=selectedIndex[state];
-		object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HANGARTYPETA | HANGARTYPELFMC, index);
+		object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, index);
 		SetState(AscensionTowerState::RoomSelection);		
 		break;
 	case AscensionTowerState::HangarForPersonSelection:
