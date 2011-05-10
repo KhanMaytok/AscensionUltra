@@ -181,6 +181,9 @@ void AscensionTower::Update (HDC hDC)
 	case AscensionTowerState::CraneList:
 		RenderCraneListPage();
 		break;
+	case AscensionTowerState::CraneGrapple:
+		RenderCraneGrapplePage();
+		break;
 	case AscensionTowerState::PersonControl:
 		RenderPersonPage();
 		break;
@@ -251,6 +254,19 @@ void AscensionTower::RenderCraneListPage()
 	sprintf(line, "Traverse level:");
 	WriteMFD(line, 8, 4);
 	sprintf(line, "Corner point 2:");
+	WriteMFD(line, 10, 4);
+}
+
+void AscensionTower::RenderCraneGrapplePage()
+{
+	SetTextColor(hDC, RGB(255,255,255));
+	Crane* crane=(Crane *)data->GetObject();
+	char line[40];
+	sprintf(line, "Cargo:");
+	WriteMFD(line, 6, 4);
+	sprintf(line, "Type:");
+	WriteMFD(line, 8, 4);
+	sprintf(line, "Weight:");
 	WriteMFD(line, 10, 4);
 }
 

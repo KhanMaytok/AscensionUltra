@@ -350,8 +350,8 @@ void AscensionTowerData::Select(int index)
 		break;
 	case AscensionTowerState::HangarForCraneSelection:
 		object[state]=ascension->GetHangar(HANGARTYPETA, selectedIndex[state]);
-		object[AscensionTowerState::CraneControl]=((TurnAroundHangar *)object[state])->GetCrane();
-		SetState(AscensionTowerState::CraneControl);
+		object[AscensionTowerState::CraneControl]=object[AscensionTowerState::CraneList]=object[AscensionTowerState::CraneGrapple]=((TurnAroundHangar *)object[state])->GetCrane();
+		SetState(AscensionTowerState::CraneGrapple);
 		break;
 	case AscensionTowerState::DoorControl:
 		switch(selection[state])
@@ -428,10 +428,10 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 			case 4: return "Z+";
 			case 5: return "Z-";
 			case 6: return "STP";
-			case 7: return "SPD";
-			case 8: return "CWL";
+			case 7: return "AUT";
+			case 8: return "SPD";			
 			case 9: return "DIR";
-			case 10: return "LST";
+			case 10: return "MOD";
 			case 11: return "BCK";
 		}
 		return NULL;
@@ -444,11 +444,28 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 			case 3: return "Y-";
 			case 4: return "Z+";
 			case 5: return "Z-";
-			case 6: return "TEA";
-			case 7: return "NXT";
-			case 8: return "PRV";
-			case 9: return "AUT";
-			case 10: return "CNT";
+			case 6: return "STP";
+			case 7: return "TEA";
+			case 8: return "NXT";
+			case 9: return "PRV";
+			case 10: return "MOD";
+			case 11: return "BCK";
+		}
+		return NULL;
+	case AscensionTowerState::CraneGrapple:
+		switch (bt)
+		{
+			case 0: return "X+";
+			case 1: return "X-";
+			case 2: return "Y+";
+			case 3: return "Y-";
+			case 4: return "Z+";
+			case 5: return "Z-";
+			case 6: return "STP";
+			case 7: return "";
+			case 8: return "GRP";
+			case 9: return "TYP";
+			case 10: return "MOD";
 			case 11: return "BCK";
 		}
 		return NULL;
@@ -500,10 +517,10 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		{"Move Z axis", "up by step", 'Q'},
 		{"Move Z axis", "down by step", 'E'},
 		{"Toggle step", "size", 'R'},
-		{"Set speed", NULL, 'F'},
-		{"Set crawl", NULL, 'V'},
-		{"Direct key", "command", 'C'},
-		{"Goto list", "page", 'X'},
+		{"Toggle auto", "sequence", 'O'},
+		{"Set speeds", NULL, 'F'},		
+		{"Toggle direct", "command", 'C'},
+		{"Switch mode", "to list", 'M'},
 		{"Go back", NULL, 'B'}};
 	static MFDBUTTONMENU craneListMenu[12] = {
 		craneControlMenu[0],
@@ -512,11 +529,24 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		craneControlMenu[3],
 		craneControlMenu[4],
 		craneControlMenu[5],
+		craneControlMenu[6],
 		{"Teach position", NULL, 'T'},
 		{"Next list", "entry", 'N'},
-		{"Previous list", "entry", 'P'},
-		{"Toggle auto", "sequence", 'O'},
-		{"Goto control", "page", 'X'},
+		{"Previous list", "entry", 'P'},		
+		{"Switch mode", "to cargo", 'M'},
+		{"Go back", NULL, 'B'}};
+	static MFDBUTTONMENU craneGrappleMenu[12] = {
+		craneControlMenu[0],
+		craneControlMenu[1],
+		craneControlMenu[2],
+		craneControlMenu[3],
+		craneControlMenu[4],
+		craneControlMenu[5],
+		craneControlMenu[6],
+		{NULL, NULL, 0},
+		{"Grapple/Release", "cargo", 'G'},
+		{"Toggle cargo", "type", 'T'},		
+		{"Switch mode", "to settings", 'M'},
 		{"Go back", NULL, 'B'}};
 	static MFDBUTTONMENU personMenu[12] = {
 		{"Change person", "name", 'N'},
@@ -555,6 +585,9 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		return 12;
 	case AscensionTowerState::CraneList:
 		for(int i=0;i<12;i++) mnu[i]=craneListMenu[i];
+		return 12;
+	case AscensionTowerState::CraneGrapple:
+		for(int i=0;i<12;i++) mnu[i]=craneGrappleMenu[i];
 		return 12;
 	case AscensionTowerState::PersonControl:
 		for(int i=0;i<12;i++) mnu[i]=personMenu[i];
@@ -647,10 +680,10 @@ bool AscensionTowerData::SetButton(int bt)
 		case 4: return SetKey(OAPI_KEY_Q);
 		case 5: return SetKey(OAPI_KEY_E);
 		case 6: return SetKey(OAPI_KEY_R);
-		case 7: return SetKey(OAPI_KEY_F);
-		case 8: return SetKey(OAPI_KEY_V);
+		case 7: return SetKey(OAPI_KEY_O);
+		case 8: return SetKey(OAPI_KEY_F);
 		case 9: return SetKey(OAPI_KEY_C);
-		case 10: return SetKey(OAPI_KEY_X);
+		case 10: return SetKey(OAPI_KEY_M);
 		case 11: return SetKey(OAPI_KEY_B);	
 		}
 		break;
@@ -663,11 +696,27 @@ bool AscensionTowerData::SetButton(int bt)
 		case 3: return SetKey(OAPI_KEY_S);
 		case 4: return SetKey(OAPI_KEY_Q);
 		case 5: return SetKey(OAPI_KEY_E);
-		case 6: return SetKey(OAPI_KEY_T);
-		case 7: return SetKey(OAPI_KEY_N);
-		case 8: return SetKey(OAPI_KEY_P);
-		case 9: return SetKey(OAPI_KEY_O);
-		case 10: return SetKey(OAPI_KEY_X);
+		case 6: return SetKey(OAPI_KEY_R);
+		case 7: return SetKey(OAPI_KEY_T);
+		case 8: return SetKey(OAPI_KEY_N);
+		case 9: return SetKey(OAPI_KEY_P);
+		case 10: return SetKey(OAPI_KEY_M);
+		case 11: return SetKey(OAPI_KEY_B);	
+		}
+		break;
+	case AscensionTowerState::CraneGrapple:
+		switch(bt)
+		{
+		case 0: return SetKey(OAPI_KEY_A);
+		case 1: return SetKey(OAPI_KEY_D);
+		case 2: return SetKey(OAPI_KEY_W);
+		case 3: return SetKey(OAPI_KEY_S);
+		case 4: return SetKey(OAPI_KEY_Q);
+		case 5: return SetKey(OAPI_KEY_E);
+		case 6: return SetKey(OAPI_KEY_R);
+		case 8: return SetKey(OAPI_KEY_G);
+		case 9: return SetKey(OAPI_KEY_T);
+		case 10: return SetKey(OAPI_KEY_M);
 		case 11: return SetKey(OAPI_KEY_B);	
 		}
 		break;
@@ -742,14 +791,14 @@ bool AscensionTowerData::SetKey(DWORD key)
 			break;
 		case OAPI_KEY_R:
 			break;
-		case OAPI_KEY_F:
+		case OAPI_KEY_O:
 			break;
-		case OAPI_KEY_V:
+		case OAPI_KEY_F:
 			break;
 		case OAPI_KEY_C:
 			((Crane*)GetObject())->StartManual();
 			break;
-		case OAPI_KEY_X:
+		case OAPI_KEY_M:
 			SetState(AscensionTowerState::CraneList);
 			break;
 		case OAPI_KEY_B:
@@ -776,16 +825,48 @@ bool AscensionTowerData::SetKey(DWORD key)
 			break;
 		case OAPI_KEY_E:
 			break;
+		case OAPI_KEY_R:
+			break;
 		case OAPI_KEY_T:
 			break;
 		case OAPI_KEY_N:
 			break;
 		case OAPI_KEY_P:
 			break;
-		case OAPI_KEY_O:
-			((Crane*)GetObject())->StartAuto(0);
+		case OAPI_KEY_M:
+			SetState(AscensionTowerState::CraneGrapple);
 			break;
-		case OAPI_KEY_X:
+		case OAPI_KEY_B:
+			Back();
+			break;
+		default:
+			result=false;
+			break;
+		}
+		return result;
+
+	case AscensionTowerState::CraneGrapple:
+		switch(key)
+		{
+		case OAPI_KEY_A:
+			break;
+		case OAPI_KEY_D:
+			break;
+		case OAPI_KEY_W:
+			break;
+		case OAPI_KEY_S:
+			break;
+		case OAPI_KEY_Q:
+			break;
+		case OAPI_KEY_E:
+			break;
+		case OAPI_KEY_R:
+			break;
+		case OAPI_KEY_G:
+			break;
+		case OAPI_KEY_T:			
+			break;
+		case OAPI_KEY_M:
 			SetState(AscensionTowerState::CraneControl);
 			break;
 		case OAPI_KEY_B:
@@ -965,6 +1046,7 @@ char *AscensionTowerData::GetTitle()
 	case AscensionTowerState::DoorControl:
 	case AscensionTowerState::CraneControl:
 	case AscensionTowerState::CraneList:
+	case AscensionTowerState::CraneGrapple:
 	case AscensionTowerState::PassengerTransfer:
 		return GetNameSafeTitle(title, ground);	
 	case AscensionTowerState::ATCMenu:
@@ -1022,11 +1104,15 @@ char *AscensionTowerData::GetSubtitle()
 			((Door *)object[state])->GetName());
 		return subtitle;
 	case AscensionTowerState::CraneControl:
-		sprintf(subtitle, "%s -> Crane -> Control",
+		sprintf(subtitle, "%s -> Crane -> Settings",
 			((Hangar *)object[AscensionTowerState::HangarForCraneSelection])->GetName());
 		return subtitle;
 	case AscensionTowerState::CraneList:
-		sprintf(subtitle, "%s -> Crane -> Automatic",
+		sprintf(subtitle, "%s -> Crane -> List",
+			((Hangar *)object[AscensionTowerState::HangarForCraneSelection])->GetName());
+		return subtitle;
+	case AscensionTowerState::CraneGrapple:
+		sprintf(subtitle, "%s -> Crane -> Cargo",
 			((Hangar *)object[AscensionTowerState::HangarForCraneSelection])->GetName());
 		return subtitle;
 	case AscensionTowerState::HangarForPersonSelection:
@@ -1060,8 +1146,11 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::TaxiRouteStartSelection: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::TaxiRouteEndSelection: SetState(AscensionTowerState::TaxiRouteStartSelection);break;
 	case AscensionTowerState::HangarForCraneSelection: SetState(AscensionTowerState::GroundMenu);break;
-	case AscensionTowerState::CraneControl: SetState(AscensionTowerState::HangarForCraneSelection);break;
-	case AscensionTowerState::CraneList: SetState(AscensionTowerState::HangarForCraneSelection);break;
+	case AscensionTowerState::CraneControl:
+	case AscensionTowerState::CraneList:
+	case AscensionTowerState::CraneGrapple:
+		SetState(AscensionTowerState::HangarForCraneSelection);
+		break;
 	case AscensionTowerState::PassengerTerminal: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::PassengerTransfer: SetState(AscensionTowerState::GroundMenu);break;
 	case AscensionTowerState::Fueling: SetState(AscensionTowerState::PassengerTerminal);break;

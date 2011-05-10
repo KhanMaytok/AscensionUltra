@@ -41,6 +41,7 @@ private:
 	void RenderDoorControlPage();
 	void RenderCraneControlPage();
 	void RenderCraneListPage();
+	void RenderCraneGrapplePage();
 	void RenderPersonPage();
 };
 
