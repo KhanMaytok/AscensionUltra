@@ -22,7 +22,7 @@ public:
 	void SetCrawl(VECTOR3 speed);
 	void SetMargin(VECTOR3 margin);
 	void SetAutoOverride(double percentage);
-	void StartAuto(int list);
+	virtual void StartAuto(int list);
 	void Stop();
 	virtual void StartManual();
 	void Teach(int waypoint);

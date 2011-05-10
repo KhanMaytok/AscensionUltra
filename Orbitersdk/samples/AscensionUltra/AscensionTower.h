@@ -40,6 +40,7 @@ private:
 	void RenderSelectionPage();
 	void RenderDoorControlPage();
 	void RenderCraneControlPage();
+	void RenderCraneListPage();
 	void RenderPersonPage();
 };
 

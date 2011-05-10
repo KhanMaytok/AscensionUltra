@@ -178,6 +178,9 @@ void AscensionTower::Update (HDC hDC)
 	case AscensionTowerState::CraneControl:
 		RenderCraneControlPage();
 		break;
+	case AscensionTowerState::CraneList:
+		RenderCraneListPage();
+		break;
 	case AscensionTowerState::PersonControl:
 		RenderPersonPage();
 		break;
@@ -235,6 +238,19 @@ void AscensionTower::RenderCraneControlPage()
 	sprintf(line, "Y: %f", pos.y);
 	WriteMFD(line, 8, 4);
 	sprintf(line, "Z: %f", pos.z);
+	WriteMFD(line, 10, 4);
+}
+
+void AscensionTower::RenderCraneListPage()
+{
+	SetTextColor(hDC, RGB(255,255,255));
+	Crane* crane=(Crane *)data->GetObject();
+	char line[40];
+	sprintf(line, "Corner point 1:");
+	WriteMFD(line, 6, 4);
+	sprintf(line, "Traverse level:");
+	WriteMFD(line, 8, 4);
+	sprintf(line, "Corner point 2:");
 	WriteMFD(line, 10, 4);
 }
 
