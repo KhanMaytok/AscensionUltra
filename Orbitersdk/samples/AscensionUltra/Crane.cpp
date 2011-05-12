@@ -23,6 +23,7 @@ void Crane::Init(VESSEL *owner, const char *name, MGROUP_TRANSLATE *X, MGROUP_TR
 	filter=NULL;
 	position=_V(0,0,0);
 	oldcommand=command=_V(0.0,0.0,0.0);
+	for(int i=0;i<WAYPOINTS;i++) waypoints[i]=_V(LISTEMPTY, 0,0);
 }
 
 Crane::~Crane(void)
@@ -37,7 +38,7 @@ void Crane::SetCrawl(VECTOR3 speed){crawl=speed;}
 void Crane::SetMargin(VECTOR3 margin){this->margin=margin;}
 void Crane::SetAutoOverride(double percentage){autoOverride=percentage;}
 
-void Crane::StartAuto(int list)
+void Crane::StartAuto(int waypoint)
 {
 }
 
@@ -58,10 +59,6 @@ void Crane::StartManual()
 	RecordEvent(oldcommand=command=_V(0.0,0.0,0.0));
 	if (filter!=NULL) delete filter;
 	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey, &Crane::Prefilter);
-}
-
-void Crane::Teach(int waypoint)
-{
 }
 
 VECTOR3 Crane::GetPosition()
@@ -216,3 +213,9 @@ void Crane::RecordEvent(VECTOR3 &command)
 }
 
 char *Crane::GetName(){return name;}
+
+int Crane::GetWaypoints(){return WAYPOINTS;}
+
+VECTOR3 Crane::GetWaypoint(int index){return (index>=0 && index<WAYPOINTS)?waypoints[index]:_V(-1,-1,-1);}
+
+void Crane::SetWaypoint(int index, VECTOR3 waypoint){if (index>=0 && index<WAYPOINTS) waypoints[index]=waypoint;}

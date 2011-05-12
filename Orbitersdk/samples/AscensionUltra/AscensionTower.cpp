@@ -197,6 +197,7 @@ void AscensionTower::Update (HDC hDC)
 }
 
 static int AT_BUTTON[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
+static int AT_BUTTONDOUBLED[12]={7,11,15,19,23,26,30,34,38,42,47,51}; //Best choice for certain MFD size in half-height units to display 12 entries
 
 void AscensionTower::RenderSelectionPage()
 {
@@ -246,15 +247,31 @@ void AscensionTower::RenderCraneControlPage()
 
 void AscensionTower::RenderCraneListPage()
 {
-	SetTextColor(hDC, RGB(255,255,255));
-	Crane* crane=(Crane *)data->GetObject();
-	char line[40];
-	sprintf(line, "Corner point 1:");
-	WriteMFD(line, 6, 4);
-	sprintf(line, "Traverse level:");
-	WriteMFD(line, 8, 4);
-	sprintf(line, "Corner point 2:");
-	WriteMFD(line, 10, 4);
+	VECTOR3 pos=((Crane *)data->GetObject())->GetPosition();
+	char line[80];
+	int size=data->GetListSize();
+	int page=data->GetPage();
+	int pages=(size+11)/12;
+	double step=1;
+
+	if (page>=pages)
+	{
+		data->SetPage(page=pages-1);
+		InvalidateButtons();
+	}
+	
+	SelectDefaultFont (hDC, 0);
+	int selection=data->GetSelection();
+	for(int i=0; i+page*12<size && i<12; i++)
+	{
+		AscensionTowerListPair entry=data->GetListItem(i+page*12);
+		WriteMFD(entry.Name, AT_BUTTONDOUBLED[i], 4, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
+		sprintf(line, "%d", entry.Index);
+		WriteMFD(line, AT_BUTTONDOUBLED[i], 1, WRITEMFD_HALFLINES);
+	}
+	
+	sprintf(line, "%6.2f %6.2f %6.2f at %6.2f   p.%d/%d", pos.x, pos.y, pos.z, step, page+1, pages);
+	WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
 }
 
 void AscensionTower::RenderCraneGrapplePage()

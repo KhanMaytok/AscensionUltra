@@ -13,6 +13,16 @@
 #include <vector>
 #include "KeyboardFilter.h"
 
+#define WAYPOINTS 100
+
+#define LISTSTOP	-2
+#define LISTJUMP	-3
+#define LISTPAUSE	-4
+#define LISTGRAPPLE	-5
+#define LISTRELEASE	-6
+#define LISTSPEEDS	-7
+#define LISTEMPTY	-1
+
 class Crane
 {
 public:
@@ -22,10 +32,10 @@ public:
 	void SetCrawl(VECTOR3 speed);
 	void SetMargin(VECTOR3 margin);
 	void SetAutoOverride(double percentage);
-	virtual void StartAuto(int list);
+	virtual void StartAuto(int waypoint);
 	void Stop();
 	virtual void StartManual();
-	void Teach(int waypoint);
+	virtual void SetWaypoint(int index, VECTOR3 waypoint);
 	virtual VECTOR3 GetPosition();
 	void SetPosition(VECTOR3 position);
 	void PostStep (double simt, double simdt, double mjd);
@@ -36,6 +46,8 @@ public:
 	void clbkPostCreation ();
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 	virtual char *GetName();
+	virtual int GetWaypoints();
+	virtual VECTOR3 GetWaypoint(int index);
 
 private:
 	void RecordEvent(VECTOR3 &command);
@@ -54,8 +66,7 @@ private:
 	VECTOR3 oldcommand;
 	VECTOR3 len;
 	double autoOverride;
-	std::vector<int> lists;
-	std::vector<int> waypoints;
+	VECTOR3 waypoints[WAYPOINTS];
 	KeyboardFilter *filter;
 	static int ConsumeDirectKey (void *crane, char *kstate);
 	static void Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam);

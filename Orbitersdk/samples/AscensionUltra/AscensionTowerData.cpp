@@ -128,6 +128,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::RoomForPersonSelection:
 	case AscensionTowerState::RoomSelection: return ((Hangar *)object[state])->GetRooms();
 	case AscensionTowerState::DoorControl: return 3;
+	case AscensionTowerState::CraneList: return ((Crane *)object[state])->GetWaypoints();
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
 	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints()-3; //Do not show launch runway and statics
@@ -208,6 +209,29 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	case AscensionTowerState::HangarForCraneSelection:
 		item.Index=index;
 		item.Name=ascension->GetHangar(HANGARTYPETA, index)->GetName();
+		return item;
+	case AscensionTowerState::CraneList:
+		item.Index=index;
+		{
+			VECTOR3 waypoint=((Crane *)object[state])->GetWaypoint(index);
+			if (waypoint.x<0)
+			{
+				if (waypoint.y<0 && waypoint.z<0)
+									sprintf(text, "OUT OF RANGE");
+				else switch ((int)waypoint.x)
+				{
+				case LISTSTOP:		sprintf(text, "STOP"); break;
+				case LISTJUMP:		sprintf(text, "JUMP %d", (int)waypoint.y); break;
+				case LISTPAUSE:		sprintf(text, "PAUSE %f", waypoint.y); break;
+				case LISTGRAPPLE:	sprintf(text, "GRAPPLE"); break;
+				case LISTRELEASE:	sprintf(text, "RELEASE"); break;
+				case LISTSPEEDS:	sprintf(text, "SPEED %f, CRAWL %f", waypoint.y, waypoint.z); break;
+				case LISTEMPTY:		sprintf(text, ""); break;
+				default:			sprintf(text, "ILLEGAL OPERATION"); break;
+				}
+			} else					sprintf(text, "GOTO %6.2f %6.2f %6.2f", waypoint.x, waypoint.y, waypoint.z);			
+		}
+		item.Name=text;
 		return item;
 	case AscensionTowerState::TaxiRouteStartSelection:
 		item.Index=index;
@@ -828,10 +852,25 @@ bool AscensionTowerData::SetKey(DWORD key)
 		case OAPI_KEY_R:
 			break;
 		case OAPI_KEY_T:
+			Select();
 			break;
 		case OAPI_KEY_N:
+			if (selection[state]<min(size-page[state]*12, 12)-1) selection[state]++;
+			else
+			{
+				if (page[state]<pages-1) page[state]++;
+				else page[state]=0;
+				selection[state]=0;
+			}
 			break;
 		case OAPI_KEY_P:
+			if (selection[state]>0) selection[state]--;
+			else
+			{
+				if (page[state]>0) page[state]--;
+				else page[state]=pages-1;
+				selection[state]=min(size-page[state]*12, 12)-1;
+			}
 			break;
 		case OAPI_KEY_M:
 			SetState(AscensionTowerState::CraneGrapple);
