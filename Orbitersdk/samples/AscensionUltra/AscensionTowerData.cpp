@@ -697,39 +697,7 @@ bool AscensionTowerData::SetButton(int bt)
 	switch(state)
 	{
 	case AscensionTowerState::CraneControl:
-		switch(bt)
-		{
-		case 0: return SetKey(OAPI_KEY_A);
-		case 1: return SetKey(OAPI_KEY_D);
-		case 2: return SetKey(OAPI_KEY_W);
-		case 3: return SetKey(OAPI_KEY_S);
-		case 4: return SetKey(OAPI_KEY_Q);
-		case 5: return SetKey(OAPI_KEY_E);
-		case 6: return SetKey(OAPI_KEY_R);
-		case 7: return SetKey(OAPI_KEY_O);
-		case 8: return SetKey(OAPI_KEY_F);
-		case 9: return SetKey(OAPI_KEY_C);
-		case 10: return SetKey(OAPI_KEY_M);
-		case 11: return SetKey(OAPI_KEY_B);	
-		}
-		break;
 	case AscensionTowerState::CraneList:
-		switch(bt)
-		{
-		case 0: return SetKey(OAPI_KEY_A);
-		case 1: return SetKey(OAPI_KEY_D);
-		case 2: return SetKey(OAPI_KEY_W);
-		case 3: return SetKey(OAPI_KEY_S);
-		case 4: return SetKey(OAPI_KEY_Q);
-		case 5: return SetKey(OAPI_KEY_E);
-		case 6: return SetKey(OAPI_KEY_R);
-		case 7: return SetKey(OAPI_KEY_T);
-		case 8: return SetKey(OAPI_KEY_N);
-		case 9: return SetKey(OAPI_KEY_P);
-		case 10: return SetKey(OAPI_KEY_M);
-		case 11: return SetKey(OAPI_KEY_B);	
-		}
-		break;
 	case AscensionTowerState::CraneGrapple:
 		switch(bt)
 		{
@@ -740,10 +708,38 @@ bool AscensionTowerData::SetButton(int bt)
 		case 4: return SetKey(OAPI_KEY_Q);
 		case 5: return SetKey(OAPI_KEY_E);
 		case 6: return SetKey(OAPI_KEY_R);
-		case 8: return SetKey(OAPI_KEY_G);
-		case 9: return SetKey(OAPI_KEY_T);
-		case 10: return SetKey(OAPI_KEY_M);
-		case 11: return SetKey(OAPI_KEY_B);	
+		case 11: return SetKey(OAPI_KEY_B);
+		default:
+			switch(state)
+			{
+				case AscensionTowerState::CraneControl:
+					switch(bt)
+					{
+					case 7: return SetKey(OAPI_KEY_O);
+					case 8: return SetKey(OAPI_KEY_F);
+					case 9: return SetKey(OAPI_KEY_C);
+					case 10: return SetKey(OAPI_KEY_M);
+					}
+					break;
+				case AscensionTowerState::CraneList:
+					switch(bt)
+					{
+					case 7: return SetKey(OAPI_KEY_T);
+					case 8: return SetKey(OAPI_KEY_N);
+					case 9: return SetKey(OAPI_KEY_P);
+					case 10: return SetKey(OAPI_KEY_M);					
+					}
+					break;
+				case AscensionTowerState::CraneGrapple:
+					switch(bt)
+					{
+					case 8: return SetKey(OAPI_KEY_G);
+					case 9: return SetKey(OAPI_KEY_T);
+					case 10: return SetKey(OAPI_KEY_M);					
+					}
+					break;
+			}
+			break;
 		}
 		break;
 	case AscensionTowerState::PersonControl:
@@ -801,124 +797,124 @@ bool AscensionTowerData::SetKey(DWORD key)
 	switch(state)
 	{
 	case AscensionTowerState::CraneControl:
-		switch(key)
-		{
-		case OAPI_KEY_A:
-			break;
-		case OAPI_KEY_D:
-			break;
-		case OAPI_KEY_W:
-			break;
-		case OAPI_KEY_S:
-			break;
-		case OAPI_KEY_Q:
-			break;
-		case OAPI_KEY_E:
-			break;
-		case OAPI_KEY_R:
-			break;
-		case OAPI_KEY_O:
-			break;
-		case OAPI_KEY_F:
-			break;
-		case OAPI_KEY_C:
-			((Crane*)GetObject())->StartManual();
-			break;
-		case OAPI_KEY_M:
-			SetState(AscensionTowerState::CraneList);
-			break;
-		case OAPI_KEY_B:
-			Back();
-			break;
-		default:
-			result=false;
-			break;
-		}
-		return result;
-
 	case AscensionTowerState::CraneList:
-		pages=(size+9)/10;
-		switch(key)
-		{
-		case OAPI_KEY_A:
-			break;
-		case OAPI_KEY_D:
-			break;
-		case OAPI_KEY_W:
-			break;
-		case OAPI_KEY_S:
-			break;
-		case OAPI_KEY_Q:
-			break;
-		case OAPI_KEY_E:
-			break;
-		case OAPI_KEY_R:
-			break;
-		case OAPI_KEY_T:
-			Select();
-			break;
-		case OAPI_KEY_N:
-			if (selection[state]<min(size-page[state]*10, 10)-1) selection[state]++;
-			else
-			{
-				if (page[state]<pages-1) page[state]++;
-				else page[state]=0;
-				selection[state]=0;
-			}
-			break;
-		case OAPI_KEY_P:
-			if (selection[state]>0) selection[state]--;
-			else
-			{
-				if (page[state]>0) page[state]--;
-				else page[state]=pages-1;
-				selection[state]=min(size-page[state]*10, 10)-1;
-			}
-			break;
-		case OAPI_KEY_M:
-			SetState(AscensionTowerState::CraneGrapple);
-			break;
-		case OAPI_KEY_B:
-			Back();
-			break;
-		default:
-			result=false;
-			break;
-		}
-		return result;
-
 	case AscensionTowerState::CraneGrapple:
-		switch(key)
 		{
-		case OAPI_KEY_A:
-			break;
-		case OAPI_KEY_D:
-			break;
-		case OAPI_KEY_W:
-			break;
-		case OAPI_KEY_S:
-			break;
-		case OAPI_KEY_Q:
-			break;
-		case OAPI_KEY_E:
-			break;
-		case OAPI_KEY_R:
-			break;
-		case OAPI_KEY_G:
-			break;
-		case OAPI_KEY_T:			
-			break;
-		case OAPI_KEY_M:
-			SetState(AscensionTowerState::CraneControl);
-			break;
-		case OAPI_KEY_B:
-			Back();
-			break;
-		default:
-			result=false;
-			break;
+			Crane *crane=(Crane*)GetObject();
+			VECTOR3 pos=crane->GetPosition();
+			switch(key)
+			{
+			case OAPI_KEY_A:
+				pos.x+=step[state];
+				crane->SetPosition(pos);
+				break;
+			case OAPI_KEY_D:
+				pos.x-=step[state];
+				crane->SetPosition(pos);
+				break;
+			case OAPI_KEY_W:
+				pos.y+=step[state];
+				crane->SetPosition(pos);
+				break;
+			case OAPI_KEY_S:
+				pos.y-=step[state];
+				crane->SetPosition(pos);
+				break;
+			case OAPI_KEY_Q:
+				pos.z+=step[state];
+				crane->SetPosition(pos);
+				break;
+			case OAPI_KEY_E:
+				pos.z-=step[state];
+				crane->SetPosition(pos);
+				break;
+			case OAPI_KEY_R:
+				step[state]*=10;
+				if (step[state]>100) step[state]=0.01;
+				step[AscensionTowerState::CraneControl]=step[AscensionTowerState::CraneGrapple]=step[AscensionTowerState::CraneList]=step[state];
+				break;
+			case OAPI_KEY_B:
+				Back();
+				break;
+			default:
+				switch(state)
+				{
+				case AscensionTowerState::CraneControl:
+					switch(key)
+					{		
+					case OAPI_KEY_O:
+						break;
+					case OAPI_KEY_F:
+						break;
+					case OAPI_KEY_C:
+						crane->StartManual();
+						break;
+					case OAPI_KEY_M:
+						SetState(AscensionTowerState::CraneList);
+						break;					
+					default:
+						result=false;
+						break;
+					}
+					break;
+
+				case AscensionTowerState::CraneList:
+					pages=(size+9)/10;
+					switch(key)
+					{		
+					case OAPI_KEY_T:						
+						break;
+					case OAPI_KEY_N:
+						if (selection[state]<min(size-page[state]*10, 10)-1) selection[state]++;
+						else
+						{
+							if (page[state]<pages-1) page[state]++;
+							else page[state]=0;
+							selection[state]=0;
+						}
+						break;
+					case OAPI_KEY_P:
+						if (selection[state]>0) selection[state]--;
+						else
+						{
+							if (page[state]>0) page[state]--;
+							else page[state]=pages-1;
+							selection[state]=min(size-page[state]*10, 10)-1;
+						}
+						break;
+					case OAPI_KEY_M:
+						SetState(AscensionTowerState::CraneGrapple);
+						break;
+					default:
+						result=false;
+						break;
+					}
+					break;
+
+				case AscensionTowerState::CraneGrapple:
+					switch(key)
+					{
+					case OAPI_KEY_G:
+						break;
+					case OAPI_KEY_T:			
+						break;
+					case OAPI_KEY_M:
+						SetState(AscensionTowerState::CraneControl);
+						break;
+					default:
+						result=false;
+						break;
+					}
+					break;
+
+				default:
+					result=false;
+					break;
+				}
+				break;
+			}
+			return result;
 		}
-		return result;
 
 	case AscensionTowerState::PersonControl:
 		switch(key)
