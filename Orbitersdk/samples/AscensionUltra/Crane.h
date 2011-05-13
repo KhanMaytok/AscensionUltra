@@ -37,7 +37,8 @@ public:
 	virtual void StartManual();
 	virtual void SetWaypoint(int index, VECTOR3 waypoint);
 	virtual VECTOR3 GetPosition();
-	void SetPosition(VECTOR3 position);
+	virtual VECTOR3 GetLength();
+	virtual void SetPosition(VECTOR3 position);
 	void PostStep (double simt, double simdt, double mjd);
 	int ConsumeDirectKey (char *kstate);
 	void DefineAnimations();

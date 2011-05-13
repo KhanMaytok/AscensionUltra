@@ -61,10 +61,9 @@ void Crane::StartManual()
 	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey, &Crane::Prefilter);
 }
 
-VECTOR3 Crane::GetPosition()
-{
-	return _V(position.x*len.x, position.y*len.y, position.z*len.z);
-}
+VECTOR3 Crane::GetPosition(){return _V(position.x*len.x, position.y*len.y, position.z*len.z);}
+
+VECTOR3 Crane::GetLength(){return len;}
 
 void Crane::SetPosition(VECTOR3 pos)
 {
