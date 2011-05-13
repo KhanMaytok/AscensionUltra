@@ -197,7 +197,7 @@ void AscensionTower::Update (HDC hDC)
 }
 
 static int AT_BUTTON[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
-static int AT_BUTTONDOUBLED[12]={7,11,15,19,23,26,30,34,38,42,47,51}; //Best choice for certain MFD size in half-height units to display 12 entries
+static int AT_BUTTONDOUBLED[10]={10,14,18,22,26,30,34,38,42,46}; //Best choice for certain MFD size in half-height units to display 10 entries
 
 void AscensionTower::RenderSelectionPage()
 {
@@ -251,9 +251,8 @@ void AscensionTower::RenderCraneListPage()
 	char line[80];
 	int size=data->GetListSize();
 	int page=data->GetPage();
-	int pages=(size+11)/12;
-	double step=1;
-
+	int pages=(size+9)/10;
+	
 	if (page>=pages)
 	{
 		data->SetPage(page=pages-1);
@@ -262,16 +261,19 @@ void AscensionTower::RenderCraneListPage()
 	
 	SelectDefaultFont (hDC, 0);
 	int selection=data->GetSelection();
-	for(int i=0; i+page*12<size && i<12; i++)
+	for(int i=0; i+page*10<size && i<10; i++)
+		WriteMFD(data->GetListItem(i+page*10).Name, AT_BUTTONDOUBLED[i], 4, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));	
+	sprintf(line, "p.%d/%d", page+1, pages);
+	WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
+
+	SetTextColor(hDC, RGB(255,255,255));
+	for(int i=0; i+page*10<size && i<10; i++)
 	{
-		AscensionTowerListPair entry=data->GetListItem(i+page*12);
-		WriteMFD(entry.Name, AT_BUTTONDOUBLED[i], 4, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
-		sprintf(line, "%d", entry.Index);
+		sprintf(line, "%d", i+page*10);
 		WriteMFD(line, AT_BUTTONDOUBLED[i], 1, WRITEMFD_HALFLINES);
 	}
-	
-	sprintf(line, "%6.2f %6.2f %6.2f at %6.2f   p.%d/%d", pos.x, pos.y, pos.z, step, page+1, pages);
-	WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
+	sprintf(line, "%6.2f %6.2f %6.2f @ %6.3f", pos.x, pos.y, pos.z, data->GetStep());
+	WriteMFD(line, 50, -1, WRITEMFD_HALFLINES);
 }
 
 void AscensionTower::RenderCraneGrapplePage()

@@ -837,6 +837,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 		return result;
 
 	case AscensionTowerState::CraneList:
+		pages=(size+9)/10;
 		switch(key)
 		{
 		case OAPI_KEY_A:
@@ -857,7 +858,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 			Select();
 			break;
 		case OAPI_KEY_N:
-			if (selection[state]<min(size-page[state]*12, 12)-1) selection[state]++;
+			if (selection[state]<min(size-page[state]*10, 10)-1) selection[state]++;
 			else
 			{
 				if (page[state]<pages-1) page[state]++;
@@ -871,7 +872,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 			{
 				if (page[state]>0) page[state]--;
 				else page[state]=pages-1;
-				selection[state]=min(size-page[state]*12, 12)-1;
+				selection[state]=min(size-page[state]*10, 10)-1;
 			}
 			break;
 		case OAPI_KEY_M:
