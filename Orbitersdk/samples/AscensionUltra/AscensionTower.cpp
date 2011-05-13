@@ -272,7 +272,7 @@ void AscensionTower::RenderCraneListPage()
 		sprintf(line, "%d", i+page*10);
 		WriteMFD(line, AT_BUTTONDOUBLED[i], 1, WRITEMFD_HALFLINES);
 	}
-	sprintf(line, "%6.2f %6.2f %6.2f @ %6.3f", pos.x, pos.y, pos.z, data->GetStep());
+	sprintf(line, "%6.2f %6.2f %6.2f @ %6.2f", pos.x, pos.y, pos.z, data->GetStep());
 	WriteMFD(line, 50, -1, WRITEMFD_HALFLINES);
 }
 
