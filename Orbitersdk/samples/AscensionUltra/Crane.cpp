@@ -35,7 +35,6 @@ Crane::~Crane(void)
 
 void Crane::SetSpeed(VECTOR3 speed){this->speed=speed;}
 void Crane::SetCrawl(VECTOR3 speed){crawl=speed;}
-void Crane::SetMargin(VECTOR3 margin){this->margin=margin;}
 void Crane::SetAutoOverride(double percentage){autoOverride=percentage;}
 
 void Crane::StartAuto(int waypoint)

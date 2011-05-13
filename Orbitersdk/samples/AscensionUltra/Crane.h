@@ -30,7 +30,6 @@ public:
 	void Init(VESSEL *owner, const char *name, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix);
 	void SetSpeed(VECTOR3 speed);
 	void SetCrawl(VECTOR3 speed);
-	void SetMargin(VECTOR3 margin);
 	void SetAutoOverride(double percentage);
 	virtual void StartAuto(int waypoint);
 	void Stop();
