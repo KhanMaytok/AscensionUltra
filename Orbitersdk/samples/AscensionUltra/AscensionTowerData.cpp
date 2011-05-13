@@ -12,6 +12,7 @@ AscensionTowerData::AscensionTowerData(MFD* mfd, VESSEL *vessel)
 		selection[i]=0;
 		selectedIndex[i]=0;
 		object[i]=NULL;
+		step[i]=1.0;
 	}
 	state=AscensionTowerState::MainMenu;
 	changePerson.Data=this;
@@ -60,6 +61,7 @@ AscensionUltra *AscensionTowerData::GetAscension()
 	return ascension;
 }
 
+double AscensionTowerData::GetStep(){return step[state];}
 int AscensionTowerData::GetPage(){return page[state];}
 void AscensionTowerData::SetPage(int page){this->page[state]=page;}
 

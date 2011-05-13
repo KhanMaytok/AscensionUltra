@@ -56,6 +56,7 @@ public:
 	AscensionTowerData(MFD *mfd, VESSEL *vessel);
 	~AscensionTowerData(void);
 	AscensionUltra *GetAscension();	
+	double GetStep();
 	int GetPage();
 	int GetListSize();
 	AscensionTowerListPair GetListItem(int index);
@@ -83,6 +84,7 @@ private:
 	AscensionTowerChangePerson changePerson;
 	MFD *mfd;
 	int page[STATES], selectedIndex[STATES], selection[STATES];
+	double step[STATES];
 	void *object[STATES];
 	void Scan();
 	void SetAscension(int index);	
