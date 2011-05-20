@@ -44,7 +44,7 @@ struct AscensionTowerListPair
 
 class AscensionTowerData;
 
-typedef struct AscensionTowerChangePerson
+typedef struct AscensionTowerCallbackData
 {
 	int Flags;	
 	AscensionTowerData *Data;
@@ -81,7 +81,7 @@ private:
 	AscensionUltra *ascension;
 	std::vector<AscensionTowerListPair> scanList;
 	AscensionTowerState state;
-	AscensionTowerChangePerson changePerson;
+	AscensionTowerCallbackData changePerson;
 	MFD *mfd;
 	int page[STATES], selectedIndex[STATES], selection[STATES];
 	double step[STATES];

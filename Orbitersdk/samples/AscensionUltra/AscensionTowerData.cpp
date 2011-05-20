@@ -779,12 +779,68 @@ bool AscensionTowerData::SetButton(int bt)
 
 bool ChangePersonData(void *id, char *str, void *usrdata)
 {
-	AscensionTowerChangePerson *cp=(AscensionTowerChangePerson *)usrdata;
+	AscensionTowerCallbackData *cp=(AscensionTowerCallbackData *)usrdata;
 	AscensionTowerData *data=cp->Data;
 	int index=data->GetAscension()->ChangePerson(data->GetSelectedIndex(), cp->Flags, str);
 	data->SetState(AscensionTowerState::Roster);
 	data->Select(index);
 	data->GetMfd()->InvalidateDisplay();
+	return true;
+}
+
+bool EditPosition(void *id, char *str, void *usrdata)
+{
+	AscensionTowerCallbackData *cp=(AscensionTowerCallbackData *)usrdata;
+	AscensionTowerData *data=cp->Data;	
+	char *end=str+strlen(str);
+	for(;str!=end;str++) if (*str>32) break;
+	switch (*str)
+	{
+	case 0:
+		((Crane*)data->GetObject())->SetWaypoint(data->GetSelectedIndex(), _V(LISTEMPTY, 0, 0));
+		break;
+	case 's':
+		str++;
+		end=str+strlen(str);
+		for(;str!=end;str++) if (*str>32) break;
+		if (str==end) ((Crane*)data->GetObject())->SetWaypoint(data->GetSelectedIndex(), _V(LISTSTOP, 0, 0));
+		else
+		{
+			float speed, crawl;
+			if (sscanf(str, "%f %f", &speed, &crawl)!=2) return false;
+			((Crane*)data->GetObject())->SetWaypoint(data->GetSelectedIndex(), _V(LISTSPEEDS, speed, crawl));
+		}
+		break;
+	case 'j':
+		{
+			unsigned int dest;
+			if (sscanf(++str, "%u", &dest)!=1) return false;
+			((Crane*)data->GetObject())->SetWaypoint(data->GetSelectedIndex(), _V(LISTJUMP, dest, 0));
+		}
+		break;
+	case 'p':
+		{
+			float pause;
+			if (sscanf(++str, "%f", &pause)!=1) return false;
+			((Crane*)data->GetObject())->SetWaypoint(data->GetSelectedIndex(), _V(LISTPAUSE, pause, 0));
+		}
+		break;
+	case 'g':
+		((Crane*)data->GetObject())->SetWaypoint(data->GetSelectedIndex(), _V(LISTGRAPPLE, 0, 0));
+		break;
+	case 'r':
+		((Crane*)data->GetObject())->SetWaypoint(data->GetSelectedIndex(), _V(LISTRELEASE, 0, 0));
+		break;
+	default:
+		{
+			float x,y,z;
+			if (sscanf(str, "%f %f %f", &x,&y,&z)!=3) return false;
+			Crane *crane=(Crane*)data->GetObject();
+			VECTOR3 len=crane->GetLength();
+			if (x<0 || y<0 || z<0 || x>len.x || y>len.y || z>len.z) return false;
+			crane->SetWaypoint(data->GetSelectedIndex(), _V(x, y, z));
+		}
+	}
 	return true;
 }
 
@@ -862,7 +918,26 @@ bool AscensionTowerData::SetKey(DWORD key)
 					pages=(size+9)/10;
 					switch(key)
 					{		
-					case OAPI_KEY_T:						
+					case OAPI_KEY_T:
+						{
+							selectedIndex[state]=GetListItem(page[state]*6+selection[state]).Index;
+							VECTOR3 waypoint=crane->GetWaypoint(selectedIndex[state]);
+							sprintf(buffer, "%6.2f %6.2f %6.2f", pos.x, pos.y, pos.z);
+							if (waypoint.x<0)
+							{
+								if (waypoint.y<0 && waypoint.z<0) break;
+								else switch ((int)waypoint.x)
+								{
+								case LISTSTOP:		sprintf(buffer, "s"); break;
+								case LISTJUMP:		sprintf(buffer, "j%d", (int)waypoint.y); break;
+								case LISTPAUSE:		sprintf(buffer, "p%f", waypoint.y); break;
+								case LISTGRAPPLE:	sprintf(buffer, "g"); break;
+								case LISTRELEASE:	sprintf(buffer, "r"); break;
+								case LISTSPEEDS:	sprintf(buffer, "s%f %f", waypoint.y, waypoint.z); break;
+								}
+							}
+						}
+						oapiOpenInputBox("Edit list entry:", EditPosition, buffer, 26, (void *)&changePerson);
 						break;
 					case OAPI_KEY_N:
 						if (selection[state]<min(size-page[state]*10, 10)-1) selection[state]++;
