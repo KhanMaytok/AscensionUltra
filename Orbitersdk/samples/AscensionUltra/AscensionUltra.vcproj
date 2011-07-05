@@ -49,7 +49,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include ; ..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example"
+				AdditionalIncludeDirectories="..\..\include ; ..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example ; ..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -144,7 +144,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include ; ..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example"
+				AdditionalIncludeDirectories="..\..\include ; ..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example ; ..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -245,6 +245,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO\UCGOCargoSDK.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO\UCGOCargoSDK.lib"
 				>
 			</File>
 			<File
