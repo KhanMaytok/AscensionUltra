@@ -39,6 +39,7 @@ private:
 	bool SelectionConsumeButton(int bt);
 	void RenderSelectionPage();
 	void RenderDoorControlPage();
+	Crane *RenderCraneStatusLine();
 	void RenderCraneControlPage();
 	void RenderCraneListPage();
 	void RenderCraneGrapplePage();

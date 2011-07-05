@@ -231,23 +231,50 @@ void AscensionTower::RenderDoorControlPage()
 	else WriteMFD("Moving", 15);
 }
 
+Crane *AscensionTower::RenderCraneStatusLine()
+{
+	char line[40];
+	Crane *crane=(Crane *)data->GetObject();
+	VECTOR3 pos=crane->GetPosition();
+	SetTextColor(hDC, RGB(255,255,255));
+	int mode=crane->GetMode();
+	switch (mode)
+	{
+	case CRANEMANUAL:
+		sprintf(line, "%6.2f %6.2f %6.2f MANUAL %6.2f", pos.x, pos.y, pos.z, data->GetStep());
+		break;
+	case CRANEDIRECT:
+		sprintf(line, "%6.2f %6.2f %6.2f DIRECT", pos.x, pos.y, pos.z);
+		break;
+	default:
+		sprintf(line, "%6.2f %6.2f %6.2f AUTO %d", pos.x, pos.y, pos.z, mode);
+	}
+	
+	WriteMFD(line, 50, -1, WRITEMFD_HALFLINES);
+	return crane;
+}
+
 void AscensionTower::RenderCraneControlPage()
 {
-	SetTextColor(hDC, RGB(255,255,255));
-	Crane* crane=(Crane *)data->GetObject();
+	Crane *crane=RenderCraneStatusLine();
 	VECTOR3 pos=crane->GetPosition();
-	char line[40];
-	sprintf(line, "X: %f", pos.x);
-	WriteMFD(line, 6, 4);
-	sprintf(line, "Y: %f", pos.y);
-	WriteMFD(line, 8, 4);
-	sprintf(line, "Z: %f", pos.z);
-	WriteMFD(line, 10, 4);
+	VECTOR3 len=crane->GetLength();
+	VECTOR3 speed=crane->GetSpeed();
+	VECTOR3 crawl=crane->GetCrawl();
+	pos.x/=len.x;
+	pos.y/=len.y;
+	pos.z/=len.z;
+	char line[80];
+	sprintf(line, "X: %5.2f%% @%6.3f(%6.3f)m/s", pos.x, speed.x, crawl.x);
+	WriteMFD(line, 6, 2);
+	sprintf(line, "Y: %5.2f%% @%6.3f(%6.3f)m/s", pos.y, speed.y, crawl.y);
+	WriteMFD(line, 8, 2);
+	sprintf(line, "Z: %5.2f%% @%6.3f(%6.3f)m/s", pos.z, speed.z, crawl.z);
+	WriteMFD(line, 10, 2);	
 }
 
 void AscensionTower::RenderCraneListPage()
 {
-	VECTOR3 pos=((Crane *)data->GetObject())->GetPosition();
 	char line[80];
 	int size=data->GetListSize();
 	int page=data->GetPage();
@@ -266,27 +293,24 @@ void AscensionTower::RenderCraneListPage()
 	sprintf(line, "p.%d/%d", page+1, pages);
 	WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
 
-	SetTextColor(hDC, RGB(255,255,255));
+	RenderCraneStatusLine();
 	for(int i=0; i+page*10<size && i<10; i++)
 	{
 		sprintf(line, "%d", i+page*10);
 		WriteMFD(line, AT_BUTTONDOUBLED[i], 1, WRITEMFD_HALFLINES);
 	}
-	sprintf(line, "%6.2f %6.2f %6.2f @ %6.2f", pos.x, pos.y, pos.z, data->GetStep());
-	WriteMFD(line, 50, -1, WRITEMFD_HALFLINES);
 }
 
 void AscensionTower::RenderCraneGrapplePage()
-{
-	SetTextColor(hDC, RGB(255,255,255));
-	Crane* crane=(Crane *)data->GetObject();
+{	
+	Crane* crane=RenderCraneStatusLine();
 	char line[40];
 	sprintf(line, "Cargo:");
 	WriteMFD(line, 6, 4);
 	sprintf(line, "Type:");
 	WriteMFD(line, 8, 4);
 	sprintf(line, "Weight:");
-	WriteMFD(line, 10, 4);
+	WriteMFD(line, 10, 4);	
 }
 
 void AscensionTower::RenderPersonPage()
