@@ -858,7 +858,7 @@ bool AscensionTowerData::SetKey(DWORD key)
 		{
 			Crane *crane=(Crane*)GetObject();
 			VECTOR3 pos=crane->GetPosition();
-			switch(key)
+			if (crane->GetMode()<=CRANEMANUAL) switch(key)
 			{
 			case OAPI_KEY_A:
 				pos.x+=step[state];
@@ -893,99 +893,109 @@ bool AscensionTowerData::SetKey(DWORD key)
 				Back();
 				break;
 			default:
-				switch(state)
-				{
-				case AscensionTowerState::CraneControl:
-					switch(key)
-					{		
-					case OAPI_KEY_O:
-						break;
-					case OAPI_KEY_F:
-						break;
-					case OAPI_KEY_C:
-						crane->StartManual();
-						break;
-					case OAPI_KEY_M:
-						SetState(AscensionTowerState::CraneList);
-						break;					
-					default:
-						result=false;
-						break;
-					}
+				result=false;
+				break;
+			}
+			else
+			{
+				//TODO: invalid sound
+				if (key==OAPI_KEY_B) Back();
+				else result=false;
+			}
+			if (result) return true; //Check for manual mode key usage and return here already
+			result=true; //Reset result to true for subsequent crane mode keys
+			switch(state)
+			{
+			case AscensionTowerState::CraneControl:
+				switch(key)
+				{		
+				case OAPI_KEY_O:
+					crane->SetMode(crane->GetMode()>CRANEMANUAL?CRANEMANUAL:selectedIndex[AscensionTowerState::CraneList]);						
 					break;
-
-				case AscensionTowerState::CraneList:
-					pages=(size+9)/10;
-					switch(key)
-					{		
-					case OAPI_KEY_T:
-						{
-							selectedIndex[state]=GetListItem(page[state]*6+selection[state]).Index;
-							VECTOR3 waypoint=crane->GetWaypoint(selectedIndex[state]);
-							sprintf(buffer, "%6.2f %6.2f %6.2f", pos.x, pos.y, pos.z);
-							if (waypoint.x<0)
-							{
-								if (waypoint.y<0 && waypoint.z<0) break;
-								else switch ((int)waypoint.x)
-								{
-								case LISTSTOP:		sprintf(buffer, "s"); break;
-								case LISTJUMP:		sprintf(buffer, "j%d", (int)waypoint.y); break;
-								case LISTPAUSE:		sprintf(buffer, "p%f", waypoint.y); break;
-								case LISTGRAPPLE:	sprintf(buffer, "g"); break;
-								case LISTRELEASE:	sprintf(buffer, "r"); break;
-								case LISTSPEEDS:	sprintf(buffer, "s%f %f", waypoint.y, waypoint.z); break;
-								}
-							}
-						}
-						oapiOpenInputBox("Edit list entry:", EditPosition, buffer, 26, (void *)&changePerson);
-						break;
-					case OAPI_KEY_N:
-						if (selection[state]<min(size-page[state]*10, 10)-1) selection[state]++;
-						else
-						{
-							if (page[state]<pages-1) page[state]++;
-							else page[state]=0;
-							selection[state]=0;
-						}
-						break;
-					case OAPI_KEY_P:
-						if (selection[state]>0) selection[state]--;
-						else
-						{
-							if (page[state]>0) page[state]--;
-							else page[state]=pages-1;
-							selection[state]=min(size-page[state]*10, 10)-1;
-						}
-						break;
-					case OAPI_KEY_M:
-						SetState(AscensionTowerState::CraneGrapple);
-						break;
-					default:
-						result=false;
-						break;
-					}
+				case OAPI_KEY_F:
 					break;
-
-				case AscensionTowerState::CraneGrapple:
-					switch(key)
-					{
-					case OAPI_KEY_G:
-						break;
-					case OAPI_KEY_T:			
-						break;
-					case OAPI_KEY_M:
-						SetState(AscensionTowerState::CraneControl);
-						break;
-					default:
-						result=false;
-						break;
-					}
+				case OAPI_KEY_C:
+					crane->SetMode(crane->GetMode()==CRANEDIRECT?CRANEMANUAL:CRANEDIRECT);
 					break;
-
+				case OAPI_KEY_M:
+					SetState(AscensionTowerState::CraneList);
+					break;					
 				default:
 					result=false;
 					break;
 				}
+				break;
+
+			case AscensionTowerState::CraneList:
+				pages=(size+9)/10;
+				selectedIndex[state]=page[state]*10+selection[state];
+				switch(key)
+				{		
+				case OAPI_KEY_T:
+					{						
+						VECTOR3 waypoint=crane->GetWaypoint(selectedIndex[state]);
+						sprintf(buffer, "%6.2f %6.2f %6.2f", pos.x, pos.y, pos.z);
+						if (waypoint.x<0)
+						{
+							if (waypoint.y<0 && waypoint.z<0) break;
+							else switch ((int)waypoint.x)
+							{
+							case LISTSTOP:		sprintf(buffer, "s"); break;
+							case LISTJUMP:		sprintf(buffer, "j%d", (int)waypoint.y); break;
+							case LISTPAUSE:		sprintf(buffer, "p%f", waypoint.y); break;
+							case LISTGRAPPLE:	sprintf(buffer, "g"); break;
+							case LISTRELEASE:	sprintf(buffer, "r"); break;
+							case LISTSPEEDS:	sprintf(buffer, "s%f %f", waypoint.y, waypoint.z); break;
+							}
+						}
+					}
+					oapiOpenInputBox("Edit list entry ( * * *|s|j*|p*|g|r|s* *|empty ):", EditPosition, buffer, 26, (void *)&changePerson);
+					break;
+				case OAPI_KEY_N:
+					if (selection[state]<min(size-page[state]*10, 10)-1) selection[state]++;
+					else
+					{
+						if (page[state]<pages-1) page[state]++;
+						else page[state]=0;
+						selection[state]=0;
+					}
+					break;
+				case OAPI_KEY_P:
+					if (selection[state]>0) selection[state]--;
+					else
+					{
+						if (page[state]>0) page[state]--;
+						else page[state]=pages-1;
+						selection[state]=min(size-page[state]*10, 10)-1;
+					}
+					break;
+				case OAPI_KEY_M:
+					SetState(AscensionTowerState::CraneGrapple);
+					break;
+				default:
+					result=false;
+					break;
+				}
+				break;
+
+			case AscensionTowerState::CraneGrapple:
+				switch(key)
+				{
+				case OAPI_KEY_G:
+					break;
+				case OAPI_KEY_T:			
+					break;
+				case OAPI_KEY_M:
+					SetState(AscensionTowerState::CraneControl);
+					break;
+				default:
+					result=false;
+					break;
+				}
+				break;
+
+			default:
+				result=false;
 				break;
 			}
 			return result;
