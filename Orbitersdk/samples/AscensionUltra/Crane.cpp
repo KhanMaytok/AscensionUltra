@@ -24,6 +24,8 @@ void Crane::Init(VESSEL *owner, const char *name, MGROUP_TRANSLATE *X, MGROUP_TR
 	position=_V(0,0,0);
 	oldcommand=command=_V(0.0,0.0,0.0);
 	for(int i=0;i<WAYPOINTS;i++) waypoints[i]=_V(LISTEMPTY, 0,0);
+	waypoint=0;
+	running=false;
 }
 
 Crane::~Crane(void)
@@ -39,10 +41,13 @@ void Crane::SetAutoOverride(double percentage){autoOverride=percentage;}
 
 void Crane::StartAuto(int waypoint)
 {
+	running=true;
+	this->waypoint=waypoint;
 }
 
 void Crane::Stop()
 {
+	running=false;
 	if (filter!=NULL)
 	{
 		sprintf(oapiDebugString(), "Crane offline");
@@ -63,6 +68,30 @@ void Crane::StartManual()
 VECTOR3 Crane::GetPosition(){return _V(position.x*len.x, position.y*len.y, position.z*len.z);}
 
 VECTOR3 Crane::GetLength(){return len;}
+
+VECTOR3 Crane::GetSpeed(){return speed;}
+
+VECTOR3 Crane::GetCrawl(){return crawl;}
+
+int Crane::GetMode(){return filter!=NULL?CRANEDIRECT:(running?waypoint:CRANEMANUAL);}
+
+void Crane::SetMode(int mode)
+{
+	int oldmode=GetMode();
+	if (oldmode==mode) return;
+	if (oldmode!=CRANEMANUAL) Stop();
+	switch(mode)
+	{
+	case CRANEDIRECT:
+		StartManual();
+		break;
+	case CRANEMANUAL:
+		break;
+	default:
+		StartAuto(mode);
+		break;
+	}	
+}
 
 void Crane::SetPosition(VECTOR3 pos)
 {

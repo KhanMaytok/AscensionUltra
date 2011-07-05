@@ -23,6 +23,9 @@
 #define LISTSPEEDS	-7
 #define LISTEMPTY	-1
 
+#define CRANEDIRECT	-2
+#define CRANEMANUAL	-1
+
 class Crane
 {
 public:
@@ -31,12 +34,16 @@ public:
 	void SetSpeed(VECTOR3 speed);
 	void SetCrawl(VECTOR3 speed);
 	void SetAutoOverride(double percentage);
-	virtual void StartAuto(int waypoint);
+	void StartAuto(int waypoint);
 	void Stop();
-	virtual void StartManual();
+	void StartManual();
+	virtual int GetMode();
+	virtual void SetMode(int mode);
 	virtual void SetWaypoint(int index, VECTOR3 waypoint);
 	virtual VECTOR3 GetPosition();
 	virtual VECTOR3 GetLength();
+	virtual VECTOR3 GetSpeed();
+	virtual VECTOR3 GetCrawl();
 	virtual void SetPosition(VECTOR3 position);
 	void PostStep (double simt, double simdt, double mjd);
 	int ConsumeDirectKey (char *kstate);
@@ -57,7 +64,7 @@ private:
 	MGROUP_TRANSLATE *mgroupY;
 	MGROUP_TRANSLATE *mgroupZ;
 	MGROUP_SCALE *mgroupReel;
-	int anim_x, anim_y, anim_z;	
+	int anim_x, anim_y, anim_z, waypoint;	
 	VECTOR3 speed;
 	VECTOR3 crawl;
 	VECTOR3 margin;
@@ -71,4 +78,5 @@ private:
 	static int ConsumeDirectKey (void *crane, char *kstate);
 	static void Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam);
 	char *event_prefix, *name;
+	bool running;
 };
