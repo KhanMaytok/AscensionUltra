@@ -32,6 +32,8 @@
 #define STATICRUNWAYLINESSPLIT 7
 #define RUNWAYENDPOINTS 15
 #define LFMCOFFSET _V(-1463,0,1260)
+#define VLC1OFFSET _V(-1866,0,2560.5)
+#define VLC1MATRIXOFFSET _V(-220,0,0)
 
 // ==============================================================
 // Global parameters
@@ -64,6 +66,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	cur_Lease=-1;
 	cur_Airport=-1;
 	cur_LaunchTunnel=-1;
+	cur_Vertical=-1;
 
 	cur_Path=0;
 	cur_Section=0;
@@ -84,7 +87,7 @@ double AscensionUltra::GetVersion(){return 1.0;}
 void AscensionUltra::InitSubObjects()
 {
 	int i;
-	char prefix[14]="HANGARx";
+	char prefix[16]="HANGARx";
 	char name[40]=" x. Turn-around Hangar";
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
@@ -92,6 +95,7 @@ void AscensionUltra::InitSubObjects()
 		name[1]=0x31+i;
 		turnAround[i].Init(this, name, i+3, prefix);
 	}
+
 	strcpy(prefix, "LEASEx");
 	strcpy(name, " x. Lease Hangar");
 	for(i=0;i<LEASELIGHTHANGARS;i++)
@@ -100,7 +104,8 @@ void AscensionUltra::InitSubObjects()
 		name[1]=0x30+((i+1) % 10);
 		if (i>8) name[0]=0x31;
 		leaseLight[i].Init(this, name, i+3+TURNAROUNDHANGARS, prefix);
-	}	
+	}
+
 	for(;i<LEASELIGHTHANGARS+LEASEHEAVYHANGARS;i++)
 	{
 		prefix[10]=0x30+i;
@@ -108,9 +113,19 @@ void AscensionUltra::InitSubObjects()
 		if (i>8) name[0]=0x31;
 		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+3+TURNAROUNDHANGARS, prefix);
 	}
+
 	strcpy(prefix, "LAUNCHTUNNEL");
 	strcpy(name, "Launch Facility");
-	launchTunnel.Init(this, name, 20, prefix);
+	launchTunnel.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS, prefix);
+
+	strcpy(prefix, "VERTICALLAUNCHx");
+	strcpy(name, " x. Vertical Launch Facility");
+	for(i=0;i<VERTICALLAUNCHFACILITIES;i++)
+	{
+		prefix[14]=0x30+i;
+		name[1]=0x31+i;
+		vertical[i].Init(this, name, i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1, prefix);
+	}
 
 	strcpy(prefix, "AIRPORT");
 	strcpy(name, "Airport");
@@ -426,6 +441,7 @@ void AscensionUltra::DefineAnimations ()
 	for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].DefineAnimations();
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].DefineAnimations();
 	launchTunnel.DefineAnimations();
+	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) vertical[i].DefineAnimations();
 	airport.DefineAnimations();
 }
 
@@ -501,6 +517,8 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	meshLeaseLightWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_LH-WO");
 	meshLeaseHeavy = oapiLoadMeshGlobal ("AscensionUltra\\AU_HH-NW", OnLeaseHeavyLoad);
 	meshLeaseHeavyWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_HH-WO", OnLeaseHeavyLoad);
+	meshVertical = oapiLoadMeshGlobal ("AscensionUltra\\AU_VLC_NW");
+	meshVerticalWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_VLC_WO");
 	
 	double curvoff[TURNAROUNDHANGARS]={-0.08,-0.12,-0.17};
 
@@ -525,10 +543,19 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		leaseHeavy[i].SetPosition(off);
 	}
 	SetMeshVisibilityMode (AddMesh (meshLaunch = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC_NW"), &(OFFSET+LFMCOFFSET)), MESHVIS_ALWAYS);
+	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++)
+	{
+		VECTOR3 off=OFFSET+VLC1OFFSET+VLC1MATRIXOFFSET*i;
+		SetMeshVisibilityMode (AddMesh (meshVertical, &off), MESHVIS_ALWAYS);
+		//vertical[i].SetPosition(off);
+	}
+
 	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASELIGHTHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseLightWindow, &(OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseHeavyWindow, &(OFFSET+LH1OFFSET+LH1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshLaunchWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC_WO"), &(OFFSET+LFMCOFFSET)), MESHVIS_ALWAYS);
+	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) SetMeshVisibilityMode (AddMesh (meshVerticalWindow, &(OFFSET+VLC1OFFSET+VLC1MATRIXOFFSET*i)), MESHVIS_ALWAYS);	
+
 	launchTunnel.SetPosition(OFFSET+LFMCOFFSET);
 
 	DefineAnimations();
@@ -538,6 +565,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	for(int i=0;i<TURNAROUNDHANGARS;i++) index=turnAround[i].InitActionAreas(crew, index);
 	for(int i=0;i<LEASELIGHTHANGARS;i++) index=leaseLight[i].InitActionAreas(crew, index);
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) index=leaseHeavy[i].InitActionAreas(crew, index);
+	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) index=vertical[i].InitActionAreas(crew, index);
 }
 
 // Read status from scenario file
@@ -564,6 +592,10 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+7, "%X", &cur_Airport);
 		} else if (cur_Airport>=0 && cur_Airport<1) {
 			if (!airport.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (!strnicmp (line, "VERTICALLAUNCH", 14)) {
+			sscanf (line+14, "%X", &cur_Vertical);
+		} else if (cur_Vertical>=0 && cur_Vertical<VERTICALLAUNCHFACILITIES) {
+			if (!vertical[cur_Vertical].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else {
             ParseScenarioLineEx (line, vs);
 			// unrecognised option - pass to Orbiter's generic parser
@@ -604,6 +636,15 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	launchTunnel.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "1");
 
+	for(i=0;i<VERTICALLAUNCHFACILITIES;i++)
+	{
+		sprintf (cbuf, "%X", i);
+		oapiWriteScenario_string (scn, "VERTICALLAUNCH", cbuf);
+		vertical[i].clbkSaveState(scn);
+	}	
+	sprintf (cbuf, "%X", i);
+	oapiWriteScenario_string (scn, "VERTICALLAUNCH", cbuf);
+
 	oapiWriteScenario_string (scn, "AIRPORT", "0");
 	airport.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "AIRPORT", "1");
@@ -619,6 +660,7 @@ void AscensionUltra::clbkPostCreation ()
 	for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].clbkPostCreation();
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].clbkPostCreation();
 	launchTunnel.clbkPostCreation();
+	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) vertical[i].clbkPostCreation();
 	airport.clbkPostCreation();
 }
 
@@ -643,6 +685,12 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 		//Tunnel event
 		return launchTunnel.clbkPlaybackEvent(simt, event_t, event_type+12, event);
 	}
+	if (!strnicmp (event_type, "VERTICALLAUNCH", 14))
+	{
+		//Hangar event
+		int hangar=(int)(event_type+14)[0]-0x30;
+		if (hangar>=0 && hangar<VERTICALLAUNCHFACILITIES) return vertical[hangar].clbkPlaybackEvent(simt, event_t, event_type+15, event);
+	}	
 	if (!strnicmp (event_type, "AIRPORT", 7))
 	{
 		//Airport event
@@ -680,6 +728,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].clbkPostStep(simt, simdt, mjd);
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
+	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) vertical[i].clbkPostStep(simt, simdt, mjd);
 	airport.clbkPostStep(simt, simdt, mjd);
 
 	//Check all virtual docks
@@ -711,7 +760,8 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	int action=crew->DetectActionAreaActivated();
 	if (action>-1) for(int i=0;i<TURNAROUNDHANGARS;i++) if (turnAround[i].ActionAreaActivated(action)) {action=-1;break;}
 	if (action>-1) for(int i=0;i<LEASELIGHTHANGARS;i++) if (leaseLight[i].ActionAreaActivated(action)) {action=-1;break;}
-	if (action>-1) for(int i=0;i<LEASEHEAVYHANGARS;i++) if (leaseHeavy[i].ActionAreaActivated(action)) break;
+	if (action>-1) for(int i=0;i<LEASEHEAVYHANGARS;i++) if (leaseHeavy[i].ActionAreaActivated(action)) {action=-1;break;}
+	if (action>-1) for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) if (vertical[i].ActionAreaActivated(action)) break;
 
 	//DEBUG relative position
 	if (coords)
@@ -862,6 +912,7 @@ int AscensionUltra::GetHangars(int type)
 	if ((type & HANGARTYPELL)>0) count+=LEASELIGHTHANGARS;	
 	if ((type & HANGARTYPELH)>0) count+=LEASEHEAVYHANGARS;
 	if ((type & HANGARTYPELFMC)>0) count+=1;
+	if ((type & HANGARTYPEVLC)>0) count+=VERTICALLAUNCHFACILITIES;
 	if ((type & HANGARTYPEPORT)>0) count+=1;
 	return count;
 }
@@ -888,6 +939,11 @@ Hangar *AscensionUltra::GetHangar(int type, int index)
 	{
 		if (index<1) return &launchTunnel;
 		else index-=1;
+	}
+	if ((type & HANGARTYPEVLC)>0)
+	{
+		if (index<VERTICALLAUNCHFACILITIES) return vertical+index;
+		else index-=VERTICALLAUNCHFACILITIES;
 	}
 	if ((type & HANGARTYPEPORT)>0)
 	{
@@ -934,6 +990,12 @@ int AscensionUltra::GetPersons()
 
 	rooms=launchTunnel.GetRooms();
 	for(j=0;j<rooms;j++) persons+=launchTunnel.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
+
+	for(i=0;i<VERTICALLAUNCHFACILITIES;i++)
+	{
+		rooms=vertical[i].GetRooms();
+		for(j=0;j<rooms;j++) persons+=vertical[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	}
 
 	rooms=airport.GetRooms();
 	for(j=0;j<rooms;j++) persons+=airport.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
@@ -1097,6 +1159,7 @@ Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel)
 	for(int i=0;i<TURNAROUNDHANGARS;i++) if (turnAround[i].CheckVincinity(&local)) return &turnAround[i];
 	for(int i=0;i<LEASELIGHTHANGARS;i++) if (leaseLight[i].CheckVincinity(&local)) return &leaseLight[i];
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) if (leaseHeavy[i].CheckVincinity(&local)) return &leaseHeavy[i];
+	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) if (vertical[i].CheckVincinity(&local)) return &vertical[i];
 	
 	return NULL;
 }

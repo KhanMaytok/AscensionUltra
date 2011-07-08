@@ -240,19 +240,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO\UCGOCargoSDK.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO\UCGOCargoSDK.lib"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib"
 				>
 			</File>
 			<File
@@ -349,6 +349,10 @@
 				RelativePath=".\TurnAroundHangar.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\VerticalLaunchHangar.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header"
@@ -419,6 +423,10 @@
 			</File>
 			<File
 				RelativePath=".\TurnAroundHangar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VerticalLaunchHangar.h"
 				>
 			</File>
 		</Filter>

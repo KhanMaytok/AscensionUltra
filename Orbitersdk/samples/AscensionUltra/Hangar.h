@@ -17,6 +17,7 @@
 #define HANGARTYPELFMC	0x04
 #define HANGARTYPEPORT	0x08
 #define HANGARTYPELH	0x10
+#define HANGARTYPEVLC	0x20
 
 class Hangar
 {
