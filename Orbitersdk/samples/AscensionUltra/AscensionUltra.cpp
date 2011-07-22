@@ -547,7 +547,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	{
 		VECTOR3 off=OFFSET+VLC1OFFSET+VLC1MATRIXOFFSET*i;
 		SetMeshVisibilityMode (AddMesh (meshVertical, &off), MESHVIS_ALWAYS);
-		//vertical[i].SetPosition(off);
+		vertical[i].SetPosition(off);
 	}
 
 	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);

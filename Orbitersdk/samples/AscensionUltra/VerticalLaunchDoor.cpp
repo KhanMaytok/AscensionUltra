@@ -14,7 +14,7 @@ void VerticalLaunchDoor::DefineAnimations()
 {	
 	int i=0;
 	anim = owner->CreateAnimation (0);
-	ANIMATIONCOMPONENT_HANDLE parent = owner->AddAnimationComponent (anim, 0, 0.2, door[i++]);
-	parent = owner->AddAnimationComponent (anim, 0.8, 1, door[i++], parent);
+	ANIMATIONCOMPONENT_HANDLE parent = owner->AddAnimationComponent (anim, 0, 0.4, door[i++]);
+	parent = owner->AddAnimationComponent (anim, 0.6, 1, door[i++], parent);
 	for(;i<transforms;i++) owner->AddAnimationComponent (anim, 0.4, 0.6, door[i], parent);
 }

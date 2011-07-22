@@ -24,6 +24,7 @@ public:
 	Door *GetDoor(int index);
 	int GetRooms();
 	Room *GetRoom(int index);
+	void SetPosition(VECTOR3 position);
 private:
 	VerticalLaunchDoor doors[DOORS];
 	Room rooms[ROOMS];
