@@ -1026,6 +1026,7 @@ Room *AscensionUltra::GetPersonLocation(int &index)
 			
 	for(int i=0;i<TURNAROUNDHANGARS;i++) if ((room = GetPersonLocationFromHangar(index, &turnAround[i]))!=NULL) return room;
 	if ((room = GetPersonLocationFromHangar(index, &launchTunnel))!=NULL) return room;
+	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) if ((room = GetPersonLocationFromHangar(index, &vertical[i]))!=NULL) return room;
 	if ((room = GetPersonLocationFromHangar(index, &airport))!=NULL) return room;
 	
 	index=0;
