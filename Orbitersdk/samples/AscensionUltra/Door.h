@@ -25,7 +25,7 @@ public:
 	virtual void Close();
 	virtual double GetPosition();
 	void PostStep (double simt, double simdt, double mjd);
-	void DefineAnimations();
+	virtual void DefineAnimations();
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
@@ -35,12 +35,14 @@ public:
 
 private:
 	void RecordEvent(double command);
-	VESSEL* owner;
-	MGROUP_TRANSFORM **door;
-	int anim, transforms, action;
+	int action;
 	double speed;
 	double command;
 	double position;
 	char *event_prefix, *name, *actionText;
-	UMMUCREWMANAGMENT *crew;	
+	UMMUCREWMANAGMENT *crew;
+protected:
+	VESSEL* owner;
+	int anim, transforms;
+	MGROUP_TRANSFORM **door;
 };

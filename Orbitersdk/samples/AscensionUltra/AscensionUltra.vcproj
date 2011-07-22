@@ -350,6 +350,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\VerticalLaunchDoor.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\VerticalLaunchHangar.cpp"
 				>
 			</File>
@@ -423,6 +427,10 @@
 			</File>
 			<File
 				RelativePath=".\TurnAroundHangar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VerticalLaunchDoor.h"
 				>
 			</File>
 			<File
