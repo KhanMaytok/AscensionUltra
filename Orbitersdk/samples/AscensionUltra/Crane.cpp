@@ -243,6 +243,17 @@ char *Crane::GetName(){return name;}
 
 int Crane::GetWaypoints(){return WAYPOINTS;}
 
-VECTOR3 Crane::GetWaypoint(int index){return (index>=0 && index<WAYPOINTS)?waypoints[index]:_V(-1,-1,-1);}
+VECTOR3 Crane::GetWaypoint(int index)
+{
+	if (index<0 || index>=WAYPOINTS) return _V(-1,-1,-1);
+	VECTOR3 result=waypoints[index];
+	if (result.x<0) return result;
+	return _V(result.x*len.x, result.y*len.y, result.z*len.z);
+}
 
-void Crane::SetWaypoint(int index, VECTOR3 waypoint){if (index>=0 && index<WAYPOINTS) waypoints[index]=waypoint;}
+void Crane::SetWaypoint(int index, VECTOR3 waypoint)
+{
+	if (index<0 || index>=WAYPOINTS) return;
+	if (waypoint.x<0) waypoints[index]=waypoint;
+	else waypoints[index]=_V(waypoint.x/len.x, waypoint.y/len.y, waypoint.z/len.z);
+}
