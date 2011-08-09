@@ -42,7 +42,12 @@ void Crane::SetAutoOverride(double percentage){autoOverride=percentage;}
 void Crane::StartAuto(int waypoint)
 {
 	running=true;
+	positioning=false;
+	waiting=false;
+	timer=0;
 	this->waypoint=waypoint;
+	trajectoryCrawl=min(min(crawl.x/len.x, crawl.y/len.y), crawl.z/len.z);
+	trajectorySpeed=min(min(speed.x/len.x, speed.y/len.y), speed.z/len.z);
 }
 
 void Crane::Stop()

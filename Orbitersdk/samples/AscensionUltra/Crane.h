@@ -72,11 +72,11 @@ private:
 	VECTOR3 command;
 	VECTOR3 oldcommand;
 	VECTOR3 len;
-	double autoOverride;
+	double autoOverride, trajectorySpeed, trajectoryCrawl, timer;
 	VECTOR3 waypoints[WAYPOINTS];
 	KeyboardFilter *filter;
 	static int ConsumeDirectKey (void *crane, char *kstate);
 	static void Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam);
 	char *event_prefix, *name;
-	bool running;
+	bool running, positioning, waiting;
 };
