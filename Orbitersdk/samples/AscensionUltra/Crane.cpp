@@ -109,9 +109,89 @@ void Crane::SetPosition(VECTOR3 pos)
 void Crane::PostStep (double simt, double simdt, double mjd)
 {
 	position+=command*simdt;
+	if (!running)
+	{
 	if (command.x!=0.0) SetAnimation(anim_x, position.x);
 	if (command.y!=0.0) SetAnimation(anim_y, position.y);
 	if (command.z!=0.0) SetAnimation(anim_z, position.z);
+		return;
+	}
+	
+	if (positioning || waiting)
+	{
+		double commandlen=length(command);
+		if (timer!=0)
+			if ((timer-=simdt)<=0)
+			{
+				timer=0;
+				if (waiting)
+				{					
+					waypoint++;
+					waiting=false;
+				}
+				else command=(command/commandlen)*trajectorySpeed;
+			}
+		if (positioning)
+		{
+			//Check target distance
+			VECTOR3 delta=waypoints[waypoint]-position;			
+			double deltalen=length(delta);
+			if (commandlen!=0 && deltalen!=0)
+			{
+				//Overshot detection
+				if (dotp(command/commandlen, delta/deltalen)<0) commandlen=deltalen=0;
+			}
+			else commandlen=deltalen=0;
+			if (commandlen==0 && deltalen==0)
+			{
+				//Target reached
+				command=_V(0,0,0);
+				position=waypoints[waypoint];
+				positioning=false;
+				waypoint++;
+			}
+			else if (deltalen<commandlen) //if there is 1 second crawl time left
+			{
+				command=(command/commandlen)*trajectoryCrawl;
+			}
+			SetAnimation(anim_x, position.x);
+			SetAnimation(anim_y, position.y);
+			SetAnimation(anim_z, position.z);
+		}
+	}
+	else if (waypoints[waypoint].x<0)
+	{
+		if (waypoints[waypoint].y<0 && waypoints[waypoint].z<0) Stop();
+		else switch ((int)waypoints[waypoint].x)
+		{
+		case LISTSTOP:		Stop(); break;
+		case LISTJUMP:		waypoint=(int)waypoints[waypoint].y; break;
+		case LISTPAUSE:
+			timer=waypoints[waypoint].y;
+			waiting=true;
+			break;
+		case LISTGRAPPLE:	waypoint++; break; //TODO: enter auto grapple code here
+		case LISTRELEASE:	waypoint++; break; //TODO: enter auto release code here
+		case LISTSPEEDS:
+			trajectorySpeed=waypoints[waypoint].y;
+			trajectoryCrawl=waypoints[waypoint].z;
+			waypoint++;
+			break;
+		}
+	}
+	else
+	{
+		//Check target distance
+		VECTOR3 delta=waypoints[waypoint]-position;
+		double deltalen=length(delta);
+		if (deltalen!=0)
+		{
+			command=(delta/deltalen)*trajectoryCrawl;
+			timer=1; // 1 second crawl time
+			positioning=true;
+		}
+		else waypoint++; //Nothing to do, go on			
+	}
 }
 
 void Crane::SetAnimation (int animation, double &position)
