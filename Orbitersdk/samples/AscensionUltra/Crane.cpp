@@ -291,6 +291,32 @@ bool Crane::clbkLoadStateEx (char *line)
 		sscanf (line+4, "%lf%lf%lf", &position.x, &position.y, &position.z);		
 		return true;
 	}
+	else if (!strnicmp (line, "L", 1))
+	{
+		int index;
+		char cmd[256];
+		sscanf (line+2, "%d %s", &index, cmd);
+		if (!strnicmp(strupr(cmd), "STOP", 4)) waypoints[index]=_V(LISTSTOP, 0, 0);
+		else if (!strnicmp(strupr(cmd), "GRAPPLE", 7)) waypoints[index]=_V(LISTGRAPPLE, 0, 0);
+		else if (!strnicmp(strupr(cmd), "RELEASE", 7)) waypoints[index]=_V(LISTRELEASE, 0, 0);
+		else if (!strnicmp(strupr(cmd), "JUMP", 4))
+		{
+			waypoints[index]=_V(LISTJUMP, 0, 0);
+			sscanf (line+2, "%d %s %lf", &index, cmd, &waypoints[index].y);			
+		}
+		else if (!strnicmp(strupr(cmd), "PAUSE", 5))
+		{
+			waypoints[index]=_V(LISTPAUSE, 0, 0);
+			sscanf (line+2, "%d %s %lf", &index, cmd, &waypoints[index].y);			
+		}
+		else if (!strnicmp(strupr(cmd), "SPEED", 5))
+		{
+			waypoints[index]=_V(LISTSPEEDS, 0, 0);
+			sscanf (line+2, "%d %s %lf %lf", &index, cmd, &waypoints[index].y, &waypoints[index].z);
+		}
+		else sscanf (line+2, "%d %lf %lf %lf", &index, &waypoints[index].x, &waypoints[index].y, &waypoints[index].z);
+		return true;
+	}
 	return false;
 }
 
@@ -299,6 +325,24 @@ void Crane::clbkSaveState (FILEHANDLE scn)
 	char cbuf[256];	
 	sprintf (cbuf, "%0.4f %0.4f %0.4f", position.x, position.y, position.z);
 	oapiWriteScenario_string (scn, "\t\tPOS", cbuf);
+	for(int i=0;i<WAYPOINTS;i++)
+	{
+		if (waypoints[i].x<0)
+		{
+			switch ((int)waypoints[i].x)
+			{
+			case LISTSTOP:		sprintf(cbuf, "%d STOP", i); break;
+			case LISTJUMP:		sprintf(cbuf, "%d JUMP %d", i, (int)waypoints[i].y); break;
+			case LISTPAUSE:		sprintf(cbuf, "%d PAUSE %0.4f", i, waypoints[i].y);break;
+			case LISTGRAPPLE:	sprintf(cbuf, "%d GRAPPLE", i); break; //TODO: enter auto grapple code here
+			case LISTRELEASE:	sprintf(cbuf, "%d RELEASE", i); break; //TODO: enter auto release code here
+			case LISTSPEEDS: sprintf(cbuf, "%d SPEED %0.4f %0.4f", i, waypoints[i].y, waypoints[i].z); break;
+			default: continue;
+			}
+		}
+		else sprintf(cbuf, "%d %0.4f %0.4f %0.4f", i, waypoints[i].x, waypoints[i].y, waypoints[i].z);
+		oapiWriteScenario_string (scn, "\t\tL", cbuf);
+	}
 }
 
 void Crane::clbkPostCreation ()
