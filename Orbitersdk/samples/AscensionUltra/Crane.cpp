@@ -46,8 +46,8 @@ void Crane::StartAuto(int waypoint)
 	waiting=false;
 	timer=0;
 	this->waypoint=waypoint;
-	trajectoryCrawl=min(min(crawl.x/len.x, crawl.y/len.y), crawl.z/len.z);
-	trajectorySpeed=min(min(speed.x/len.x, speed.y/len.y), speed.z/len.z);
+	trajectoryCrawl=min(min(crawl.x, crawl.y), crawl.z);
+	trajectorySpeed=min(min(speed.x, speed.y), speed.z);
 }
 
 void Crane::Stop()
@@ -70,7 +70,7 @@ void Crane::StartManual()
 	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey, &Crane::Prefilter);
 }
 
-VECTOR3 Crane::GetPosition(){return _V(position.x*len.x, position.y*len.y, position.z*len.z);}
+VECTOR3 Crane::GetPosition(){return _V(position.x, position.y, position.z);}
 
 VECTOR3 Crane::GetLength(){return len;}
 
@@ -101,9 +101,9 @@ void Crane::SetMode(int mode)
 void Crane::SetPosition(VECTOR3 pos)
 {
 	position=pos;
-	SetAnimation(anim_x, position.x/=len.x);
-	SetAnimation(anim_y, position.y/=len.y);
-	SetAnimation(anim_z, position.z/=len.z);
+	SetAnimation(anim_x, position.x, len.x);
+	SetAnimation(anim_y, position.y, len.y);
+	SetAnimation(anim_z, position.z, len.z);
 }
 
 void Crane::PostStep (double simt, double simdt, double mjd)
@@ -111,9 +111,9 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 	position+=command*simdt;
 	if (!running)
 	{
-	if (command.x!=0.0) SetAnimation(anim_x, position.x);
-	if (command.y!=0.0) SetAnimation(anim_y, position.y);
-	if (command.z!=0.0) SetAnimation(anim_z, position.z);
+		if (command.x!=0.0) SetAnimation(anim_x, position.x, len.x);
+		if (command.y!=0.0) SetAnimation(anim_y, position.y, len.y);
+		if (command.z!=0.0) SetAnimation(anim_z, position.z, len.z);
 		return;
 	}
 	
@@ -156,9 +156,9 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 			{
 				command=(command/commandlen)*trajectoryCrawl;
 			}
-			SetAnimation(anim_x, position.x);
-			SetAnimation(anim_y, position.y);
-			SetAnimation(anim_z, position.z);
+			SetAnimation(anim_x, position.x, len.x);
+			SetAnimation(anim_y, position.y, len.y);
+			SetAnimation(anim_z, position.z, len.z);
 		}
 	}
 	else if (waypoints[waypoint].x<0)
@@ -195,11 +195,11 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 	}
 }
 
-void Crane::SetAnimation (int animation, double &position)
+void Crane::SetAnimation (int animation, double &position, double length)
 {
 	if (position<0) position=0;
-	if (position>1) position=1;
-	owner->SetAnimation (animation, position);	
+	if (position>length) position=length;
+	owner->SetAnimation (animation, position/length);	
 }
 
 void Crane::DefineAnimations()
@@ -243,38 +243,38 @@ int Crane::ConsumeDirectKey (char *kstate)
 	if (KEYDOWN(kstate, OAPI_KEY_A))
 	{
 		//X neg
-		if (KEYMOD_SHIFT(kstate)) command.x=-crawl.x/len.x;
-		else command.x=-speed.x/len.x;		
+		if (KEYMOD_SHIFT(kstate)) command.x=-crawl.x;
+		else command.x=-speed.x;		
 	}
 	if (KEYDOWN(kstate, OAPI_KEY_S))
 	{
 		//Y neg
-		if (KEYMOD_SHIFT(kstate)) command.y=-crawl.y/len.y;
-		else command.y=-speed.y/len.y;
+		if (KEYMOD_SHIFT(kstate)) command.y=-crawl.y;
+		else command.y=-speed.y;
 	}
 	if (KEYDOWN(kstate, OAPI_KEY_E))
 	{
 		//Z neg
-		if (KEYMOD_SHIFT(kstate)) command.z=-crawl.z/len.z;
-		else command.z=-speed.z/len.z;
+		if (KEYMOD_SHIFT(kstate)) command.z=-crawl.z;
+		else command.z=-speed.z;
 	}
 	if (KEYDOWN(kstate, OAPI_KEY_D))
 	{
 		//X pos
-		if (KEYMOD_SHIFT(kstate)) command.x=crawl.x/len.x;
-		else command.x=speed.x/len.x;
+		if (KEYMOD_SHIFT(kstate)) command.x=crawl.x;
+		else command.x=speed.x;
 	}
 	if (KEYDOWN(kstate, OAPI_KEY_W))
 	{
 		//Y pos
-		if (KEYMOD_SHIFT(kstate)) command.y=crawl.y/len.y;
-		else command.y=speed.y/len.y;
+		if (KEYMOD_SHIFT(kstate)) command.y=crawl.y;
+		else command.y=speed.y;
 	}
 	if (KEYDOWN(kstate, OAPI_KEY_Q) && !KEYMOD_CONTROL(kstate)) //Check for Ctrl+Q, too
 	{
 		//Z pos
-		if (KEYMOD_SHIFT(kstate)) command.z=crawl.z/len.z;
-		else command.z=speed.z/len.z;
+		if (KEYMOD_SHIFT(kstate)) command.z=crawl.z;
+		else command.z=speed.z;
 	}
 	if (length(command)!=0)
 	{
@@ -303,9 +303,9 @@ void Crane::clbkSaveState (FILEHANDLE scn)
 
 void Crane::clbkPostCreation ()
 {	
-	SetAnimation(anim_x, position.x);
-	SetAnimation(anim_y, position.y);
-	SetAnimation(anim_z, position.z);
+	SetAnimation(anim_x, position.x, len.x);
+	SetAnimation(anim_y, position.y, len.y);
+	SetAnimation(anim_z, position.z, len.z);
 }
 
 bool Crane::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
@@ -329,17 +329,6 @@ char *Crane::GetName(){return name;}
 
 int Crane::GetWaypoints(){return WAYPOINTS;}
 
-VECTOR3 Crane::GetWaypoint(int index)
-{
-	if (index<0 || index>=WAYPOINTS) return _V(-1,-1,-1);
-	VECTOR3 result=waypoints[index];
-	if (result.x<0) return result;
-	return _V(result.x*len.x, result.y*len.y, result.z*len.z);
-}
+VECTOR3 Crane::GetWaypoint(int index){return (index>=0 && index<WAYPOINTS)?waypoints[index]:_V(-1,-1,-1);}
 
-void Crane::SetWaypoint(int index, VECTOR3 waypoint)
-{
-	if (index<0 || index>=WAYPOINTS) return;
-	if (waypoint.x<0) waypoints[index]=waypoint;
-	else waypoints[index]=_V(waypoint.x/len.x, waypoint.y/len.y, waypoint.z/len.z);
-}
+void Crane::SetWaypoint(int index, VECTOR3 waypoint){if (index>=0 && index<WAYPOINTS) waypoints[index]=waypoint;}

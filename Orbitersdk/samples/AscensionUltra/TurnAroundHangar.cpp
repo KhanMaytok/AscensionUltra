@@ -11,8 +11,8 @@
 
 TurnAroundHangar::TurnAroundHangar(void):Hangar()
 {
-	crane1.SetSpeed(_V(10,10,10));
-	crane1.SetCrawl(_V(1,1,1));	
+	crane1.SetSpeed(_V(0.5,0.5,0.5));
+	crane1.SetCrawl(_V(0.1,0.1,0.1));	
 }
 
 int TurnAroundHangar::GetType(){return HANGARTYPETA;}

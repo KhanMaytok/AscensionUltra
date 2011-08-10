@@ -58,7 +58,7 @@ public:
 
 private:
 	void RecordEvent(VECTOR3 &command);
-	void SetAnimation (int animation, double &position);
+	void SetAnimation (int animation, double &position, double length);
 	VESSEL* owner;
 	MGROUP_TRANSLATE *mgroupX;
 	MGROUP_TRANSLATE *mgroupY;
