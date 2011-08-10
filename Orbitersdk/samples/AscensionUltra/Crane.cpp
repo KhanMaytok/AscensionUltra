@@ -117,6 +117,8 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 		return;
 	}
 	
+	if (waypoint>=WAYPOINTS || waypoint<0) waypoint=0;
+	
 	if (positioning || waiting)
 	{
 		double commandlen=length(command);
@@ -150,7 +152,7 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 				positioning=false;
 				waypoint++;
 			}
-			else if (deltalen<commandlen) //if there is 1 second crawl time left
+			else if (deltalen<trajectoryCrawl) //if there is 1 second crawl time left
 			{
 				command=(command/commandlen)*trajectoryCrawl;
 			}
@@ -161,10 +163,8 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 	}
 	else if (waypoints[waypoint].x<0)
 	{
-		if (waypoints[waypoint].y<0 && waypoints[waypoint].z<0) Stop();
-		else switch ((int)waypoints[waypoint].x)
+		switch ((int)waypoints[waypoint].x)
 		{
-		case LISTSTOP:		Stop(); break;
 		case LISTJUMP:		waypoint=(int)waypoints[waypoint].y; break;
 		case LISTPAUSE:
 			timer=waypoints[waypoint].y;
@@ -177,6 +177,7 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 			trajectoryCrawl=waypoints[waypoint].z;
 			waypoint++;
 			break;
+		default: Stop(); break; //Illegal, LISTSTOP and LISTEMPTY
 		}
 	}
 	else
