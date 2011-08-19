@@ -43,7 +43,6 @@ void Crane::StartAuto(int waypoint)
 {
 	running=true;
 	positioning=false;
-	waiting=false;
 	timer=0;
 	this->waypoint=waypoint;
 	trajectoryCrawl=min(min(crawl.x, crawl.y), crawl.z);
@@ -119,20 +118,9 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 	
 	if (waypoint>=WAYPOINTS || waypoint<0) waypoint=0;
 	
-	if (positioning || waiting)
+	if (positioning)
 	{
 		double commandlen=length(command);
-		if (timer!=0)
-			if ((timer-=simdt)<=0)
-			{
-				timer=0;
-				if (waiting)
-				{					
-					waypoint++;
-					waiting=false;
-				}
-				else command=(command/commandlen)*trajectorySpeed;
-			}
 		if (positioning)
 		{
 			//Check target distance
@@ -150,6 +138,7 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 				command=_V(0,0,0);
 				position=waypoints[waypoint];
 				positioning=false;
+				timer=0;
 				waypoint++;
 			}
 			else if (deltalen<trajectoryCrawl) //if there is 1 second crawl time left
@@ -159,6 +148,15 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 			SetAnimation(anim_x, position.x, len.x);
 			SetAnimation(anim_y, position.y, len.y);
 			SetAnimation(anim_z, position.z, len.z);
+			
+		}		
+	}
+	else if (timer!=0)
+	{
+		if ((timer-=simdt)<=0)
+		{
+			timer=0;
+			waypoint++;			
 		}
 	}
 	else if (waypoints[waypoint].x<0)
@@ -168,7 +166,6 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 		case LISTJUMP:		waypoint=(int)waypoints[waypoint].y; break;
 		case LISTPAUSE:
 			timer=waypoints[waypoint].y;
-			waiting=true;
 			break;
 		case LISTGRAPPLE:	waypoint++; break; //TODO: enter auto grapple code here
 		case LISTRELEASE:	waypoint++; break; //TODO: enter auto release code here

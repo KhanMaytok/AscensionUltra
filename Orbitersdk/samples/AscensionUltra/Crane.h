@@ -78,5 +78,5 @@ private:
 	static int ConsumeDirectKey (void *crane, char *kstate);
 	static void Prefilter (void *crane, WPARAM &wparam, LPARAM &lparam);
 	char *event_prefix, *name;
-	bool running, positioning, waiting;
+	bool running, positioning;
 };
