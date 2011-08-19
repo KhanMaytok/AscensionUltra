@@ -58,13 +58,13 @@ void Crane::Stop()
 		delete filter;
 		filter=NULL;
 	}
-	RecordEvent(oldcommand=command=_V(0.0,0.0,0.0));
+	RecordEvent("CMD", oldcommand=command=_V(0.0,0.0,0.0));
 }
 
 void Crane::StartManual()
 {
 	sprintf(oapiDebugString(), "Crane online (A/D long axis, W/S short axis, Q/E reel, B to return)");
-	RecordEvent(oldcommand=command=_V(0.0,0.0,0.0));
+	RecordEvent("CMD", oldcommand=command=_V(0.0,0.0,0.0));
 	if (filter!=NULL) delete filter;
 	filter=new KeyboardFilter(this, &Crane::ConsumeDirectKey, &Crane::Prefilter);
 }
@@ -103,6 +103,7 @@ void Crane::SetPosition(VECTOR3 pos)
 	SetAnimation(anim_x, position.x, len.x);
 	SetAnimation(anim_y, position.y, len.y);
 	SetAnimation(anim_z, position.z, len.z);
+	RecordEvent("POS", pos);
 }
 
 void Crane::PostStep (double simt, double simdt, double mjd)
@@ -135,15 +136,22 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 			if (commandlen==0 && deltalen==0)
 			{
 				//Target reached
-				command=_V(0,0,0);
-				position=waypoints[waypoint];
+				RecordEvent("CMD", command=_V(0,0,0));
+				RecordEvent("POS", position=waypoints[waypoint]);
 				positioning=false;
 				timer=0;
 				waypoint++;
 			}
 			else if (deltalen<trajectoryCrawl) //if there is 1 second crawl time left
 			{
-				command=(command/commandlen)*trajectoryCrawl;
+				if (timer>=0) RecordEvent("CMD", command=(command/commandlen)*trajectoryCrawl);
+				timer=-1;
+			}
+			else if (timer!=0)
+				if ((timer-=simdt)<=0)
+				{
+					timer=0;
+					RecordEvent("CMD", command=(command/commandlen)*trajectorySpeed);
 			}
 			SetAnimation(anim_x, position.x, len.x);
 			SetAnimation(anim_y, position.y, len.y);
@@ -184,7 +192,7 @@ void Crane::PostStep (double simt, double simdt, double mjd)
 		double deltalen=length(delta);
 		if (deltalen!=0)
 		{
-			command=(delta/deltalen)*trajectoryCrawl;
+			RecordEvent("CMD", command=(delta/deltalen)*trajectoryCrawl);
 			timer=1; // 1 second crawl time
 			positioning=true;
 		}
@@ -275,7 +283,7 @@ int Crane::ConsumeDirectKey (char *kstate)
 	}
 	if (length(command)!=0)
 	{
-		if (oldcommand.x!=command.x || oldcommand.y!=command.y || oldcommand.z!=command.z) RecordEvent(command);
+		if (oldcommand.x!=command.x || oldcommand.y!=command.y || oldcommand.z!=command.z) RecordEvent("CMD", command);
 		return 1;
 	}
 	return 0;
@@ -356,13 +364,22 @@ bool Crane::clbkPlaybackEvent (double simt, double event_t, const char *event_ty
 		sscanf (event, "%lf%lf%lf", &command.x, &command.y, &command.z);
 		return true;
 	}
+	if (!strnicmp (event_type, "POS", 3))
+	{
+		sscanf (event, "%lf%lf%lf", &position.x, &position.y, &position.z);
+		return true;
+	}
 	return false;
 }
 
-void Crane::RecordEvent(VECTOR3 &command)
+void Crane::RecordEvent(const char *command, VECTOR3 &value)
 {
 	static char e[40]="";
-	sprintf(e, "%0.4f %0.4f %0.4f", command.x, command.y, command.z);
+	char *event_prefix_tail=event_prefix+strlen(event_prefix)-3;
+	event_prefix_tail[0]=command[0];
+	event_prefix_tail[1]=command[1];
+	event_prefix_tail[2]=command[2];
+	sprintf(e, "%0.4f %0.4f %0.4f", value.x, value.y, value.z);
 	owner->RecordEvent(event_prefix, e);
 }
 

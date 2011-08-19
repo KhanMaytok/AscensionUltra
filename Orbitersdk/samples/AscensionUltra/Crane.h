@@ -57,7 +57,7 @@ public:
 	virtual VECTOR3 GetWaypoint(int index);
 
 private:
-	void RecordEvent(VECTOR3 &command);
+	void RecordEvent(const char *command, VECTOR3 &value);
 	void SetAnimation (int animation, double &position, double length);
 	VESSEL* owner;
 	MGROUP_TRANSLATE *mgroupX;
