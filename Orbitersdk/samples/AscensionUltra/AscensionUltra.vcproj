@@ -342,6 +342,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Tracker.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TransferDefaultRoom.cpp"
 				>
 			</File>
@@ -419,6 +423,10 @@
 			</File>
 			<File
 				RelativePath=".\Routes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tracker.h"
 				>
 			</File>
 			<File
