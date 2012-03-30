@@ -23,6 +23,7 @@
 #include "AirportHangar.h"
 #include "Routes.h"
 #include "Person.h"
+#include "Tracker.h"
 #include "UMmuSDK.h"
 #include <map>
 
@@ -89,7 +90,7 @@ private:
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
-	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLeaseLight, meshLeaseHeavy, meshLaunch, meshLaunchWindow, meshLeaseLightWindow, meshLeaseHeavyWindow, meshVertical, meshVerticalWindow;
+	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLeaseLight, meshLeaseHeavy, meshLaunch, meshLaunchWindow, meshLeaseLightWindow, meshLeaseHeavyWindow, meshVertical, meshVerticalWindow, meshDRadar;
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LeaseLightHangar leaseLight[LEASELIGHTHANGARS];
 	LeaseHeavyHangar leaseHeavy[LEASEHEAVYHANGARS];
@@ -103,6 +104,7 @@ private:
 	Routes taxiways;
 	Routes runways;
 	Room *controlRoom;
+	Tracker dradar;
 	UMMUCREWMANAGMENT *crew;
 	int orbiterExtensionsResult;
 	float orbiterExtensionsVersion;
@@ -112,7 +114,7 @@ private:
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical;
+	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical, cur_DopplerRadar;
 
 	//DEBUG
 

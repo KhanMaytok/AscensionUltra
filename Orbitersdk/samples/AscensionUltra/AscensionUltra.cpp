@@ -34,6 +34,8 @@
 #define LFMCOFFSET _V(-1463,0,1260)
 #define VLC1OFFSET _V(-1866,0,2560.5)
 #define VLC1MATRIXOFFSET _V(-220,0,0)
+#define DRADAROFFSET _V(-1866,0,1000)
+#define DRADARPIVOT 10
 
 // ==============================================================
 // Global parameters
@@ -126,6 +128,17 @@ void AscensionUltra::InitSubObjects()
 		name[1]=0x31+i;
 		vertical[i].Init(this, name, i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1, prefix);
 	}
+
+	/* Tracker definition */
+	//0-1,7-10 groups are dishes, 4 is static plate, 2-3/5-6 is rotation stand
+	static UINT RotGrp[10] = {2,3,5,6,0,1,7,8,9,10};
+	strcpy(prefix, "DRADAR");
+	strcpy(name, "Doppler Radar");
+	i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+VERTICALLAUNCHFACILITIES;
+	dradar.Init(this, name,
+		new MGROUP_ROTATE(i, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), -360*RAD),
+		new MGROUP_ROTATE(i, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), 90*RAD),
+		90*RAD, prefix);
 
 	strcpy(prefix, "AIRPORT");
 	strcpy(name, "Airport");
@@ -441,6 +454,7 @@ void AscensionUltra::DefineAnimations ()
 	for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].DefineAnimations();
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].DefineAnimations();
 	launchTunnel.DefineAnimations();
+	dradar.DefineAnimations();
 	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) vertical[i].DefineAnimations();
 	airport.DefineAnimations();
 }
@@ -549,6 +563,8 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		SetMeshVisibilityMode (AddMesh (meshVertical, &off), MESHVIS_ALWAYS);
 		vertical[i].SetPosition(off);
 	}
+	SetMeshVisibilityMode (AddMesh (meshDRadar = oapiLoadMeshGlobal ("cssc\\d-radar"), &(OFFSET+DRADAROFFSET)), MESHVIS_ALWAYS);
+	dradar.SetPosition(OFFSET+DRADAROFFSET+_V(0,10,0)); //Position of dish center
 
 	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASELIGHTHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseLightWindow, &(OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
@@ -588,6 +604,10 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+12, "%X", &cur_LaunchTunnel);
 		} else if (cur_LaunchTunnel>=0 && cur_LaunchTunnel<1) {
 			if (!launchTunnel.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (!strnicmp (line, "DRADAR", 6)) {
+			sscanf (line+6, "%X", &cur_DopplerRadar);
+		} else if (cur_DopplerRadar>=0 && cur_DopplerRadar<1) {
+			if (!dradar.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else if (!strnicmp (line, "AIRPORT", 7)) {
 			sscanf (line+7, "%X", &cur_Airport);
 		} else if (cur_Airport>=0 && cur_Airport<1) {
@@ -636,6 +656,10 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	launchTunnel.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "1");
 
+	oapiWriteScenario_string (scn, "DRADAR", "0");
+	dradar.clbkSaveState(scn);
+	oapiWriteScenario_string (scn, "DRADAR", "1");
+
 	for(i=0;i<VERTICALLAUNCHFACILITIES;i++)
 	{
 		sprintf (cbuf, "%X", i);
@@ -660,6 +684,7 @@ void AscensionUltra::clbkPostCreation ()
 	for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].clbkPostCreation();
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].clbkPostCreation();
 	launchTunnel.clbkPostCreation();
+	dradar.clbkPostCreation();
 	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) vertical[i].clbkPostCreation();
 	airport.clbkPostCreation();
 }
@@ -684,6 +709,11 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 	{
 		//Tunnel event
 		return launchTunnel.clbkPlaybackEvent(simt, event_t, event_type+12, event);
+	}
+	if (!strnicmp (event_type, "DRADAR", 6))
+	{
+		//Tunnel event
+		return dradar.clbkPlaybackEvent(simt, event_t, event_type+6, event);
 	}
 	if (!strnicmp (event_type, "VERTICALLAUNCH", 14))
 	{
@@ -723,11 +753,14 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 // --------------------------------------------------------------
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
+	OBJHANDLE obj=oapiGetFocusObject();
+	if (obj!=dradar.GetTarget()) dradar.SetTarget(obj); 
 	//Call post steps of all sub-elements
 	for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].clbkPostStep(simt, simdt, mjd);
 	launchTunnel.clbkPostStep(simt, simdt, mjd);
+	dradar.clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) vertical[i].clbkPostStep(simt, simdt, mjd);
 	airport.clbkPostStep(simt, simdt, mjd);
 
