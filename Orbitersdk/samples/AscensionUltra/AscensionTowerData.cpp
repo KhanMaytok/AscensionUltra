@@ -504,24 +504,24 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 			case 3: return "PUL";
 			case 4: return "WGT";
 			case 5: return "LOC";
-			case 6: return "";
-			case 7: return selectedIndex[AscensionTowerState::Roster]>0?"EVA":"";
+			case 6: return selectedIndex[AscensionTowerState::Roster]>0?"EVA":"";
+			case 7: return selectedIndex[AscensionTowerState::Roster]>0?"DEL":"";
 			case 8: return "";
-			case 9: return selectedIndex[AscensionTowerState::Roster]>0?"DEL":"";
-			case 10: return "";
-			case 11: return "BCK";
+			case 9: return "RES";
+			case 10: return "BCK";
+			case 11: return "HOM";
 		}
 		return NULL;
 	default:
 		int size=GetListSize();
 		switch (bt)
 		{
-			case 6: return size>0?"SEL":"";
-			case 7: return size>1?"UP":"";
-			case 8: return size>1?"DWN":"";
-			case 9: return size>6?"NXT":"";
-			case 10: return size>6?"PRV":"";
-			case 11: return (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"BAS":"BCK";
+			case 6: return size>6?"NXT":"";
+			case 7: return size>6?"PRV":"";
+			case 8: return "";
+			case 9: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"RES":"";
+			case 10: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"BCK":"";
+			case 11: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"HOM":"BAS";
 			default: return size>page[state]*6+bt?" > ":"";
 		}
 		return NULL;
@@ -581,12 +581,12 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		{personMenu[0].line1, "puls", 'P'},
 		{personMenu[0].line1, "weigth", 'W'},
 		{personMenu[0].line1, "location", 'L'},
-		{NULL, NULL, 0},
 		{"EVA person", NULL, 'E'},
+		{"Remove person", "from roster", 'D'},
 		{NULL, NULL, 0},
-		{"Remove person", "from rooster", 'D'},
-		{NULL, NULL, 0},
-		{"Go back", NULL, 'B'}};
+		{"Reset to default", "values", 'R'},
+		{"Go back", NULL, 'B'},
+		{"Main menu", NULL, 'H'}};
 
 	switch(state)
 	{	
@@ -619,13 +619,12 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		for(int i=0;i<12;i++) mnu[i]=personMenu[i];
 		if (selectedIndex[AscensionTowerState::Roster]==0)
 		{
-			mnu[7]=personMenu[6];
-			mnu[9]=personMenu[6];
+			mnu[6]=personMenu[8];
+			mnu[7]=personMenu[8];
 		}
 		return 12;
 	}
 	sprintf(select, "Select %s", target);
-	sprintf(marked, "marked %s", target);
 
 	int size=GetListSize();
 	int k=min(size-page[state]*6, 6);
@@ -644,22 +643,15 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	}
 	
 	k=6;
-	if (size>0)
+	if (size>6)
 	{
-		mnu[6].line1="Select currently";
-		mnu[6].line2=marked;
-		mnu[6].selchar='S';
-		k=7;
-	}
-	if (size>1)
-	{
-		mnu[7].line1="Move marker";
-		mnu[7].line2="up";
-		mnu[7].selchar='U';
-		mnu[8].line1="Move marker";
-		mnu[8].line2="down";
-		mnu[8].selchar='D';
-		k=9;
+		mnu[6].line1="Switch to";
+		mnu[6].line2="next page";
+		mnu[6].selchar='N';
+		mnu[7].line1="Switch to";
+		mnu[7].line2="previous page";
+		mnu[7].selchar='P';
+		k=8;
 	}
 	for(int i=k;i<9;i++)
 	{
@@ -667,26 +659,25 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		mnu[i].line2=NULL;
 		mnu[i].selchar=0;
 	}
-
-	if (size>6)
+	if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu)
 	{
-		mnu[9].line1="Switch to";
-		mnu[9].line2="next page";
-		mnu[9].selchar='N';
-		mnu[10].line1="Switch to";
-		mnu[10].line2="previous page";
-		mnu[10].selchar='P';
+		mnu[9].line1="Reset to default";
+		mnu[9].line2="values";
+		mnu[9].selchar='R';
+		mnu[10].line1="Go back";
+		mnu[10].line2=NULL;
+		mnu[10].selchar='B';
+		k=11;
 	}
-	else for(int i=9;i<11;i++)
+	for(int i=k;i<11;i++)
 	{
 		mnu[i].line1=NULL;
 		mnu[i].line2=NULL;
 		mnu[i].selchar=0;
 	}
-
-	mnu[11].line1=(state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"Scan for bases":"Go back";
+	mnu[11].line1=(state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"Scan for bases":"Main menu";
 	mnu[11].line2=NULL;
-	mnu[11].selchar='B';
+	mnu[11].selchar='H';
 	
 	return 12;
 }
@@ -751,9 +742,11 @@ bool AscensionTowerData::SetButton(int bt)
 		case 3: return SetKey(OAPI_KEY_P);
 		case 4: return SetKey(OAPI_KEY_W);		
 		case 5: return SetKey(OAPI_KEY_L);
-		case 7: return SetKey(OAPI_KEY_E);
-		case 9: return SetKey(OAPI_KEY_D);
-		case 11: return SetKey(OAPI_KEY_B);
+		case 6: return SetKey(OAPI_KEY_E);
+		case 7: return SetKey(OAPI_KEY_D);
+		case 9: return SetKey(OAPI_KEY_R);
+		case 10: return SetKey(OAPI_KEY_B);
+		case 11: return SetKey(OAPI_KEY_H);
 		}
 		break;
 	default:
@@ -765,12 +758,11 @@ bool AscensionTowerData::SetButton(int bt)
 		case 3:
 		case 4:
 		case 5: return SetKey(OAPI_KEY_1+bt);
-		case 6: return SetKey(OAPI_KEY_S);
-		case 7: return SetKey(OAPI_KEY_U);
-		case 8: return SetKey(OAPI_KEY_D);
-		case 9: return SetKey(OAPI_KEY_N);
-		case 10: return SetKey(OAPI_KEY_P);
-		case 11: return SetKey(OAPI_KEY_B);	
+		case 6: return SetKey(OAPI_KEY_N);
+		case 7: return SetKey(OAPI_KEY_P);
+		case 9: return SetKey(OAPI_KEY_R);
+		case 10: return SetKey(OAPI_KEY_B);
+		case 11: return SetKey(OAPI_KEY_H);	
 		}
 		break;
 	}
@@ -1052,6 +1044,12 @@ bool AscensionTowerData::SetKey(DWORD key)
 		case OAPI_KEY_B:
 			Back();
 			break;
+		case OAPI_KEY_H:
+			SetState(AscensionTowerState::MainMenu);
+			break;
+		case OAPI_KEY_R:
+			//Reset();
+			break;
 		default:
 			result=false;
 			break;
@@ -1079,36 +1077,16 @@ bool AscensionTowerData::SetKey(DWORD key)
 			}
 			else result=false;		
 			break;
-		case OAPI_KEY_U://Selection up
-			if (size>1)
-			{
-				if (selection[state]>0) selection[state]--;
-				else
-				{
-					SetKey(OAPI_KEY_P);
-					selection[state]=min(size-page[state]*6, 6)-1;
-				}
-			}
-			else result=false;
+		case OAPI_KEY_B://Go back
+			if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu)	Back();
 			break;
-		case OAPI_KEY_D://Selection down
-			if (size>1)
-			{
-				if (selection[state]<min(size-page[state]*6, 6)-1) selection[state]++;
-				else
-				{
-					SetKey(OAPI_KEY_N);
-					selection[state]=0;
-				}
-			}
-			else result=false;
+		case OAPI_KEY_H://Main menu/Scan for bases
+			if (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)
+				SetState(AscensionTowerState::BaseSelect);
+			else SetState(AscensionTowerState::MainMenu);
 			break;
-		case OAPI_KEY_S://Select
-			if (size>0) Select();
-			else result=false;
-			break;
-		case OAPI_KEY_B://Go back/Scan for bases
-			Back();
+		case OAPI_KEY_R://Reset to default
+			//if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu) Reset();
 			break;
 		default:
 			if (key>=OAPI_KEY_1 && key<=OAPI_KEY_6)
