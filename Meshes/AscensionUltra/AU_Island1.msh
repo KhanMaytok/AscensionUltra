@@ -5304,7 +5304,7 @@ ac3dmat1
 MATERIAL ac3dmat1
 1 1 1 1
 0.2 0.2 0.2 1
-0.2 0.2 0.2 1 128
+0.2 0.2 0.2 1 64
 0 0 0 1
 TEXTURES 1
 AscensionUltra/AU_Island_Tex.dds
