@@ -504,24 +504,24 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 			case 3: return "PUL";
 			case 4: return "WGT";
 			case 5: return "LOC";
-			case 6: return selectedIndex[AscensionTowerState::Roster]>0?"EVA":"";
-			case 7: return selectedIndex[AscensionTowerState::Roster]>0?"DEL":"";
-			case 8: return "";
-			case 9: return "RES";
-			case 10: return "BCK";
-			case 11: return "HOM";
+			case 6: return "HOM";
+			case 7: return "BCK";
+			case 8: return "RES";
+			case 9: return "";
+			case 10: return selectedIndex[AscensionTowerState::Roster]>0?"EVA":"";
+			case 11: return selectedIndex[AscensionTowerState::Roster]>0?"DEL":"";
 		}
 		return NULL;
 	default:
 		int size=GetListSize();
 		switch (bt)
 		{
-			case 6: return size>6?"NXT":"";
-			case 7: return size>6?"PRV":"";
-			case 8: return "";
-			case 9: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"RES":"";
-			case 10: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"BCK":"";
-			case 11: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"HOM":"BAS";
+			case 6: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"HOM":"BAS";
+			case 7: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"BCK":"";
+			case 8: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"RES":"";
+			case 9: return "";
+			case 10: return size>6?"NXT":"";
+			case 11: return size>6?"PRV":"";
 			default: return size>page[state]*6+bt?" > ":"";
 		}
 		return NULL;
@@ -581,12 +581,12 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		{personMenu[0].line1, "puls", 'P'},
 		{personMenu[0].line1, "weigth", 'W'},
 		{personMenu[0].line1, "location", 'L'},
-		{"EVA person", NULL, 'E'},
-		{"Remove person", "from roster", 'D'},
-		{NULL, NULL, 0},
-		{"Reset to default", "values", 'R'},
+		{"Main menu", NULL, 'H'},
 		{"Go back", NULL, 'B'},
-		{"Main menu", NULL, 'H'}};
+		{"Reset to default", "values", 'R'},
+		{NULL, NULL, 0},
+		{"EVA person", NULL, 'E'},
+		{"Remove person", "from roster", 'D'}};
 
 	switch(state)
 	{	
@@ -619,8 +619,8 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		for(int i=0;i<12;i++) mnu[i]=personMenu[i];
 		if (selectedIndex[AscensionTowerState::Roster]==0)
 		{
-			mnu[6]=personMenu[8];
-			mnu[7]=personMenu[8];
+			mnu[10]=personMenu[9];
+			mnu[11]=personMenu[9];
 		}
 		return 12;
 	}
@@ -643,42 +643,39 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 	}
 	
 	k=6;
-	if (size>6)
-	{
-		mnu[6].line1="Switch to";
-		mnu[6].line2="next page";
-		mnu[6].selchar='N';
-		mnu[7].line1="Switch to";
-		mnu[7].line2="previous page";
-		mnu[7].selchar='P';
-		k=8;
-	}
-	for(int i=k;i<9;i++)
-	{
-		mnu[i].line1=NULL;
-		mnu[i].line2=NULL;
-		mnu[i].selchar=0;
-	}
+	mnu[k].line1=(state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"Scan for bases":"Main menu";
+	mnu[k].line2=NULL;
+	mnu[k++].selchar='H';
 	if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu)
 	{
-		mnu[9].line1="Reset to default";
-		mnu[9].line2="values";
-		mnu[9].selchar='R';
-		mnu[10].line1="Go back";
-		mnu[10].line2=NULL;
-		mnu[10].selchar='B';
-		k=11;
+		mnu[k].line1="Go back";
+		mnu[k].line2=NULL;
+		mnu[k++].selchar='B';
+		mnu[k].line1="Reset to default";
+		mnu[k].line2="values";
+		mnu[k++].selchar='R';
 	}
-	for(int i=k;i<11;i++)
+	for(;k<10;k++)
 	{
-		mnu[i].line1=NULL;
-		mnu[i].line2=NULL;
-		mnu[i].selchar=0;
+		mnu[k].line1=NULL;
+		mnu[k].line2=NULL;
+		mnu[k].selchar=0;
 	}
-	mnu[11].line1=(state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"Scan for bases":"Main menu";
-	mnu[11].line2=NULL;
-	mnu[11].selchar='H';
-	
+	if (size>6)
+	{
+		mnu[k].line1="Switch to";
+		mnu[k].line2="next page";
+		mnu[k++].selchar='N';
+		mnu[k].line1="Switch to";
+		mnu[k].line2="previous page";
+		mnu[k++].selchar='P';		
+	}	
+	for(;k<12;k++)
+	{
+		mnu[k].line1=NULL;
+		mnu[k].line2=NULL;
+		mnu[k].selchar=0;
+	}
 	return 12;
 }
 
@@ -742,11 +739,11 @@ bool AscensionTowerData::SetButton(int bt)
 		case 3: return SetKey(OAPI_KEY_P);
 		case 4: return SetKey(OAPI_KEY_W);		
 		case 5: return SetKey(OAPI_KEY_L);
-		case 6: return SetKey(OAPI_KEY_E);
-		case 7: return SetKey(OAPI_KEY_D);
-		case 9: return SetKey(OAPI_KEY_R);
-		case 10: return SetKey(OAPI_KEY_B);
-		case 11: return SetKey(OAPI_KEY_H);
+		case 6: return SetKey(OAPI_KEY_H);
+		case 7: return SetKey(OAPI_KEY_B);
+		case 8: return SetKey(OAPI_KEY_R);
+		case 10: return SetKey(OAPI_KEY_E);
+		case 11: return SetKey(OAPI_KEY_D);
 		}
 		break;
 	default:
@@ -758,11 +755,11 @@ bool AscensionTowerData::SetButton(int bt)
 		case 3:
 		case 4:
 		case 5: return SetKey(OAPI_KEY_1+bt);
-		case 6: return SetKey(OAPI_KEY_N);
-		case 7: return SetKey(OAPI_KEY_P);
-		case 9: return SetKey(OAPI_KEY_R);
-		case 10: return SetKey(OAPI_KEY_B);
-		case 11: return SetKey(OAPI_KEY_H);	
+		case 6: return SetKey(OAPI_KEY_H);
+		case 7: return SetKey(OAPI_KEY_B);
+		case 8: return SetKey(OAPI_KEY_R);
+		case 10: return SetKey(OAPI_KEY_N);
+		case 11: return SetKey(OAPI_KEY_P);	
 		}
 		break;
 	}
