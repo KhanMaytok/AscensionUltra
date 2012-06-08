@@ -214,12 +214,12 @@ void AscensionTower::RenderSelectionPage()
 	SelectDefaultFont (hDC, 0);
 	int selection=data->GetSelection();
 	for(int i=0; i+page*6<size && i<6; i++) WriteMFD(data->GetListItem(i+page*6).Name, AT_BUTTON[i], 1, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
-	if (pages>1)
+	if (pages>0)
 	{
 		sprintf(line, "p.%d/%d", page+1, pages);
 		WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
 	}
-	else if (pages==0) WriteMFD("N O   B A S E S   A V A I L A B L E");
+	else WriteMFD("N O   B A S E S   A V A I L A B L E");
 }
 
 void AscensionTower::RenderDoorControlPage()
