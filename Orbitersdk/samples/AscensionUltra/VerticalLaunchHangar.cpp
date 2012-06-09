@@ -29,7 +29,7 @@ void VerticalLaunchHangar::DefineAnimations ()
 		new MGROUP_ROTATE(meshIndex, DoorGrp+8, 1,	_V(17,92,-97), _V(0,0,-1), (float)(90*RAD)));
 	Hangar::DefineAnimations();
 	
-	rooms[0].Init(owner, this, "Vertical Launch Control", _V(0,149,-137), _V(0,0,1), _V(0,0,0), 4);
+	rooms[0].Init(owner, this, "Vertical Launch Control", _V(0,150,-137), _V(0,0,1), _V(0,0,0), 4);
 
 	doors[0].SetSpeed(0.02); //50s for full animation
 }
