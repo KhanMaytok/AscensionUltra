@@ -35,8 +35,9 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define VERTICALLAUNCHFACILITIES 2
 #define TAXIWAYSUBSECTIONS 32
 #define TAXIWAYPATHS 24
-#define RUNWAYSUBSECTIONS 92
-#define RUNWAYPATHS 20
+#define RUNWAYSUBSECTIONS 112
+#define RUNWAYPATHS 24
+#define DRADARS 2
 
 //Defines for person change API
 #define PERSON_EVA		0x00
@@ -104,7 +105,7 @@ private:
 	Routes taxiways;
 	Routes runways;
 	Room *controlRoom;
-	Tracker dradar;
+	Tracker dradar[DRADARS];
 	UMMUCREWMANAGMENT *crew;
 	int orbiterExtensionsResult;
 	float orbiterExtensionsVersion;
