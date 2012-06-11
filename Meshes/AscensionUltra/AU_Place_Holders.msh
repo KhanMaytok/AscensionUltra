@@ -10962,9 +10962,9 @@ MATERIALS 1
 ac3dmat14
 MATERIAL ac3dmat14
 0.8 0.8 0.8 1
-0.2 0.2 0.2 1
-0.102 0.102 0.102 1 128
-0.125 0.125 0.125 1
+0.4 0.4 0.4 1
+0.2 0.2 0.2 1 128
+0.1 0.1 0.1 1
 TEXTURES 4
 AscensionUltra/TR_signs.dds
 AscensionUltra/TA_Tex.dds
