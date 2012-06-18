@@ -31,8 +31,8 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define VERTICALLAUNCHFACILITIES 2
 #define TAXIWAYSUBSECTIONS 32
 #define TAXIWAYPATHS 24
-#define RUNWAYSUBSECTIONS 112
-#define RUNWAYPATHS 24
+#define RUNWAYSUBSECTIONS 66
+#define RUNWAYPATHS 14
 #define DRADARS 2
 
 //Defines for person change API
