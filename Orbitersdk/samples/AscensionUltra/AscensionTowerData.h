@@ -34,6 +34,7 @@ typedef enum AscensionTowerState
 	PassengerTransfer,
 	CraneList,
 	CraneGrapple,
+	Reset,
 };
 
 struct AscensionTowerListPair
@@ -44,7 +45,7 @@ struct AscensionTowerListPair
 
 class AscensionTowerData;
 
-typedef struct AscensionTowerCallbackData
+struct AscensionTowerCallbackData
 {
 	int Flags;	
 	AscensionTowerData *Data;

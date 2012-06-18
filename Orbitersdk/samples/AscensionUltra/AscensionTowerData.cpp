@@ -118,7 +118,7 @@ int AscensionTowerData::GetListSize()
 	switch(state)
 	{
 	case AscensionTowerState::BaseSelect: return scanList.size();
-	case AscensionTowerState::MainMenu: return 4;
+	case AscensionTowerState::MainMenu: return 5;
 	case AscensionTowerState::GroundMenu: return ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)==NULL?4:5;
 	case AscensionTowerState::ATCMenu: return 3;
 	case AscensionTowerState::HangarForDoorSelection:	
@@ -133,7 +133,7 @@ int AscensionTowerData::GetListSize()
 	case AscensionTowerState::CraneList: return ((Crane *)object[state])->GetWaypoints();
 	case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
 	case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
-	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints()-3; //Do not show launch runway and statics
+	case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
 	case AscensionTowerState::Roster: return ascension->GetPersons();
 	case AscensionTowerState::PassengerTransfer:
 		if (ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)!=(Hangar *)object[state])
@@ -148,7 +148,7 @@ int AscensionTowerData::GetListSize()
 
 AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 {
-	static AscensionTowerListPair mainMenu[4]={{0," Ground Operations"},{1," Air Traffic Control"},{2," Control Rooms"}, {3, " Roster"}};
+	static AscensionTowerListPair mainMenu[5]={{0," Ground Operations"},{1," Air Traffic Control"},{2," Control Rooms"}, {3, " Roster"}, {4, " Reset to Defaults"}};
 	static AscensionTowerListPair groundMenu[5]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"},{4," Request Passenger Transfer"}};
 	static AscensionTowerListPair atcMenu[3]={{0," Request Bearing"},{1," Request Clearance to Land"},{2," Request Launch Clearance"}};
 	static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};	
@@ -323,6 +323,7 @@ void AscensionTowerData::Select(int index)
 		case 1: SetState(AscensionTowerState::ATCMenu); break;
 		case 2: SetState(AscensionTowerState::HangarForRoomSelection); break;
 		case 3: SetState(AscensionTowerState::Roster); break;
+		case 4: SetState(AscensionTowerState::Reset); break;
 		}		
 		break;
 	case AscensionTowerState::GroundMenu:
