@@ -13,6 +13,8 @@
 #include "windows.h"
 #include "orbitersdk.h"
 #include "AscensionTower.h"
+#pragma warning(disable : 4482)
+
 
 // ==============================================================
 // Global variables
@@ -136,7 +138,6 @@ void AscensionTower::Update (HDC hDC)
 		g_Bar=CreateSolidBrush(g_MiddleGreen);
 	}
 
-	char line[40];
 	AscensionTowerState state=data->GetState();
 	AscensionUltra *au=NULL;
 	//Get Ascension object - lost or changed Ascension objects will cause state to change
@@ -330,9 +331,9 @@ void AscensionTower::RenderPersonPage()
 	Person person=ascension->GetPerson(data->GetSelectedIndex());
 	WriteMFD(person.Name, AT_BUTTON[0], 7, WRITEMFD_HALFLINES);
 	WriteMFD(person.MiscId, AT_BUTTON[1], 7, WRITEMFD_HALFLINES);
-	WriteMFD(itoa(person.Age, line, 10), AT_BUTTON[2], 7, WRITEMFD_HALFLINES);
-	WriteMFD(itoa(person.Puls, line, 10), AT_BUTTON[3], 7, WRITEMFD_HALFLINES);
-	WriteMFD(itoa(person.Weight, line, 10), AT_BUTTON[4], 7, WRITEMFD_HALFLINES);
+	WriteMFD(_itoa(person.Age, line, 10), AT_BUTTON[2], 7, WRITEMFD_HALFLINES);
+	WriteMFD(_itoa(person.Puls, line, 10), AT_BUTTON[3], 7, WRITEMFD_HALFLINES);
+	WriteMFD(_itoa(person.Weight, line, 10), AT_BUTTON[4], 7, WRITEMFD_HALFLINES);
 	WriteMFD(person.Location->GetHangar()->GetName(), AT_BUTTON[5]-1, 7, WRITEMFD_HALFLINES);
 	WriteMFD(person.Location->GetName(), AT_BUTTON[5]+1, 11, WRITEMFD_HALFLINES);
 }

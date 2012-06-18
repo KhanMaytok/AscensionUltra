@@ -1,4 +1,6 @@
 #include "AscensionTowerData.h"
+#pragma warning(disable : 4482)
+
 
 AscensionTowerData::AscensionTowerData(MFD* mfd, VESSEL *vessel)
 {
@@ -98,7 +100,7 @@ void AscensionTowerData::Scan()
 		if (strcmp(vessel->GetClassName(), "AscensionUltra")==0)
 		{
 			char *source=vessel->GetName();
-			int l=strlen(itoa(i, line, 10));
+			int l=strlen(_itoa(i, line, 10));
 			int sum=strlen(source)+l+3;
 			if (sum<37) sprintf(target=new char[sum+1], "[%s] %s", line, source);
 			else
@@ -408,7 +410,7 @@ void AscensionTowerData::Select(int index)
 		{
 			start=t->GetPoint(selectedIndex[state]);
 			bool on=!t->On(start, t->GetPoint(2, false, start));
-			int k=t->GetPoints()-3;
+			int k=t->GetPoints();
 			for(int i=0;i<k;i++)
 			{
 				start=t->GetPoint(i);
