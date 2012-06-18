@@ -330,6 +330,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Module.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Person.cpp"
 				>
 			</File>
@@ -411,6 +415,10 @@
 			</File>
 			<File
 				RelativePath=".\meshres.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Module.h"
 				>
 			</File>
 			<File

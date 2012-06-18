@@ -8,13 +8,9 @@
 // Class interface of Ascension Ultra vessel.
 // ==============================================================
 
-#ifndef __ASCENSIONULTRA_H
-#define __ASCENSIONULTRA_H
-
-#define STRICT
-
+#pragma once
 #include "orbitersdk.h"
-#include "resource.h"
+#include "Module.h"
 #include "TurnAroundHangar.h"
 #include "LeaseLightHangar.h"
 #include "LeaseHeavyHangar.h"
@@ -128,13 +124,3 @@ private:
 	int mnr;
 
 };
-
-typedef struct {
-	HINSTANCE hDLL;
-	HFONT font[2];
-	DWORD col[4];
-	HBRUSH brush[4];
-	HPEN pen[2];
-} GDIParams;
-
-#endif // !__ASCENSIONULTRA_H
