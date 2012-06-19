@@ -11,8 +11,11 @@
 #include "Hangar.h"
 #include "Door.h"
 #include "Room.h"
-#define DOORS 4
-#define ROOMS 2
+#include "BeaconArray.h"
+#define DOORS	4
+#define ROOMS	2
+#define BEACONS	26
+#define SECTION	"LFMC"
 
 class LaunchTunnelHangar:public Hangar
 {
@@ -27,5 +30,6 @@ public:
 	void SetPosition(VECTOR3 position);
 private:
 	Door doors[DOORS];	
-	Room rooms[ROOMS];	
+	Room rooms[ROOMS];
+	BeaconArray beacons[BEACONS];
 };

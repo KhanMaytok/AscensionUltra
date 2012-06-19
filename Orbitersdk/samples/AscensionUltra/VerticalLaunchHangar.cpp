@@ -8,6 +8,7 @@
 // Class implementation of vertical launch facility buildings.
 // ==============================================================
 #include "VerticalLaunchHangar.h"
+#include "Module.h"
 
 int VerticalLaunchHangar::GetType(){return HANGARTYPEVLC;}
 
@@ -30,6 +31,8 @@ void VerticalLaunchHangar::DefineAnimations ()
 	Hangar::DefineAnimations();
 	
 	rooms[0].Init(owner, this, "Vertical Launch Control", _V(0,150,-137), _V(0,0,1), _V(0,0,0), 4);
+
+	ReadBeaconDefinition(beacons, BEACONS, SECTION, position, owner);
 
 	doors[0].SetSpeed(0.02); //50s for full animation
 }

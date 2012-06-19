@@ -8,6 +8,7 @@
 // Class implementation of launch tunnel building.
 // ==============================================================
 #include "LaunchTunnelHangar.h"
+#include "Module.h"
 
 int LaunchTunnelHangar::GetType(){return HANGARTYPELFMC;}
 
@@ -31,6 +32,8 @@ void LaunchTunnelHangar::DefineAnimations ()
 
 	rooms[0].Init(owner, this, "Control", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
 	rooms[1].Init(owner, this, "Tower", _V(111,218,70), _V(0,0,-1));
+
+	ReadBeaconDefinition(beacons, BEACONS, SECTION, position, owner);
 
 	Hangar::DefineAnimations();
 }
