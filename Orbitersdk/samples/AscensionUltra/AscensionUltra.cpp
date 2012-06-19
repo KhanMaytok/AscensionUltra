@@ -244,7 +244,12 @@ void AscensionUltra::InitSubObjects()
 		"Lease Hangars"		//14
 	};
 
-	taxiways.Init(1.4, 0.4, 2, 0.3, -0.2);
+	taxiways.Init(
+		taxiwaySubsection[0].GetSize(),
+		taxiwaySubsection[0].GetFallOff(),
+		taxiwaySubsection[0].GetPeriod(),
+		taxiwaySubsection[0].GetDuration(),
+		taxiwaySubsection[0].GetPropagate());
 	//Generated subsection table by Excel
 	taxiways.Add(&taxiwayPath[0], points[1], points[2], true, 78);
 	taxiways.Add(&taxiwayPath[1], points[1], points[3], true, 76);
@@ -280,7 +285,12 @@ void AscensionUltra::InitSubObjects()
 
 	taxiways.Switch(true);
 
-	runways.Init(1.4, 0.4, 2, 0.12, -0.07);
+	runways.Init(
+		runwaySubsection[0].GetSize(),
+		runwaySubsection[0].GetFallOff(),
+		runwaySubsection[0].GetPeriod(),
+		runwaySubsection[0].GetDuration(),
+		runwaySubsection[0].GetPropagate());
 	runways.Add(&runwayPath[0], points[9], points[11], false, 49);
 	runways.Add(&runwayPath[1], points[4], points[11], false, 99);
 	runways.Add(&runwayPath[6], points[4], points[12], false, 98);
@@ -305,13 +315,7 @@ void AscensionUltra::InitSubObjects()
 	runways.Switch(points[9],points[11],true); //Runway 13L/31R static
 	runways.Switch(points[10],points[11],true);//Runway 31L/13R static
 
-	double landingStrobes[4][2]={{35,-2},{45,-2},{55,2},{65,2}};	
-	for(int i=0;i<4;i++)
-	{
-		runwaySubsection[(int)landingStrobes[i][0]].SetPeriod(landingStrobes[i][1]);
-		runwaySubsection[(int)landingStrobes[i][0]].SetDuration(0.12);
-		runwaySubsection[(int)landingStrobes[i][0]].SetPropagate(-0.07);
-	}
+	OverwriteBeaconParamsDefinition(runwaySubsection, RUNWAYSUBSECTIONS, "RUNWAYS");
 
 	//Finalize routes with priorities
 	taxiways.PriorityFinalize();

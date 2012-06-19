@@ -91,21 +91,51 @@ void ReadBeaconDefinition(BeaconArray *beacons, int count, const char *section, 
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
+	char defaults[LINESIZE]="";
+	GetPrivateProfileString(section, "BeaconParams", "1,1,1,1,0", defaults, LINESIZE, INIFILE);
 	for(int i=0;i<count;i++)
 	{
 		sprintf(pf, "BeaconArray%d", i);
 		GetPrivateProfileString(section, pf, "0,0,0 0,0,0 0,0,0 1", line, LINESIZE, INIFILE);
 		VECTOR3 start, end, color;
-		int size;
-		sscanf(line, "%lf,%lf,%lf %lf,%lf,%lf %lf,%lf,%lf %d", &start.x, &start.y, &start.z, &end.x, &end.y, &end.z, &color.x, &color.y, &color.z, &size);
+		int length;
+		sscanf(line, "%lf,%lf,%lf %lf,%lf,%lf %lf,%lf,%lf %d", &start.x, &start.y, &start.z, &end.x, &end.y, &end.z, &color.x, &color.y, &color.z, &length);
+		sprintf(pf, "BeaconParams%d", i);
+		GetPrivateProfileString(section, pf, defaults, line, LINESIZE, INIFILE);
+		double size, falloff, period, duration, propagation;
+		sscanf(line, "%lf,%lf,%lf,%lf,%lf", &size, &falloff, &period, &duration, &propagation);
 		//Coordinate transformation
 		start.x=-start.x;
 		start+=position;
 		end.x=-end.x;
 		end+=position;
 		color/=255;
-		beacons[i].Init(owner, start, end, color, size);
+		beacons[i].Init(owner, start, end, color, length);
+		beacons[i].SetSize(size);
+		beacons[i].SetFallOff(falloff);
+		beacons[i].SetPeriod(period);
+		beacons[i].SetDuration(duration);
+		beacons[i].SetPropagate(propagation);
 		beacons[i].Switch(true);
+	}
+}
+
+void OverwriteBeaconParamsDefinition(BeaconArray *beacons, int count, const char *section)
+{
+	char pf[PREFIXSIZE]="";
+	char line[LINESIZE]="";
+	for(int i=0;i<count;i++)
+	{
+		sprintf(pf, "BeaconParams%d", i);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		if (line[0]==0x00) continue;
+		double size, falloff, period, duration, propagation;
+		sscanf(line, "%lf,%lf,%lf,%lf,%lf", &size, &falloff, &period, &duration, &propagation);
+		beacons[i].SetSize(size);
+		beacons[i].SetFallOff(falloff);
+		beacons[i].SetPeriod(period);
+		beacons[i].SetDuration(duration);
+		beacons[i].SetPropagate(propagation);
 	}
 }
 
