@@ -8,6 +8,8 @@ BeaconArray::BeaconArray(void)
 	period=0;
 	duration=0;
 	propagate=0;
+	offset=0;
+	offsetPropagation=0;
 	color=_V(0,1,0);
 }
 
