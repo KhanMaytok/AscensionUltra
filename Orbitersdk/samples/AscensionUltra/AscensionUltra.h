@@ -22,6 +22,7 @@
 #include "Tracker.h"
 #include "UMmuSDK.h"
 #include <map>
+#include <vector>
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -107,6 +108,7 @@ private:
 	float orbiterExtensionsVersion;
 	std::map<Room*,VESSEL*> roomVessel;
 	std::map<VESSEL*, Room*> vesselRoom;
+	std::vector<char *> endPoints;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

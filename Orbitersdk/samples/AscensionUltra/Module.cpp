@@ -6,10 +6,10 @@
 
 #include "AscensionUltra.h"
 #include "Module.h"
-//#include "ScnEditorAPI.h"
-//#include "DlgCtrl.h"
-//#include "meshres.h"
-//#include "resource.h"
+#include "ScnEditorAPI.h"
+#include "DlgCtrl.h"
+#include "meshres.h"
+#include "resource.h"
 
 #define STRICT
 
@@ -120,6 +120,81 @@ void ReadBeaconDefinition(BeaconArray *beacons, int count, const char *section, 
 	}
 }
 
+void ReadBeaconPaths(BeaconPath *paths, int count, BeaconArray *beacons, const char *section, VESSEL *owner)
+{
+	char pf[PREFIXSIZE]="";
+	char line[LINESIZE]="";
+	for(int i=0;i<count;i++)
+	{
+		paths[i].Init(owner, NULL, _V(0,0,0), 0, 0);
+		sprintf(pf, "BeaconPath%d", i);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		int k=strlen(line);
+		int s=0;
+		bool valid=false;
+		for(int j=0;j<k;j++) switch(line[j])
+		{
+		case ';':
+			line[j]=0x00;
+			j=k;
+			break;
+		case ',':
+			if (valid)
+			{
+				line[j]=0x00;
+				int val=atoi(line+s);
+				if (val<0) paths[i].Add(beacons-val, true);
+				else paths[i].Add(beacons+val, false);
+			}
+			s=j+1;
+			valid=false;
+			break;
+		default:
+			if (line[j]<'0' || line[j]>'9') break;
+			valid=true;
+			break;
+		}		
+		if (valid)
+		{
+			int val=atoi(line+s);
+			if (val<0) paths[i].Add(beacons-val, true);
+			else paths[i].Add(beacons+val);
+		}
+	}
+}
+
+void ReadBeaconEndPoints(std::vector<char *> *endPoints, const char *section)
+{
+	char pf[PREFIXSIZE]="";
+	char line[LINESIZE]="";
+	int i=0;
+	while(true)
+	{
+		sprintf(pf, "BeaconEndPoint%d", i++);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		if (line[0]==0x00) break;
+		char *p=new char[strlen(line)+1];
+		strcpy(p, line);
+		endPoints->push_back(p);
+	}
+}
+
+void ReadBeaconRoutes(Routes *routes, BeaconPath *paths, std::vector<char *> *endPoints, const char *section)
+{
+	char pf[PREFIXSIZE]="";
+	char line[LINESIZE]="";
+	int i=0;
+	while(true)
+	{
+		sprintf(pf, "BeaconRoute%d", i++);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		if (line[0]==0x00) break;
+		int path, start, end, reverse, priority;
+		sscanf(line, "%d %d:%d %d %d", &path, &start, &end, &reverse, &priority);
+		routes->Add(&paths[path], (*endPoints)[start], (*endPoints)[end], reverse?true:false, priority);
+	}
+}
+
 void OverwriteBeaconParamsDefinition(BeaconArray *beacons, int count, const char *section)
 {
 	char pf[PREFIXSIZE]="";
@@ -173,7 +248,7 @@ DLLCLBK void ovcExit (VESSEL *vessel)
 	if (vessel) delete (AscensionUltra*)vessel;
 }
 
-/*AscensionUltra *GetDG (HWND hDlg)
+AscensionUltra *GetDG (HWND hDlg)
 {
 	// retrieve AscensionUltra interface from scenario editor
 	OBJHANDLE hVessel;
@@ -288,4 +363,3 @@ void UpdateCtrlDialog (AscensionUltra *dg, HWND hWnd)
 	SendDlgItemMessage (hWnd, IDC_OLOCK_OPEN, BM_SETCHECK, bstatus[op], 0);
 	SendDlgItemMessage (hWnd, IDC_OLOCK_CLOSE, BM_SETCHECK, bstatus[1-op], 0);	
 }
-*/
