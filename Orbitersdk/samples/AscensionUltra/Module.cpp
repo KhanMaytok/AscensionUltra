@@ -87,20 +87,22 @@ void RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref)
 	}	
 }
 
-void ReadBeaconDefinition(BeaconArray *beacons, int count, const char *section, VECTOR3 position, VESSEL *owner)
+void ReadBeaconDefinition(std::vector<BeaconArray *> &beacons, const char *section, VECTOR3 position, VESSEL *owner)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
 	char defaults[LINESIZE]="";
+	int i=0;
 	GetPrivateProfileString(section, "BeaconParams", "1,1,1,1,0", defaults, LINESIZE, INIFILE);
-	for(int i=0;i<count;i++)
+	while(true)
 	{
 		sprintf(pf, "BeaconArray%d", i);
-		GetPrivateProfileString(section, pf, "0,0,0 0,0,0 0,0,0 1", line, LINESIZE, INIFILE);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		if (line[0]==0x00) break;
 		VECTOR3 start, end, color;
 		int length;
 		sscanf(line, "%lf,%lf,%lf %lf,%lf,%lf %lf,%lf,%lf %d", &start.x, &start.y, &start.z, &end.x, &end.y, &end.z, &color.x, &color.y, &color.z, &length);
-		sprintf(pf, "BeaconParams%d", i);
+		sprintf(pf, "BeaconParams%d", i++);
 		GetPrivateProfileString(section, pf, defaults, line, LINESIZE, INIFILE);
 		double size, falloff, period, duration, propagation;
 		sscanf(line, "%lf,%lf,%lf,%lf,%lf", &size, &falloff, &period, &duration, &propagation);
@@ -110,25 +112,30 @@ void ReadBeaconDefinition(BeaconArray *beacons, int count, const char *section, 
 		end.x=-end.x;
 		end+=position;
 		color/=255;
-		beacons[i].Init(owner, start, end, color, length);
-		beacons[i].SetSize(size);
-		beacons[i].SetFallOff(falloff);
-		beacons[i].SetPeriod(period);
-		beacons[i].SetDuration(duration);
-		beacons[i].SetPropagate(propagation);
-		beacons[i].Switch(true);
+		BeaconArray *beacon=new BeaconArray();
+		beacon->Init(owner, start, end, color, length);
+		beacon->SetSize(size);
+		beacon->SetFallOff(falloff);
+		beacon->SetPeriod(period);
+		beacon->SetDuration(duration);
+		beacon->SetPropagate(propagation);
+		beacon->Switch(true);
+		beacons.push_back(beacon);
 	}
 }
 
-void ReadBeaconPaths(BeaconPath *paths, int count, BeaconArray *beacons, const char *section, VESSEL *owner)
+void ReadBeaconPaths(std::vector<BeaconPath *> &paths, std::vector<BeaconArray *> &beacons, const char *section, VESSEL *owner)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
-	for(int i=0;i<count;i++)
+	int i=0;
+	while(true)
 	{
-		paths[i].Init(owner, NULL, _V(0,0,0), 0, 0);
-		sprintf(pf, "BeaconPath%d", i);
+		sprintf(pf, "BeaconPath%d", i++);
 		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		if (line[0]==0x00) break;
+		BeaconPath *path=new BeaconPath();
+		path->Init(owner, NULL, _V(0,0,0), 0, 0);
 		int k=strlen(line);
 		int s=0;
 		bool valid=false;
@@ -143,8 +150,8 @@ void ReadBeaconPaths(BeaconPath *paths, int count, BeaconArray *beacons, const c
 			{
 				line[j]=0x00;
 				int val=atoi(line+s);
-				if (val<0) paths[i].Add(beacons-val, true);
-				else paths[i].Add(beacons+val, false);
+				if (val<0) path->Add(beacons[-val], true);
+				else path->Add(beacons[val], false);
 			}
 			s=j+1;
 			valid=false;
@@ -157,13 +164,14 @@ void ReadBeaconPaths(BeaconPath *paths, int count, BeaconArray *beacons, const c
 		if (valid)
 		{
 			int val=atoi(line+s);
-			if (val<0) paths[i].Add(beacons-val, true);
-			else paths[i].Add(beacons+val);
+			if (val<0) path->Add(beacons[-val], true);
+			else path->Add(beacons[val]);
 		}
+		paths.push_back(path);
 	}
 }
 
-void ReadBeaconEndPoints(std::vector<char *> *endPoints, const char *section)
+void ReadBeaconEndPoints(std::vector<char *> &endPoints, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
@@ -175,11 +183,11 @@ void ReadBeaconEndPoints(std::vector<char *> *endPoints, const char *section)
 		if (line[0]==0x00) break;
 		char *p=new char[strlen(line)+1];
 		strcpy(p, line);
-		endPoints->push_back(p);
+		endPoints.push_back(p);
 	}
 }
 
-void ReadBeaconRoutes(Routes *routes, BeaconPath *paths, std::vector<char *> *endPoints, const char *section)
+void ReadBeaconRoutes(Routes &routes, std::vector<BeaconPath *> &paths, std::vector<char *> &endPoints, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
@@ -191,26 +199,27 @@ void ReadBeaconRoutes(Routes *routes, BeaconPath *paths, std::vector<char *> *en
 		if (line[0]==0x00) break;
 		int path, start, end, reverse, priority;
 		sscanf(line, "%d %d:%d %d %d", &path, &start, &end, &reverse, &priority);
-		routes->Add(&paths[path], (*endPoints)[start], (*endPoints)[end], reverse?true:false, priority);
+		routes.Add(paths[path], endPoints[start], endPoints[end], reverse?true:false, priority);
 	}
 }
 
-void OverwriteBeaconParamsDefinition(BeaconArray *beacons, int count, const char *section)
+void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
-	for(int i=0;i<count;i++)
+	int k=beacons.size();
+	for(int i=0;i<k;i++)
 	{
 		sprintf(pf, "BeaconParams%d", i);
 		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
 		if (line[0]==0x00) continue;
 		double size, falloff, period, duration, propagation;
 		sscanf(line, "%lf,%lf,%lf,%lf,%lf", &size, &falloff, &period, &duration, &propagation);
-		beacons[i].SetSize(size);
-		beacons[i].SetFallOff(falloff);
-		beacons[i].SetPeriod(period);
-		beacons[i].SetDuration(duration);
-		beacons[i].SetPropagate(propagation);
+		beacons[i]->SetSize(size);
+		beacons[i]->SetFallOff(falloff);
+		beacons[i]->SetPeriod(period);
+		beacons[i]->SetDuration(duration);
+		beacons[i]->SetPropagate(propagation);
 	}
 }
 

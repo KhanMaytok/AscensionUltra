@@ -12,11 +12,10 @@
 #include "Room.h"
 #include "VerticalLaunchDoor.h"
 #include "BeaconArray.h"
+#include <vector>
 
 #define DOORS	1
 #define ROOMS	1
-#define BEACONS	20
-#define SECTION	"VLC"
 
 class VerticalLaunchHangar:public Hangar
 {
@@ -31,5 +30,4 @@ public:
 private:
 	VerticalLaunchDoor doors[DOORS];
 	Room rooms[ROOMS];
-	BeaconArray beacons[BEACONS];
 };

@@ -11,6 +11,8 @@
 #include "Door.h"
 #include "Room.h"
 #include "UMmuSDK.h"
+#include "BeaconArray.h"
+#include <vector>
 
 #define HANGARTYPETA	0x01
 #define HANGARTYPELL	0x02
@@ -30,7 +32,7 @@ public:
 	virtual bool clbkLoadStateEx (char *line);
 	virtual void clbkSaveState (FILEHANDLE scn);
 	virtual void clbkPostCreation ();
-	virtual void Init(VESSEL* owner, const char *name, UINT meshIndex, const char *event_prefix);
+	virtual void Init(VESSEL* owner, const char *name, UINT meshIndex, const char *classname, int instance);
 	virtual int GetDoors();
 	virtual Door *GetDoor(int index);
 	virtual bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
@@ -44,8 +46,10 @@ public:
 protected:
 	VESSEL* owner;
 	UINT meshIndex;
-	char *event_prefix, *name;
+	char *event_prefix, *name, *classname;
+	int instance; 
 	int cur_door, cur_room;
 	int areaStart, areaEnd;
 	VECTOR3 position;
+	std::vector<BeaconArray *> beacons;
 };

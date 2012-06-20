@@ -8,6 +8,7 @@
 // Class implementation of abstract hangar building.
 // ==============================================================
 #include "Hangar.h"
+#include "Module.h"
 
 Hangar::Hangar(void)
 {
@@ -25,6 +26,8 @@ Hangar::Hangar(void)
 
 Hangar::~Hangar(void)
 {
+	for(std::vector<BeaconArray *>::iterator i=beacons.begin();i!=beacons.end();i++) delete *i;
+	delete [] classname;
 	delete [] event_prefix;
 	delete [] name;
 }
@@ -35,6 +38,8 @@ void Hangar::DefineAnimations ()
 {	
 	int k=GetDoors();
 	for (int i=0;i<k;i++) GetDoor(i)->DefineAnimations();
+	if (instance>=0) ReadBeaconDefinition(beacons, classname, position, owner);
+	ReadBeaconDefinition(beacons, event_prefix, position, owner);
 }
 
 void Hangar::clbkPostStep (double simt, double simdt, double mjd)
@@ -87,11 +92,16 @@ void Hangar::clbkPostCreation ()
 	for(int i=0;i<k;i++) GetDoor(i)->clbkPostCreation();
 }
 
-void Hangar::Init(VESSEL* owner, const char *name, UINT meshIndex, const char *event_prefix)
+void Hangar::Init(VESSEL* owner, const char *name, UINT meshIndex, const char *classname, int instance)
 {
 	this->owner=owner;
 	this->meshIndex=meshIndex;
-	strcpy(this->event_prefix=new char[strlen(event_prefix)+1], event_prefix);
+	this->instance=instance;
+	int i=strlen(classname);
+	strcpy(this->classname=new char[i+1], classname);
+	this->event_prefix=new char[i+40];
+	if (instance<0) strcpy(this->event_prefix, this->classname);
+	else sprintf(this->event_prefix, "%s%d", classname, instance);
 	strcpy(this->name=new char[strlen(name)+1], name);
 }
 

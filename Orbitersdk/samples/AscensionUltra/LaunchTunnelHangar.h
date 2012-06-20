@@ -12,10 +12,10 @@
 #include "Door.h"
 #include "Room.h"
 #include "BeaconArray.h"
+#include <vector>
+
 #define DOORS	4
 #define ROOMS	2
-#define BEACONS	26
-#define SECTION	"LFMC"
 
 class LaunchTunnelHangar:public Hangar
 {
@@ -31,5 +31,4 @@ public:
 private:
 	Door doors[DOORS];	
 	Room rooms[ROOMS];
-	BeaconArray beacons[BEACONS];
 };

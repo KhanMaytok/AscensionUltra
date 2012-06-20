@@ -30,10 +30,6 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define LEASELIGHTHANGARS 6
 #define LEASEHEAVYHANGARS 3
 #define VERTICALLAUNCHFACILITIES 2
-#define TAXIWAYSUBSECTIONS 32
-#define TAXIWAYPATHS 24
-#define RUNWAYSUBSECTIONS 66
-#define RUNWAYPATHS 14
 #define DRADARS 2
 
 //Defines for person change API
@@ -95,10 +91,6 @@ private:
 	VerticalLaunchHangar vertical[VERTICALLAUNCHFACILITIES];
 	LaunchTunnelHangar launchTunnel;
 	AirportHangar airport;
-	BeaconArray taxiwaySubsection[TAXIWAYSUBSECTIONS];
-	BeaconPath taxiwayPath[TAXIWAYPATHS];
-	BeaconArray runwaySubsection[RUNWAYSUBSECTIONS];
-	BeaconPath runwayPath[RUNWAYPATHS];
 	Routes taxiways;
 	Routes runways;
 	Room *controlRoom;
@@ -109,6 +101,8 @@ private:
 	std::map<Room*,VESSEL*> roomVessel;
 	std::map<VESSEL*, Room*> vesselRoom;
 	std::vector<char *> endPoints;
+	std::vector<BeaconArray *> taxiwaySubsection, runwaySubsection;
+	std::vector<BeaconPath *> taxiwayPath, runwayPath;	
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

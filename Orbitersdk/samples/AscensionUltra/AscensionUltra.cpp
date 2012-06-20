@@ -45,11 +45,12 @@ bool clbkBeaconSizeInput (void *id, char *str, void *usrdata)
 	double value1, value2;
 	sscanf(str, "%lf %lf", &value1, &value2);	
 	if (value1<=0.0 || value2<0) return false;
-	BeaconPath *bp=(BeaconPath *)usrdata;
-	for(int i=0;i<TAXIWAYPATHS;i++)
+	std::vector<BeaconPath *> *bp=(std::vector<BeaconPath *> *)usrdata;
+	int k=bp->size();
+	for(int i=0;i<k;i++)
 	{
-		bp[i].SetSize(value1);
-		bp[i].SetFallOff(value2);	
+		(*bp)[i]->SetSize(value1);
+		(*bp)[i]->SetFallOff(value2);	
 	}
 	return true;
 }
@@ -58,13 +59,14 @@ bool clbkBeaconFallOffInput (void *id, char *str, void *usrdata)
 {
 	double value1, value2, value3, value4;
 	sscanf(str, "%lf %lf %lf %lf", &value1, &value2, &value3, &value4);
-	BeaconPath *bp=(BeaconPath *)usrdata;
-	for(int i=0;i<RUNWAYPATHS;i++)
+	std::vector<BeaconPath *> *bp=(std::vector<BeaconPath *> *)usrdata;
+	int k=bp->size();
+	for(int i=0;i<k;i++)
 	{
-		bp[i].SetPeriod(value1);
-		bp[i].SetDuration(value2);
-		bp[i].SetPropagate(value3);
-		bp[i].SetOffset(value4);
+		(*bp)[i]->SetPeriod(value1);
+		(*bp)[i]->SetDuration(value2);
+		(*bp)[i]->SetPropagate(value3);
+		(*bp)[i]->SetOffset(value4);
 	}
 	return true;
 }
@@ -94,8 +96,12 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 // --------------------------------------------------------------
 AscensionUltra::~AscensionUltra ()
 {
-	//Remove strings for endpoints
+	//Remove dynamic INI parameters
 	for(std::vector<char *>::iterator i=endPoints.begin();i!=endPoints.end();i++) delete [] *i;
+	for(std::vector<BeaconArray *>::iterator i=taxiwaySubsection.begin();i!=taxiwaySubsection.end();i++) delete *i;
+	for(std::vector<BeaconArray *>::iterator i=runwaySubsection.begin();i!=runwaySubsection.end();i++) delete *i;
+	for(std::vector<BeaconPath *>::iterator i=taxiwayPath.begin();i!=taxiwayPath.end();i++) delete *i;
+	for(std::vector<BeaconPath *>::iterator i=runwayPath.begin();i!=runwayPath.end();i++) delete *i;
 	OrbiterExtensions::Exit(this);
 }
 
@@ -104,63 +110,52 @@ double AscensionUltra::GetVersion(){return 1.0;}
 void AscensionUltra::InitSubObjects()
 {
 	int i;
-	char prefix[16]="HANGARx";
 	char name[40]=" x. Turn-around Hangar";
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
-		prefix[6]=0x30+i;
 		name[1]=0x31+i;
-		turnAround[i].Init(this, name, i+3, prefix);
+		turnAround[i].Init(this, name, i+3, "HANGAR", i);
 	}
 
-	strcpy(prefix, "LEASEx");
 	strcpy(name, " x. Lease Hangar");
 	for(i=0;i<LEASELIGHTHANGARS;i++)
 	{
-		prefix[10]=0x30+i;
 		name[1]=0x30+((i+1) % 10);
 		if (i>8) name[0]=0x31;
-		leaseLight[i].Init(this, name, i+3+TURNAROUNDHANGARS, prefix);
+		leaseLight[i].Init(this, name, i+3+TURNAROUNDHANGARS, "LEASE", i);
 	}
 
 	for(;i<LEASELIGHTHANGARS+LEASEHEAVYHANGARS;i++)
 	{
-		prefix[10]=0x30+i;
 		name[1]=0x30+((i+1) % 10);
 		if (i>8) name[0]=0x31;
-		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+3+TURNAROUNDHANGARS, prefix);
+		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+3+TURNAROUNDHANGARS, "LEASE", i);
 	}
 
-	strcpy(prefix, "LAUNCHTUNNEL");
 	strcpy(name, "Launch Facility");
-	launchTunnel.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS, prefix);
+	launchTunnel.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS, "LAUNCHTUNNEL", -1);
 
-	strcpy(prefix, "VERTICALLAUNCHx");
 	strcpy(name, " x. Vertical Launch Facility");
 	for(i=0;i<VERTICALLAUNCHFACILITIES;i++)
 	{
-		prefix[14]=0x30+i;
 		name[1]=0x31+i;
-		vertical[i].Init(this, name, i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1, prefix);
+		vertical[i].Init(this, name, i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1, "VERTICALLAUNCH", i);
 	}
 
 	/* Tracker definition */
 	//0-1,7-10 groups are dishes, 4 is static plate, 2-3/5-6 is rotation stand
 	static UINT RotGrp[10] = {2,3,5,6,0,1,7,8,9,10};
-	strcpy(prefix, "DRADARx");
 	strcpy(name, " x. Doppler Radar");
 	for(i=0;i<DRADARS;i++)
 	{
-		prefix[6]=0x30+i;
 		name[1]=0x31+i;
 		dradar[i].Init(this, name,
 			new MGROUP_ROTATE(i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+VERTICALLAUNCHFACILITIES, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), -360*RAD),
 			new MGROUP_ROTATE(i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+VERTICALLAUNCHFACILITIES, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), 90*RAD),
-			90*RAD, prefix);
+			90*RAD, "DRADAR", i);
 	}
-	strcpy(prefix, "AIRPORT");
 	strcpy(name, "Airport");
-	airport.Init(this, name, -1, prefix); //TODO: mesh index currently not set
+	airport.Init(this, name, -1, "AIRPORT", -1); //TODO: mesh index currently not set
 	crew=airport.GetEntrance()->GetCrew();
 
 	controlRoom=launchTunnel.GetRoom(1); //Tower
@@ -170,28 +165,28 @@ void AscensionUltra::InitSubObjects()
 
 	if ((orbiterExtensionsVersion=OrbiterExtensions::GetVersion())<0) orbiterExtensionsVersion=0.0;
 
-	ReadBeaconDefinition(taxiwaySubsection, TAXIWAYSUBSECTIONS, "TAXIWAYS", OFFSET, this);
-	ReadBeaconPaths(taxiwayPath, TAXIWAYPATHS, taxiwaySubsection, "TAXIWAYS", this);
-	ReadBeaconEndPoints(&endPoints, "TAXIWAYS");
+	ReadBeaconDefinition(taxiwaySubsection, "TAXIWAYS", OFFSET, this);
+	ReadBeaconPaths(taxiwayPath, taxiwaySubsection, "TAXIWAYS", this);
+	ReadBeaconEndPoints(endPoints, "TAXIWAYS");
 	taxiways.Init(
-		taxiwaySubsection[0].GetSize(),
-		taxiwaySubsection[0].GetFallOff(),
-		taxiwaySubsection[0].GetPeriod(),
-		taxiwaySubsection[0].GetDuration(),
-		taxiwaySubsection[0].GetPropagate());
-	ReadBeaconRoutes(&taxiways, taxiwayPath, &endPoints, "TAXIWAYS");
+		taxiwaySubsection[0]->GetSize(),
+		taxiwaySubsection[0]->GetFallOff(),
+		taxiwaySubsection[0]->GetPeriod(),
+		taxiwaySubsection[0]->GetDuration(),
+		taxiwaySubsection[0]->GetPropagate());
+	ReadBeaconRoutes(taxiways, taxiwayPath, endPoints, "TAXIWAYS");
 	taxiways.Switch(true);
 	taxiways.PriorityFinalize();
 
-	ReadBeaconDefinition(runwaySubsection, RUNWAYSUBSECTIONS, "RUNWAYS", OFFSET, this);
-	ReadBeaconPaths(runwayPath, RUNWAYPATHS, runwaySubsection, "RUNWAYS", this);
+	ReadBeaconDefinition(runwaySubsection, "RUNWAYS", OFFSET, this);
+	ReadBeaconPaths(runwayPath, runwaySubsection, "RUNWAYS", this);
 	runways.Init(
-		runwaySubsection[0].GetSize(),
-		runwaySubsection[0].GetFallOff(),
-		runwaySubsection[0].GetPeriod(),
-		runwaySubsection[0].GetDuration(),
-		runwaySubsection[0].GetPropagate());
-	ReadBeaconRoutes(&runways, runwayPath, &endPoints, "RUNWAYS");
+		runwaySubsection[0]->GetSize(),
+		runwaySubsection[0]->GetFallOff(),
+		runwaySubsection[0]->GetPeriod(),
+		runwaySubsection[0]->GetDuration(),
+		runwaySubsection[0]->GetPropagate());
+	ReadBeaconRoutes(runways, runwayPath, endPoints, "RUNWAYS");
 	runways.Switch(false);
 	runways.Switch(endPoints[4],endPoints[11],true); //Runway 13L static
 	runways.Switch(endPoints[5],endPoints[11],true); //Runway 13R static
@@ -199,7 +194,7 @@ void AscensionUltra::InitSubObjects()
 	runways.Switch(endPoints[7],endPoints[11],true); //Runway 31R static
 	runways.Switch(endPoints[9],endPoints[11],true); //Runway 13L/31R static
 	runways.Switch(endPoints[10],endPoints[11],true);//Runway 31L/13R static
-	OverwriteBeaconParamsDefinition(runwaySubsection, RUNWAYSUBSECTIONS, "RUNWAYS");
+	OverwriteBeaconParamsDefinition(runwaySubsection, "RUNWAYS");
 	runways.PriorityFinalize();
 
 	//DEBUG
@@ -625,13 +620,13 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;	
 		case OAPI_KEY_U:
 			sprintf(inputBoxTitle, "Taxiway beacon (size,falloff):");
-			sprintf(inputBoxBuffer, "%f  %f", taxiwayPath[0].GetSize(),taxiwayPath[0].GetFallOff());
-			oapiOpenInputBox(inputBoxTitle, clbkBeaconSizeInput, inputBoxBuffer, 80, taxiwayPath);
+			sprintf(inputBoxBuffer, "%f  %f", taxiwayPath[0]->GetSize(),taxiwayPath[0]->GetFallOff());
+			oapiOpenInputBox(inputBoxTitle, clbkBeaconSizeInput, inputBoxBuffer, 80, &taxiwayPath);
 			return 1;
 		case OAPI_KEY_I:
 			sprintf(inputBoxTitle, "Runway beacon (period, duration, propagate, offset):");
-			sprintf(inputBoxBuffer, "%f  %f  %f  %f", runwayPath[9].GetPeriod(), runwayPath[9].GetDuration(), runwayPath[9].GetPropagate(), runwayPath[9].GetOffset());
-			oapiOpenInputBox(inputBoxTitle, clbkBeaconFallOffInput, inputBoxBuffer, 80, runwayPath);
+			sprintf(inputBoxBuffer, "%f  %f  %f  %f", runwayPath[9]->GetPeriod(), runwayPath[9]->GetDuration(), runwayPath[9]->GetPropagate(), runwayPath[9]->GetOffset());
+			oapiOpenInputBox(inputBoxTitle, clbkBeaconFallOffInput, inputBoxBuffer, 80, &runwayPath);
 			return 1;
 		case OAPI_KEY_C:
 			coords=!coords;

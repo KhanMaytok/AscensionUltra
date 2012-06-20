@@ -10,12 +10,14 @@
 
 #pragma once
 #include "orbitersdk.h"
+#include <vector>
+#include "BeaconArray.h"
 
 class Tracker
 {
 public:
 	~Tracker(void);
-	void Init(VESSEL *owner, const char *name, MGROUP_ROTATE *azimuth, MGROUP_ROTATE *elevation, double rotationOffset, const char *event_prefix);
+	void Init(VESSEL *owner, const char *name, MGROUP_ROTATE *azimuth, MGROUP_ROTATE *elevation, double rotationOffset, const char *classname, int instance);
 	virtual void SetTarget(OBJHANDLE target);
 	virtual OBJHANDLE GetTarget();
 	virtual double GetDistance();
@@ -37,5 +39,7 @@ private:
 	OBJHANDLE target;
 	VECTOR3 position;
 	double rotationOffset;
-	char *event_prefix, *name;	
+	char *event_prefix, *name, *classname;	
+	int instance;
+	std::vector<BeaconArray *> beacons;
 };
