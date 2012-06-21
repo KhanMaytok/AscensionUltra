@@ -346,6 +346,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Runways.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Taxiways.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Tracker.cpp"
 				>
 			</File>
@@ -431,6 +439,14 @@
 			</File>
 			<File
 				RelativePath=".\Routes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Runways.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Taxiways.h"
 				>
 			</File>
 			<File

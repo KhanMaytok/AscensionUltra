@@ -20,6 +20,8 @@
 #include "Routes.h"
 #include "Person.h"
 #include "Tracker.h"
+#include "Taxiways.h"
+#include "Runways.h"
 #include "UMmuSDK.h"
 #include <map>
 #include <vector>
@@ -91,8 +93,8 @@ private:
 	VerticalLaunchHangar vertical[VERTICALLAUNCHFACILITIES];
 	LaunchTunnelHangar launchTunnel;
 	AirportHangar airport;
-	Routes taxiways;
-	Routes runways;
+	Taxiways taxiways;
+	Runways runways;
 	Room *controlRoom;
 	Tracker dradar[DRADARS];
 	UMMUCREWMANAGMENT *crew;
@@ -100,9 +102,6 @@ private:
 	float orbiterExtensionsVersion;
 	std::map<Room*,VESSEL*> roomVessel;
 	std::map<VESSEL*, Room*> vesselRoom;
-	std::vector<char *> endPoints;
-	std::vector<BeaconArray *> taxiwaySubsection, runwaySubsection;
-	std::vector<BeaconPath *> taxiwayPath, runwayPath;	
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	

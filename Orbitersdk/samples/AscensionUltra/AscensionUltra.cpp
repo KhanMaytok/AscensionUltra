@@ -97,11 +97,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 AscensionUltra::~AscensionUltra ()
 {
 	//Remove dynamic INI parameters
-	for(std::vector<char *>::iterator i=endPoints.begin();i!=endPoints.end();i++) delete [] *i;
-	for(std::vector<BeaconArray *>::iterator i=taxiwaySubsection.begin();i!=taxiwaySubsection.end();i++) delete *i;
-	for(std::vector<BeaconArray *>::iterator i=runwaySubsection.begin();i!=runwaySubsection.end();i++) delete *i;
-	for(std::vector<BeaconPath *>::iterator i=taxiwayPath.begin();i!=taxiwayPath.end();i++) delete *i;
-	for(std::vector<BeaconPath *>::iterator i=runwayPath.begin();i!=runwayPath.end();i++) delete *i;
 	OrbiterExtensions::Exit(this);
 }
 
@@ -165,37 +160,9 @@ void AscensionUltra::InitSubObjects()
 
 	if ((orbiterExtensionsVersion=OrbiterExtensions::GetVersion())<0) orbiterExtensionsVersion=0.0;
 
-	ReadBeaconDefinition(taxiwaySubsection, "TAXIWAYS", OFFSET, this);
-	ReadBeaconPaths(taxiwayPath, taxiwaySubsection, "TAXIWAYS", this);
-	ReadBeaconEndPoints(endPoints, "TAXIWAYS");
-	taxiways.Init(
-		taxiwaySubsection[0]->GetSize(),
-		taxiwaySubsection[0]->GetFallOff(),
-		taxiwaySubsection[0]->GetPeriod(),
-		taxiwaySubsection[0]->GetDuration(),
-		taxiwaySubsection[0]->GetPropagate());
-	ReadBeaconRoutes(taxiways, taxiwayPath, endPoints, "TAXIWAYS");
-	taxiways.Switch(true);
-	taxiways.PriorityFinalize();
+	taxiways.Init(this, "TAXIWAYS", OFFSET);
 
-	ReadBeaconDefinition(runwaySubsection, "RUNWAYS", OFFSET, this);
-	ReadBeaconPaths(runwayPath, runwaySubsection, "RUNWAYS", this);
-	runways.Init(
-		runwaySubsection[0]->GetSize(),
-		runwaySubsection[0]->GetFallOff(),
-		runwaySubsection[0]->GetPeriod(),
-		runwaySubsection[0]->GetDuration(),
-		runwaySubsection[0]->GetPropagate());
-	ReadBeaconRoutes(runways, runwayPath, endPoints, "RUNWAYS");
-	runways.Switch(false);
-	runways.Switch(endPoints[4],endPoints[11],true); //Runway 13L static
-	runways.Switch(endPoints[5],endPoints[11],true); //Runway 13R static
-	runways.Switch(endPoints[6],endPoints[11],true); //Runway 31L static
-	runways.Switch(endPoints[7],endPoints[11],true); //Runway 31R static
-	runways.Switch(endPoints[9],endPoints[11],true); //Runway 13L/31R static
-	runways.Switch(endPoints[10],endPoints[11],true);//Runway 31L/13R static
-	OverwriteBeaconParamsDefinition(runwaySubsection, "RUNWAYS");
-	runways.PriorityFinalize();
+	runways.Init(this, "RUNWAYS", OFFSET);
 
 	//DEBUG
 	disx=0.0;
