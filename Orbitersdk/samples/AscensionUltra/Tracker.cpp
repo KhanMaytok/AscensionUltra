@@ -14,12 +14,20 @@
 void Tracker::Init(VESSEL *owner, const char *name, MGROUP_ROTATE *azimuth, MGROUP_ROTATE *elevation, double rotationOffset, const char *classname, int instance)
 {
 	this->owner=owner;
-	this->instance=instance;
 	int i=strlen(classname);
 	strcpy(this->classname=new char[i+1], classname);
 	this->event_prefix=new char[i+40];
-	if (instance<0) sprintf(this->event_prefix, "%sTGT", classname);
-	else sprintf(this->event_prefix, "%s%dTGT", classname, instance);	
+	this->instancename=new char[i+40];
+	if (instance<0)
+	{
+		sprintf(this->event_prefix, "%sTGT", classname);
+		instancename=NULL;
+	}
+	else
+	{
+		sprintf(this->event_prefix, "%s%dTGT", classname, instance);
+		sprintf(this->instancename, "%s%d", classname, instance);
+	}
 	strcpy(this->name=new char[strlen(name)+1], name);
 	mgroupAzimuth=azimuth;
 	mgroupElevation=elevation;
@@ -90,8 +98,8 @@ void Tracker::clbkPostCreation ()
 
 void Tracker::DefineAnimations()
 {	
-	if (instance>=0) ReadBeaconDefinition(beacons, classname, position, owner);
-	ReadBeaconDefinition(beacons, event_prefix, position, owner);
+	ReadBeaconDefinition(beacons, classname, position, owner);
+	if (instancename!=NULL) ReadBeaconDefinition(beacons, instancename, position, owner);
 	anim_azimuth = owner->CreateAnimation (0);
 	ANIMATIONCOMPONENT_HANDLE parent = owner->AddAnimationComponent (anim_azimuth, 0, 1, mgroupAzimuth);
 	anim_elevation = owner->CreateAnimation (0);

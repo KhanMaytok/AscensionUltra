@@ -39,7 +39,6 @@ private:
 	OBJHANDLE target;
 	VECTOR3 position;
 	double rotationOffset;
-	char *event_prefix, *name, *classname;	
-	int instance;
+	char *event_prefix, *name, *classname, *instancename;	
 	std::vector<BeaconArray *> beacons;
 };
