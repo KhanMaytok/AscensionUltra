@@ -40,37 +40,6 @@ void OnLeaseHeavyLoad(MESHHANDLE hMesh, bool firstload)
 	if (firstload) RotateMesh(hMesh, PI, _V(0,1,0), _V(0,0,0));
 }
 
-bool clbkBeaconSizeInput (void *id, char *str, void *usrdata)
-{
-	double value1, value2;
-	sscanf(str, "%lf %lf", &value1, &value2);	
-	if (value1<=0.0 || value2<0) return false;
-	std::vector<BeaconPath *> *bp=(std::vector<BeaconPath *> *)usrdata;
-	int k=bp->size();
-	for(int i=0;i<k;i++)
-	{
-		(*bp)[i]->SetSize(value1);
-		(*bp)[i]->SetFallOff(value2);	
-	}
-	return true;
-}
-
-bool clbkBeaconFallOffInput (void *id, char *str, void *usrdata)
-{
-	double value1, value2, value3, value4;
-	sscanf(str, "%lf %lf %lf %lf", &value1, &value2, &value3, &value4);
-	std::vector<BeaconPath *> *bp=(std::vector<BeaconPath *> *)usrdata;
-	int k=bp->size();
-	for(int i=0;i<k;i++)
-	{
-		(*bp)[i]->SetPeriod(value1);
-		(*bp)[i]->SetDuration(value2);
-		(*bp)[i]->SetPropagate(value3);
-		(*bp)[i]->SetOffset(value4);
-	}
-	return true;
-}
-
 // Constructor
 AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 : VESSEL2 (hObj, fmodel)
@@ -584,16 +553,6 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 		case OAPI_KEY_0:
 			mnr++;
 			sprintf(oapiDebugString(), "[%d]x%f y%f z%f d%f", mnr, disx, disy, disz, stp);
-			return 1;	
-		case OAPI_KEY_U:
-			sprintf(inputBoxTitle, "Taxiway beacon (size,falloff):");
-			sprintf(inputBoxBuffer, "%f  %f", taxiwayPath[0]->GetSize(),taxiwayPath[0]->GetFallOff());
-			oapiOpenInputBox(inputBoxTitle, clbkBeaconSizeInput, inputBoxBuffer, 80, &taxiwayPath);
-			return 1;
-		case OAPI_KEY_I:
-			sprintf(inputBoxTitle, "Runway beacon (period, duration, propagate, offset):");
-			sprintf(inputBoxBuffer, "%f  %f  %f  %f", runwayPath[9]->GetPeriod(), runwayPath[9]->GetDuration(), runwayPath[9]->GetPropagate(), runwayPath[9]->GetOffset());
-			oapiOpenInputBox(inputBoxTitle, clbkBeaconFallOffInput, inputBoxBuffer, 80, &runwayPath);
 			return 1;
 		case OAPI_KEY_C:
 			coords=!coords;

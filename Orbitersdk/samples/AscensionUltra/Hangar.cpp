@@ -15,6 +15,7 @@ Hangar::Hangar(void)
 	int k=GetDoors();
 	for(int i=0;i<k;i++) GetDoor(i)->SetSpeed(0.1);
 
+	classname=NULL;
 	event_prefix=NULL;
 	name=NULL;
 
