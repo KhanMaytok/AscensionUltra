@@ -37,6 +37,9 @@ public:
 	// Check if specified route is on or off
 	virtual bool On(const char *start, const char *end);
 
+	// Check if one of the routes from/to the given start/end point is on or off
+	virtual bool On(const char *point, bool isEnd=false);
+
 	// Switch strobing of specified route on and off
 	virtual void Strobe(const char *start, const char *end, bool on);
 
@@ -44,7 +47,7 @@ public:
 	virtual bool Strobing(const char *start, const char *end);
 
 	// Check if one of the routes from/to the given start/end point is strobing
-	virtual bool AnyStrobing(const char *point, bool isEnd=false);
+	virtual bool Strobing(const char *point, bool isEnd=false);
 
 	/* Return count of all:
 	   no parameters        .. available start points

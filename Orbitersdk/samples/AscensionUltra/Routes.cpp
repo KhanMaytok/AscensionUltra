@@ -133,11 +133,19 @@ bool Routes::On(const char *start, const char *end)
 	return link->On; 
 }
 
-bool Routes::AnyStrobing(const char *point, bool isEnd)
+bool Routes::Strobing(const char *point, bool isEnd)
 {
 	std::map<const char *, Route *> *points=isEnd?GetStarts(point):GetEnds(point);
 	if (points==NULL) return false;
 	for (std::map<const char *, Route *>::iterator i=points->begin();i!=points->end();i++) if (i->second->Strobing) return true;
+	return false;
+}
+
+bool Routes::On(const char *point, bool isEnd)
+{
+	std::map<const char *, Route *> *points=isEnd?GetStarts(point):GetEnds(point);
+	if (points==NULL) return false;
+	for (std::map<const char *, Route *>::iterator i=points->begin();i!=points->end();i++) if (i->second->On) return true;
 	return false;
 }
 

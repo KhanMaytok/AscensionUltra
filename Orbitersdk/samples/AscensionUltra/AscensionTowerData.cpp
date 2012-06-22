@@ -242,7 +242,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		{
 			Routes *t=ascension->GetTaxiways();
 			item.Name=t->GetPoint(index);
-			sprintf(text, "%c %s", t->AnyStrobing(item.Name)?'*':' ', item.Name);
+			sprintf(text, "%c %s", t->Strobing(item.Name)?'*':' ', item.Name);
 		}
 		item.Name=text;
 		return item;
@@ -260,7 +260,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 		{
 			Routes *t=ascension->GetRunways();
 			item.Name=t->GetPoint(index);
-			sprintf(text, "%c %s", t->On(item.Name, t->GetPoint(2, false, item.Name))?'*':' ', item.Name);
+			sprintf(text, "%c %s", t->On(item.Name)?'*':' ', item.Name);
 		}
 		item.Name=text;
 		return item;
