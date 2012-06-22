@@ -406,28 +406,7 @@ void AscensionTowerData::Select(int index)
 		}
 		break;
 	case AscensionTowerState::LandingRunwaySelection:
-		t=ascension->GetRunways();
-		{
-			start=t->GetPoint(selectedIndex[state]);
-			bool on=!t->On(start, t->GetPoint(2, false, start));
-			int k=t->GetPoints();
-			for(int i=0;i<k;i++)
-			{
-				start=t->GetPoint(i);
-				t->Switch(start, t->GetPoint(2, false, start), false);
-				t->Switch(start, t->GetPoint(1, false, start), false);
-				t->Switch(start, t->GetPoint(0, false, start), true);
-			}
-			if (on)
-			{
-				start=t->GetPoint(selectedIndex[state]);
-				t->Switch(start, t->GetPoint(2, false, start), true);
-				t->Switch(start, t->GetPoint(1, false, start), true);
-				k=selectedIndex[state] ^ 0x03;
-				start=t->GetPoint(k);
-				t->Switch(start, t->GetPoint(0, false, start), false);
-			}
-		}
+		ascension->GetRunways()->Activate(selectedIndex[state]);
 		break;
 	case AscensionTowerState::Roster:
 		selectedIndex[AscensionTowerState::PersonControl]=selectedIndex[state];

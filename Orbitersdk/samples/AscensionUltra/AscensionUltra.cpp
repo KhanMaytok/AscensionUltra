@@ -621,9 +621,9 @@ Hangar *AscensionUltra::GetHangar(int type, int index)
 	return NULL;
 }
 
-Routes *AscensionUltra::GetTaxiways(){return &taxiways;}
+Taxiways *AscensionUltra::GetTaxiways(){return &taxiways;}
 
-Routes *AscensionUltra::GetRunways(){return &runways;}
+Runways *AscensionUltra::GetRunways(){return &runways;}
 
 Room *AscensionUltra::GetControlRoom(){return controlRoom;}
 void AscensionUltra::SwitchView(Room *room)

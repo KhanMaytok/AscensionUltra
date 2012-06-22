@@ -24,13 +24,42 @@ void Runways::Init(VESSEL* owner, const char *classname, VECTOR3 &position)
 		beacons[0]->GetDuration(),
 		beacons[0]->GetPropagate());
 	ReadBeaconRoutes(*this, paths, endPoints, classname);
-	Switch(false);
-	Switch(endPoints[0],endPoints[6],true); //Runway 13L static
-	Switch(endPoints[1],endPoints[6],true); //Runway 13R static
-	Switch(endPoints[2],endPoints[6],true); //Runway 31L static
-	Switch(endPoints[3],endPoints[6],true); //Runway 31R static
-	Switch(endPoints[4],endPoints[6],true); //Runway 13L/31R static
-	Switch(endPoints[5],endPoints[6],true);//Runway 31L/13R static
+
+	//Detect and activate static beacons
+	int k=endPoints.size();
+	for(int i=0;i<k;i++)
+		if (strcmp(endPoints[i], "Static")==0)
+		{
+			staticIndex=i;
+			break;
+		}
+	Routes::Switch(false);
+	for(int i=0;i<staticIndex;i++)
+		Routes::Switch(endPoints[i],endPoints[staticIndex],true);
+	k=GetPoints(false, endPoints[staticIndex]);
+	for(int i=0;i<k;i++)
+		Routes::Switch(endPoints[staticIndex], Routes::GetPoint(i, false, endPoints[staticIndex]), true);
+	
 	OverwriteBeaconParamsDefinition(beacons, classname);
 	PriorityFinalize();
+}
+
+void Runways::Activate(int index)
+{
+	char *point=GetPoint(index);
+	bool on=!On(point);
+	int k=endPoints.size();
+	for(int i=0;i<staticIndex;i++)
+		for(int j=staticIndex+1;j<k;j++)
+			Switch(endPoints[i], endPoints[j], endPoints[i]==point?on:false);
+}
+
+bool Runways::On(const char *point, bool isEnd)
+{
+	return Routes::On(point, endPoints[staticIndex+1]);
+}
+
+int Runways::GetPoints(bool isEnd, char *fromPoint)
+{
+	return Routes::GetPoints(isEnd, fromPoint)-((!isEnd && fromPoint==NULL)?1:0);
 }

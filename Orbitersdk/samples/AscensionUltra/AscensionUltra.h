@@ -68,8 +68,8 @@ public:
 
 	virtual Hangar *GetHangar(int type, int index);
 	virtual int GetHangars(int type);
-	virtual Routes *GetTaxiways();
-	virtual Routes *GetRunways();
+	virtual Taxiways *GetTaxiways();
+	virtual Runways *GetRunways();
 	virtual Room *GetControlRoom();
 	virtual void SwitchView(Room *room);
 	virtual int GetPersons();
