@@ -1,0 +1,47 @@
+* Design of MFD pages is a bit unfortunate. Refactor with inheritance instead of ugly switch/case constructs.
+* Refactor various interfaces to be consistent. ATM there is a index-driven, class-based and struct-based approach.
+* Think about making sub-objects sub-vessels
+* Make coordinate system more generic. I.e. use INI structure to define hangar positions.
+* Create grouping system to group elements into named sections. This can act as containers for interfacing (return e.g. group "Hangars") and for
+  beacon routes (no more misuse of Routes for runways). Possible architecture:
+  Class GroupElement, containing only field "Type". Everything derives from GroupElement.
+  Class Group, itself a GroupElement can hold one or more elements and associates it with a name.
+* Launch Facility wizard:
+					1. Access to launch prepare site - MFD shows wait-screen, if launch prepare site is occupied.
+					   Occupied: LF keeps flag, set on launch wizard start from other MFD wizard, reset on occupying vessel proceeding to launch.
+					   After wait-screen, door is automatically opening, if not already open. Show opening screen
+					   If door is open and not occupied, show "Clear to enter" screen. From now on, site is occupied again.
+					   "Clear to enter" screen offers "Abort" button. If clicked and no vessel in door/hangar area, close door again and clear
+					   occupied flag. Show abort screen, that is a dead end until "Back" is clicked.
+					2. With rising edge of vessel vincinity, switch to passenger transfer screen. If there is no waiting launch candidate,
+					   the entrance door is automatically closed. If there is no launch in process, automatically open exit door.
+					   This also automatically links the vessel to the passenger terminal in launch facility, if possible. In addition, a
+					   roster-screen is shown with filter set to only the passenger terminal. This roster-screen lacks the "Add new
+					   person..." entry and replaces the Previous button with a proceed button. Whenever a person is selected, it will be
+					   transfered/EVA'd. Clicking the proceed button will switch to get-ready-screen.
+					3. Get-ready-screen shows launching procedure steps (Exhaust shield, Exhaust door, clearance). As soon as exit door is open,
+					   proceed-to-launch-screen is shown and launch in progress flag is set. As soon as vessel is in position, exit door is
+					   closed again. After exit door is closed, exhaust shield and exhaust door are closed/opened simultaneously. After this,
+					   "Contact ATC for clearance" is shown. Get-ready/Proceed-to-launch screen offers "Abort" button. If clicked, all doors
+					   are opened. If no vessel is in door/hangar/launch area anymore, close all doors again and clear all flags.
+					4. In ATC menu, launch menu for LF gives "Ready to launch" screen with automatical activation of beacons, if vessel is in
+					   launch position. If not, "Proceed to launch" is displayed. On engine activity, the exhaust tunnel simulates exhaust
+					   deflection, based on actual vessel exhaust size. vessel exhaust is reduced to minimize visual disturbances. After
+					   vessel cleared exhaust size area, actual vessel exhaust is restored and deflection simulation is switched off. After
+					   this and vessel take-off, exhaust shield and exhaust door is retracted again, showing "Clear launch area" and a
+					   "Cleared" button. Pressing the "cleared" button clears the launch in progress flag and returns to menu.
+* Vertical launch facility wizard:
+					1. Show wait-screen, if MLP is occupied already. If MLP is back in place, show list of vessels + "Load script..." entry.
+					   If user selects vessel, or loaded script vessels, put it into place and attach it in default/script place.
+					2. The detail screen offers position adjustment buttons to place the vessel on MLP and do roll-out. If rolled-out, the fuel
+					   screen appears.
+					3. The fuel-screen offers fuelling of each propellant tank and roll-in. If rolled-in again, position adjustment is shown again.
+					   The countdown button here will ask for additional countdown value in seconds, showing "On hold for final count-down".
+					   Including up to here, every screen offers "Abort", that will roll-in the MLP and delete the vessel again.
+					4. In ATC menu, launch menu for VLF immediately retracts the gangways and rolls the MLP cover back in, giving "Final count-down"
+					   screen with "T-<value+time for retract>", counting down. If vessel is not in launch position, show "Prepare stack".
+					   If the countdown reaches zero, clock runs away with "T+" and starts
+					   previously selected main engine (in details dialog). The exhaust deflection simulation kicks in. As soon as the vessel left
+					   exhaust size area, exhaust simulation is disabled and screen shows "Clear launch area", showing "cleared" button. Pressing
+					   the button returns the MLP animation (rolling cover out, rolling all in, deploy gangways again). After MLP is in place again,
+					   launch in progress is cleared.
