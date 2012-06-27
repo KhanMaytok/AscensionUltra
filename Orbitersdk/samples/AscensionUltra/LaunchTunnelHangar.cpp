@@ -14,7 +14,7 @@ int LaunchTunnelHangar::GetType(){return HANGARTYPELFMC;}
 
 void LaunchTunnelHangar::DefineAnimations ()
 {
-	static UINT DoorGrp[4] = {1,0,32,3};
+	static UINT DoorGrp[4] = {0,1,2,3};
 	char prefix[20]="";
 	int i=0;
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);	
