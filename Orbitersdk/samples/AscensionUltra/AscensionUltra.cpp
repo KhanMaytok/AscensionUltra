@@ -86,14 +86,14 @@ void AscensionUltra::InitSubObjects()
 	{
 		name[1]=0x30+((i+1) % 10);
 		if (i>8) name[0]=0x31;
-		leaseLight[i].Init(this, name, i+3+TURNAROUNDHANGARS, "LEASE", i);
+		leaseLight[i].Init(this, name, i+3+TURNAROUNDHANGARS, "LIGHTLEASE", i, "LEASE");
 	}
 
 	for(;i<LEASELIGHTHANGARS+LEASEHEAVYHANGARS;i++)
 	{
 		name[1]=0x30+((i+1) % 10);
 		if (i>8) name[0]=0x31;
-		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+3+TURNAROUNDHANGARS, "LEASE", i);
+		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+3+TURNAROUNDHANGARS, "HEAVYLEASE", i, "LEASE");
 	}
 
 	strcpy(name, "Launch Facility");

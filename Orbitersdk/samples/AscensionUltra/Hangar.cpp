@@ -39,8 +39,14 @@ void Hangar::DefineAnimations ()
 {	
 	int k=GetDoors();
 	for (int i=0;i<k;i++) GetDoor(i)->DefineAnimations();
-	if (instance>=0) ReadBeaconDefinition(beacons, classname, position, owner);
-	ReadBeaconDefinition(beacons, event_prefix, position, owner);
+	ReadBeaconDefinition(beacons, classname, position, owner);
+	if (instance>=0)
+	{
+		char *line=new char[strlen(classname)+40];
+		sprintf(line, "%s%d", classname, instance);
+		ReadBeaconDefinition(beacons, line, position, owner);
+		delete [] line;
+	}
 }
 
 void Hangar::clbkPostStep (double simt, double simdt, double mjd)
@@ -93,16 +99,17 @@ void Hangar::clbkPostCreation ()
 	for(int i=0;i<k;i++) GetDoor(i)->clbkPostCreation();
 }
 
-void Hangar::Init(VESSEL* owner, const char *name, UINT meshIndex, const char *classname, int instance)
+void Hangar::Init(VESSEL* owner, const char *name, UINT meshIndex, const char *classname, int instance, const char *event_prefix)
 {
 	this->owner=owner;
 	this->meshIndex=meshIndex;
 	this->instance=instance;
 	int i=strlen(classname);
 	strcpy(this->classname=new char[i+1], classname);
-	this->event_prefix=new char[i+40];
-	if (instance<0) strcpy(this->event_prefix, this->classname);
-	else sprintf(this->event_prefix, "%s%d", classname, instance);
+	if (event_prefix==NULL) event_prefix=classname;
+	this->event_prefix=new char[strlen(event_prefix)+40]; // make some room for digits of instance
+	if (instance<0) strcpy(this->event_prefix, event_prefix);
+	else sprintf(this->event_prefix, "%s%d", event_prefix, instance);
 	strcpy(this->name=new char[strlen(name)+1], name);
 }
 
