@@ -26,7 +26,7 @@ void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraP
 		VECTOR3 p=_V(1,2,1)+doorPosition;
 		crew.DefineAirLockShape(true, n.x,p.x,n.y,p.y,n.z,p.z);
 		VECTOR3 d=_V(0,0,1)-viewDirection;
-		crew.SetMembersPosRotOnEVA(_V(0,1,0)+doorPosition, _V(0,asin(length(d)/(d.x<0?2:-2))*2,0));		
+		crew.SetMembersPosRotOnEVA(_V(0,1.5,0)+doorPosition, _V(0,asin(length(d)/(d.x<0?2:-2))*2,0));		
 		crew.SetMaxSeatAvailableInShip(capacity);
 	}
 	this->hangar=hangar;
