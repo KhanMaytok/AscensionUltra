@@ -227,17 +227,21 @@
 				RelativePath="..\..\lib\Orbitersdk.lib"
 				>
 			</File>
-			<File
-				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib"
-				>
-			</File>
 		</Filter>
 		<File
+			RelativePath=".\AscensionUltraConfig.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\AscensionUltraConfig.h"
+			>
+		</File>
+		<File
 			RelativePath=".\AscensionUltraConfigurator.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\AscensionUltraConfigurator.h"
 			>
 		</File>
 		<File
@@ -246,6 +250,14 @@
 		</File>
 		<File
 			RelativePath=".\Conf_resource.h"
+			>
+		</File>
+		<File
+			RelativePath=".\RootConfig.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\RootConfig.h"
 			>
 		</File>
 	</Files>

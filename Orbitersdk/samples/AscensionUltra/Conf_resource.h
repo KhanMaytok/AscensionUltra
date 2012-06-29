@@ -1,11 +1,15 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by Script1.rc
+// Microsoft Visual C++ generated include file.
+// Used by AscensionUltraConfigurator.rc
 //
 #define IDD_DGCONFIG                    101
 #define IDC_RADIO1                      1000
 #define IDC_RADIO2                      1001
-#define IDC_STATIC                      -1
+#define IDC_CHKSPAWN                    1002
+#define IDC_CHKRESET                    1003
+#define IDC_CHKSCNSAVE                  1004
+#define IDC_CHKSCNSAVE2                 1005
+#define IDC_CHKRECSAVE                  1005
 
 // Next default values for new objects
 // 
@@ -13,7 +17,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
