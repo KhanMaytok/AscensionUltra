@@ -249,6 +249,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\AscensionUltraSpawner.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\AscensionUltraSpawner.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Conf_resource.h"
 			>
 		</File>

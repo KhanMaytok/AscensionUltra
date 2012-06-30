@@ -6,6 +6,11 @@
 #define SCNSAVE		"scenario-save"
 #define RECSAVE		"recorder-save"
 #define INIFILE		"Modules\\AscensionUltra.ini"
+#define CLASSNAME	"AscensionUltra"
+#define AUNAME		"Wideawake International"
+#define LONGITUDE	(-14.405L*RAD)
+#define LATITUDE	(-7.955L*RAD)
+#define	HEADING		(220.0L*RAD)
 
 class AscensionUltraConfig;
 class RootConfig;

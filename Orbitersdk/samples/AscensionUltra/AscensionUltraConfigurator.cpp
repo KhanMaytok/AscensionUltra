@@ -18,6 +18,7 @@
 #include "AscensionUltraConfigurator.h"
 #include "AscensionUltraConfig.h"
 #include "RootConfig.h"
+#include "AscensionUltraSpawner.h"
 
 #define SECTION		"Settings"
 #define SPAWN		"auto-spawn"
@@ -42,6 +43,8 @@ DLLCLBK void InitModule (HINSTANCE hDLL)
 	}
 		
 	oapiRegisterLaunchpadItem (gParams.item, root);
+
+	oapiRegisterModule(new AscensionUltraSpawner(hDLL));
 }
 
 DLLCLBK void ExitModule (HINSTANCE hDLL)
