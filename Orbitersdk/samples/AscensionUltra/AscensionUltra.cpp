@@ -32,6 +32,12 @@
 #define DRADAROFFSET _V(-895,0,970)
 #define DRADARMATRIXOFFSET _V(-4495,0,0)
 #define DRADARPIVOT 10
+#define SECTION		"Settings"
+#define SPAWN		"auto-spawn"
+#define RESET		"fast-reset"
+#define SCNSAVE		"scenario-save"
+#define RECSAVE		"recorder-save"
+#define INIFILE		"Modules\\AscensionUltra.ini"
 
 // Static methods
 
@@ -290,11 +296,12 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 // Write status to scenario file
 void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 {
-	char cbuf[256];
-	int i;
-
 	// Write default vessel parameters
 	VESSEL2::clbkSaveState (scn);
+	if (GetPrivateProfileInt(SECTION, SCNSAVE, 1, INIFILE)==0) return;
+
+	char cbuf[256];
+	int i;
 
 	// Write custom parameters
 	for(i=0;i<TURNAROUNDHANGARS;i++)
@@ -340,8 +347,7 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 
 	oapiWriteScenario_string (scn, "AIRPORT", "0");
 	airport.clbkSaveState(scn);
-	oapiWriteScenario_string (scn, "AIRPORT", "1");
-	
+	oapiWriteScenario_string (scn, "AIRPORT", "1");	
 }
 
 // Finalise vessel creation
