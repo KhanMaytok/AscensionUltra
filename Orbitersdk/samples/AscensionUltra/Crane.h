@@ -31,8 +31,8 @@ class Crane
 public:
 	~Crane(void);
 	void Init(VESSEL *owner, const char *name, MGROUP_TRANSLATE *X, MGROUP_TRANSLATE *Y, MGROUP_TRANSLATE *Z, MGROUP_SCALE *Reel, const char *event_prefix);
-	void SetSpeed(VECTOR3 speed);
-	void SetCrawl(VECTOR3 speed);
+	virtual void SetSpeed(VECTOR3 speed);
+	virtual void SetCrawl(VECTOR3 speed);
 	void SetAutoOverride(double percentage);
 	void StartAuto(int waypoint);
 	void Stop();

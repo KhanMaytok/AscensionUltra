@@ -815,6 +815,18 @@ bool EditPosition(void *id, char *str, void *usrdata)
 	return true;
 }
 
+bool EditSpeed(void *id, char *str, void *usrdata)
+{
+	AscensionTowerCallbackData *cp=(AscensionTowerCallbackData *)usrdata;
+	AscensionTowerData *data=cp->Data;	
+	VECTOR3 speed, crawl;
+	if (sscanf(str, "%lf[%lf],%lf[%lf],%lf[%lf]", &speed.x, &crawl.x, &speed.y, &crawl.y, &speed.z, &crawl.z)!=6) return false;
+	Crane *crane=(Crane*)data->GetObject();
+	crane->SetSpeed(speed);
+	crane->SetCrawl(crawl);
+	return true;
+}
+
 // Handling shortcut keys
 bool AscensionTowerData::SetKey(DWORD key)
 {	
@@ -884,6 +896,12 @@ bool AscensionTowerData::SetKey(DWORD key)
 					crane->SetMode(crane->GetMode()>CRANEMANUAL?CRANEMANUAL:selectedIndex[AscensionTowerState::CraneList]);						
 					break;
 				case OAPI_KEY_F:
+					{
+						VECTOR3 speed=crane->GetSpeed();
+						VECTOR3 crawl=crane->GetCrawl();
+						sprintf(buffer, "%6.2f[%6.2f], %6.2f[%6.2f], %6.2f[%6.2f]", speed.x, crawl.x, speed.y, crawl.y, speed.z, crawl.z);
+					}
+					oapiOpenInputBox("Edit speeds (long,short,reel with fast[slow]):", EditSpeed, buffer, 52, (void *)&changePerson);
 					break;
 				case OAPI_KEY_C:
 					crane->SetMode(crane->GetMode()==CRANEDIRECT?CRANEMANUAL:CRANEDIRECT);
