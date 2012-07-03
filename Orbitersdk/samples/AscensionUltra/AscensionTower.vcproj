@@ -245,11 +245,19 @@
 			>
 		</File>
 		<File
+			RelativePath=".\AscensionTower.rc"
+			>
+		</File>
+		<File
 			RelativePath=".\AscensionTowerData.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\AscensionTowerData.h"
+			>
+		</File>
+		<File
+			RelativePath=".\AscensionTowerResource.h"
 			>
 		</File>
 		<File
