@@ -177,7 +177,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	VECTOR3 r[2] = {{0,0,6}, {0,0,-4}};
 	SetSize (5000);
 	SetVisibilityLimit (7.5e-4, 1.5e-3);
-	SetAlbedoRGB (_V(0.77,0.20,0.13));
+	SetAlbedoRGB (_V(0.13,0.20,0.13));
 	SetTouchdownPoints (_V(0,0,10), _V(-3.5,0,-3), _V(3.5,0,-3));
 	SetCOG_elev(0.001);
 	EnableTransponder (true);
