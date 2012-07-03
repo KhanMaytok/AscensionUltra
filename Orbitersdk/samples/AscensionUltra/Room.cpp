@@ -44,9 +44,6 @@ void Room::PostStep (double simt, double simdt, double mjd)
 		switch (process)
 		{
 		case UMMU_RETURNED_TO_OUR_SHIP:
-			sprintf(oapiDebugString(),"%s \"%s\" aged %i entered %s through %s",
-			crew.GetCrewMiscIdByName(crew.GetLastEnteredCrewName()),crew.GetLastEnteredCrewName()
-			,crew.GetCrewAgeByName(crew.GetLastEnteredCrewName()),hangar->GetName(), name);
 			break;	
 		default:
 			VesselRoomTransfer *transfer=GetTransfered();
