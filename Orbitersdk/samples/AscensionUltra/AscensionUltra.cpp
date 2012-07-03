@@ -26,8 +26,8 @@
 #define MAXSTATICRUNWAYLINES 14
 #define STATICRUNWAYLINESSPLIT 7
 #define RUNWAYENDPOINTS 15
-#define LFMCOFFSET _V(-1463,0,1260)
-#define VLC1OFFSET _V(-1866,0,2560.5)
+#define LFMCOFFSET _V(-1463.55,-0.19,1260)
+#define VLC1OFFSET _V(-1866,-0.28,2560.5)
 #define VLC1MATRIXOFFSET _V(-220,0,0)
 #define DRADAROFFSET _V(-895,0,970)
 #define DRADARMATRIXOFFSET _V(-4495,0,0)
@@ -201,25 +201,27 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	meshVerticalWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_VLC_WO");
 	meshDRadar = oapiLoadMeshGlobal ("cssc\\d-radar");
 	
-	double curvoff[TURNAROUNDHANGARS]={-0.08,-0.12,-0.17};
+	double curvoffTA[TURNAROUNDHANGARS]={-0.08,-0.12,-0.17};
+	double curvoffLL[LEASELIGHTHANGARS]={0, -0.01, -0.02, -0.03, -0.04, -0.05};
+	double curvoffHL[LEASEHEAVYHANGARS]={-0.02, -0.04, -0.06};
 
 	InitSubObjects();
 
 	for(int i=0;i<TURNAROUNDHANGARS;i++)
 	{
-		VECTOR3 off=OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0);
+		VECTOR3 off=OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoffTA[i],0);
 		SetMeshVisibilityMode (AddMesh (meshHangar, &off), MESHVIS_ALWAYS);
 		turnAround[i].SetPosition(off);
 	}
 	for(int i=0;i<LEASELIGHTHANGARS;i++)
 	{
-		VECTOR3 off=OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i;
+		VECTOR3 off=OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i+_V(0,curvoffLL[i],0);
 		SetMeshVisibilityMode (AddMesh (meshLeaseLight, &off), MESHVIS_ALWAYS);
 		leaseLight[i].SetPosition(off);
 	}
 	for(int i=0;i<LEASEHEAVYHANGARS;i++)
 	{
-		VECTOR3 off=OFFSET+LH1OFFSET+LH1MATRIXOFFSET*i;
+		VECTOR3 off=OFFSET+LH1OFFSET+LH1MATRIXOFFSET*i+_V(0,curvoffHL[i],0);
 		SetMeshVisibilityMode (AddMesh (meshLeaseHeavy, &off), MESHVIS_ALWAYS);
 		leaseHeavy[i].SetPosition(off);
 	}
@@ -236,9 +238,9 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		SetMeshVisibilityMode (AddMesh (meshDRadar, &off), MESHVIS_ALWAYS);
 		dradar[i].SetPosition(off+_V(0,DRADARPIVOT,0)); //Dish position
 	}
-	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoff[i],0))), MESHVIS_ALWAYS);
-	for(int i=0;i<LEASELIGHTHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseLightWindow, &(OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
-	for(int i=0;i<LEASEHEAVYHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseHeavyWindow, &(OFFSET+LH1OFFSET+LH1MATRIXOFFSET*i)), MESHVIS_ALWAYS);
+	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoffTA[i],0))), MESHVIS_ALWAYS);
+	for(int i=0;i<LEASELIGHTHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseLightWindow, &(OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i+_V(0,curvoffLL[i],0))), MESHVIS_ALWAYS);
+	for(int i=0;i<LEASEHEAVYHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseHeavyWindow, &(OFFSET+LH1OFFSET+LH1MATRIXOFFSET*i+_V(0,curvoffHL[i],0))), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshLaunchWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC_WO"), &(OFFSET+LFMCOFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<VERTICALLAUNCHFACILITIES;i++) SetMeshVisibilityMode (AddMesh (meshVerticalWindow, &(OFFSET+VLC1OFFSET+VLC1MATRIXOFFSET*i)), MESHVIS_ALWAYS);	
 
