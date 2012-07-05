@@ -403,6 +403,7 @@ void AscensionTowerData::Select(int index)
 		{
 			t->Strobe(false);
 			t->Strobe(start, end, true);
+			SetState(AscensionTowerState::GroundMenu);
 		}
 		break;
 	case AscensionTowerState::LandingRunwaySelection:
