@@ -80,45 +80,49 @@ double AscensionUltra::GetVersion(){return 1.0;}
 void AscensionUltra::InitSubObjects()
 {
 	int i;
-	char name[40]=" x. Turn-around Hangar";
+	char name[40]="Turn-around Hangar #x";
+	int k=strlen(name)-1;
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
-		name[1]=0x31+i;
+		name[k]=0x31+i;
 		turnAround[i].Init(this, name, i+3, "HANGAR", i);
 	}
 
-	strcpy(name, " x. Lease Hangar");
+	strcpy(name, "Lease Hangar #x ");
+	k=strlen(name)-2;
 	for(i=0;i<LEASELIGHTHANGARS;i++)
 	{
-		name[1]=0x30+((i+1) % 10);
-		if (i>8) name[0]=0x31;
+		name[i>8?k+1:k]=0x30+((i+1) % 10);
+		if (i>8) name[k]=0x31;
 		leaseLight[i].Init(this, name, i+3+TURNAROUNDHANGARS, "LIGHTLEASE", i, "LEASE");
 	}
 
 	for(;i<LEASELIGHTHANGARS+LEASEHEAVYHANGARS;i++)
 	{
-		name[1]=0x30+((i+1) % 10);
-		if (i>8) name[0]=0x31;
+		name[i>8?k+1:k]=0x30+((i+1) % 10);
+		if (i>8) name[k]=0x31;
 		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+3+TURNAROUNDHANGARS, "HEAVYLEASE", i, "LEASE");
 	}
 
-	strcpy(name, "Launch Facility");
+	strcpy(name, "Winged Launch Facility");
 	launchTunnel.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS, "LAUNCHTUNNEL", -1);
 
-	strcpy(name, " x. Vertical Launch Facility");
+	strcpy(name, "Vertical Launch Facility #x");
+	k=strlen(name)-1;
 	for(i=0;i<VERTICALLAUNCHFACILITIES;i++)
 	{
-		name[1]=0x31+i;
+		name[k]=0x31+i;
 		vertical[i].Init(this, name, i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1, "VERTICALLAUNCH", i);
 	}
 
 	/* Tracker definition */
 	//0-1,7-10 groups are dishes, 4 is static plate, 2-3/5-6 is rotation stand
 	static UINT RotGrp[10] = {2,3,5,6,0,1,7,8,9,10};
-	strcpy(name, " x. Doppler Radar");
+	strcpy(name, "Doppler Radar #x");
+	k=strlen(name)-1;
 	for(i=0;i<DRADARS;i++)
 	{
-		name[1]=0x31+i;
+		name[k]=0x31+i;
 		dradar[i].Init(this, name,
 			new MGROUP_ROTATE(i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+VERTICALLAUNCHFACILITIES, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), -360*RAD),
 			new MGROUP_ROTATE(i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+VERTICALLAUNCHFACILITIES, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), 90*RAD),
