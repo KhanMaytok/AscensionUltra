@@ -107,7 +107,8 @@ private:
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
 	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical, cur_DopplerRadar;
-
+	bool oldCameraMode;
+	
 	//DEBUG
 
 	int cur_Path;

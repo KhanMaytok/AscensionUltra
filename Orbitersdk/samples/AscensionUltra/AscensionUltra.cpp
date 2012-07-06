@@ -63,6 +63,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	cur_Path=0;
 	cur_Section=0;
 
+	oldCameraMode=false;
+
 	coords=false;
 }
 
@@ -435,8 +437,19 @@ void AscensionUltra::clbkVisualDestroyed (VISHANDLE vis, int refcount)
 // --------------------------------------------------------------
 void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 {
+	//Check for internal view in order to fix rendering order via MESHVIS_EXTPASS
+	//This could decrease performance, so we disable it later again
 	OBJHANDLE obj=oapiGetFocusObject();
-	
+	bool mode=oapiCameraInternal() && obj==GetHandle();
+	if (mode != oldCameraMode)
+	{
+		oldCameraMode=mode;
+		int i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+VERTICALLAUNCHFACILITIES+DRADARS;
+		int k=GetMeshVisibilityMode(i)>MESHVIS_NEVER?GetMeshCount():i;
+		WORD vismode=MESHVIS_ALWAYS | (mode?MESHVIS_EXTPASS:0);
+		for(int i=0;i<k;i++) SetMeshVisibilityMode(i, vismode);
+	}
+		
 	//Call post steps of all sub-elements
 	for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].clbkPostStep(simt, simdt, mjd);
 	for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].clbkPostStep(simt, simdt, mjd);
@@ -568,6 +581,15 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		case OAPI_KEY_C:
 			coords=!coords;
+			return 1;
+		case OAPI_KEY_W:
+			{
+				int i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+VERTICALLAUNCHFACILITIES+DRADARS;
+				int k=GetMeshCount();
+				int mode=GetMeshVisibilityMode(i) > MESHVIS_NEVER?MESHVIS_NEVER:(MESHVIS_ALWAYS | MESHVIS_EXTPASS);
+				for(;i<k;i++) SetMeshVisibilityMode(i, mode);
+				sprintf(oapiDebugString(), "Window status: %X", mode);
+			}
 			return 1;
 		}
 	}
