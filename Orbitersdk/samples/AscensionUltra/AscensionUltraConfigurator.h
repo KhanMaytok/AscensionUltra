@@ -7,7 +7,7 @@
 #define RECSAVE		"recorder-save"
 #define INIFILE		"Modules\\AscensionUltra.ini"
 #define CLASSNAME	"AscensionUltra"
-#define AUNAME		"Wideawake International"
+#define AUNAME		"Wideawake_Int(AU)"
 #define LONGITUDE	(-14.405L*RAD)
 #define LATITUDE	(-7.955L*RAD)
 #define	HEADING		(220.0L*RAD)
