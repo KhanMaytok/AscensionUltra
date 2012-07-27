@@ -16,6 +16,7 @@
 #include "LeaseHeavyHangar.h"
 #include "LaunchTunnelHangar.h"
 #include "VerticalLaunchHangar.h"
+#include "SmallVerticalLaunchHangar.h"
 #include "AirportHangar.h"
 #include "Routes.h"
 #include "Person.h"
@@ -31,7 +32,6 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define TURNAROUNDHANGARS 3
 #define LEASELIGHTHANGARS 6
 #define LEASEHEAVYHANGARS 3
-#define VERTICALLAUNCHFACILITIES 2
 #define DRADARS 2
 
 //Defines for person change API
@@ -86,11 +86,14 @@ private:
 
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
-	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLeaseLight, meshLeaseHeavy, meshLaunch, meshLaunchWindow, meshLeaseLightWindow, meshLeaseHeavyWindow, meshVertical, meshVerticalWindow, meshDRadar;
+	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLeaseLight, meshLeaseHeavy;
+	MESHHANDLE meshLaunch, meshLaunchWindow, meshLeaseLightWindow, meshLeaseHeavyWindow, meshVertical, meshVerticalWindow, meshDRadar;
+	MESHHANDLE meshVerticalSmall, meshVerticalSmallWindow;
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LeaseLightHangar leaseLight[LEASELIGHTHANGARS];
 	LeaseHeavyHangar leaseHeavy[LEASEHEAVYHANGARS];
-	VerticalLaunchHangar vertical[VERTICALLAUNCHFACILITIES];
+	VerticalLaunchHangar vertical;
+	SmallVerticalLaunchHangar verticalSmall;
 	LaunchTunnelHangar launchTunnel;
 	AirportHangar airport;
 	Taxiways taxiways;
@@ -106,7 +109,7 @@ private:
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical, cur_DopplerRadar;
+	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical, cur_DopplerRadar, cur_VerticalSmall;
 	bool oldCameraMode;
 	
 	//DEBUG
