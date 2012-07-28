@@ -350,6 +350,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SmallVerticalLaunchHangar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Taxiways.cpp"
 				>
 			</File>
@@ -443,6 +447,10 @@
 			</File>
 			<File
 				RelativePath=".\Runways.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SmallVerticalLaunchHangar.h"
 				>
 			</File>
 			<File
