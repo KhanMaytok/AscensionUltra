@@ -150,8 +150,10 @@ void ReadBeaconPaths(std::vector<BeaconPath *> &paths, std::vector<BeaconArray *
 			{
 				line[j]=0x00;
 				int val=atoi(line+s);
-				if (val<0) path->Add(beacons[-val], true);
-				else path->Add(beacons[val], false);
+				bool sign=val<0;
+				if (val==0) sign = strchr(line+s, '-')!=NULL;
+				val=abs(val);
+				path->Add(beacons[val], sign);
 			}
 			s=j+1;
 			valid=false;
