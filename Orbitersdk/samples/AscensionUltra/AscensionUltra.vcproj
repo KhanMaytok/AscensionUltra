@@ -310,6 +310,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Group.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Hangar.cpp"
 				>
 			</File>
@@ -403,6 +407,14 @@
 			</File>
 			<File
 				RelativePath=".\Door.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Group.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GroupElement.h"
 				>
 			</File>
 			<File

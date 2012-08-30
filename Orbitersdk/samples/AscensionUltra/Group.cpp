@@ -18,14 +18,34 @@ Group::Group(char *name):GroupElement()
 
 void Group::Add(GroupElement *element)
 {
+	byIndex.push_back(element);
+	char *name=element->GetName();
+	if (name==NULL) return;
+	std::string n;
+	n.assign(name);
+	byName[n]=element; //In case of name conflicts, this means that the name always will reference the last definition added
 }
 
-GroupElement *Group::GetElement(int index)
+GroupElement * Group::operator [] (int index)
 {
-	return NULL;
+	if (index<0 || index>byIndex.size()) return NULL;
+	return byIndex[index];
 }
 
-GroupElement *Group::GetElement(char *name)
+GroupElement *Group::operator [] (char *name)
 {
-	return NULL;
+	std::string n;
+	n.assign(name);
+	return byName.count(n)>0?byName[n]:NULL;
+}
+
+GroupElement *Group::operator [] (char **name)
+{	
+	if (*name == NULL) return this;
+	std::string n;
+	n.assign(*name++);
+	if (byName.count(n)<=0) return NULL;
+	GroupElement *element = byName[n];
+	if (element->GetType()==TypeGroup) return (*((Group *)element))[name];
+	return *name==NULL?this:NULL;	 
 }

@@ -10,13 +10,20 @@
 
 #pragma once
 #include "GroupElement.h"
+#include <vector>
+#include <hash_map>
+#include <string>
 
-class Group : GroupElement
+class Group : public GroupElement
 {
 public:
 	Group(char *name);
 	void Add(GroupElement *element);
-	GroupElement *GetElement(int index);
-	GroupElement *GetElement(char *name);
+	GroupElement * operator [](int index);
+	GroupElement * operator [](char *name);
+	GroupElement * operator [](char **name);
 	virtual GroupElementType GetType() {return TypeGroup;}
+private:
+	std::vector<GroupElement *> byIndex;
+	stdext::hash_map<std::string, GroupElement *> byName;
 };
