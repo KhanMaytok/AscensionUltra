@@ -225,6 +225,76 @@ void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const 
 	}
 }
 
+void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *section, VESSEL *owner)//TODO: create a suitable data-type here
+{
+	char pf[PREFIXSIZE]="";
+	char line[LINESIZE]="";
+	int i=0;
+	while(true)
+	{
+		sprintf(pf, "BeaconGroup%d", i++);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		if (line[0]==0x00) break;
+		int k=strlen(line);
+		int s=0;
+		bool valid=false;
+		int e=0;
+		int j=0;
+		Group *group=NULL;
+		//First step: search name until ':', trimming leading and trailing whitespace
+		for(;j<k && !valid;j++) switch(line[j])
+		{
+		case ' ':
+		case '\t':
+			if (e==0) s=j+1;
+			break;
+		case ':':
+			if (s>e) j=k; //no valid name: exits loop to skip entry
+			else
+			{
+				line[e+1]=0x00;
+				group=new Group(line+s);
+				valid=true;
+			}
+			break;
+		default:
+			e=j;
+			break;
+		}
+		if (!valid) continue; //Skip if name terminator not found
+		valid=false;
+		s=j;
+		//Second step: create grouping
+		for(;j<k;j++) switch(line[j])
+		{
+		case ';':
+			line[j]=0x00;
+			j=k;
+			break;
+		case ',':
+			if (valid)
+			{
+				line[j]=0x00;
+				int val=atoi(line+s);
+				group->Add(beacons[val]);
+			}
+			s=j+1;
+			valid=false;
+			break;
+		default:
+			if (line[j]<'0' || line[j]>'9') break;
+			valid=true;
+			break;
+		}		
+		if (valid)
+		{
+			int val=atoi(line+s);
+			group->Add(beacons[val]);
+		}
+		groups.Add(group);
+	}
+}
+
 // --------------------------------------------------------------
 // Module cleanup
 // --------------------------------------------------------------

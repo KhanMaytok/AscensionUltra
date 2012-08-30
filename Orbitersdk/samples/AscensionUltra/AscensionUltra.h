@@ -23,6 +23,7 @@
 #include "Tracker.h"
 #include "Taxiways.h"
 #include "Runways.h"
+#include "Group.h"
 #include "UMmuSDK.h"
 #include <map>
 #include <vector>
