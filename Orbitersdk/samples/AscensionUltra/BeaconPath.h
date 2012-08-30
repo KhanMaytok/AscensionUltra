@@ -4,7 +4,7 @@
 #include "BeaconArray.h"
 #include "GroupElement.h"
 
-class BeaconPath : GroupElement
+class BeaconPath : public GroupElement
 {
 public:
 	~BeaconPath(void);

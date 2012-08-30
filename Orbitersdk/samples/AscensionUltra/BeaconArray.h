@@ -12,7 +12,7 @@
 #include "orbitersdk.h"
 #include "GroupElement.h"
 
-class BeaconArray : GroupElement
+class BeaconArray : public GroupElement
 {
 public:
 	BeaconArray(void);
