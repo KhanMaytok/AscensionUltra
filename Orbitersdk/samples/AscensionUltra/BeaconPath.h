@@ -2,8 +2,9 @@
 #include "orbitersdk.h"
 #include <list>
 #include "BeaconArray.h"
+#include "GroupElement.h"
 
-class BeaconPath
+class BeaconPath : GroupElement
 {
 public:
 	~BeaconPath(void);
@@ -46,6 +47,8 @@ public:
 	   how far off is the animation's timing from the virtual zero point */
 	void SetOffset(double offset);
 	double GetOffset();
+
+	virtual GroupElementType GetType() {return TypeBeaconPath;}
 
 private:	
 	struct Item

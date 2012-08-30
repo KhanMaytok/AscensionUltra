@@ -10,8 +10,9 @@
 
 #pragma once
 #include "orbitersdk.h"
+#include "GroupElement.h"
 
-class BeaconArray
+class BeaconArray : GroupElement
 {
 public:
 	BeaconArray(void);
@@ -58,6 +59,8 @@ public:
 	void SetOffset(double offset);
 	double GetOffset();
 	double GetOffsetPropagation();
+
+	virtual GroupElementType GetType() {return TypeBeaconArray;}
 
 private:
 	void Clear();

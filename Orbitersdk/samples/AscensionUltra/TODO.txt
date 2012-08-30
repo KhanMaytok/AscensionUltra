@@ -1,7 +1,11 @@
 * Design of MFD pages is a bit unfortunate. Refactor with inheritance instead of ugly switch/case constructs.
 * Refactor various interfaces to be consistent. ATM there is a index-driven, class-based and struct-based approach.
 * Think about making sub-objects sub-vessels
-* Make coordinate system more generic. I.e. use files with ini-like structure to define e.g. beacon-arrays and hangar positions.
+* Make coordinate system more generic. I.e. use INI structure to define hangar positions.
+* Create grouping system to group elements into named sections. This can act as containers for interfacing (return e.g. group "Hangars") and for
+  beacon routes (no more misuse of Routes for runways). Possible architecture:
+  Class GroupElement, containing only field "Type". Everything derives from GroupElement.
+  Class Group, itself a GroupElement can hold one or more elements and associates it with a name.
 * Launch Facility wizard:
 					1. Access to launch prepare site - MFD shows wait-screen, if launch prepare site is occupied.
 					   Occupied: LF keeps flag, set on launch wizard start from other MFD wizard, reset on occupying vessel proceeding to launch.
