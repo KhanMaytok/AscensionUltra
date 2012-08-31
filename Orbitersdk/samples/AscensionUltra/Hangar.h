@@ -12,6 +12,7 @@
 #include "Room.h"
 #include "UMmuSDK.h"
 #include "BeaconArray.h"
+#include "Group.h"
 #include <vector>
 
 #define HANGARTYPETA	0x01
@@ -52,4 +53,5 @@ protected:
 	int areaStart, areaEnd;
 	VECTOR3 position;
 	std::vector<BeaconArray *> beacons;
+	Group beaconGroup;
 };

@@ -11,6 +11,8 @@
 #include <string.h>
 #include "Group.h"
 
+Group::Group():GroupElement(){}
+
 Group::Group(char *name):GroupElement()
 {
 	SetName(name);

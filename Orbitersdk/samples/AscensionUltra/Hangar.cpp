@@ -40,11 +40,13 @@ void Hangar::DefineAnimations ()
 	int k=GetDoors();
 	for (int i=0;i<k;i++) GetDoor(i)->DefineAnimations();
 	ReadBeaconDefinition(beacons, classname, position, owner);
+	ReadBeaconGroups(beaconGroup, beacons, classname);
 	if (instance>=0)
 	{
 		char *line=new char[strlen(classname)+40];
 		sprintf(line, "%s%d", classname, instance);
 		ReadBeaconDefinition(beacons, line, position, owner);
+		ReadBeaconGroups(beaconGroup, beacons, line);
 		delete [] line;
 	}
 }

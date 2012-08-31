@@ -17,6 +17,7 @@
 class Group : public GroupElement
 {
 public:
+	Group();
 	Group(char *name);
 	void Add(GroupElement *element);
 	GroupElement * operator [](int index);

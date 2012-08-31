@@ -225,7 +225,7 @@ void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const 
 	}
 }
 
-void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *section, VESSEL *owner)//TODO: create a suitable data-type here
+void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";

@@ -3,6 +3,7 @@
 #include "BeaconArray.h"
 #include "BeaconPath.h"
 #include "Routes.h"
+#include "Group.h"
 #include <vector>
 
 void RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref);
@@ -11,3 +12,4 @@ void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const 
 void ReadBeaconPaths(std::vector<BeaconPath *> &paths, std::vector<BeaconArray *> &beacons, const char *section, VESSEL *owner);
 void ReadBeaconEndPoints(std::vector<char *> &endPoints, const char *section);
 void ReadBeaconRoutes(Routes &routes, std::vector<BeaconPath *> &paths, std::vector<char *> &endPoints, const char *section);
+void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *section);
