@@ -10,9 +10,18 @@
 
 #pragma once
 #include "Door.h"
+#include "Group.h"
 
 class VerticalLaunchDoor:public Door
 {
 public:
+	VerticalLaunchDoor();
+	~VerticalLaunchDoor();
+	void InitBeaconTransform(Group *group, int transforms, ... );
 	void DefineAnimations();
+	void PostStep (double simt, double simdt, double mjd);
+private:
+	Group *beaconGroups;
+	int beaconTransforms;
+	MGROUP_TRANSFORM **beaconTransform;
 };
