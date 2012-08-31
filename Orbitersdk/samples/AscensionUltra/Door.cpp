@@ -23,10 +23,22 @@ void Door::Init(VESSEL *owner, const char *name, const char *event_prefix, int t
 	for(int i=0;i<transforms;i++) door[i]=va_arg(doors, MGROUP_TRANSFORM*);
 	va_end(doors);
 	SetSpeed(0.1);
+}
+
+Door::Door(void)
+{
+	owner=NULL;
+	event_prefix=NULL;
+	actionText=NULL;
+	name=NULL;
+	transforms=0;
+	door=NULL;
 	position=0;
+	speed=0;
 	command=0.0;
 	crew=NULL;
 	action=0;
+	anim=0;
 }
 
 Door::~Door(void)

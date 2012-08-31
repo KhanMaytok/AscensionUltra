@@ -17,6 +17,7 @@
 class Door
 {
 public:
+	Door(void);
 	~Door(void);
 	void Init(VESSEL *owner, const char *name, const char *event_prefix, int transforms, ... );
 	void SetSpeed(double speed);
@@ -24,7 +25,7 @@ public:
 	virtual void Open();
 	virtual void Close();
 	virtual double GetPosition();
-	void PostStep (double simt, double simdt, double mjd);
+	virtual void PostStep (double simt, double simdt, double mjd);
 	virtual void DefineAnimations();
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
