@@ -9,6 +9,7 @@
 // ==============================================================
 
 #pragma once
+#include "orbitersdk.h"
 
 enum GroupElementType
 {
@@ -25,6 +26,7 @@ public:
 	~GroupElement(void) {delete [] name;}
 	char *GetName() {return name;}
 	virtual GroupElementType GetType() {return TypeGroupElement;}
+	virtual void Displace(VECTOR3 offset) {}
 protected:
 	void SetName(char *name)
 	{
