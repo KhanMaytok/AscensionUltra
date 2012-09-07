@@ -39,11 +39,11 @@ private:
 	int action;
 	double speed;
 	double command;
-	double position;
 	char *event_prefix, *name, *actionText;
 	UMMUCREWMANAGMENT *crew;
 protected:
 	VESSEL* owner;
 	int anim, transforms;
+	double position;
 	MGROUP_TRANSFORM **door;
 };
