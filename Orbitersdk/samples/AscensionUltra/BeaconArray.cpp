@@ -11,6 +11,7 @@ BeaconArray::BeaconArray(void)
 	offset=0;
 	offsetPropagation=0;
 	color=_V(0,1,0);
+	start=end=_V(0,0,0);
 }
 
 BeaconArray::~BeaconArray(void)
@@ -55,6 +56,13 @@ void BeaconArray::Init(VESSEL *owner, VECTOR3 &start, VECTOR3 &end, VECTOR3 &col
 }
 
 void BeaconArray::SetLine(VECTOR3 &start, VECTOR3 &end)
+{
+	this->start=start;
+	this->end=end;
+	SetPositions(start, end);
+}
+
+void BeaconArray::SetPositions(VECTOR3 &start, VECTOR3 &end)
 {
 	if (beacons<1) return;
 	*(spec[0].pos)=start;
@@ -101,20 +109,8 @@ void BeaconArray::SetFallOff(double falloff){ for (int i=0;i<beacons;i++) spec[i
 
 void BeaconArray::GetLine(VECTOR3 &start, VECTOR3 &end)
 {
-	switch (beacons)
-	{
-	case 0:
-		start=_V(0,0,0);
-		end=_V(0,0,0);
-		return;
-	case 1:
-		start=end=*(spec[0].pos);
-		return;
-	default:
-		start=*(spec[0].pos);
-		end=*(spec[beacons-1].pos);
-		return;
-	}
+	start=this->start;
+	end=this->end;	
 }
 void BeaconArray::GetColor(VECTOR3 &color) { color=(spec!=NULL && beacons>0)?*(spec[0].col):_V(0,0,0); }
 int BeaconArray::GetBeacons() { return beacons; }

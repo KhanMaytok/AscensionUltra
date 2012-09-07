@@ -61,13 +61,15 @@ public:
 	double GetOffsetPropagation();
 
 	virtual GroupElementType GetType() {return TypeBeaconArray;}
+	virtual void Displace(VECTOR3 offset) {SetPositions(start+offset, end+offset);}
 
 private:
 	void Clear();
 	void CalculateStrobe();
+	void SetPositions(VECTOR3 &start, VECTOR3 &end);
 	VESSEL *owner;
 	BEACONLIGHTSPEC *spec;	
 	int beacons;
-	VECTOR3 color;
+	VECTOR3 start, end, color;
 	double period, duration, propagate, offset, offsetPropagation;
 };
