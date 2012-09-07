@@ -47,5 +47,14 @@ void VerticalLaunchDoor::DefineAnimations()
 void VerticalLaunchDoor::PostStep (double simt, double simdt, double mjd)
 {
 	Door::PostStep(simt, simdt, mjd);
-	//TODO: displace group according to position transformations
+	for(int i=0;i<beaconTransforms;i++)
+	{
+		switch(beaconTransform[i]->Type())
+		{
+		case MGROUP_TRANSFORM::TRANSLATE:
+			MGROUP_TRANSLATE *t=(MGROUP_TRANSLATE *)beaconTransform[i];
+			for(int j=0;j<t->ngrp;j++) (*beaconGroups)[j]->Displace(t->shift*position);
+			break;
+		}
+	}
 }
