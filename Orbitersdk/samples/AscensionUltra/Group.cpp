@@ -18,6 +18,11 @@ Group::Group(char *name):GroupElement()
 	SetName(name);
 }
 
+void Group::Displace(VECTOR3 offset)
+{
+	for(std::vector<GroupElement *>::iterator i=byIndex.begin();i!=byIndex.end();i++) (*i)->Displace(offset);
+}
+
 void Group::Add(GroupElement *element)
 {
 	byIndex.push_back(element);
