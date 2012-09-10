@@ -15,6 +15,7 @@ int SmallVerticalLaunchHangar::GetType(){return HANGARTYPEVLC;}
 void SmallVerticalLaunchHangar::DefineAnimations ()
 {
 	static UINT DoorGrp[7] = {2,0,1,3,4,5,6};
+	static char *BeaconGrp[6] = {"cover","mlp"};
 	char prefix[40]="";
 	int i=0;
 
@@ -26,6 +27,9 @@ void SmallVerticalLaunchHangar::DefineAnimations ()
 		new MGROUP_ROTATE(meshIndex, DoorGrp+4, 1,	_V(-17,52,-97), _V(0,0,1), (float)(90*RAD)),
 		new MGROUP_ROTATE(meshIndex, DoorGrp+5, 1,	_V(17,32,-97), _V(0,0,-1), (float)(90*RAD)),
 		new MGROUP_ROTATE(meshIndex, DoorGrp+6, 1,	_V(17,52,-97), _V(0,0,-1), (float)(90*RAD)));
+	doors[0].InitBeaconTransform(&beaconGroup, 2,
+		new MGROUP_TRANSLATE(0, (UINT *)BeaconGrp, 2, _V(0,0,290)),
+		new MGROUP_TRANSLATE(0, (UINT *)BeaconGrp, 1, _V(0,0,-290))); 
 	Hangar::DefineAnimations();
 	
 	rooms[0].Init(owner, this, "Vertical Launch Control", _V(0,150,-137), _V(0,0,1), _V(0,0,0), 4);
