@@ -34,6 +34,11 @@ VerticalLaunchDoor::~VerticalLaunchDoor(void)
 	delete [] beaconTransform;
 }
 
+//VerticalLaunchDoor uses implicit knowledge of transformation order to establish multi-sequence animation.
+//Transformation 0 is translation of cover group to stand in animation state 0-0.4,
+//transformation 1 is translation of cover from stand to VAB in animation state 0.6-1 and
+//the rest is rotational movement of clamps in animation state 0.4-0.6.
+
 void VerticalLaunchDoor::DefineAnimations()
 {	
 	int i=0;
@@ -46,15 +51,15 @@ void VerticalLaunchDoor::DefineAnimations()
 void VerticalLaunchDoor::PostStep (double simt, double simdt, double mjd)
 {
 	Door::PostStep(simt, simdt, mjd);
-	for(int i=0;i<beaconTransforms;i++)
-	{
-		switch(beaconTransform[i]->Type())
-		{
-		case MGROUP_TRANSFORM::TRANSLATE:
-			MGROUP_TRANSLATE *t=(MGROUP_TRANSLATE *)beaconTransform[i];
-			char **beaconGrp=(char **)t->grp;
-			for(int j=0;j<t->ngrp;j++) (*beaconGroups)[beaconGrp[j]]->Displace(t->shift*position);
-			break;
-		}
-	}
+	double positionRoot=min(position/0.4, 1);
+	double positionCover=max((position-0.6)/0.4, 0);
+	int i=0;
+	if (i>=beaconTransforms) return;
+	MGROUP_TRANSLATE *t=(MGROUP_TRANSLATE *)beaconTransform[i++];
+	char **beaconGrp=(char **)t->grp;
+	for(int j=0;j<t->ngrp;j++) (*beaconGroups)[beaconGrp[j]]->Displace(t->shift*positionRoot);
+	if (i>=beaconTransforms) return;
+	MGROUP_TRANSLATE *t2=(MGROUP_TRANSLATE *)beaconTransform[i++];
+	beaconGrp=(char **)t2->grp;
+	for(int j=0;j<t2->ngrp;j++) (*beaconGroups)[beaconGrp[j]]->Displace(t->shift*positionRoot+t2->shift*positionCover);
 }
