@@ -16,15 +16,15 @@ AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 	for(int i=0;i<10;i++) AT_BUTTONDOUBLED[i]=bdp[i];
 }
 
-void AscensionTowerPage::Update(HDC hDC)
+void AscensionTowerPage::Update()
 {
 	mfd=data->GetMFD();
 	ascension=data->GetAscension();	
 	MFDRenderer();
 
-	mfd->SelectDefaultFont(hDC, 1);
+	mfd->SetWriteStyle(1,2);
 	
-	mfd->Title (hDC, GetTitle());	
+	mfd->Write (GetTitle(), 0, 0);
 	mfd->Write (GetSubtitle(), 2, 2);
 }
 
@@ -39,13 +39,13 @@ void AscensionTowerPage::MFDRenderer()
 		mfd->InvalidateButtons();
 	}
 		
-	mfd->SelectDefaultFont (hDC, 0);
+	mfd->SetWriteStyle(0);
 	for(int i=0; i+page*6<size && i<6; i++)
 		mfd->Write(GetListItem(i+page*6).Name, AT_BUTTON[i], 1, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
 	if (pages>0)
 	{
 		sprintf(line, "p.%d/%d", page+1, pages);
-		mfd->Write(line, 27, -1, WRITEMFD_RIGHTALINED);
+		mfd->Write(line, 27, -1, WRITEMFD_RIGHTALIGNED);
 	}
 	else mfd->Write("N O   B A S E S   A V A I L A B L E");
 }

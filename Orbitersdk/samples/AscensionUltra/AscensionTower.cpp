@@ -21,9 +21,8 @@
 // Global variables
 
 std::map<VESSEL *, std::map<UINT, AscensionTowerData *> *> g_MFDData;
-HBRUSH g_Bar;
-COLORREF g_MiddleGreen;
 int g_MFDmode; // identifier for new MFD mode
+oapi::Brush *myBrush;
 
 // ==============================================================
 // API interface
@@ -31,18 +30,19 @@ int g_MFDmode; // identifier for new MFD mode
 DLLCLBK void InitModule (HINSTANCE hDLL)
 {
 	static char *name = "Ascension Tower";
-	MFDMODESPEC spec;
+	MFDMODESPECEX spec;
 	spec.name = name;
 	spec.key = OAPI_KEY_T;
 	spec.msgproc = AscensionTower::MsgProc;
+	spec.context = NULL;
 	g_MFDmode = oapiRegisterMFDMode (spec);
-	g_Bar=NULL;
+	myBrush=oapiCreateBrush(0x00008000);
 }
 
 DLLCLBK void ExitModule (HINSTANCE hDLL)
 {
-	if (g_Bar!=NULL) DeleteObject(g_Bar);
 	oapiUnregisterMFDMode (g_MFDmode);
+	oapiReleaseBrush(myBrush);
 }
 
 DLLCLBK void opcCloseRenderViewport (void)
@@ -60,7 +60,7 @@ DLLCLBK void opcCloseRenderViewport (void)
 
 // Constructor
 AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
-: MFD (w, h, vessel)
+: MFD2 (w, h, vessel)
 {	
 	std::map<UINT, AscensionTowerData *> *mfds=g_MFDData[vessel];
 	if (mfds==NULL)
@@ -84,21 +84,13 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 }
 
 // Repaint the MFD
-void AscensionTower::Update (HDC hDC)
+bool AscensionTower::Update (oapi::Sketchpad *pad)
 {
-	//
-	//Creating the pen for drawing the progress bar
-	if (g_Bar==NULL)
-	{
-		LOGPEN pen;
-		SelectDefaultPen(hDC, 2);
-		GetObject(GetCurrentObject(hDC, OBJ_PEN), sizeof(LOGPEN), &pen);
-		g_MiddleGreen=pen.lopnColor;
-		g_Bar=CreateSolidBrush(g_MiddleGreen);
-	}
+	this->pad=pad;
 
-	this->hDC=hDC;
-	data->Update(hDC);
+	data->Update();
+
+	return true;
 }
 
 // MFD message parser
@@ -131,30 +123,38 @@ bool AscensionTower::ConsumeButton(int bt, int event)
 	return true;
 }
 
-void AscensionTower::WriteMFD(char *text, int line, int column, int flags)
+void AscensionTower::Write(char *text, int line, int column, int flags)
 {
 	int l=strlen(text);
 	int x=0;
 	int y=0;
+	int w=W/36;
+	int h=H/28;
+
 	if (line<0)
 	{
-		x=(1+(36-l)/2)*cw;
-		y=13*ch;		
+		x=(1+(36-l)/2)*w;
+		y=13*h;		
 	}
 	else
 	{
-		y=(int)(line*ch) >> (HALFLINES(flags)?1:0);
-		if (column<0 && !(RIGHTALINED(flags))) x=(1+(36-l)/2)*cw;
+		y=(int)(line*h) >> (HALFLINES(flags)?1:0);
+		if (column<0 && !(RIGHTALIGNED(flags))) x=(1+(36-l)/2)*w;
 		else
 		{
-			if (RIGHTALINED(flags)) x=(column<0?W:column*cw)-(l+1)*cw;
-			else x=column*cw;
+			if (RIGHTALIGNED(flags)) x=(column<0?W:column*w)-(l+1)*w;
+			else x=column*w;
 		}
 	}
-	if (HIGHLIGHTED(flags))
-	{
-		SelectObject(hDC, g_Bar);
-		Rectangle(hDC, cw-2, y-2, W-cw+2, y+ch+6 );
-	}
-	TextOut(hDC, x, y, text, l);
+	if (HIGHLIGHTED(flags))	pad->Rectangle(w-2, y-2, W-w+2, y+h+6);
+	pad->Text(x, y, text, l);
+}
+
+void AscensionTower::SetWriteStyle(int font, int color, int intensity, int style)
+{
+	static DWORD colors[4] = {0x0000FF00, 0x0000FFFF, 0x00FFFFFF, 0x00FF0000};
+	pad->SetFont(GetDefaultFont(font));
+	pad->SetTextColor(colors[color]);
+	pad->SetPen(GetDefaultPen(color, intensity, style));
+	pad->SetBrush(myBrush);
 }

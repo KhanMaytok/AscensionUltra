@@ -23,9 +23,9 @@ bool AscensionTowerData::StateChange(AscensionTowerPageInstance newstate)
 	return true;
 }
 
-void AscensionTowerData::Update(HDC hDC)
+void AscensionTowerData::Update()
 {
-	pages[state]->Update(hDC);
+	pages[state]->Update();
 }
 
 AscensionTower *AscensionTowerData::GetMFD(){return mfd;}

@@ -11,7 +11,7 @@ class AscensionTowerData
 {
 public:
 	AscensionTowerData(AscensionTower *mfd);
-	void Update(HDC hDC);
+	void Update();
 	char *GetButtonLabel (int bt);
 	int GetButtonMenu (MFDBUTTONMENU *mnu);
 	bool SetButton(int bt);
