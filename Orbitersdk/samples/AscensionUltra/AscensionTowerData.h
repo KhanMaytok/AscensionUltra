@@ -1,30 +1,27 @@
 #pragma once
 #include <vector>
 #include "AscensionUltra.h"
+#include "AscensionTower.h"
+#include "AscensionTowerPage.h"
 #include "orbitersdk.h"
 
-#define BUFFERLEN 256
+class AscensionTowerPage;
 
 class AscensionTowerData
 {
 public:
-	AscensionTowerData(MFD *mfd, VESSEL *vessel);
-	~AscensionTowerData(void);
-	
-	double GetStep();
-	int GetPage();
-	int GetSelection();
-	AscensionTowerState GetState();
-	void SetState(AscensionTowerState state);
-	void SetPage(int page);
-	void *GetObject();
-	int GetSelectedIndex();
-	MFD *GetMfd();
-private:	
-	VESSEL *vessel;
-	char buffer[BUFFERLEN+1];
-	MFD *mfd;
-	int page[STATES], selectedIndex[STATES], selection[STATES];
-	double step[STATES];
-	void *object[STATES];
+	AscensionTowerData(AscensionTower *mfd);
+	void Update(HDC hDC);
+	char *GetButtonLabel (int bt);
+	int GetButtonMenu (MFDBUTTONMENU *mnu);
+	bool SetButton(int bt);
+	bool SetKey(DWORD key);
+	AscensionTower *GetMFD();
+	AscensionUltra *GetAscension();
+
+private:
+	AscensionTower *mfd;
+	enum AscensionTowerPageInstance state;
+	std::map<AscensionTowerPageInstance, AscensionTowerPage *> pages;
+	bool StateChange(AscensionTowerPageInstance newstate);
 };

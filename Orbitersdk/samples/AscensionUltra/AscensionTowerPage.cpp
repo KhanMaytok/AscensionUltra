@@ -1,42 +1,36 @@
 #include "AscensionTowerPage.h"
 
+extern HBRUSH g_Bar;
+extern COLORREF g_MiddleGreen;
+
 AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 {
 	this->data=data;
+	page=0;
+	selection=0;
+	selectedIndex=0;
+	ascension=NULL;
+	int bp[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units;
+	int bdp[10]={10,14,18,22,26,30,34,38,42,46}; //Best choice for certain MFD size in half-height units to display 10 entries
+	for(int i=0;i<6;i++) AT_BUTTON[i]=bp[i];
+	for(int i=0;i<10;i++) AT_BUTTONDOUBLED[i]=bdp[i];
 }
 
-void AscensionTowerPage::WriteMFD(char *text, int line, int column, int flags)
+void AscensionTowerPage::Update(HDC hDC)
 {
-	int l=strlen(text);
-	int x=0;
-	int y=0;
-	if (line<0)
-	{
-		x=(1+(36-l)/2)*width;
-		y=13*height;		
-	}
-	else
-	{
-		y=(int)(line*height) >> (HALFLINES(flags)?1:0);
-		if (column<0 && !(RIGHTALINED(flags))) x=(1+(36-l)/2)*width;
-		else
-		{
-			if (RIGHTALINED(flags)) x=(column<0?mfdWidth:column*width)-(l+1)*width;
-			else x=column*width;
-		}
-	}
-	if (HIGHLIGHTED(flags))
-	{
-		SelectObject(hDC, g_Bar);
-		Rectangle(hDC, width-2, y-2, mfdWidth-width+2, y+height+6 );
-	}
-	TextOut(hDC, x, y, text, l);
+	mfd=data->GetMFD();
+	ascension=data->GetAscension();	
+	MFDRenderer();
+
+	mfd->SelectDefaultFont(hDC, 1);
+	
+	mfd->Title (hDC, GetTitle());	
+	mfd->Write (GetSubtitle(), 2, 2);
 }
 
-void AscensionTowerPage::RenderPage()
+void AscensionTowerPage::MFDRenderer()
 {
 	char line[40];
-	MFD *mfd=data->GetMfd();
 	int size=GetListSize();
 	int pages=(size+5)/6;
 	if (page>=pages)
@@ -46,20 +40,21 @@ void AscensionTowerPage::RenderPage()
 	}
 		
 	mfd->SelectDefaultFont (hDC, 0);
-	for(int i=0; i+page*6<size && i<6; i++) WriteMFD(GetListItem(i+page*6).Name, AT_BUTTON[i], 1, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
+	for(int i=0; i+page*6<size && i<6; i++)
+		mfd->Write(GetListItem(i+page*6).Name, AT_BUTTON[i], 1, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
 	if (pages>0)
 	{
 		sprintf(line, "p.%d/%d", page+1, pages);
-		WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
+		mfd->Write(line, 27, -1, WRITEMFD_RIGHTALINED);
 	}
-	else WriteMFD("N O   B A S E S   A V A I L A B L E");
+	else mfd->Write("N O   B A S E S   A V A I L A B L E");
 }
 
 int AscensionTowerPage::GetListSize() {return 0;}
 
 AscensionTowerListPair AscensionTowerPage::GetListItem(int index) {AscensionTowerListPair nullitem={0,""}; return nullitem;}
 
-void AscensionTowerPage::Select(int index)
+AscensionTowerPageInstance AscensionTowerPage::Select(int index)
 {
 	if (index<0) selectedIndex=GetListItem(page*6+selection).Index;
 	else
@@ -68,33 +63,58 @@ void AscensionTowerPage::Select(int index)
 		page=index / 6;
 		selection=index % 6;
 	}
+	return NoChange;
 }
 
-char *AscensionTowerPage::GetButtonLabel (int bt) {return "";}
+char *AscensionTowerPage::GetButtonLabel (int bt)
+{
+	if (bt==0) ascension=data->GetAscension();
+	return LabelRenderer(bt);
+}
 
-int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu) { mnu=NULL; return 0;}
+char *AscensionTowerPage::LabelRenderer (int bt) {return "";}
+
+int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu)
+{
+	mnu=NULL;
+	ascension=data->GetAscension();
+	return MenuRenderer(mnu);
+}
+
+int AscensionTowerPage::MenuRenderer (MFDBUTTONMENU *mnu) {return 0;}
 
 AscensionTowerPageInstance AscensionTowerPage::SetButton(int bt)
 {
+	ascension=data->GetAscension();
+	return ButtonHandler(bt);
+}
+
+AscensionTowerPageInstance AscensionTowerPage::ButtonHandler(int bt)
+{
 	switch(bt)
-		{
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5: return SetKey(OAPI_KEY_1+bt);
-		case 6: return SetKey(OAPI_KEY_H);
-		case 7: return SetKey(OAPI_KEY_B);
-		case 8: return SetKey(OAPI_KEY_R);
-		case 10: return SetKey(OAPI_KEY_N);
-		case 11: return SetKey(OAPI_KEY_P);	
-		}
-		break;
+	{
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5: return SetKey(OAPI_KEY_1+bt);
+	case 6: return SetKey(OAPI_KEY_H);
+	case 7: return SetKey(OAPI_KEY_B);
+	case 8: return SetKey(OAPI_KEY_R);
+	case 10: return SetKey(OAPI_KEY_N);
+	case 11: return SetKey(OAPI_KEY_P);	
+	}
 	return Undefined;
 }
 
-AscensionTowerPageInstance AscensionTowerPage::SetKey(DWORD key) {return Undefined;}
+AscensionTowerPageInstance AscensionTowerPage::SetKey(DWORD key)
+{
+	ascension=data->GetAscension();
+	return KeyHandler(key);
+}
+
+AscensionTowerPageInstance AscensionTowerPage::KeyHandler(DWORD key) {return Undefined;}
 
 char *AscensionTowerPage::GetTitle() { static char title[57]; return GetNameSafeTitle(title, "");}
 
@@ -102,7 +122,7 @@ char *AscensionTowerPage::GetSubtitle() {return "";}
 
 char *AscensionTowerPage::GetNameSafeTitle(char *title, char *trailer)
 {
-	char *name=data->GetAscension()->GetName();
+	char *name=ascension->GetName();
 	int i=56-strlen(trailer);
 	bool longer=false;
 	if (strlen(name)>i)
