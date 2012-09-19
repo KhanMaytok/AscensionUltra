@@ -273,6 +273,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\BasePage.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\BasePage.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Door.h"
 			>
 		</File>
