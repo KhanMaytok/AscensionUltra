@@ -5,7 +5,6 @@ BasePage::BasePage(AscensionTowerData *data):AscensionTowerPage(data)
 {
 	ascensionHandle=NULL;
 	ascensionName=NULL;
-	ascension=NULL;
 }
 
 BasePage::~BasePage(void)
@@ -385,7 +384,7 @@ AscensionTowerPageInstance BasePage::Select(int index)
 }
 
 // Return button labels
-char *BasePage::GetButtonLabel (int bt)
+char *BasePage::LabelRenderer (int bt)
 {
 	int size=GetListSize();
 	switch (bt)
@@ -489,7 +488,7 @@ char *BasePage::GetButtonLabel (int bt)
 
 
 // Return button menus
-int BasePage::GetButtonMenu (MFDBUTTONMENU *mnu)
+int BasePage::MenuRenderer (MFDBUTTONMENU *mnu)
 {	
 	static MFDBUTTONMENU personMenu[12] = {
 		{"Select base", "next to the button", '1'},
@@ -505,7 +504,7 @@ int BasePage::GetButtonMenu (MFDBUTTONMENU *mnu)
 		{"Switch to", "next page", 'N'},
 		{"Switch to", "previous page", 'P'}};
 
-	mnu=&personMenu;
+	mnu=personMenu;
 	
 	int size=GetListSize();
 	for(int i=min(size-page*6, 6);i<6;i++)
@@ -514,7 +513,7 @@ int BasePage::GetButtonMenu (MFDBUTTONMENU *mnu)
 		mnu[i].line2=NULL;
 		mnu[i].selchar=0;
 	}
-	return return size>6?12:7;
+	return size>6?12:7;
 	/*
 	static char select[20];
 	static char marked[20];
@@ -664,9 +663,9 @@ int BasePage::GetButtonMenu (MFDBUTTONMENU *mnu)
 }
 
 // Handling button presses
-AscensionTowerPageInstance BasePage::SetButton(int bt)
+AscensionTowerPageInstance BasePage::ButtonHandler(int bt)
 {
-	return AscensionTowerPage::SetButton(bt);
+	return AscensionTowerPage::ButtonHandler(bt);
 	/*
 	switch(state)
 	{
@@ -803,7 +802,7 @@ bool EditPosition(void *id, char *str, void *usrdata)
 }*/
 
 // Handling shortcut keys
-AscensionTowerPageInstance BasePage::SetKey(DWORD key)
+AscensionTowerPageInstance BasePage::KeyHandler(DWORD key)
 {	
 	int size=GetListSize();
 	int pages=(size+5)/6;

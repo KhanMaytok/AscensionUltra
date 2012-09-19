@@ -1,42 +1,32 @@
+#pragma once
 #include "AscensionTowerData.h"
+#include "BasePage.h"
 #pragma warning(disable : 4482)
 
-
-AscensionTowerData::AscensionTowerData(MFD* mfd, VESSEL *vessel)
+AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
 {
-	this->vessel=vessel;
-	for(int i=0;i<STATES;i++)
-	{
-		page[i]=0;
-		selection[i]=0;
-		selectedIndex[i]=0;
-		object[i]=NULL;
-		step[i]=1.0;
-	}
-	state=AscensionTowerState::MainMenu;
-	changePerson.Data=this;
 	this->mfd=mfd;
+	state=BaseSelect;
+	pages[state]=new BasePage(this);
 }
 
-double AscensionTowerData::GetStep(){return step[state];}
-int AscensionTowerData::GetPage(){return page[state];}
-void AscensionTowerData::SetPage(int page){this->page[state]=page;}
+char *AscensionTowerData::GetButtonLabel (int bt){return pages[state]->GetButtonLabel(bt);}
+int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu){return pages[state]->GetButtonMenu(mnu);}
+bool AscensionTowerData::SetButton(int bt){return StateChange(pages[state]->SetButton(bt));}
+bool AscensionTowerData::SetKey(DWORD key){return StateChange(pages[state]->SetKey(key));}
 
-AscensionTowerState AscensionTowerData::GetState(){return state;}
-
-void AscensionTowerData::SetState(AscensionTowerState state)
+bool AscensionTowerData::StateChange(AscensionTowerPageInstance newstate)
 {
-	switch(state)
-	{
-	case AscensionTowerState::BaseSelect:
-		Scan();
-		break;	
-	}
-	this->state=state;
+	if (newstate==Undefined) return false;
+	if (newstate==NoChange) return true;
+	state=newstate;
+	return true;
 }
 
-void *AscensionTowerData::GetObject(){return object[state];}
+void AscensionTowerData::Update(HDC hDC)
+{
+	pages[state]->Update(hDC);
+}
 
-int AscensionTowerData::GetSelectedIndex(){return selectedIndex[state];}
-
-MFD *AscensionTowerData::GetMfd(){return mfd;}
+AscensionTower *AscensionTowerData::GetMFD(){return mfd;}
+AscensionUltra *AscensionTowerData::GetAscension(){return ((BasePage *)pages[BaseSelect])->GetAscension();}
