@@ -47,7 +47,7 @@ class AscensionTowerPage
 {
 public:
 	AscensionTowerPage(AscensionTowerData *data);
-	void Update(HDC hDC);
+	void Update();
 	char *GetButtonLabel (int bt);
 	int GetButtonMenu (MFDBUTTONMENU *mnu);
 	AscensionTowerPageInstance SetButton(int bt);
