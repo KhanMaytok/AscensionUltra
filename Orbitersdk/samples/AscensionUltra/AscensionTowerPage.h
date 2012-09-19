@@ -56,8 +56,6 @@ class AscensionTowerPage
 {
 public:
 	AscensionTowerPage(AscensionTowerData *data);
-	~AscensionTowerPage(void);
-
 	virtual void RenderPage();
 	virtual int GetListSize();
 	virtual AscensionTowerListPair GetListItem(int index);

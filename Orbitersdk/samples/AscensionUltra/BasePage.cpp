@@ -1,7 +1,101 @@
 #include "BasePage.h"
 #pragma warning(disable : 4482)
 
-int AscensionTowerData::GetListSize()
+BasePage::BasePage(AscensionTowerData *data):AscensionTowerPage(data)
+{
+	ascensionHandle=NULL;
+	ascensionName=NULL;
+	ascension=NULL;
+}
+
+BasePage::~BasePage(void)
+{
+	delete [] ascensionName;
+	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->Name;
+	scanList.clear();
+}
+
+// Resolves object reference by means of:
+// 1. using the index, check pointer
+// 2. get all vessels of class AscensionUltra, check for unique name
+// 3. return NULL
+AscensionUltra *BasePage::GetAscension()
+{	
+	if (oapiIsVessel(ascensionHandle)) return ascension;
+	Scan();
+	int detected=-1;
+	if (ascensionName!=NULL) for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++)
+	{
+		if (strcmp(i->Name, ascensionName)==0)
+		{
+			if (detected>=0)
+			{
+				return ascension=NULL; //Name is not unique
+			}
+			detected=i->Index;			
+		}
+	}
+	if (detected<0)
+	{
+		if (scanList.size()!=1)
+		{
+			return ascension=NULL;
+		}
+		detected=scanList.begin()->Index;
+	}
+	SetAscension(detected);
+	return ascension;
+}
+
+void BasePage::SetAscension(int index)
+{
+	ascension=NULL;
+	if (index<0 || index>=(int)oapiGetVesselCount()) return Scan();
+	ascensionHandle=oapiGetVesselByIndex(index);
+	VESSEL *vessel=oapiGetVesselInterface(ascensionHandle);	
+	if (strcmp(vessel->GetClassName(), "AscensionUltra")!=0) return Scan();
+	ascension=(AscensionUltra *)vessel;
+	char *name=ascension->GetName();
+	double version=ascension->GetVersion();
+	if (version!=1.0)
+	{
+		ascension=NULL;
+		sprintf(oapiDebugString(), "%s has version %f (need 1.0). Please upgrade MFD and/or vessel.", name, version);
+		return Scan();
+	}
+	delete [] ascensionName;
+	strcpy(ascensionName=new char[strlen(name)+1], name);	
+}
+
+void BasePage::Scan()
+{
+	for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++) delete [] i->Name;
+	scanList.clear();
+	int k=oapiGetVesselCount();
+	char line[20]; //enough for int conversion base 10
+	char *target;
+	for (int i=0;i<k;i++)
+	{
+		VESSEL *vessel=oapiGetVesselInterface(oapiGetVesselByIndex(i));	
+		if (strcmp(vessel->GetClassName(), "AscensionUltra")==0)
+		{
+			char *source=vessel->GetName();
+			int l=strlen(_itoa(i, line, 10));
+			int sum=strlen(source)+l+3;
+			if (sum<37) sprintf(target=new char[sum+1], "[%s] %s", line, source);
+			else
+			{
+				sprintf(target=new char[37], "[%s] ", line);
+				strncat(target, source, 31-l);
+				strcat(target, "..");
+			}
+			AscensionTowerListPair pair={i,target};
+			scanList.push_back(pair);
+		}
+	}	
+}
+
+int BasePage::GetListSize()
 {
 	return scanList.size();
 	/*switch(state)
@@ -35,7 +129,7 @@ int AscensionTowerData::GetListSize()
 	return 0;*/
 }
 
-AscensionTowerListPair AscensionTowerData::GetListItem(int index)
+AscensionTowerListPair BasePage::GetListItem(int index)
 {
 	return scanList[index];
 	/*static AscensionTowerListPair mainMenu[5]={{0," Ground Operations"},{1," Air Traffic Control"},{2," Control Rooms"}, {3, " Roster"}, {4, " Reset to Defaults"}};
@@ -174,7 +268,7 @@ AscensionTowerListPair AscensionTowerData::GetListItem(int index)
 	return nullItem;*/
 }
 
-AscensionTowerPageInstance AscensionTowerData::Select(int index)
+AscensionTowerPageInstance BasePage::Select(int index)
 {
 	AscensionTowerPage::Select(index);
 	SetAscension(selectedIndex);
@@ -271,6 +365,7 @@ AscensionTowerPageInstance AscensionTowerData::Select(int index)
 		{
 			t->Strobe(false);
 			t->Strobe(start, end, true);
+			SetState(AscensionTowerState::GroundMenu);
 		}
 		break;
 	case AscensionTowerState::LandingRunwaySelection:
@@ -290,7 +385,7 @@ AscensionTowerPageInstance AscensionTowerData::Select(int index)
 }
 
 // Return button labels
-char *AscensionTowerData::GetButtonLabel (int bt)
+char *BasePage::GetButtonLabel (int bt)
 {
 	int size=GetListSize();
 	switch (bt)
@@ -394,7 +489,7 @@ char *AscensionTowerData::GetButtonLabel (int bt)
 
 
 // Return button menus
-int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
+int BasePage::GetButtonMenu (MFDBUTTONMENU *mnu)
 {	
 	static MFDBUTTONMENU personMenu[12] = {
 		{"Select base", "next to the button", '1'},
@@ -409,6 +504,8 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 		{NULL, NULL, 0},
 		{"Switch to", "next page", 'N'},
 		{"Switch to", "previous page", 'P'}};
+
+	mnu=&personMenu;
 	
 	int size=GetListSize();
 	for(int i=min(size-page*6, 6);i<6;i++)
@@ -567,7 +664,7 @@ int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
 }
 
 // Handling button presses
-AscensionTowerPageInstance AscensionTowerData::SetButton(int bt)
+AscensionTowerPageInstance BasePage::SetButton(int bt)
 {
 	return AscensionTowerPage::SetButton(bt);
 	/*
@@ -706,9 +803,8 @@ bool EditPosition(void *id, char *str, void *usrdata)
 }*/
 
 // Handling shortcut keys
-AscensionTowerPageInstance AscensionTowerData::SetKey(DWORD key)
+AscensionTowerPageInstance BasePage::SetKey(DWORD key)
 {	
-	bool result=true;
 	int size=GetListSize();
 	int pages=(size+5)/6;
 	/*switch(state)
@@ -774,6 +870,12 @@ AscensionTowerPageInstance AscensionTowerData::SetKey(DWORD key)
 					crane->SetMode(crane->GetMode()>CRANEMANUAL?CRANEMANUAL:selectedIndex[AscensionTowerState::CraneList]);						
 					break;
 				case OAPI_KEY_F:
+					{
+						VECTOR3 speed=crane->GetSpeed();
+						VECTOR3 crawl=crane->GetCrawl();
+						sprintf(buffer, "%6.2f[%6.2f], %6.2f[%6.2f], %6.2f[%6.2f]", speed.x, crawl.x, speed.y, crawl.y, speed.z, crawl.z);
+					}
+					oapiOpenInputBox("Edit speeds (long,short,reel with fast[slow]):", EditSpeed, buffer, 52, (void *)&changePerson);
 					break;
 				case OAPI_KEY_C:
 					crane->SetMode(crane->GetMode()==CRANEDIRECT?CRANEMANUAL:CRANEDIRECT);
@@ -926,56 +1028,43 @@ AscensionTowerPageInstance AscensionTowerData::SetKey(DWORD key)
 		return result;
 		
 	default:*/
-		switch(key)
-		{	
-		case OAPI_KEY_N://Next page
-			if (size>6)
-			{
-				if (page<pages-1) page++;
-				else page=0;
-				selection=0;
-			}
-			else result=false;		
-			break;
-		case OAPI_KEY_P://Previous page
-			if (size>6)
-			{
-				if (page>0) page--;
-				else page=pages-1;
-				selection=min(size-page*6, 6)-1;
-			}
-			else result=false;		
-			break;
-		/*case OAPI_KEY_B://Go back
-			if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu)	Back();
-			break;*/
-		case OAPI_KEY_H://Main menu/Scan for bases
-			//if (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)
-				return BaseSelect;
-			//else SetState(AscensionTowerState::MainMenu);
-			break;
-		case OAPI_KEY_R://Reset to default
-			//if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu) Reset();
-			break;
-		default:
-			if (key>=OAPI_KEY_1 && key<=OAPI_KEY_6)
-			{
-				int bt=key-OAPI_KEY_1;
-				if (bt<min(size-page*6, 6))
-				{
-					selection=bt;
-					Select();
-				}
-				else result=false;
-			}
-			else result=false;
-		}
-		return result;
+	switch(key)
+	{	
+	case OAPI_KEY_N://Next page
+		if (size<7) return Undefined;
+		if (page<pages-1) page++;
+		else page=0;
+		selection=0;
+		return NoChange;
+	case OAPI_KEY_P://Previous page
+		if (size<7) return Undefined;
+		if (page>0) page--;
+		else page=pages-1;
+		selection=min(size-page*6, 6)-1;
+		return NoChange;
+	/*case OAPI_KEY_B://Go back
+		if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu)	Back();
+		break;*/
+	case OAPI_KEY_H://Main menu/Scan for bases
+		//if (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)
+		return BaseSelect;
+		//else SetState(AscensionTowerState::MainMenu);
+	case OAPI_KEY_R://Reset to default
+		//if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu) Reset();
+		return NoChange;
+	default:
+		if (key<OAPI_KEY_1 || key>OAPI_KEY_6) return Undefined;
+		{
+			int bt=key-OAPI_KEY_1;
+			if (bt>=min(size-page*6, 6)) return Undefined;
+			selection=bt;
+			return Select();
+		}		
 	}
-	return false;
+	return Undefined;
 }
 
-char *AscensionTowerData::GetTitle()
+char *BasePage::GetTitle()
 {
 	/*static char *tower=" Tower";
 	static char *ground=" Ground";
@@ -1020,7 +1109,7 @@ char *AscensionTowerData::GetTitle()
 	}*/	
 }
 
-char *AscensionTowerData::GetSubtitle()
+char *BasePage::GetSubtitle()
 {
 	/*static char subtitle[57];
 
@@ -1079,9 +1168,8 @@ char *AscensionTowerData::GetSubtitle()
 	return "";*/
 }
 
-void AscensionTowerData::Back()
+/*void AscensionTowerData::Back()
 {
-	/*
 	switch(state)
 	{
 	case AscensionTowerState::MainMenu:
@@ -1113,5 +1201,4 @@ void AscensionTowerData::Back()
 	case AscensionTowerState::HangarForRoomSelection: SetState(AscensionTowerState::MainMenu);break;
 	case AscensionTowerState::RoomSelection: SetState(AscensionTowerState::HangarForRoomSelection);break;
 	}
-	*/
-}
+}*/

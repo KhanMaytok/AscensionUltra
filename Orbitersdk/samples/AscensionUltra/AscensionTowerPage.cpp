@@ -5,10 +5,6 @@ AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 	this->data=data;
 }
 
-AscensionTowerPage::~AscensionTowerPage(void)
-{
-}
-
 void AscensionTowerPage::WriteMFD(char *text, int line, int column, int flags)
 {
 	int l=strlen(text);
