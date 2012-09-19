@@ -76,7 +76,6 @@ char *AscensionTowerPage::LabelRenderer (int bt) {return "";}
 
 int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu)
 {
-	mnu=NULL;
 	ascension=data->GetAscension();
 	return MenuRenderer(mnu);
 }
