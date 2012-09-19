@@ -504,8 +504,7 @@ int BasePage::MenuRenderer (MFDBUTTONMENU *mnu)
 		{"Switch to", "next page", 'N'},
 		{"Switch to", "previous page", 'P'}};
 
-	mnu=personMenu;
-	
+	for(int i=0;i<12;i++) mnu[i]=personMenu[i];
 	int size=GetListSize();
 	for(int i=min(size-page*6, 6);i<6;i++)
 	{
