@@ -1,7 +1,8 @@
 #include "AscensionTowerPage.h"
 
-AscensionTowerPage::AscensionTowerPage(void)
+AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 {
+	this->data=data;
 }
 
 AscensionTowerPage::~AscensionTowerPage(void)
@@ -39,6 +40,7 @@ void AscensionTowerPage::WriteMFD(char *text, int line, int column, int flags)
 void AscensionTowerPage::RenderPage()
 {
 	char line[40];
+	MFD *mfd=data->GetMfd();
 	int size=GetListSize();
 	int pages=(size+5)/6;
 	if (page>=pages)
@@ -46,7 +48,7 @@ void AscensionTowerPage::RenderPage()
 		page=max(pages-1,0);
 		mfd->InvalidateButtons();
 	}
-	
+		
 	mfd->SelectDefaultFont (hDC, 0);
 	for(int i=0; i+page*6<size && i<6; i++) WriteMFD(GetListItem(i+page*6).Name, AT_BUTTON[i], 1, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
 	if (pages>0)
@@ -76,9 +78,27 @@ char *AscensionTowerPage::GetButtonLabel (int bt) {return "";}
 
 int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu) { mnu=NULL; return 0;}
 
-bool AscensionTowerPage::SetButton(int bt) {return false;}
+AscensionTowerPageInstance AscensionTowerPage::SetButton(int bt)
+{
+	switch(bt)
+		{
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5: return SetKey(OAPI_KEY_1+bt);
+		case 6: return SetKey(OAPI_KEY_H);
+		case 7: return SetKey(OAPI_KEY_B);
+		case 8: return SetKey(OAPI_KEY_R);
+		case 10: return SetKey(OAPI_KEY_N);
+		case 11: return SetKey(OAPI_KEY_P);	
+		}
+		break;
+	return Undefined;
+}
 
-bool AscensionTowerPage::SetKey(DWORD key) {return false;}
+AscensionTowerPageInstance AscensionTowerPage::SetKey(DWORD key) {return Undefined;}
 
 char *AscensionTowerPage::GetTitle() { static char title[57]; return GetNameSafeTitle(title, "");}
 
@@ -86,7 +106,7 @@ char *AscensionTowerPage::GetSubtitle() {return "";}
 
 char *AscensionTowerPage::GetNameSafeTitle(char *title, char *trailer)
 {
-	char *name=ascension->GetName();
+	char *name=data->GetAscension()->GetName();
 	int i=56-strlen(trailer);
 	bool longer=false;
 	if (strlen(name)>i)

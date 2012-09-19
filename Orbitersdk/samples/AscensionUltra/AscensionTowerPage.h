@@ -1,7 +1,5 @@
 #pragma once
-#include <vector>
-#include "AscensionUltra.h"
-#include "orbitersdk.h"
+#include "AscensionTowerData.h"
 
 #define WRITEMFD_HALFLINES		0x01
 #define WRITEMFD_RIGHTALINED	0x04
@@ -40,6 +38,8 @@ typedef enum AscensionTowerPageInstance
 	CraneList,
 	CraneGrapple,
 	Reset,
+	NoChange,
+	Undefined,
 };
 
 struct AscensionTowerListPair
@@ -55,23 +55,22 @@ static int AT_BUTTON[6], AT_BUTTONDOUBLED[10];
 class AscensionTowerPage
 {
 public:
-	AscensionTowerPage(void);
+	AscensionTowerPage(AscensionTowerData *data);
 	~AscensionTowerPage(void);
 
 	virtual void RenderPage();
 	virtual int GetListSize();
 	virtual AscensionTowerListPair GetListItem(int index);
-	virtual void Select(int index=-1);
+	virtual AscensionTowerPageInstance Select(int index=-1);
 	virtual char *GetButtonLabel (int bt);
 	virtual int GetButtonMenu (MFDBUTTONMENU *mnu);
-	virtual bool SetButton(int bt);
-	virtual bool SetKey(DWORD key);
+	virtual AscensionTowerPageInstance SetButton(int bt);
+	virtual AscensionTowerPageInstance SetKey(DWORD key);
 	virtual char *GetTitle();
 	virtual char *GetSubtitle();
 	
 protected:
-	AscensionUltra *ascension;
-	MFD *mfd;
+	AscensionTowerData *data;
 	float width, height;
 	int mfdWidth, mfdHeight;
 	HDC hDC;
