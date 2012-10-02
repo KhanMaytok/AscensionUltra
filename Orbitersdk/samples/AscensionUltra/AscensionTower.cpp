@@ -8,18 +8,21 @@
 // Class implementation of Ascension tower MFD.
 // ==============================================================
 
+#pragma once
+#pragma warning(disable : 4482)
 #define STRICT
 #define ORBITER_MODULE
 #include "windows.h"
+#include <map>
 #include "orbitersdk.h"
 #include "AscensionTower.h"
-#pragma warning(disable : 4482)
-
 
 // ==============================================================
 // Global variables
 
+std::map<VESSEL *, std::map<UINT, AscensionTowerData *> *> g_MFDData;
 int g_MFDmode; // identifier for new MFD mode
+oapi::Brush *myBrush;
 
 // ==============================================================
 // API interface
@@ -27,18 +30,19 @@ int g_MFDmode; // identifier for new MFD mode
 DLLCLBK void InitModule (HINSTANCE hDLL)
 {
 	static char *name = "Ascension Tower";
-	MFDMODESPEC spec;
+	MFDMODESPECEX spec;
 	spec.name = name;
 	spec.key = OAPI_KEY_T;
 	spec.msgproc = AscensionTower::MsgProc;
+	spec.context = NULL;
 	g_MFDmode = oapiRegisterMFDMode (spec);
-	g_Bar=NULL;
+	myBrush=oapiCreateBrush(0x00008000);
 }
 
 DLLCLBK void ExitModule (HINSTANCE hDLL)
 {
-	if (g_Bar!=NULL) DeleteObject(g_Bar);
 	oapiUnregisterMFDMode (g_MFDmode);
+	oapiReleaseBrush(myBrush);
 }
 
 DLLCLBK void opcCloseRenderViewport (void)
@@ -56,13 +60,8 @@ DLLCLBK void opcCloseRenderViewport (void)
 
 // Constructor
 AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
-: MFD (w, h, vessel)
+: MFD2 (w, h, vessel)
 {	
-	width=(int)w/36;
-	height=(int)h/28;
-	mfdWidth=w;
-	mfdHeight=h;	
-	
 	std::map<UINT, AscensionTowerData *> *mfds=g_MFDData[vessel];
 	if (mfds==NULL)
 	{
@@ -70,13 +69,7 @@ AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
 		g_MFDData[vessel]=mfds;
 	}
 	data=(*mfds)[mfd];
-	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData(this, vessel);	
-}
-
-// Destructor
-AscensionTower::~AscensionTower ()
-{
-	// Add MFD cleanup code here
+	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData(this);
 }
 
 // Return button labels
@@ -90,252 +83,14 @@ int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 	return data->GetButtonMenu(mnu);	
 }
 
-#define HIGHLIGHTED(flags)	(flags & WRITEMFD_HIGHLIGHTED)>0
-#define HALFLINES(flags)	(flags & WRITEMFD_HALFLINES)>0
-#define RIGHTALINED(flags)	(flags & WRITEMFD_RIGHTALINED)>0
-
-void AscensionTower::WriteMFD(char *text, int line, int column, int flags)
-{
-	int l=strlen(text);
-	int x=0;
-	int y=0;
-	if (line<0)
-	{
-		x=(1+(36-l)/2)*width;
-		y=13*height;		
-	}
-	else
-	{
-		y=(int)(line*height) >> (HALFLINES(flags)?1:0);
-		if (column<0 && !(RIGHTALINED(flags))) x=(1+(36-l)/2)*width;
-		else
-		{
-			if (RIGHTALINED(flags)) x=(column<0?mfdWidth:column*width)-(l+1)*width;
-			else x=column*width;
-		}
-	}
-	if (HIGHLIGHTED(flags))
-	{
-		SelectObject(hDC, g_Bar);
-		Rectangle(hDC, width-2, y-2, mfdWidth-width+2, y+height+6 );
-	}
-	TextOut(hDC, x, y, text, l);
-}
-
 // Repaint the MFD
-void AscensionTower::Update (HDC hDC)
+bool AscensionTower::Update (oapi::Sketchpad *pad)
 {
-	this->hDC=hDC;
+	this->pad=pad;
 
-	//
-	//Creating the pen for drawing the progress bar
-	if (g_Bar==NULL)
-	{
-		LOGPEN pen;
-		SelectDefaultPen(hDC, 2);
-		GetObject(GetCurrentObject(hDC, OBJ_PEN), sizeof(LOGPEN), &pen);
-		g_MiddleGreen=pen.lopnColor;
-		g_Bar=CreateSolidBrush(g_MiddleGreen);
-	}
+	data->Update();
 
-	AscensionTowerState state=data->GetState();
-	AscensionUltra *au=NULL;
-	//Get Ascension object - lost or changed Ascension objects will cause state to change
-	if (state!=AscensionTowerState::BaseSelect)
-	{
-		au=data->GetAscension();
-		if (au!=ascension)
-		{
-			ascension=au;
-			state=data->GetState();
-			InvalidateButtons();
-		}
-	}
-
-	switch(state)
-	{
-	case AscensionTowerState::BaseSelect:
-	case AscensionTowerState::MainMenu:
-	case AscensionTowerState::GroundMenu:
-	case AscensionTowerState::ATCMenu:
-	case AscensionTowerState::HangarForDoorSelection:
-	case AscensionTowerState::HangarForCraneSelection:
-	case AscensionTowerState::HangarForRoomSelection:
-	case AscensionTowerState::DoorSelection:
-	case AscensionTowerState::RoomSelection:
-	case AscensionTowerState::TaxiRouteStartSelection:
-	case AscensionTowerState::TaxiRouteEndSelection:
-	case AscensionTowerState::LandingRunwaySelection:
-	case AscensionTowerState::Roster:
-	case AscensionTowerState::RoomForPersonSelection:
-	case AscensionTowerState::HangarForPersonSelection:
-	case AscensionTowerState::PassengerTransfer:
-		RenderSelectionPage();	
-		break;
-	case AscensionTowerState::DoorControl:
-		RenderSelectionPage();
-		RenderDoorControlPage();
-		break;
-	case AscensionTowerState::CraneControl:
-		RenderCraneControlPage();
-		break;
-	case AscensionTowerState::CraneList:
-		RenderCraneListPage();
-		break;
-	case AscensionTowerState::CraneGrapple:
-		RenderCraneGrapplePage();
-		break;
-	case AscensionTowerState::PersonControl:
-		RenderPersonPage();
-		break;
-	}
-
-	SelectDefaultFont(hDC, 1);
-	
-	Title (hDC, data->GetTitle());	
-	WriteMFD(data->GetSubtitle(), 2, 2);
-
-}
-
-static int AT_BUTTON[6]={8, 16, 24, 33, 41, 50}; //Best choice for certain MFD size in half-height units
-static int AT_BUTTONDOUBLED[10]={10,14,18,22,26,30,34,38,42,46}; //Best choice for certain MFD size in half-height units to display 10 entries
-
-void AscensionTower::RenderSelectionPage()
-{
-	char line[40];
-	int size=data->GetListSize();
-	int page=data->GetPage();
-	int pages=(size+5)/6;
-	if (page>=pages)
-	{
-		data->SetPage(page=max(pages-1,0));
-		InvalidateButtons();
-	}
-	
-	SelectDefaultFont (hDC, 0);
-	int selection=data->GetSelection();
-	for(int i=0; i+page*6<size && i<6; i++) WriteMFD(data->GetListItem(i+page*6).Name, AT_BUTTON[i], 1, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
-	if (pages>0)
-	{
-		sprintf(line, "p.%d/%d", page+1, pages);
-		WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
-	}
-	else WriteMFD("N O   B A S E S   A V A I L A B L E");
-}
-
-void AscensionTower::RenderDoorControlPage()
-{
-	SetTextColor(hDC, RGB(255,255,255));
-	Door* door=(Door *)data->GetObject();
-	if (door->GetPosition()<=0) WriteMFD("Closed", 15);
-	else if (door->GetPosition()>=1) WriteMFD("Open", 15);
-	else WriteMFD("Moving", 15);
-}
-
-Crane *AscensionTower::RenderCraneStatusLine()
-{
-	char line[40];
-	Crane *crane=(Crane *)data->GetObject();
-	VECTOR3 pos=crane->GetPosition();
-	SetTextColor(hDC, RGB(255,255,255));
-	int mode=crane->GetMode();
-	switch (mode)
-	{
-	case CRANEMANUAL:
-		sprintf(line, "%6.2f %6.2f %6.2f MANUAL %6.2f", pos.x, pos.y, pos.z, data->GetStep());
-		break;
-	case CRANEDIRECT:
-		sprintf(line, "%6.2f %6.2f %6.2f DIRECT", pos.x, pos.y, pos.z);
-		break;
-	default:
-		sprintf(line, "%6.2f %6.2f %6.2f AUTO %d", pos.x, pos.y, pos.z, mode);
-	}
-	
-	WriteMFD(line, 50, -1, WRITEMFD_HALFLINES);
-	return crane;
-}
-
-void AscensionTower::RenderCraneControlPage()
-{
-	Crane *crane=RenderCraneStatusLine();
-	VECTOR3 pos=crane->GetPosition();
-	VECTOR3 len=crane->GetLength();
-	VECTOR3 speed=crane->GetSpeed();
-	VECTOR3 crawl=crane->GetCrawl();
-	pos.x/=len.x;
-	pos.y/=len.y;
-	pos.z/=len.z;
-	char line[80];
-	sprintf(line, "X: %5.2f%% @%6.3f(%6.3f)m/s", pos.x, speed.x, crawl.x);
-	WriteMFD(line, 6, 2);
-	sprintf(line, "Y: %5.2f%% @%6.3f(%6.3f)m/s", pos.y, speed.y, crawl.y);
-	WriteMFD(line, 8, 2);
-	sprintf(line, "Z: %5.2f%% @%6.3f(%6.3f)m/s", pos.z, speed.z, crawl.z);
-	WriteMFD(line, 10, 2);	
-}
-
-void AscensionTower::RenderCraneListPage()
-{
-	char line[80];
-	int size=data->GetListSize();
-	int page=data->GetPage();
-	int pages=(size+9)/10;
-	
-	if (page>=pages)
-	{
-		data->SetPage(page=pages-1);
-		InvalidateButtons();
-	}
-	
-	SelectDefaultFont (hDC, 0);
-	int selection=data->GetSelection();
-	for(int i=0; i+page*10<size && i<10; i++)
-		WriteMFD(data->GetListItem(i+page*10).Name, AT_BUTTONDOUBLED[i], 4, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));	
-	sprintf(line, "p.%d/%d", page+1, pages);
-	WriteMFD(line, 27, -1, WRITEMFD_RIGHTALINED);
-
-	RenderCraneStatusLine();
-	for(int i=0; i+page*10<size && i<10; i++)
-	{
-		sprintf(line, "%d", i+page*10);
-		WriteMFD(line, AT_BUTTONDOUBLED[i], 1, WRITEMFD_HALFLINES);
-	}
-}
-
-void AscensionTower::RenderCraneGrapplePage()
-{	
-	Crane* crane=RenderCraneStatusLine();
-	char line[40];
-	sprintf(line, "Cargo:");
-	WriteMFD(line, 6, 4);
-	sprintf(line, "Type:");
-	WriteMFD(line, 8, 4);
-	sprintf(line, "Weight:");
-	WriteMFD(line, 10, 4);	
-}
-
-void AscensionTower::RenderPersonPage()
-{
-	SelectDefaultFont(hDC, 1);
-	WriteMFD("Name", AT_BUTTON[0], 1, WRITEMFD_HALFLINES);
-	WriteMFD("Function", AT_BUTTON[1], 1, WRITEMFD_HALFLINES);
-	WriteMFD("Age", AT_BUTTON[2], 1, WRITEMFD_HALFLINES);
-	WriteMFD("Puls", AT_BUTTON[3], 1, WRITEMFD_HALFLINES);
-	WriteMFD("Weight", AT_BUTTON[4], 1, WRITEMFD_HALFLINES);
-	WriteMFD("Location", AT_BUTTON[5], 1, WRITEMFD_HALFLINES);
-
-	SelectDefaultFont(hDC, 0);
-	SetTextColor(hDC, RGB(255,255,255));
-	char line[10];
-
-	Person person=ascension->GetPerson(data->GetSelectedIndex());
-	WriteMFD(person.Name, AT_BUTTON[0], 7, WRITEMFD_HALFLINES);
-	WriteMFD(person.MiscId, AT_BUTTON[1], 7, WRITEMFD_HALFLINES);
-	WriteMFD(_itoa(person.Age, line, 10), AT_BUTTON[2], 7, WRITEMFD_HALFLINES);
-	WriteMFD(_itoa(person.Puls, line, 10), AT_BUTTON[3], 7, WRITEMFD_HALFLINES);
-	WriteMFD(_itoa(person.Weight, line, 10), AT_BUTTON[4], 7, WRITEMFD_HALFLINES);
-	WriteMFD(person.Location->GetHangar()->GetName(), AT_BUTTON[5]-1, 7, WRITEMFD_HALFLINES);
-	WriteMFD(person.Location->GetName(), AT_BUTTON[5]+1, 11, WRITEMFD_HALFLINES);
+	return true;
 }
 
 // MFD message parser
@@ -366,4 +121,40 @@ bool AscensionTower::ConsumeButton(int bt, int event)
 	InvalidateButtons();
 	InvalidateDisplay();
 	return true;
+}
+
+void AscensionTower::Write(char *text, int line, int column, int flags)
+{
+	int l=strlen(text);
+	int x=0;
+	int y=0;
+	int w=W/36;
+	int h=H/28;
+
+	if (line<0)
+	{
+		x=(1+(36-l)/2)*w;
+		y=13*h;		
+	}
+	else
+	{
+		y=(int)(line*h) >> (HALFLINES(flags)?1:0);
+		if (column<0 && !(RIGHTALIGNED(flags))) x=(1+(36-l)/2)*w;
+		else
+		{
+			if (RIGHTALIGNED(flags)) x=(column<0?W:column*w)-(l+1)*w;
+			else x=column*w;
+		}
+	}
+	if (HIGHLIGHTED(flags))	pad->Rectangle(w-2, y-2, W-w+2, y+h+6);
+	pad->Text(x, y, text, l);
+}
+
+void AscensionTower::SetWriteStyle(int font, int color, int intensity, int style)
+{
+	static DWORD colors[4] = {0x0000FF00, 0x0000FFFF, 0x00FFFFFF, 0x00FF0000};
+	pad->SetFont(GetDefaultFont(font));
+	pad->SetTextColor(colors[color]);
+	pad->SetPen(GetDefaultPen(color, intensity, style));
+	pad->SetBrush(myBrush);
 }

@@ -261,7 +261,23 @@
 			>
 		</File>
 		<File
+			RelativePath=".\AscensionTowerPage.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\AscensionTowerPage.h"
+			>
+		</File>
+		<File
 			RelativePath=".\AscensionUltra.h"
+			>
+		</File>
+		<File
+			RelativePath=".\BasePage.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\BasePage.h"
 			>
 		</File>
 		<File
