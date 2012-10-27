@@ -32,7 +32,7 @@
 #define DRADAROFFSET _V(-895,0,970)
 #define DRADARMATRIXOFFSET _V(-4495,0,0)
 #define DRADARPIVOT 10
-#define PORTOFFSET _V(-125,0,645)
+#define PORTOFFSET _V(-130.5,-0.5,645)
 #define SECTION		"Settings"
 #define SPAWN		"auto-spawn"
 #define RESET		"fast-reset"
