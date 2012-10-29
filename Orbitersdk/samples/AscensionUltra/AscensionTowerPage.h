@@ -58,6 +58,7 @@ protected:
 	AscensionTowerData *data;
 	AscensionUltra *ascension;
 	AscensionTower *mfd;
+	VESSEL *vessel;
 	int selectedIndex, selection, page;
 	char *GetNameSafeTitle(char *title, char *trailer);
 	virtual void MFDRenderer();

@@ -6,6 +6,7 @@ extern COLORREF g_MiddleGreen;
 AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 {
 	this->data=data;
+	this->vessel=data->GetMFD()->GetVessel();
 	page=0;
 	selection=0;
 	selectedIndex=0;
@@ -72,7 +73,22 @@ char *AscensionTowerPage::GetButtonLabel (int bt)
 	return LabelRenderer(bt);
 }
 
-char *AscensionTowerPage::LabelRenderer (int bt) {return "";}
+char *AscensionTowerPage::LabelRenderer (int bt) 
+{
+	int size=GetListSize();
+	switch (bt)
+	{
+		case  0:
+		case  1:
+		case  2:
+		case  3:
+		case  4:
+		case  5: return size>page*6+bt?" > ":NULL;
+		case 10: return size>6?"NXT":NULL;
+		case 11: return size>6?"PRV":NULL;
+		default: return NULL;
+	}
+}
 
 int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu)
 {
@@ -80,7 +96,31 @@ int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu)
 	return MenuRenderer(mnu);
 }
 
-int AscensionTowerPage::MenuRenderer (MFDBUTTONMENU *mnu) {return 0;}
+int AscensionTowerPage::MenuRenderer (MFDBUTTONMENU *mnu)
+{
+	static MFDBUTTONMENU menu[9] = {
+		{NULL, "next to the button", '1'},
+		{NULL, menu[0].line2, '2'},
+		{NULL, menu[0].line2, '3'},
+		{NULL, menu[0].line2, '4'},
+		{NULL, menu[0].line2, '5'},
+		{NULL, menu[0].line2, '6'},
+		{NULL, NULL, 0},
+		{"Switch to", "next page", 'N'},
+		{"Switch to", "previous page", 'P'}};
+	
+	const char *label=mnu[0].line1;
+	for(int i=0;i<6;i++)
+	{
+		mnu[i]=menu[i];
+		mnu[i].line1=label;
+	}
+	int size=GetListSize();
+	for(int i=min(size-page*6, 6);i<6;i++) mnu[i]=menu[6];
+	if (size<7) return 10;
+	for(int i=10;i<12;i++) mnu[i]=menu[i-3];
+	return 12;
+}
 
 AscensionTowerPageInstance AscensionTowerPage::SetButton(int bt)
 {
@@ -113,7 +153,35 @@ AscensionTowerPageInstance AscensionTowerPage::SetKey(DWORD key)
 	return KeyHandler(key);
 }
 
-AscensionTowerPageInstance AscensionTowerPage::KeyHandler(DWORD key) {return Undefined;}
+AscensionTowerPageInstance AscensionTowerPage::KeyHandler(DWORD key)
+{
+	int size=GetListSize();
+	int pages=(size+5)/6;
+	switch(key)
+	{	
+	case OAPI_KEY_N://Next page
+		if (size<7) return Undefined;
+		if (page<pages-1) page++;
+		else page=0;
+		selection=0;
+		return NoChange;
+	case OAPI_KEY_P://Previous page
+		if (size<7) return Undefined;
+		if (page>0) page--;
+		else page=pages-1;
+		selection=min(size-page*6, 6)-1;
+		return NoChange;
+	default:
+		if (key<OAPI_KEY_1 || key>OAPI_KEY_6) return Undefined;
+		{
+			int bt=key-OAPI_KEY_1;
+			if (bt>=min(size-page*6, 6)) return Undefined;
+			selection=bt;
+			return Select();
+		}		
+	}
+	return Undefined;
+}
 
 char *AscensionTowerPage::GetTitle() { static char title[57]; return GetNameSafeTitle(title, "");}
 
