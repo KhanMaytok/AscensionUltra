@@ -1,6 +1,8 @@
 #pragma once
 #include "AscensionTowerData.h"
 #include "BasePage.h"
+#include "MainPage.h"
+#include "GroundPage.h"
 #pragma warning(disable : 4482)
 
 AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
@@ -8,6 +10,8 @@ AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
 	this->mfd=mfd;
 	state=BaseSelect;
 	pages[state]=new BasePage(this);
+	pages[MainMenu]=new MainPage(this);
+	pages[GroundMenu]=new GroundPage(this);
 }
 
 char *AscensionTowerData::GetButtonLabel (int bt){return pages[state]->GetButtonLabel(bt);}
