@@ -10,12 +10,11 @@ public:
 protected:
 	char *LabelRenderer (int bt);
 	int MenuRenderer (MFDBUTTONMENU *mnu);
-	AscensionTowerPageInstance ButtonHandler(int bt);
 	AscensionTowerPageInstance KeyHandler(DWORD key);
-	char *GetTitle();
-	char *GetSubtitle();
-	int GetListSize();
-	AscensionTowerListPair GetListItem(int index);
+	char *GetTitle(){return "Ascension Tower";}
+	char *GetSubtitle(){return scanList.size()>0?"Select base":"";}
+	int GetListSize(){return scanList.size();}
+	AscensionTowerListPair GetListItem(int index){return scanList[index];}
 	AscensionTowerPageInstance Select(int index=-1);
 private:
 	OBJHANDLE ascensionHandle;
