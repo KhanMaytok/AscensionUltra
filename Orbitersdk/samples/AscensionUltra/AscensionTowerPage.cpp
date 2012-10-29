@@ -135,3 +135,5 @@ char *AscensionTowerPage::GetNameSafeTitle(char *title, char *trailer)
 	strcat(title, trailer);
 	return title;
 }
+
+void AscensionTowerPage::SetDataRoot(void *dataRoot){this->dataRoot=dataRoot;}
