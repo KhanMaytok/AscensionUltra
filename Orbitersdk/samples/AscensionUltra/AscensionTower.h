@@ -31,8 +31,10 @@ public:
 	static int MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
 	void Write(char *text, int line=-1, int column=-1, int flags=0);
 	void SetWriteStyle(int font=0, int color=0, int intensity=0, int style=1);
+	VESSEL *GetVessel();
 	
 private:
 	AscensionTowerData *data;
 	oapi::Sketchpad *pad;
+	VESSEL *vessel;
 };

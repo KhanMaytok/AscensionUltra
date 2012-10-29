@@ -69,6 +69,7 @@ AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
 		g_MFDData[vessel]=mfds;
 	}
 	data=(*mfds)[mfd];
+	this->vessel=vessel;
 	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData(this);
 }
 
@@ -158,3 +159,5 @@ void AscensionTower::SetWriteStyle(int font, int color, int intensity, int style
 	pad->SetPen(GetDefaultPen(color, intensity, style));
 	pad->SetBrush(myBrush);
 }
+
+VESSEL *AscensionTower::GetVessel(){return vessel;}
