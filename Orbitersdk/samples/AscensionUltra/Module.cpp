@@ -76,7 +76,7 @@ void RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref)
 			VECTOR3 p=_V(m->Vtx[j].x, m->Vtx[j].y, m->Vtx[j].z);
 			VECTOR3 n=_V(m->Vtx[j].nx, m->Vtx[j].ny, m->Vtx[j].nz);
 			p=mul(M, (p-ref))+ref;
-			n=mul(M, (n-ref))+ref;
+			n=mul(M, n);
 			m->Vtx[j].x=p.x;
 			m->Vtx[j].y=p.y;
 			m->Vtx[j].z=p.z;
