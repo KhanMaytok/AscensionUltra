@@ -257,15 +257,15 @@
 			>
 		</File>
 		<File
-			RelativePath=".\AscensionTowerResource.h"
-			>
-		</File>
-		<File
 			RelativePath=".\AscensionTowerPage.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\AscensionTowerPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\AscensionTowerResource.h"
 			>
 		</File>
 		<File
