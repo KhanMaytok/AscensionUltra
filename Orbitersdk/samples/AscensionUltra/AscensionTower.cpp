@@ -80,7 +80,9 @@ char *AscensionTower::ButtonLabel (int bt){return data->GetButtonLabel(bt);}
 int AscensionTower::ButtonMenu (const MFDBUTTONMENU **menu) const
 {
 	static MFDBUTTONMENU mnu[12];
+	static MFDBUTTONMENU empty = {NULL, NULL, 0};
 	if (menu) *menu = mnu;
+	for(int i=0;i<12;i++) mnu[i]=empty;
 	return data->GetButtonMenu(mnu);	
 }
 
