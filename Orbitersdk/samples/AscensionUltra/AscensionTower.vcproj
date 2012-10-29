@@ -273,10 +273,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\BasePage.cpp"
-			>
-		</File>
-		<File
 			RelativePath=".\BasePage.h"
 			>
 		</File>
@@ -285,15 +281,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\GroundPage.cpp"
-			>
-		</File>
-		<File
 			RelativePath=".\GroundPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\MainPage.cpp"
 			>
 		</File>
 		<File
