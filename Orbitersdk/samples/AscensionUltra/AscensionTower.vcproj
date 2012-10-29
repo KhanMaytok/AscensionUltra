@@ -284,6 +284,22 @@
 			RelativePath=".\Door.h"
 			>
 		</File>
+		<File
+			RelativePath=".\GroundPage.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\GroundPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\MainPage.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\MainPage.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
