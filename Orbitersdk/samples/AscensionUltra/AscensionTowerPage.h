@@ -52,6 +52,7 @@ public:
 	int GetButtonMenu (MFDBUTTONMENU *mnu);
 	AscensionTowerPageInstance SetButton(int bt);
 	AscensionTowerPageInstance SetKey(DWORD key);
+	void SetDataRoot(void *dataRoot); // Sets the root object of the page data items, e.g. the hangar the doors are in on the doors list page
 	
 protected:
 	AscensionTowerData *data;
@@ -71,4 +72,5 @@ protected:
 	virtual AscensionTowerPageInstance KeyHandler(DWORD key);
 	int AT_BUTTON[6];
 	int AT_BUTTONDOUBLED[10];
+	void *dataRoot;
 };
