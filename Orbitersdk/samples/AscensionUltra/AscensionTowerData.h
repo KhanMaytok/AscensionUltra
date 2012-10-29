@@ -18,7 +18,8 @@ public:
 	bool SetKey(DWORD key);
 	AscensionTower *GetMFD();
 	AscensionUltra *GetAscension();
-
+	AscensionTowerPage *GetPage(enum AscensionTowerPageInstance page);
+	
 private:
 	AscensionTower *mfd;
 	enum AscensionTowerPageInstance state;

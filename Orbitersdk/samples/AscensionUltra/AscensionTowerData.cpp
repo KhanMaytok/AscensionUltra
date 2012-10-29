@@ -23,6 +23,8 @@ bool AscensionTowerData::StateChange(AscensionTowerPageInstance newstate)
 	return true;
 }
 
+AscensionTowerPage *AscensionTowerData::GetPage(AscensionTowerPageInstance page){return pages[page];}
+
 void AscensionTowerData::Update()
 {
 	pages[state]->Update();
