@@ -20,7 +20,7 @@ AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 void AscensionTowerPage::Update()
 {
 	mfd=data->GetMFD();
-	ascension=data->GetAscension();	
+	ascension=data->GetAscension();
 	MFDRenderer();
 
 	mfd->SetWriteStyle(1,2);
