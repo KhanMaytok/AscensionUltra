@@ -273,6 +273,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\ATCPage.h"
+			>
+		</File>
+		<File
 			RelativePath=".\BasePage.h"
 			>
 		</File>
@@ -285,7 +289,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\HangarRoomPage.h"
+			>
+		</File>
+		<File
 			RelativePath=".\MainPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\RosterPage.h"
 			>
 		</File>
 	</Files>
