@@ -297,6 +297,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\RoomListPage.h"
+			>
+		</File>
+		<File
 			RelativePath=".\RosterPage.h"
 			>
 		</File>
