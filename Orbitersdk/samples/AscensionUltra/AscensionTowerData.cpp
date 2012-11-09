@@ -3,15 +3,21 @@
 #include "BasePage.h"
 #include "MainPage.h"
 #include "GroundPage.h"
+#include "ATCPage.h"
+#include "HangarRoomPage.h"
+#include "RosterPage.h"
 #pragma warning(disable : 4482)
 
 AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
 {
 	this->mfd=mfd;
 	state=BaseSelect;
-	pages[state]=new BasePage(this);
+	pages[BaseSelect]=new BasePage(this);
 	pages[MainMenu]=new MainPage(this);
 	pages[GroundMenu]=new GroundPage(this);
+	pages[ATCMenu]=new ATCPage(this);
+	pages[HangarForRoomSelection]=new HangarRoomPage(this);
+	pages[Roster]=new RosterPage(this);
 }
 
 char *AscensionTowerData::GetButtonLabel (int bt){return pages[state]->GetButtonLabel(bt);}
