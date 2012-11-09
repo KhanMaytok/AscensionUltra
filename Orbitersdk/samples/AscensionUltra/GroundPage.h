@@ -48,7 +48,7 @@ protected:
 		}
 	}
 
-	char *GetTitle(){return "Ascension Tower";}
+	char *GetTitle(){return GetNameSafeTitle("Tower");}
 
 	char *GetSubtitle(){return "Select request";}
 

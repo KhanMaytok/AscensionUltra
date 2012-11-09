@@ -183,14 +183,15 @@ AscensionTowerPageInstance AscensionTowerPage::KeyHandler(DWORD key)
 	return Undefined;
 }
 
-char *AscensionTowerPage::GetTitle() { static char title[57]; return GetNameSafeTitle(title, "");}
+char *AscensionTowerPage::GetTitle() { return GetNameSafeTitle("");}
 
 char *AscensionTowerPage::GetSubtitle() {return "";}
 
-char *AscensionTowerPage::GetNameSafeTitle(char *title, char *trailer)
+char *AscensionTowerPage::GetNameSafeTitle(char *trailer)
 {
+	static char title[57];
 	char *name=ascension->GetName();
-	int i=56-strlen(trailer);
+	int i=55-strlen(trailer); //55=57-EOL-Space
 	bool longer=false;
 	if (strlen(name)>i)
 	{
@@ -199,6 +200,7 @@ char *AscensionTowerPage::GetNameSafeTitle(char *title, char *trailer)
 	}
 	strncpy(title, name, i);
 	title[i]=0;
+	strcat(title, " ");
 	if (longer) strcat(title, "..");
 	strcat(title, trailer);
 	return title;
