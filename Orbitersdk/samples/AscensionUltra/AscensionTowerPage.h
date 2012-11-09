@@ -60,7 +60,7 @@ protected:
 	AscensionTower *mfd;
 	VESSEL *vessel;
 	int selectedIndex, selection, page;
-	char *GetNameSafeTitle(char *title, char *trailer);
+	char *GetNameSafeTitle(char *trailer);
 	virtual void MFDRenderer();
 	virtual int GetListSize();
 	virtual AscensionTowerListPair GetListItem(int index);
