@@ -285,7 +285,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\DoorListPage.h"
+			>
+		</File>
+		<File
 			RelativePath=".\GroundPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\HangarDoorPage.h"
 			>
 		</File>
 		<File

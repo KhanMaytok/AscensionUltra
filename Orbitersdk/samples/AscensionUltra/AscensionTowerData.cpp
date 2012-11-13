@@ -7,6 +7,8 @@
 #include "HangarRoomPage.h"
 #include "RosterPage.h"
 #include "RoomListPage.h"
+#include "HangarDoorPage.h"
+#include "DoorListPage.h"
 #pragma warning(disable : 4482)
 
 AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
@@ -20,6 +22,8 @@ AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
 	pages[HangarForRoomSelection]=new HangarRoomPage(this);
 	pages[Roster]=new RosterPage(this);
 	pages[RoomSelection]=new RoomListPage(this);
+	pages[HangarForDoorSelection]=new HangarDoorPage(this);
+	pages[DoorSelection]=new DoorListPage(this);
 }
 
 char *AscensionTowerData::GetButtonLabel (int bt){return pages[state]->GetButtonLabel(bt);}
