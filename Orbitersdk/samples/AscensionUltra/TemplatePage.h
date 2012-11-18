@@ -91,19 +91,6 @@ protected:
 				case 11: return selectedIndex[AscensionTowerState::Roster]>0?"DEL":"";
 			}
 			return NULL;
-		default:
-			int size=GetListSize();
-			switch (bt)
-			{
-				case 6: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"HOM":"BAS";
-				case 7: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"BCK":"";
-				case 8: return state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu?"RES":"";
-				case 9: return "";
-				case 10: return size>6?"NXT":"";
-				case 11: return size>6?"PRV":"";
-				default: return size>page[state]*6+bt?" > ":"";
-			}
-			return NULL;
 		}*/
 	}
 
@@ -178,21 +165,6 @@ protected:
 
 		switch(state)
 		{	
-		case AscensionTowerState::BaseSelect: target="base"; break;		
-		case AscensionTowerState::GroundMenu: 
-		case AscensionTowerState::ATCMenu:
-		case AscensionTowerState::MainMenu:  target="request"; break;
-		case AscensionTowerState::Roster: target="person"; break;
-		case AscensionTowerState::HangarForCraneSelection:
-		case AscensionTowerState::HangarForRoomSelection:
-		case AscensionTowerState::HangarForDoorSelection: target="hangar"; break;
-		case AscensionTowerState::DoorSelection: target="door"; break;
-		case AscensionTowerState::TaxiRouteStartSelection: target="route start"; break;
-		case AscensionTowerState::TaxiRouteEndSelection: target="route end"; break;
-		case AscensionTowerState::LandingRunwaySelection: target="runway"; break;
-		case AscensionTowerState::RoomForPersonSelection:
-		case AscensionTowerState::PassengerTransfer:
-		case AscensionTowerState::RoomSelection: target="room"; break;
 		case AscensionTowerState::DoorControl: target="command"; break;
 		case AscensionTowerState::CraneControl:
 			for(int i=0;i<12;i++) mnu[i]=craneControlMenu[i];
@@ -211,60 +183,7 @@ protected:
 				mnu[11]=personMenu[9];
 			}
 			return 12;
-		}
-		sprintf(select, "Select %s", target);
-
-		int size=GetListSize();
-		int k=min(size-page[state]*6, 6);
-
-		for(int i=0;i<k;i++)
-		{
-			mnu[i].line1=select;
-			mnu[i].line2="next to the button";
-			mnu[i].selchar=0x31+i;
-		}
-		for(int i=k;i<6;i++)
-		{
-			mnu[i].line1=NULL;
-			mnu[i].line2=NULL;
-			mnu[i].selchar=0;
-		}
-		
-		k=6;
-		mnu[k].line1=(state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)?"Scan for bases":"Main menu";
-		mnu[k].line2=NULL;
-		mnu[k++].selchar='H';
-		if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu)
-		{
-			mnu[k].line1="Go back";
-			mnu[k].line2=NULL;
-			mnu[k++].selchar='B';
-			mnu[k].line1="Reset to default";
-			mnu[k].line2="values";
-			mnu[k++].selchar='R';
-		}
-		for(;k<10;k++)
-		{
-			mnu[k].line1=NULL;
-			mnu[k].line2=NULL;
-			mnu[k].selchar=0;
-		}
-		if (size>6)
-		{
-			mnu[k].line1="Switch to";
-			mnu[k].line2="next page";
-			mnu[k++].selchar='N';
-			mnu[k].line1="Switch to";
-			mnu[k].line2="previous page";
-			mnu[k++].selchar='P';		
-		}	
-		for(;k<12;k++)
-		{
-			mnu[k].line1=NULL;
-			mnu[k].line2=NULL;
-			mnu[k].selchar=0;
-		}
-		return 12;*/
+		}*/		
 	}
 
 	AscensionTowerPageInstance ButtonHandler(int bt)
@@ -569,61 +488,13 @@ protected:
 				result=false;
 				break;
 			}
-			return result;
-			
-		default:
-		switch(key)
-		{	
-		case OAPI_KEY_N://Next page
-			if (size<7) return Undefined;
-			if (page<pages-1) page++;
-			else page=0;
-			selection=0;
-			return NoChange;
-		case OAPI_KEY_P://Previous page
-			if (size<7) return Undefined;
-			if (page>0) page--;
-			else page=pages-1;
-			selection=min(size-page*6, 6)-1;
-			return NoChange;
-		case OAPI_KEY_B://Go back
-			if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu)	Back();
-			break;
-		case OAPI_KEY_H://Main menu/Scan for bases
-			//if (state==AscensionTowerState::BaseSelect || state==AscensionTowerState::MainMenu)
-			return BaseSelect;
-			//else SetState(AscensionTowerState::MainMenu);
-		case OAPI_KEY_R://Reset to default
-			//if (state!=AscensionTowerState::BaseSelect && state!=AscensionTowerState::MainMenu) Reset();
-			return NoChange;
-		default:
-			if (key<OAPI_KEY_1 || key>OAPI_KEY_6) return Undefined;
-			{
-				int bt=key-OAPI_KEY_1;
-				if (bt>=min(size-page*6, 6)) return Undefined;
-				selection=bt;
-				return Select();
-			}		
-		}
-		return Undefined;*/
+			return result;*/
 	}
 
 	char *GetTitle()
 	{
-		/*static char *tower=" Tower";
-		static char *ground=" Ground";
-		static char *atc=" ATC";
-		static char *rooster=" Roster";
-		static char title[57];
-		switch(state)
-		{*/
-		return "Ascension Tower";
-		/*case AscensionTowerState::GroundMenu:
-		case AscensionTowerState::HangarForDoorSelection:
-		case AscensionTowerState::DoorSelection:
-		case AscensionTowerState::TaxiRouteStartSelection:
-		case AscensionTowerState::TaxiRouteEndSelection:
-		case AscensionTowerState::HangarForCraneSelection:
+		return GetNameSafeTitle("Ground");
+		/*
 		case AscensionTowerState::PassengerTerminal:
 		case AscensionTowerState::Fueling:
 		case AscensionTowerState::LaunchPrepare:
@@ -631,57 +502,28 @@ protected:
 		case AscensionTowerState::CraneControl:
 		case AscensionTowerState::CraneList:
 		case AscensionTowerState::CraneGrapple:
-		case AscensionTowerState::PassengerTransfer:
-			return GetNameSafeTitle(title, ground);	
-		case AscensionTowerState::ATCMenu:
+		return GetNameSafeTitle(title, ground);	
 		case AscensionTowerState::Bearing:
-		case AscensionTowerState::LandingRunwaySelection:
 		case AscensionTowerState::Launch:
 			return GetNameSafeTitle(title, atc);	
 			break;
-		case AscensionTowerState::HangarForPersonSelection:
-		case AscensionTowerState::RoomForPersonSelection:
-		case AscensionTowerState::Roster:
 		case AscensionTowerState::PersonControl:
 			return GetNameSafeTitle(title, rooster);
 			break;
-		case AscensionTowerState::MainMenu:
-		case AscensionTowerState::HangarForRoomSelection:
-		case AscensionTowerState::RoomSelection:
-		default:		
-			return GetNameSafeTitle(title, tower);	
 		}*/	
 	}
 
 	char *GetSubtitle()
 	{
-		/*static char subtitle[57];
-
-		switch(state)
-		{*/
+		//static char subtitle[57];
 		return "Select request";
 		/*
-		case AscensionTowerState::GroundMenu: return "Select ground request";
-		case AscensionTowerState::ATCMenu: return "Select ATC request";	
-		case AscensionTowerState::Roster: return "Select Person";
 		case AscensionTowerState::PersonControl: return selectedIndex[AscensionTowerState::Roster]>0?"Person Information":"Add new person";
-		case AscensionTowerState::HangarForDoorSelection: return "Select Hangar for Roll-in/Roll-out";	
-		case AscensionTowerState::DoorSelection: return "Select Door for Roll-in/Roll-out";	
-		case AscensionTowerState::TaxiRouteStartSelection: return "Select Taxi Route Start";
-		case AscensionTowerState::HangarForCraneSelection: return "Select Hangar for Cargo Crane";	
 		case AscensionTowerState::PassengerTerminal: return "Passenger Terminal";	
 		case AscensionTowerState::Fueling: return "Fueling";	
 		case AscensionTowerState::LaunchPrepare: return "Launch Tunnel";	
 		case AscensionTowerState::Bearing: return "Bearing";	
-		case AscensionTowerState::LandingRunwaySelection: return "Select Runway for Landing";	
 		case AscensionTowerState::Launch: return "Request Launch Clearance";	
-		case AscensionTowerState::HangarForRoomSelection: return "Select Hangar for Control Room";
-		case AscensionTowerState::RoomSelection: return "Select Control Room";
-		case AscensionTowerState::PassengerTransfer: return "Select Destination for PAX";
-		case AscensionTowerState::TaxiRouteEndSelection:
-			sprintf(subtitle, "Taxi from %s to",
-				(char *)object[state]);
-			return subtitle;
 		case AscensionTowerState::DoorControl:
 			sprintf(subtitle, "%s -> %s",
 				((Hangar *)object[AscensionTowerState::DoorSelection])->GetName(),
@@ -698,18 +540,8 @@ protected:
 		case AscensionTowerState::CraneGrapple:
 			sprintf(subtitle, "%s -> Crane -> Cargo",
 				((Hangar *)object[AscensionTowerState::HangarForCraneSelection])->GetName());
-			return subtitle;
-		case AscensionTowerState::HangarForPersonSelection:
-			sprintf(subtitle, "%s -> Hangar Location",
-				ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Name);
-			return subtitle;
-		case AscensionTowerState::RoomForPersonSelection:
-			sprintf(subtitle, "%s -> %s -> Room Location",
-				ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Name,
-				((Hangar *)object[state])->GetName());
-			return subtitle;
-		}
-		return "";*/
+			return subtitle;		
+		}*/
 	}
 
 	int GetListSize()
@@ -717,30 +549,9 @@ protected:
 		return ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)==NULL?4:5;
 		/*switch(state)
 		{
-		case AscensionTowerState::ATCMenu: return 3;
-		case AscensionTowerState::HangarForDoorSelection:	
-			return ascension->GetHangars(HANGARTYPETA | HANGARTYPELL | HANGARTYPELFMC | HANGARTYPELH | HANGARTYPEVLC);
-		case AscensionTowerState::HangarForPersonSelection:
-		case AscensionTowerState::HangarForRoomSelection: return ascension->GetHangars(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT | HANGARTYPEVLC);
-		case AscensionTowerState::HangarForCraneSelection: return ascension->GetHangars(HANGARTYPETA);
-		case AscensionTowerState::DoorSelection: return ((Hangar *)object[state])->GetDoors();
-		case AscensionTowerState::RoomForPersonSelection:
-		case AscensionTowerState::RoomSelection: return ((Hangar *)object[state])->GetRooms();
 		case AscensionTowerState::DoorControl: return 3;
 		case AscensionTowerState::CraneList: return ((Crane *)object[state])->GetWaypoints();
-		case AscensionTowerState::TaxiRouteStartSelection: return ascension->GetTaxiways()->GetPoints();
-		case AscensionTowerState::TaxiRouteEndSelection: return ascension->GetTaxiways()->GetPoints(false, (char *)object[state]);
-		case AscensionTowerState::LandingRunwaySelection: return ascension->GetRunways()->GetPoints();
-		case AscensionTowerState::Roster: return ascension->GetPersons();
-		case AscensionTowerState::PassengerTransfer:
-			if (ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)!=(Hangar *)object[state])
-			{
-				SetState(AscensionTowerState::GroundMenu);
-				return 0;
-			}
-			return ((Hangar *)object[state])->GetRooms();
-		}
-		return 0;*/
+		}*/
 	}
 
 	AscensionTowerListPair GetListItem(int index)
@@ -748,68 +559,12 @@ protected:
 		static AscensionTowerListPair menu[5]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"},{4," Request Passenger Transfer"}};
 		return menu[index];
 		
-		/*static AscensionTowerListPair atcMenu[3]={{0," Request Bearing"},{1," Request Clearance to Land"},{2," Request Launch Clearance"}};
-		static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};	
+		/*static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};	
 		static char text[57];
-
-		AscensionTowerListPair nullItem={0,""};	
 		AscensionTowerListPair item;
 		
 		switch(state)
 		{
-		case AscensionTowerState::BaseSelect: return scanList[index];
-		case AscensionTowerState::MainMenu: return mainMenu[index];
-		case AscensionTowerState::GroundMenu: return groundMenu[index];
-		case AscensionTowerState::ATCMenu: return atcMenu[index];
-		case AscensionTowerState::DoorControl: return doorMenu[index];
-		case AscensionTowerState::HangarForDoorSelection:
-			item.Index=index;
-			item.Name=ascension->GetHangar(HANGARTYPETA | HANGARTYPELL | HANGARTYPELFMC | HANGARTYPELH | HANGARTYPEVLC, index)->GetName();
-			return item;
-		case AscensionTowerState::DoorSelection:
-			item.Index=index;
-			item.Name=((Hangar *)object[state])->GetDoor(index)->GetName();
-			return item;
-		case AscensionTowerState::HangarForRoomSelection:
-			item.Index=index;
-			{
-				Hangar *h=ascension->GetHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT | HANGARTYPEVLC, index);
-				sprintf(text, "%c %s", ascension->GetControlRoom()->GetHangar()==h?'*':' ', h->GetName());
-			}
-			item.Name=text;
-			return item;
-		case AscensionTowerState::HangarForPersonSelection:
-			item.Index=index;
-			{
-				Hangar *h=ascension->GetHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT | HANGARTYPEVLC, index);
-				sprintf(text, "%c %s",
-					ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Location->GetHangar()==h?'*':' ',
-					h->GetName());
-			}
-			item.Name=text;
-			return item;
-		case AscensionTowerState::RoomForPersonSelection:
-			item.Index=index;
-			{			
-				Room *r=((Hangar *)object[state])->GetRoom(index);
-				sprintf(text, "%c %s",
-					ascension->GetPerson(selectedIndex[AscensionTowerState::PersonControl]).Location==r?'*':' ',
-					r->GetName());
-			}
-			item.Name=text;
-			return item;
-		case AscensionTowerState::RoomSelection:
-			item.Index=index;
-			{
-				Room *r=((Hangar *)object[state])->GetRoom(index);
-				sprintf(text, "%c %s", ascension->GetControlRoom()==r?'*':' ', r->GetName());
-			}
-			item.Name=text;
-			return item;
-		case AscensionTowerState::HangarForCraneSelection:
-			item.Index=index;
-			item.Name=ascension->GetHangar(HANGARTYPETA, index)->GetName();
-			return item;
 		case AscensionTowerState::CraneList:
 			item.Index=index;
 			{
@@ -833,53 +588,7 @@ protected:
 			}
 			item.Name=text;
 			return item;
-		case AscensionTowerState::TaxiRouteStartSelection:
-			item.Index=index;
-			{
-				Routes *t=ascension->GetTaxiways();
-				item.Name=t->GetPoint(index);
-				sprintf(text, "%c %s", t->Strobing(item.Name)?'*':' ', item.Name);
-			}
-			item.Name=text;
-			return item;
-		case AscensionTowerState::TaxiRouteEndSelection:
-			item.Index=index;
-			{
-				Routes *t=ascension->GetTaxiways();
-				item.Name=t->GetPoint(index, false, (char *)object[state]);
-				sprintf(text, "%c %s", t->Strobing((char *)object[state], item.Name)?'*':' ', item.Name);
-			}
-			item.Name=text;
-			return item;
-		case AscensionTowerState::LandingRunwaySelection:
-			item.Index=index;
-			{
-				Routes *t=ascension->GetRunways();
-				item.Name=t->GetPoint(index);
-				sprintf(text, "%c %s", t->On(item.Name)?'*':' ', item.Name);
-			}
-			item.Name=text;
-			return item;
-		case AscensionTowerState::Roster:
-			item.Index=index;
-			{
-				Person person=ascension->GetPerson(index);
-				if (index>0) sprintf(text, "  %s %s", person.MiscId, person.Name);
-				else sprintf(text, "  Add new person...");
-			}
-			item.Name=text;
-			return item;
-		case AscensionTowerState::PassengerTransfer:
-			item.Index=index;
-			{
-				Room *r=((Hangar *)object[state])->GetRoom(index);
-				VESSEL *v=r->GetDock();
-				sprintf(text, "%c %s", v==vessel?'*':v==NULL?' ':'o', r->GetName());
-			}
-			item.Name=text;
-			return item;
-		}
-		return nullItem;*/
+		}*/
 	}
 
 	AscensionTowerPageInstance Select(int index=-1)
@@ -899,47 +608,6 @@ protected:
 		/*
 		switch(state)
 		{
-		case AscensionTowerState::ATCMenu:
-			switch(selection[state])
-			{
-			case 0: SetState(AscensionTowerState::Bearing); break;
-			case 1: SetState(AscensionTowerState::LandingRunwaySelection); break;
-			case 2: SetState(AscensionTowerState::Launch); break;
-			}		
-			break;
-		case AscensionTowerState::HangarForDoorSelection:
-			index=selectedIndex[state];
-			object[AscensionTowerState::DoorSelection]=ascension->GetHangar(HANGARTYPETA | HANGARTYPELL | HANGARTYPELFMC | HANGARTYPELH | HANGARTYPEVLC, index);
-			SetState(AscensionTowerState::DoorSelection);		
-			break;
-		case AscensionTowerState::HangarForRoomSelection:
-			index=selectedIndex[state];
-			object[AscensionTowerState::RoomSelection]=ascension->GetHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT | HANGARTYPEVLC, index);
-			SetState(AscensionTowerState::RoomSelection);		
-			break;
-		case AscensionTowerState::HangarForPersonSelection:
-			index=selectedIndex[state];
-			object[AscensionTowerState::RoomForPersonSelection]=ascension->GetHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT | HANGARTYPEVLC, index);
-			SetState(AscensionTowerState::RoomForPersonSelection);		
-			break;
-		case AscensionTowerState::RoomForPersonSelection:
-			index=ascension->ChangePerson(selectedIndex[AscensionTowerState::PersonControl], PERSON_LOCATION, ((Hangar *)object[state])->GetRoom(selectedIndex[state]));
-			if (index<0) break; //TODO: denial sound
-			SetState(AscensionTowerState::Roster);
-			Select(index);
-			break;
-		case AscensionTowerState::RoomSelection:		
-			ascension->SwitchView(((Hangar *)object[state])->GetRoom(selectedIndex[state]));
-			break;
-		case AscensionTowerState::DoorSelection:
-			object[AscensionTowerState::DoorControl]=((Hangar *)object[state])->GetDoor(selectedIndex[state]);
-			SetState(AscensionTowerState::DoorControl);
-			break;
-		case AscensionTowerState::HangarForCraneSelection:
-			object[state]=ascension->GetHangar(HANGARTYPETA, selectedIndex[state]);
-			object[AscensionTowerState::CraneControl]=object[AscensionTowerState::CraneList]=object[AscensionTowerState::CraneGrapple]=((TurnAroundHangar *)object[state])->GetCrane();
-			SetState(AscensionTowerState::CraneGrapple);
-			break;
 		case AscensionTowerState::DoorControl:
 			switch(selection[state])
 			{
@@ -947,35 +615,6 @@ protected:
 			case 1: ((Door *)object[state])->Close(); break;
 			case 2: ((Door *)object[state])->Stop(); break;
 			}		
-			break;
-		case AscensionTowerState::TaxiRouteStartSelection:
-			object[AscensionTowerState::TaxiRouteEndSelection]=ascension->GetTaxiways()->GetPoint(selectedIndex[state]);
-			SetState(AscensionTowerState::TaxiRouteEndSelection);
-			break;
-		case AscensionTowerState::TaxiRouteEndSelection:
-			t=ascension->GetTaxiways();
-			start=(char *)object[AscensionTowerState::TaxiRouteEndSelection];
-			end=t->GetPoint(selectedIndex[state], false, start);
-			if (t->Strobing(start,end)) t->Strobe(start, end, false);
-			else
-			{
-				t->Strobe(false);
-				t->Strobe(start, end, true);
-				SetState(AscensionTowerState::GroundMenu);
-			}
-			break;
-		case AscensionTowerState::LandingRunwaySelection:
-			ascension->GetRunways()->Activate(selectedIndex[state]);
-			break;
-		case AscensionTowerState::Roster:
-			selectedIndex[AscensionTowerState::PersonControl]=selectedIndex[state];
-			SetState(AscensionTowerState::PersonControl);
-			break;
-		case AscensionTowerState::PassengerTransfer:
-			Room *r=((Hangar *)object[state])->GetRoom(selectedIndex[state]);
-			VESSEL *v=r->GetDock();
-			if (v==NULL) ascension->DockVessel(r, vessel);
-			else if (v==vessel) ascension->DockVessel(r, NULL);
 			break;
 		}*/
 	}
