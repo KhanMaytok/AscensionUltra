@@ -249,19 +249,19 @@
 			>
 		</File>
 		<File
-			RelativePath=".\AscensionTowerData.cpp"
+			RelativePath=".\Pages\AscensionTowerData.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\AscensionTowerData.h"
+			RelativePath=".\Pages\AscensionTowerData.h"
 			>
 		</File>
 		<File
-			RelativePath=".\AscensionTowerPage.cpp"
+			RelativePath=".\Pages\AscensionTowerPage.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\AscensionTowerPage.h"
+			RelativePath=".\Pages\AscensionTowerPage.h"
 			>
 		</File>
 		<File
@@ -273,11 +273,11 @@
 			>
 		</File>
 		<File
-			RelativePath=".\ATCPage.h"
+			RelativePath=".\Pages\ATCPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\BasePage.h"
+			RelativePath=".\Pages\BasePage.h"
 			>
 		</File>
 		<File
@@ -285,59 +285,59 @@
 			>
 		</File>
 		<File
-			RelativePath=".\DoorListPage.h"
+			RelativePath=".\Pages\DoorListPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\GroundPage.h"
+			RelativePath=".\Pages\GroundPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\HangarCranePage.h"
+			RelativePath=".\Pages\HangarCranePage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\HangarDoorPage.h"
+			RelativePath=".\Pages\HangarDoorPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\HangarRoomPage.h"
+			RelativePath=".\Pages\HangarRoomPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\MainPage.h"
+			RelativePath=".\Pages\MainPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\PaXferPage.h"
+			RelativePath=".\Pages\PaXferPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\PersonHangarPage.h"
+			RelativePath=".\Pages\PersonHangarPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\PersonRoomPage.h"
+			RelativePath=".\Pages\PersonRoomPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\RoomListPage.h"
+			RelativePath=".\Pages\RoomListPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\RosterPage.h"
+			RelativePath=".\Pages\RosterPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\RunwayListPage.h"
+			RelativePath=".\Pages\RunwayListPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\TaxiRouteEndPage.h"
+			RelativePath=".\Pages\TaxiRouteEndPage.h"
 			>
 		</File>
 		<File
-			RelativePath=".\TaxiRouteStartPage.h"
+			RelativePath=".\Pages\TaxiRouteStartPage.h"
 			>
 		</File>
 	</Files>
