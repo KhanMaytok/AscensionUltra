@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "AscensionUltra.h"
-#include "AscensionTower.h"
+#include "..\AscensionUltra.h"
+#include "..\AscensionTower.h"
 #include "AscensionTowerPage.h"
 #include "orbitersdk.h"
 
