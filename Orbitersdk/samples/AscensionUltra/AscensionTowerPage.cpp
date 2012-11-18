@@ -207,3 +207,5 @@ char *AscensionTowerPage::GetNameSafeTitle(char *trailer)
 }
 
 void AscensionTowerPage::SetDataRoot(void *dataRoot){this->dataRoot=dataRoot;}
+
+void AscensionTowerPage::SetIndex(int index){Select(index);}
