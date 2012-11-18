@@ -293,6 +293,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\HangarCranePage.h"
+			>
+		</File>
+		<File
 			RelativePath=".\HangarDoorPage.h"
 			>
 		</File>
@@ -305,11 +309,35 @@
 			>
 		</File>
 		<File
+			RelativePath=".\PaXferPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PersonHangarPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\PersonRoomPage.h"
+			>
+		</File>
+		<File
 			RelativePath=".\RoomListPage.h"
 			>
 		</File>
 		<File
 			RelativePath=".\RosterPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\RunwayListPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\TaxiRouteEndPage.h"
+			>
+		</File>
+		<File
+			RelativePath=".\TaxiRouteStartPage.h"
 			>
 		</File>
 	</Files>

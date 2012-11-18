@@ -9,6 +9,13 @@
 #include "RoomListPage.h"
 #include "HangarDoorPage.h"
 #include "DoorListPage.h"
+#include "TaxiRouteStartPage.h"
+#include "TaxiRouteEndPage.h"
+#include "HangarCranePage.h"
+#include "RunwayListPage.h"
+#include "PersonHangarPage.h"
+#include "PersonRoomPage.h"
+#include "PaXferPage.h"
 #pragma warning(disable : 4482)
 
 AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
@@ -24,6 +31,13 @@ AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
 	pages[RoomSelection]=new RoomListPage(this);
 	pages[HangarForDoorSelection]=new HangarDoorPage(this);
 	pages[DoorSelection]=new DoorListPage(this);
+	pages[TaxiRouteStartSelection]=new TaxiRouteStartPage(this);
+	pages[TaxiRouteEndSelection]=new TaxiRouteEndPage(this);
+	pages[HangarForCraneSelection]=new HangarCranePage(this);
+	pages[LandingRunwaySelection]=new RunwayListPage(this);
+	pages[HangarForPersonSelection]=new PersonHangarPage(this);
+	pages[RoomForPersonSelection]=new PersonRoomPage(this);
+	pages[PassengerTransfer]=new PaXferPage(this);
 }
 
 char *AscensionTowerData::GetButtonLabel (int bt){return pages[state]->GetButtonLabel(bt);}
