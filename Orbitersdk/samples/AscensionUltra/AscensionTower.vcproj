@@ -236,6 +236,94 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Pages"
+			>
+			<File
+				RelativePath=".\Pages\AscensionTowerData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\AscensionTowerData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\AscensionTowerPage.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\AscensionTowerPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\ATCPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\BasePage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\DoorListPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\GroundPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\HangarCranePage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\HangarDoorPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\HangarRoomPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\MainPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\PaXferPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\PersonHangarPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\PersonRoomPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\RoomListPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\RosterPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\RunwayListPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\TaxiRouteEndPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\TaxiRouteStartPage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\TemplatePage.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\AscensionTower.cpp"
 			>
@@ -249,22 +337,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Pages\AscensionTowerData.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\AscensionTowerData.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\AscensionTowerPage.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\AscensionTowerPage.h"
-			>
-		</File>
-		<File
 			RelativePath=".\AscensionTowerResource.h"
 			>
 		</File>
@@ -273,71 +345,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Pages\ATCPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\BasePage.h"
-			>
-		</File>
-		<File
 			RelativePath=".\Door.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\DoorListPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\GroundPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\HangarCranePage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\HangarDoorPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\HangarRoomPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\MainPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\PaXferPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\PersonHangarPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\PersonRoomPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\RoomListPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\RosterPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\RunwayListPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\TaxiRouteEndPage.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Pages\TaxiRouteStartPage.h"
 			>
 		</File>
 	</Files>

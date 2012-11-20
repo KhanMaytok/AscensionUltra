@@ -9,7 +9,7 @@
 // ==============================================================
 
 #pragma once
-#include "AscensionTowerData.h"
+#include "Pages\AscensionTowerData.h"
 #define WRITEMFD_HALFLINES		0x01
 #define WRITEMFD_RIGHTALIGNED	0x04
 #define WRITEMFD_HIGHLIGHTED	0x08
