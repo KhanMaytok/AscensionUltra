@@ -2,12 +2,12 @@
 #include "AscensionTowerPage.h"
 #pragma warning(disable : 4482)
 
-class GroundPage: public AscensionTowerPage
+class TemplatePage: public AscensionTowerPage
 {
 
 public:
 
-	GroundPage(AscensionTowerData *data):AscensionTowerPage(data){}
+	TemplatePage(AscensionTowerData *data):AscensionTowerPage(data){}
 
 protected:
 
@@ -493,7 +493,7 @@ protected:
 
 	char *GetTitle()
 	{
-		return GetNameSafeTitle("Ground");
+		return GetNameSafeTitle("Tower");
 		/*
 		case AscensionTowerState::PassengerTerminal:
 		case AscensionTowerState::Fueling:
@@ -516,7 +516,7 @@ protected:
 	char *GetSubtitle()
 	{
 		//static char subtitle[57];
-		return "Select request";
+		return "Empty page";
 		/*
 		case AscensionTowerState::PersonControl: return selectedIndex[AscensionTowerState::Roster]>0?"Person Information":"Add new person";
 		case AscensionTowerState::PassengerTerminal: return "Passenger Terminal";	
@@ -546,7 +546,7 @@ protected:
 
 	int GetListSize()
 	{
-		return ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel)==NULL?4:5;
+		return 0;
 		/*switch(state)
 		{
 		case AscensionTowerState::DoorControl: return 3;
@@ -556,8 +556,8 @@ protected:
 
 	AscensionTowerListPair GetListItem(int index)
 	{
-		static AscensionTowerListPair menu[5]={{0," Request Roll-in/Roll-out"},{1," Request Taxi"},{2," Request Cargo Control"},{3," Request Launch"},{4," Request Passenger Transfer"}};
-		return menu[index];
+		static AscensionTowerListPair nullitem={0,NULL};
+		return nullitem;
 		
 		/*static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};	
 		static char text[57];
@@ -593,18 +593,7 @@ protected:
 
 	AscensionTowerPageInstance Select(int index=-1)
 	{
-		AscensionTowerPage::Select(index);
-		switch(selection)
-		{
-			case 0: return HangarForDoorSelection;
-			case 1: return TaxiRouteStartSelection;
-			case 2: return HangarForCraneSelection;
-			case 3: return PassengerTerminal;
-			case 4:
-				data->GetPage(PassengerTransfer)->SetDataRoot(ascension->GetNearestHangar(HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT, vessel));
-				return PassengerTransfer;
-			default: return Undefined;
-		}
+		return Undefined;
 		/*
 		switch(state)
 		{
