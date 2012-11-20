@@ -16,6 +16,7 @@
 #include "PersonHangarPage.h"
 #include "PersonRoomPage.h"
 #include "PaXferPage.h"
+#include "TemplatePage.h"
 #pragma warning(disable : 4482)
 
 //TODO: implement base auto-select and paxfer auto-clear
@@ -40,6 +41,17 @@ AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
 	pages[HangarForPersonSelection]=new PersonHangarPage(this);
 	pages[RoomForPersonSelection]=new PersonRoomPage(this);
 	pages[PassengerTransfer]=new PaXferPage(this);
+	pages[PassengerTerminal]=new TemplatePage(this);
+	pages[Fueling]=new TemplatePage(this);
+	pages[LaunchPrepare]=new TemplatePage(this);
+	pages[Bearing]=new TemplatePage(this);
+	pages[Launch]=new TemplatePage(this);
+	pages[DoorControl]=new TemplatePage(this);
+	pages[CraneControl]=new TemplatePage(this);
+	pages[PersonControl]=new TemplatePage(this);
+	pages[CraneList]=new TemplatePage(this);
+	pages[CraneGrapple]=new TemplatePage(this);
+	pages[Reset]=new TemplatePage(this);
 }
 
 char *AscensionTowerData::GetButtonLabel (int bt){return pages[state]->GetButtonLabel(bt);}
