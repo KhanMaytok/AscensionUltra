@@ -16,6 +16,7 @@
 #include "PersonHangarPage.h"
 #include "PersonRoomPage.h"
 #include "PaXferPage.h"
+#include "DoorPage.h"
 #include "TemplatePage.h"
 #pragma warning(disable : 4482)
 
@@ -46,7 +47,7 @@ AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
 	pages[LaunchPrepare]=new TemplatePage(this);
 	pages[Bearing]=new TemplatePage(this);
 	pages[Launch]=new TemplatePage(this);
-	pages[DoorControl]=new TemplatePage(this);
+	pages[DoorControl]=new DoorPage(this);
 	pages[CraneControl]=new TemplatePage(this);
 	pages[PersonControl]=new TemplatePage(this);
 	pages[CraneList]=new TemplatePage(this);

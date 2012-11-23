@@ -2,12 +2,12 @@
 #include "AscensionTowerPage.h"
 #pragma warning(disable : 4482)
 
-class DoorListPage: public AscensionTowerPage
+class DoorPage: public AscensionTowerPage
 {
 
 public:
 
-	DoorListPage(AscensionTowerData *data):AscensionTowerPage(data){}
+	DoorPage(AscensionTowerData *data):AscensionTowerPage(data){}
 
 protected:
 
@@ -31,7 +31,7 @@ protected:
 			{"Reset to default", "values", 'R'}
 		};
 		
-		mnu[0].line1="Select door";
+		mnu[0].line1="Select command";
 		for(int i=0;i<3;i++) mnu[6+i]=menu[i];	
 		return AscensionTowerPage::MenuRenderer(mnu);
 	}
@@ -43,7 +43,7 @@ protected:
 		case OAPI_KEY_H:
 			return MainMenu;
 		case OAPI_KEY_B:
-			return HangarForDoorSelection;
+			return DoorSelection;
 		default:
 			return AscensionTowerPage::KeyHandler(key);
 		}
@@ -51,31 +51,44 @@ protected:
 
 	char *GetTitle(){return GetNameSafeTitle("Ground");}
 
-	char *GetSubtitle(){return "Select Door for Roll-in/Roll-out";}
+	char *GetSubtitle()
+	{
+		static char subtitle[57];
+		sprintf(subtitle, "%s -> %s",
+			(char *)((void **)dataRoot)[0],
+			((Door *)((void **)dataRoot)[1])->GetName());
+		return subtitle;
+	}
 
-	int GetListSize(){return ((Hangar *)dataRoot)->GetDoors();}
+	int GetListSize(){return 3;}
 
 	AscensionTowerListPair GetListItem(int index)
 	{
-		AscensionTowerListPair item =
-		{
-			index,
-			((Hangar *)dataRoot)->GetDoor(index)->GetName()
-		};
-		return item;
+		static AscensionTowerListPair doorMenu[3]={{0," Open"},{1," Close"},{2," Stop"}};	
+		return doorMenu[index];
 	}
 
 	AscensionTowerPageInstance Select(int index=-1)
 	{
 		AscensionTowerPage::Select(index);
-		Hangar *hangar = (Hangar *)dataRoot;
-		dataSet[0]=hangar->GetName();
-		dataSet[1]=hangar->GetDoor(selectedIndex);
-		data->GetPage(DoorControl)->SetDataRoot(dataSet);
-		return DoorControl;
+		Door *door=(Door *)((void **)dataRoot)[1];
+		switch(selectedIndex)
+		{
+		case 0: door->Open(); break;
+		case 1: door->Close(); break;
+		case 2: door->Stop(); break;
+		}
+		return NoChange;
 	}
 
-private:
-	void* dataSet[2];
+	void MFDRenderer()
+	{
+		AscensionTowerPage::MFDRenderer();
+		mfd->SetWriteStyle(0,2);
+		Door* door=(Door *)((void **)dataRoot)[1];
+		if (door->GetPosition()<=0) mfd->Write("Closed", 15);
+		else if (door->GetPosition()>=1) mfd->Write("Open", 15);
+		else mfd->Write("Moving", 15);
+	}
 
 };
