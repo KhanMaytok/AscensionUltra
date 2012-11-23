@@ -70,7 +70,8 @@ AscensionTower::AscensionTower (UINT mfd, DWORD w, DWORD h, VESSEL *vessel)
 	}
 	data=(*mfds)[mfd];
 	this->vessel=vessel;
-	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData(this);
+	if (data==NULL) (*mfds)[mfd]=data=new AscensionTowerData();
+	data->SetMFD(this);
 }
 
 // Return button labels

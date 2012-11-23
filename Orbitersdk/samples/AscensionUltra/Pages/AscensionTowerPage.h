@@ -75,4 +75,7 @@ protected:
 	int AT_BUTTON[6];
 	int AT_BUTTONDOUBLED[10];
 	void *dataRoot;
+
+private:
+	void RefreshHandles();
 };
