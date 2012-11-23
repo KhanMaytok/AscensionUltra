@@ -22,9 +22,8 @@
 
 //TODO: implement base auto-select and paxfer auto-clear
 
-AscensionTowerData::AscensionTowerData(AscensionTower* mfd)
+AscensionTowerData::AscensionTowerData()
 {
-	this->mfd=mfd;
 	state=BaseSelect;
 	pages[BaseSelect]=new BasePage(this);
 	pages[MainMenu]=new MainPage(this);
@@ -71,4 +70,5 @@ bool AscensionTowerData::StateChange(AscensionTowerPageInstance newstate)
 AscensionTowerPage *AscensionTowerData::GetPage(AscensionTowerPageInstance page){return pages[page];}
 void AscensionTowerData::Update(){pages[state]->Update();}
 AscensionTower *AscensionTowerData::GetMFD(){return mfd;}
+void AscensionTowerData::SetMFD(AscensionTower *mfd){this->mfd=mfd;}
 AscensionUltra *AscensionTowerData::GetAscension(){return ((BasePage *)pages[BaseSelect])->GetAscension();}

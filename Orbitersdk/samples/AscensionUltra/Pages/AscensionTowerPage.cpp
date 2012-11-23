@@ -5,8 +5,7 @@ extern COLORREF g_MiddleGreen;
 
 AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 {
-	this->data=data;
-	this->vessel=data->GetMFD()->GetVessel();
+	this->data=data;	
 	page=0;
 	selection=0;
 	selectedIndex=0;
@@ -17,10 +16,16 @@ AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 	for(int i=0;i<10;i++) AT_BUTTONDOUBLED[i]=bdp[i];
 }
 
-void AscensionTowerPage::Update()
+void AscensionTowerPage::RefreshHandles()
 {
 	mfd=data->GetMFD();
+	vessel=mfd->GetVessel();
 	ascension=data->GetAscension();
+}
+
+void AscensionTowerPage::Update()
+{
+	RefreshHandles();
 	MFDRenderer();
 
 	mfd->SetWriteStyle(1,2);
@@ -69,7 +74,7 @@ AscensionTowerPageInstance AscensionTowerPage::Select(int index)
 
 char *AscensionTowerPage::GetButtonLabel (int bt)
 {
-	if (bt==0) ascension=data->GetAscension();
+	if (bt==0) RefreshHandles();
 	return LabelRenderer(bt);
 }
 
@@ -92,7 +97,7 @@ char *AscensionTowerPage::LabelRenderer (int bt)
 
 int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu)
 {
-	ascension=data->GetAscension();
+	RefreshHandles();
 	return MenuRenderer(mnu);
 }
 
@@ -124,7 +129,7 @@ int AscensionTowerPage::MenuRenderer (MFDBUTTONMENU *mnu)
 
 AscensionTowerPageInstance AscensionTowerPage::SetButton(int bt)
 {
-	ascension=data->GetAscension();
+	RefreshHandles();
 	return ButtonHandler(bt);
 }
 
@@ -149,7 +154,7 @@ AscensionTowerPageInstance AscensionTowerPage::ButtonHandler(int bt)
 
 AscensionTowerPageInstance AscensionTowerPage::SetKey(DWORD key)
 {
-	ascension=data->GetAscension();
+	RefreshHandles();
 	return KeyHandler(key);
 }
 
