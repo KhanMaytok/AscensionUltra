@@ -7,7 +7,7 @@
 bool ChangePersonData(void *id, char *str, void *usrdata)
 {
 	AscensionTowerCallbackData *cp=(AscensionTowerCallbackData *)usrdata;
-	AscensionTowerData *data=cp->Data;
+	AscensionTowerData *data=(AscensionTowerData *)cp->Data;
 	int index=data->GetAscension()->ChangePerson(cp->Index, cp->Flags, str);
 	data->GetPage(Roster)->SetIndex(index);
 	data->GetMFD()->InvalidateDisplay();

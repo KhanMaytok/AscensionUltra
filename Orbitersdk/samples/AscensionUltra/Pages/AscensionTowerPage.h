@@ -47,7 +47,7 @@ struct AscensionTowerCallbackData
 {
 	int Flags;
 	int Index;
-	AscensionTowerData *Data;
+	void *Data;
 };
 
 class AscensionTowerPage
