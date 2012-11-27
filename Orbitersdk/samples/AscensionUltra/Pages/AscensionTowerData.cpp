@@ -19,6 +19,8 @@
 #include "DoorPage.h"
 #include "TemplatePage.h"
 #include "PersonPage.h"
+#include "CraneBasePage.h"
+#include "CranePage.h"
 #pragma warning(disable : 4482)
 
 //TODO: implement base auto-select and paxfer auto-clear
@@ -48,7 +50,7 @@ AscensionTowerData::AscensionTowerData()
 	pages[Bearing]=new TemplatePage(this);
 	pages[Launch]=new TemplatePage(this);
 	pages[DoorControl]=new DoorPage(this);
-	pages[CraneControl]=new TemplatePage(this);
+	pages[CraneControl]=new CranePage(this);
 	pages[PersonControl]=new PersonPage(this);
 	pages[CraneList]=new TemplatePage(this);
 	pages[CraneGrapple]=new TemplatePage(this);

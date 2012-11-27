@@ -264,6 +264,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Pages\CraneBasePage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Pages\CranePage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Pages\DoorListPage.h"
 				>
 			</File>
