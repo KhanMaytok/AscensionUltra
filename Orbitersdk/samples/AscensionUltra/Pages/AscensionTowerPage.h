@@ -43,6 +43,13 @@ struct AscensionTowerListPair
 class AscensionTower;
 class AscensionTowerData;
 
+struct AscensionTowerCallbackData
+{
+	int Flags;
+	int Index;
+	AscensionTowerData *Data;
+};
+
 class AscensionTowerPage
 {
 public:

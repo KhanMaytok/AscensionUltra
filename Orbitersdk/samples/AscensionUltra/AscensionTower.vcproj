@@ -300,6 +300,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Pages\PersonPage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Pages\PersonRoomPage.h"
 				>
 			</File>
