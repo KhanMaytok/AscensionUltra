@@ -8,7 +8,11 @@ class HangarCranePage: public AscensionTowerPage
 
 public:
 
-	HangarCranePage(AscensionTowerData *data):AscensionTowerPage(data){}
+	HangarCranePage(AscensionTowerData *data):AscensionTowerPage(data)
+	{
+		step=1.0;
+		start=0;
+	}
 
 protected:
 
@@ -71,10 +75,18 @@ protected:
 		AscensionTowerPage::Select(index);
 		dataRoot = ascension->GetHangar(HANGARS, selectedIndex);
 		void *crane=((TurnAroundHangar *)dataRoot)->GetCrane();
-		data->GetPage(CraneControl)->SetDataRoot(crane);
-		data->GetPage(CraneList)->SetDataRoot(crane);
-		data->GetPage(CraneGrapple)->SetDataRoot(crane);
-		return CraneGrapple;
+		dataSet[0]=dataRoot;
+		dataSet[1]=crane;
+		dataSet[2]=&step;
+		dataSet[3]=&start;
+		data->GetPage(CraneControl)->SetDataRoot(dataSet);
+		data->GetPage(CraneList)->SetDataRoot(dataSet);
+		data->GetPage(CraneGrapple)->SetDataRoot(dataSet);
+		return CraneControl;
 	}
+
+	void *dataSet[4];
+	double step;
+	int start;
 
 };
