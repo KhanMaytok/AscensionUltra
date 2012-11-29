@@ -44,6 +44,7 @@ protected:
 			case 4: return "Z+";
 			case 5: return "Z-";
 			case 6: return "STP";
+			case 10: return "MOD";
 			case 11: return "BCK";
 			default: return NULL;
 		}
@@ -51,7 +52,7 @@ protected:
 
 	int MenuRenderer (MFDBUTTONMENU *mnu)
 	{	
-		static MFDBUTTONMENU menu[8] = 
+		static MFDBUTTONMENU menu[9] = 
 		{
 			{"Move X axis", "pos. by step", 'A'},
 			{"Move X axis", "neg. by step", 'D'},
@@ -60,12 +61,14 @@ protected:
 			{"Move Z axis", "up by step", 'Q'},
 			{"Move Z axis", "down by step", 'E'},
 			{"Toggle step", "size", 'R'},
+			{"Switch mode", "to list", 'M'},
 			{"Go back", NULL, 'B'}
 		};
 		
 		for(int i=0;i<7;i++) mnu[i]=menu[i];
-		mnu[11]=menu[7];
-		return 8;
+		mnu[10]=menu[7];
+		mnu[11]=menu[8];
+		return 12;
 	}
 
 	AscensionTowerPageInstance ButtonHandler(int bt)
@@ -79,6 +82,7 @@ protected:
 			case 4: return SetKey(OAPI_KEY_Q);
 			case 5: return SetKey(OAPI_KEY_E);
 			case 6: return SetKey(OAPI_KEY_R);
+			case 10: return SetKey(OAPI_KEY_M);
 			case 11: return SetKey(OAPI_KEY_B);
 			default: return Undefined;
 		}

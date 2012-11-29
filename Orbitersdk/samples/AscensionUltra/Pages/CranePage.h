@@ -49,24 +49,22 @@ protected:
 		{
 			case 7: return "AUT";
 			case 8: return "SPD";			
-			case 9: return "DIR";
-			case 10: return "MOD";
+			case 9: return "DIR";			
 			default: return CraneBasePage::LabelRenderer(bt);
 		}
 	}
 
 	int MenuRenderer (MFDBUTTONMENU *mnu)
 	{	
-		static MFDBUTTONMENU menu[4] = 
+		static MFDBUTTONMENU menu[3] = 
 		{
 			{"Toggle auto", "sequence", 'O'},
 			{"Set speeds", NULL, 'F'},		
-			{"Toggle direct", "command", 'C'},
-			{"Switch mode", "to list", 'M'}
+			{"Toggle direct", "command", 'C'}
 		};
 		
-		for(int i=0;i<4;i++) mnu[7+i]=menu[i];	
-		return CraneBasePage::MenuRenderer(mnu)+4;
+		for(int i=0;i<3;i++) mnu[7+i]=menu[i];	
+		return CraneBasePage::MenuRenderer(mnu);
 	}
 
 	AscensionTowerPageInstance ButtonHandler(int bt)
@@ -76,7 +74,6 @@ protected:
 		case 7: return SetKey(OAPI_KEY_O);
 		case 8: return SetKey(OAPI_KEY_F);
 		case 9: return SetKey(OAPI_KEY_C);
-		case 10: return SetKey(OAPI_KEY_M);
 		default: return CraneBasePage::ButtonHandler(bt);
 		}
 	}
