@@ -32,6 +32,7 @@
 #define DRADAROFFSET _V(-895,0,970)
 #define DRADARMATRIXOFFSET _V(-4495,0,0)
 #define DRADARPIVOT 10
+#define PORTOFFSET _V(-130.5,-0.5,645)
 #define SECTION		"Settings"
 #define SPAWN		"auto-spawn"
 #define RESET		"fast-reset"
@@ -237,6 +238,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		SetMeshVisibilityMode (AddMesh (meshDRadar, &off), MESHVIS_ALWAYS);
 		dradar[i].SetPosition(off+_V(0,DRADARPIVOT,0)); //Dish position
 	}
+	SetMeshVisibilityMode (AddMesh (meshPort = oapiLoadMeshGlobal ("AscensionUltra\\AU_Docks"), &(OFFSET+PORTOFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoffTA[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASELIGHTHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseLightWindow, &(OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i+_V(0,curvoffLL[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseHeavyWindow, &(OFFSET+LH1OFFSET+LH1MATRIXOFFSET*i+_V(0,curvoffHL[i],0))), MESHVIS_ALWAYS);
@@ -587,7 +589,7 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		case OAPI_KEY_W:
 			{
-				int i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS;
+				int i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS+1;
 				int k=GetMeshCount();
 				int mode=GetMeshVisibilityMode(i) > MESHVIS_NEVER?MESHVIS_NEVER:(MESHVIS_ALWAYS | MESHVIS_EXTPASS);
 				for(;i<k;i++) SetMeshVisibilityMode(i, mode);
