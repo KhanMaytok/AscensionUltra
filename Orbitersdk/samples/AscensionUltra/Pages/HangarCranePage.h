@@ -82,7 +82,7 @@ protected:
 		data->GetPage(CraneControl)->SetDataRoot(dataSet);
 		data->GetPage(CraneList)->SetDataRoot(dataSet);
 		data->GetPage(CraneGrapple)->SetDataRoot(dataSet);
-		return CraneControl;
+		return CraneGrapple;
 	}
 
 	void *dataSet[4];
