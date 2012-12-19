@@ -33,6 +33,7 @@
 #define DRADARMATRIXOFFSET _V(-4495,0,0)
 #define DRADARPIVOT 10
 #define PORTOFFSET _V(-130.5,-0.5,645)
+#define AIRPORTOFFSET _V(-4653,0,605)
 #define SECTION		"Settings"
 #define SPAWN		"auto-spawn"
 #define RESET		"fast-reset"
@@ -130,7 +131,7 @@ void AscensionUltra::InitSubObjects()
 			90*RAD, "DRADAR", i);
 	}
 	strcpy(name, "Airport");
-	airport.Init(this, name, -1, "AIRPORT", -1); //TODO: mesh index currently not set
+	airport.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS+1+1, "AIRPORT", -1);
 	crew=airport.GetEntrance()->GetCrew();
 
 	controlRoom=launchTunnel.GetRoom(1); //Tower
@@ -240,16 +241,19 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	}
 	SetMeshVisibilityMode (AddMesh (meshPort = oapiLoadMeshGlobal ("AscensionUltra\\AU_Docks"), &(OFFSET+PORTOFFSET)), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Billboards"), &OFFSET), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshAirport = oapiLoadMeshGlobal ("AscensionUltra\\AU_Airport_NW"), &(OFFSET+AIRPORTOFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoffTA[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASELIGHTHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseLightWindow, &(OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i+_V(0,curvoffLL[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseHeavyWindow, &(OFFSET+LH1OFFSET+LH1MATRIXOFFSET*i+_V(0,curvoffHL[i],0))), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshLaunchWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_LFMC_WO"), &(OFFSET+LFMCOFFSET)), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshVerticalWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_VLC_WO"), &(OFFSET+VLC1OFFSET)), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshVerticalSmallWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_VLC2_WO"), &(OFFSET+VLC2OFFSET)), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshAirportWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_Airport_WO"), &(OFFSET+AIRPORTOFFSET)), MESHVIS_ALWAYS);
 	
 	launchTunnel.SetPosition(OFFSET+LFMCOFFSET);
 	vertical.SetPosition(OFFSET+VLC1OFFSET);
 	verticalSmall.SetPosition(OFFSET+VLC2OFFSET);
+	airport.SetPosition(OFFSET+AIRPORTOFFSET);
 
 	DefineAnimations();
 
@@ -590,7 +594,7 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		case OAPI_KEY_W:
 			{
-				int i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS+1+1;
+				int i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS+1+1+1;
 				int k=GetMeshCount();
 				int mode=GetMeshVisibilityMode(i) > MESHVIS_NEVER?MESHVIS_NEVER:(MESHVIS_ALWAYS | MESHVIS_EXTPASS);
 				for(;i<k;i++) SetMeshVisibilityMode(i, mode);

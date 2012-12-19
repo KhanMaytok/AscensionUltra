@@ -20,7 +20,7 @@ void AirportHangar::DefineAnimations ()
 	crew->SetMaxSeatAvailableInShip(1);
 	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
 
-	hall.Init(owner, this, "Terminal Hall", _V(0,0,0), _V(0,0,-1), _V(0,0,0), 100);
+	hall.Init(owner, this, "Terminal", _V(0,89,20), _V(0,-0.090444119,0.995901532), _V(0,0,20), 100);
 	Hangar::DefineAnimations();
 }
 
@@ -29,3 +29,5 @@ int AirportHangar::GetRooms(){return 1;} //Do not return entrance as a room
 Room *AirportHangar::GetRoom(int index){return index==0?&hall:NULL;} //Skip entrance
 
 Room *AirportHangar::GetEntrance(){return &entrance;}
+
+void AirportHangar::SetPosition(VECTOR3 position){this->position=position;}
