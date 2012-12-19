@@ -89,7 +89,7 @@ private:
 
 	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLeaseLight, meshLeaseHeavy;
 	MESHHANDLE meshLaunch, meshLaunchWindow, meshLeaseLightWindow, meshLeaseHeavyWindow, meshVertical, meshVerticalWindow, meshDRadar;
-	MESHHANDLE meshVerticalSmall, meshVerticalSmallWindow, meshPort;
+	MESHHANDLE meshVerticalSmall, meshVerticalSmallWindow, meshPort, meshAirport, meshAirportWindow;
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LeaseLightHangar leaseLight[LEASELIGHTHANGARS];
 	LeaseHeavyHangar leaseHeavy[LEASEHEAVYHANGARS];

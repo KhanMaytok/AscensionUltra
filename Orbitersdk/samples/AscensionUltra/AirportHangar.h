@@ -20,6 +20,7 @@ public:
 	int GetRooms();
 	Room *GetRoom(int index);
 	Room *GetEntrance();
+	void SetPosition(VECTOR3 position);
 private:
 	Room entrance;	
 	TransferDefaultRoom hall;
