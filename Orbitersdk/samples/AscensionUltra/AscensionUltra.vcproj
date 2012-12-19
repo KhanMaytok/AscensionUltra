@@ -306,6 +306,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DocksHangar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Door.cpp"
 				>
 			</File>
@@ -403,6 +407,10 @@
 			</File>
 			<File
 				RelativePath=".\Crane.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DocksHangar.h"
 				>
 			</File>
 			<File

@@ -17,6 +17,7 @@
 #include "LaunchTunnelHangar.h"
 #include "VerticalLaunchHangar.h"
 #include "SmallVerticalLaunchHangar.h"
+#include "DocksHangar.h"
 #include "AirportHangar.h"
 #include "Routes.h"
 #include "Person.h"
@@ -89,7 +90,7 @@ private:
 
 	MESHHANDLE meshHangar, meshWindow, meshTopo, meshPlaceHolder, meshLeaseLight, meshLeaseHeavy;
 	MESHHANDLE meshLaunch, meshLaunchWindow, meshLeaseLightWindow, meshLeaseHeavyWindow, meshVertical, meshVerticalWindow, meshDRadar;
-	MESHHANDLE meshVerticalSmall, meshVerticalSmallWindow, meshPort, meshAirport, meshAirportWindow;
+	MESHHANDLE meshVerticalSmall, meshVerticalSmallWindow, meshDocks, meshAirport, meshAirportWindow;
 	TurnAroundHangar turnAround[TURNAROUNDHANGARS];
 	LeaseLightHangar leaseLight[LEASELIGHTHANGARS];
 	LeaseHeavyHangar leaseHeavy[LEASEHEAVYHANGARS];
@@ -97,6 +98,7 @@ private:
 	SmallVerticalLaunchHangar verticalSmall;
 	LaunchTunnelHangar launchTunnel;
 	AirportHangar airport;
+	DocksHangar docks;
 	Taxiways taxiways;
 	Runways runways;
 	Room *controlRoom;
@@ -110,7 +112,7 @@ private:
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
-	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical, cur_DopplerRadar, cur_VerticalSmall;
+	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical, cur_DopplerRadar, cur_VerticalSmall, cur_Docks;
 	bool oldCameraMode;
 	
 	//DEBUG
