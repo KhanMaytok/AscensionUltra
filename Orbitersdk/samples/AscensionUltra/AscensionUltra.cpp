@@ -32,7 +32,7 @@
 #define DRADAROFFSET _V(-895,0,970)
 #define DRADARMATRIXOFFSET _V(-4495,0,0)
 #define DRADARPIVOT 10
-#define DOCKSOFFSET _V(-130.5,-0.5,645)
+#define DOCKSOFFSET _V(-130.5,0,645)
 #define AIRPORTOFFSET _V(-4653,0,605)
 #define SECTION		"Settings"
 #define SPAWN		"auto-spawn"
