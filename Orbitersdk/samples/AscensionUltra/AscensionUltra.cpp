@@ -203,7 +203,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	// ************************* mesh ***************************
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &OFFSET), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Base_Signs"), &OFFSET), MESHVIS_ALWAYS);
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Place_Holders"), &OFFSET), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Admin"), &OFFSET), MESHVIS_ALWAYS);
 	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\AU_TA-NW");
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_TA-WO");
 	meshLeaseLight = oapiLoadMeshGlobal ("AscensionUltra\\AU_LH-NW");
