@@ -32,7 +32,7 @@
 #define DRADAROFFSET _V(-895,0,970)
 #define DRADARMATRIXOFFSET _V(-4495,0,0)
 #define DRADARPIVOT 10
-#define PORTOFFSET _V(-130.5,-0.5,645)
+#define DOCKSOFFSET _V(-130.5,-0.5,645)
 #define AIRPORTOFFSET _V(-4653,0,605)
 #define SECTION		"Settings"
 #define SPAWN		"auto-spawn"
@@ -59,6 +59,7 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	cur_TurnAround=-1;
 	cur_Lease=-1;
 	cur_Airport=-1;
+	cur_Docks=-1;
 	cur_LaunchTunnel=-1;
 	cur_Vertical=-1;
 
@@ -130,6 +131,10 @@ void AscensionUltra::InitSubObjects()
 			new MGROUP_ROTATE(i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), 90*RAD),
 			90*RAD, "DRADAR", i);
 	}
+
+	strcpy(name, "Dockyard");
+	docks.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS, "DOCKYARD", -1);
+
 	strcpy(name, "Airport");
 	airport.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS+1+1, "AIRPORT", -1);
 	crew=airport.GetEntrance()->GetCrew();
@@ -164,6 +169,7 @@ void AscensionUltra::DefineAnimations ()
 	for(int i=0;i<DRADARS;i++) dradar[i].DefineAnimations();
 	vertical.DefineAnimations();
 	verticalSmall.DefineAnimations();
+	docks.DefineAnimations();
 	airport.DefineAnimations();
 }
 
@@ -239,7 +245,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		SetMeshVisibilityMode (AddMesh (meshDRadar, &off), MESHVIS_ALWAYS);
 		dradar[i].SetPosition(off+_V(0,DRADARPIVOT,0)); //Dish position
 	}
-	SetMeshVisibilityMode (AddMesh (meshPort = oapiLoadMeshGlobal ("AscensionUltra\\AU_Docks"), &(OFFSET+PORTOFFSET)), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshDocks = oapiLoadMeshGlobal ("AscensionUltra\\AU_Docks"), &(OFFSET+DOCKSOFFSET)), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Billboards"), &OFFSET), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshAirport = oapiLoadMeshGlobal ("AscensionUltra\\AU_Airport_NW"), &(OFFSET+AIRPORTOFFSET)), MESHVIS_ALWAYS);
 	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoffTA[i],0))), MESHVIS_ALWAYS);
@@ -253,6 +259,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	launchTunnel.SetPosition(OFFSET+LFMCOFFSET);
 	vertical.SetPosition(OFFSET+VLC1OFFSET);
 	verticalSmall.SetPosition(OFFSET+VLC2OFFSET);
+	docks.SetPosition(OFFSET+DOCKSOFFSET);
 	airport.SetPosition(OFFSET+AIRPORTOFFSET);
 
 	DefineAnimations();
@@ -294,6 +301,10 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
 			sscanf (line+7, "%X", &cur_Airport);
 		} else if (cur_Airport>=0 && cur_Airport<1) {
 			if (!airport.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
+		} else if (!strnicmp (line, "DOCKYARD", 8)) {
+			sscanf (line+8, "%X", &cur_Docks);
+		} else if (cur_Docks>=0 && cur_Docks<1) {
+			if (!docks.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else if (!strnicmp (line, "VERTICALLAUNCH", 14)) {
 			sscanf (line+14, "%X", &cur_Vertical);
 		} else if (cur_Vertical>=0 && cur_Vertical<1) {
@@ -362,6 +373,10 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	oapiWriteScenario_string (scn, "AIRPORT", "0");
 	airport.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "AIRPORT", "1");	
+
+	oapiWriteScenario_string (scn, "DOCKYARD", "0");
+	docks.clbkSaveState(scn);
+	oapiWriteScenario_string (scn, "DOCKYARD", "1");
 }
 
 // Finalise vessel creation
@@ -376,6 +391,7 @@ void AscensionUltra::clbkPostCreation ()
 	for(int i=0;i<DRADARS;i++) dradar[i].clbkPostCreation();
 	vertical.clbkPostCreation();
 	verticalSmall.clbkPostCreation();
+	docks.clbkPostCreation();
 	airport.clbkPostCreation();
 }
 
@@ -417,6 +433,11 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 	{
 		//Airport event
 		return airport.clbkPlaybackEvent(simt, event_t, event_type+7, event);
+	}
+	if (!strnicmp (event_type, "DOCKYARD", 8))
+	{
+		//Airport event
+		return docks.clbkPlaybackEvent(simt, event_t, event_type+8, event);
 	}
 	return false;
 }
@@ -470,6 +491,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	}
 	vertical.clbkPostStep(simt, simdt, mjd);
 	verticalSmall.clbkPostStep(simt, simdt, mjd);
+	docks.clbkPostStep(simt, simdt, mjd);
 	airport.clbkPostStep(simt, simdt, mjd);
 
 	//Check all virtual docks
@@ -663,6 +685,11 @@ Hangar *AscensionUltra::GetHangar(int type, int index)
 		if (index<1) return &airport;
 		else index-=1;
 	}
+	if ((type & HANGARTYPEDOCKS)>0)
+	{
+		if (index<1) return &docks;
+		else index-=1;
+	}
 	return NULL;
 }
 
@@ -708,7 +735,10 @@ int AscensionUltra::GetPersons()
 	for(j=0;j<rooms;j++) persons+=vertical.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
 	rooms=verticalSmall.GetRooms();
 	for(j=0;j<rooms;j++) persons+=verticalSmall.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
-	
+
+	rooms=docks.GetRooms();
+	for(j=0;j<rooms;j++) persons+=docks.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+
 	rooms=airport.GetRooms();
 	for(j=0;j<rooms;j++) persons+=airport.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
 	
@@ -740,6 +770,7 @@ Room *AscensionUltra::GetPersonLocation(int &index)
 	if ((room = GetPersonLocationFromHangar(index, &launchTunnel))!=NULL) return room;
 	if ((room = GetPersonLocationFromHangar(index, &vertical))!=NULL) return room;
 	if ((room = GetPersonLocationFromHangar(index, &verticalSmall))!=NULL) return room;
+	if ((room = GetPersonLocationFromHangar(index, &docks))!=NULL) return room;
 	if ((room = GetPersonLocationFromHangar(index, &airport))!=NULL) return room;
 	
 	index=0;
@@ -870,6 +901,7 @@ Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel)
 	
 	if (launchTunnel.CheckVincinity(&local)) return &launchTunnel;	
 	if (airport.CheckVincinity(&local)) return &airport;
+	if (docks.CheckVincinity(&local)) return &docks;
 	for(int i=0;i<TURNAROUNDHANGARS;i++) if (turnAround[i].CheckVincinity(&local)) return &turnAround[i];
 	for(int i=0;i<LEASELIGHTHANGARS;i++) if (leaseLight[i].CheckVincinity(&local)) return &leaseLight[i];
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) if (leaseHeavy[i].CheckVincinity(&local)) return &leaseHeavy[i];
