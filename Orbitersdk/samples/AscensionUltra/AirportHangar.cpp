@@ -20,7 +20,7 @@ void AirportHangar::DefineAnimations ()
 	crew->SetMaxSeatAvailableInShip(1);
 	crew->AddCrewMember("John Doe", 20, 60, 75, "Crew");
 
-	hall.Init(owner, this, "Terminal Hall", _V(0,89,20), _V(0,0,1), _V(0,0,-122.5), 100, _V(0,PI,0));
+	hall.Init(owner, this, "Control Tower", _V(0,89,20), _V(0,0,1), _V(0,0,-122.5), 100, _V(0,PI,0));
 	Hangar::DefineAnimations();
 }
 

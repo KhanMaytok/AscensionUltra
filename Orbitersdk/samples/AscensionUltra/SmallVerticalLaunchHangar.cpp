@@ -32,7 +32,7 @@ void SmallVerticalLaunchHangar::DefineAnimations ()
 		new MGROUP_TRANSLATE(0, (UINT *)BeaconGrp, 1, _V(0,0,-290))); 
 	Hangar::DefineAnimations();
 	
-	rooms[0].Init(owner, this, "Vertical Launch Control", _V(0,150,-137), _V(0,0,1), _V(0,0,0), 4);
+	rooms[0].Init(owner, this, "Vertical Launch Control Room", _V(0,150,-137), _V(0,0,1), _V(0,0,0), 4);
 
 	doors[0].SetSpeed(0.02); //50s for full animation
 }
