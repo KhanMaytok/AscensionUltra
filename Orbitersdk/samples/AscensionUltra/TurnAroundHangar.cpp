@@ -41,7 +41,7 @@ void TurnAroundHangar::DefineAnimations ()
 		new MGROUP_SCALE(meshIndex, DoorGrp+2, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1)),
 		prefix);
 
-	char *name[ROOMS]={"East Control","West Control"};
+	char *name[ROOMS]={"East Control Room","West Control Room"};
 	VECTOR3 room[ROOMS][3]={ ROOM_EAST , ROOM_WEST };
 	for(int i=0;i<ROOMS;i++) rooms[i].Init(owner, this, name[i], room[i][0], room[i][1], room[i][2], 4 );
 

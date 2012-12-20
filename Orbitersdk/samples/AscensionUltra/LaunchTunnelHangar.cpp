@@ -30,8 +30,8 @@ void LaunchTunnelHangar::DefineAnimations ()
 	doors[3].Init(owner, "Tunnel Door", prefix, 1,
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1,	_V(-47,0,0)));
 
-	rooms[0].Init(owner, this, "Control", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
-	rooms[1].Init(owner, this, "Tower", _V(111,218,70), _V(0,0,-1));
+	rooms[0].Init(owner, this, "Control Room", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
+	rooms[1].Init(owner, this, "Control Tower", _V(111,218,70), _V(0,0,-1));
 
 	Hangar::DefineAnimations();
 }
