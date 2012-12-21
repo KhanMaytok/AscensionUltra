@@ -255,6 +255,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetMeshVisibilityMode (AddMesh (meshVerticalWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_VLC_WO"), &(OFFSET+VLC1OFFSET)), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshVerticalSmallWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_VLC2_WO"), &(OFFSET+VLC2OFFSET)), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshAirportWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_Airport_WO"), &(OFFSET+AIRPORTOFFSET)), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Flora"), &OFFSET), MESHVIS_ALWAYS);
 	
 	launchTunnel.SetPosition(OFFSET+LFMCOFFSET);
 	vertical.SetPosition(OFFSET+VLC1OFFSET);
