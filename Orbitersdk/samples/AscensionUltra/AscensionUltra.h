@@ -35,6 +35,12 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define LEASELIGHTHANGARS 6
 #define LEASEHEAVYHANGARS 3
 #define DRADARS 2
+#define LAUNCHTUNNELS 1
+#define VERTICALLAUNCHES 2
+#define DOCKYARDS 1
+#define AIRPORTS 1
+#define STATICMESHES 4
+#define STATICTRANSPARENCIES 1
 
 //Defines for person change API
 #define PERSON_EVA		0x00
