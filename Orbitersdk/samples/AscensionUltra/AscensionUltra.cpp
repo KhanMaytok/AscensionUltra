@@ -90,7 +90,7 @@ void AscensionUltra::InitSubObjects()
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
 		name[k]=0x31+i;
-		turnAround[i].Init(this, name, i+3, "HANGAR", i);
+		turnAround[i].Init(this, name, i+STATICMESHES, "HANGAR", i);
 	}
 
 	strcpy(name, "Lease Hangar #x ");
@@ -99,24 +99,24 @@ void AscensionUltra::InitSubObjects()
 	{
 		name[i>8?k+1:k]=0x30+((i+1) % 10);
 		if (i>8) name[k]=0x31;
-		leaseLight[i].Init(this, name, i+3+TURNAROUNDHANGARS, "LIGHTLEASE", i, "LEASE");
+		leaseLight[i].Init(this, name, i+STATICMESHES+TURNAROUNDHANGARS, "LIGHTLEASE", i, "LEASE");
 	}
 
 	for(;i<LEASELIGHTHANGARS+LEASEHEAVYHANGARS;i++)
 	{
 		name[i>8?k+1:k]=0x30+((i+1) % 10);
 		if (i>8) name[k]=0x31;
-		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+3+TURNAROUNDHANGARS, "HEAVYLEASE", i, "LEASE");
+		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+STATICMESHES+TURNAROUNDHANGARS, "HEAVYLEASE", i, "LEASE");
 	}
 
 	strcpy(name, "Winged Launch Facility");
-	launchTunnel.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS, "LAUNCHTUNNEL", -1);
+	launchTunnel.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS, "LAUNCHTUNNEL", -1);
 
 	strcpy(name, "Vertical Launch Facility 1");
-	vertical.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1, "VERTICALLAUNCH", 0);
+	vertical.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS, "VERTICALLAUNCH", 0);
 
 	strcpy(name, "Vertical Launch Facility 2");
-	verticalSmall.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1, "VERTICALLAUNCH", 1);
+	verticalSmall.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+1, "VERTICALLAUNCH", 1);
 
 	/* Tracker definition */
 	//0-1,7-10 groups are dishes, 4 is static plate, 2-3/5-6 is rotation stand
@@ -127,16 +127,16 @@ void AscensionUltra::InitSubObjects()
 	{
 		name[k]=0x31+i;
 		dradar[i].Init(this, name,
-			new MGROUP_ROTATE(i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), -360*RAD),
-			new MGROUP_ROTATE(i+3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), 90*RAD),
+			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), -360*RAD),
+			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), 90*RAD),
 			90*RAD, "DRADAR", i);
 	}
 
 	strcpy(name, "Dockyard");
-	docks.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS, "DOCKYARD", -1);
+	docks.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES+DRADARS, "DOCKYARD", -1);
 
 	strcpy(name, "Airport");
-	airport.Init(this, name, 3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS+1+1, "AIRPORT", -1);
+	airport.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES+DRADARS+DOCKYARDS, "AIRPORT", -1);
 	crew=airport.GetEntrance()->GetCrew();
 
 	controlRoom=launchTunnel.GetRoom(1); //Tower
@@ -204,6 +204,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Island1"), &OFFSET), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Base_Signs"), &OFFSET), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Admin"), &OFFSET), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Billboards"), &OFFSET), MESHVIS_ALWAYS);
 	meshHangar = oapiLoadMeshGlobal ("AscensionUltra\\AU_TA-NW");
 	meshWindow = oapiLoadMeshGlobal ("AscensionUltra\\AU_TA-WO");
 	meshLeaseLight = oapiLoadMeshGlobal ("AscensionUltra\\AU_LH-NW");
@@ -246,8 +247,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 		dradar[i].SetPosition(off+_V(0,DRADARPIVOT,0)); //Dish position
 	}
 	SetMeshVisibilityMode (AddMesh (meshDocks = oapiLoadMeshGlobal ("AscensionUltra\\AU_Docks"), &(OFFSET+DOCKSOFFSET)), MESHVIS_ALWAYS);
-	SetMeshVisibilityMode (AddMesh (meshTopo = oapiLoadMeshGlobal ("AscensionUltra\\AU_Billboards"), &OFFSET), MESHVIS_ALWAYS);
-	SetMeshVisibilityMode (AddMesh (meshAirport = oapiLoadMeshGlobal ("AscensionUltra\\AU_Airport_NW"), &(OFFSET+AIRPORTOFFSET)), MESHVIS_ALWAYS);
+	SetMeshVisibilityMode (AddMesh (meshAirport = oapiLoadMeshGlobal ("AscensionUltra\\AU_Airport_NW"), &(OFFSET+AIRPORTOFFSET)), MESHVIS_ALWAYS);	
 	for(int i=0;i<TURNAROUNDHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshWindow, &(OFFSET+TA1OFFSET+TA1MATRIXOFFSET*i+_V(0,curvoffTA[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASELIGHTHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseLightWindow, &(OFFSET+LL1OFFSET+LL1MATRIXOFFSET*i+_V(0,curvoffLL[i],0))), MESHVIS_ALWAYS);
 	for(int i=0;i<LEASEHEAVYHANGARS;i++) SetMeshVisibilityMode (AddMesh (meshLeaseHeavyWindow, &(OFFSET+LH1OFFSET+LH1MATRIXOFFSET*i+_V(0,curvoffHL[i],0))), MESHVIS_ALWAYS);
@@ -449,7 +449,7 @@ void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 	visual = vis;
 	//Close tunnel door
 	MESHGROUP_TRANSFORM mt;
-	mt.nmesh=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS;
+	mt.nmesh=STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS;
 	mt.ngrp=3;
 	mt.transform=mt.TRANSLATE;
 	mt.P.transparam.shift=_V(47,0,0);	
@@ -474,7 +474,7 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	if (mode != oldCameraMode)
 	{
 		oldCameraMode=mode;
-		int i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS;
+		int i=STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES+DRADARS+DOCKYARDS+AIRPORTS;
 		int k=GetMeshVisibilityMode(i)>MESHVIS_NEVER?GetMeshCount():i;
 		WORD vismode=MESHVIS_ALWAYS | (mode?MESHVIS_EXTPASS:0);
 		for(int i=0;i<k;i++) SetMeshVisibilityMode(i, vismode);
@@ -617,8 +617,9 @@ int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 			return 1;
 		case OAPI_KEY_W:
 			{
-				int i=3+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+1+1+1+DRADARS+1+1+1;
-				int k=GetMeshCount();
+				
+				int i=STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES+DRADARS+DOCKYARDS+AIRPORTS;
+				int k=GetMeshCount()-STATICTRANSPARENCIES;
 				int mode=GetMeshVisibilityMode(i) > MESHVIS_NEVER?MESHVIS_NEVER:(MESHVIS_ALWAYS | MESHVIS_EXTPASS);
 				for(;i<k;i++) SetMeshVisibilityMode(i, mode);
 				sprintf(oapiDebugString(), "Window status: %X", mode);
