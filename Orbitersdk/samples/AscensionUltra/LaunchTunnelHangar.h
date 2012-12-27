@@ -13,9 +13,18 @@
 #include "Room.h"
 #include "BeaconArray.h"
 #include <vector>
+#include "Checklist.h"
 
 #define DOORS	4
 #define ROOMS	2
+
+class PrepareChecklist:public Checklist
+{
+};
+
+class LaunchChecklist:public Checklist
+{
+};
 
 class LaunchTunnelHangar:public Hangar
 {
@@ -28,7 +37,11 @@ public:
 	Room *GetRoom(int index);
 	bool CheckVincinity(VECTOR3 *pos);
 	void SetPosition(VECTOR3 position);
+	int GetChecklists();
+	Checklist *GetChecklist(int index);
 private:
 	Door doors[DOORS];	
 	Room rooms[ROOMS];
+	PrepareChecklist prepare;
+	LaunchChecklist launch;
 };
