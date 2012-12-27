@@ -302,6 +302,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Checklist.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Crane.cpp"
 				>
 			</File>
@@ -403,6 +407,10 @@
 			</File>
 			<File
 				RelativePath=".\BeaconPath.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Checklist.h"
 				>
 			</File>
 			<File
