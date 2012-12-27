@@ -44,6 +44,9 @@ int LaunchTunnelHangar::GetRooms(){return ROOMS;}
 
 Room *LaunchTunnelHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
 
+int LaunchTunnelHangar::GetChecklists(){return 2;}
+Checklist *LaunchTunnelHangar::GetChecklist(int index){return index==0?(Checklist *)&prepare:(index==1?(Checklist *)&launch:NULL);}
+
 bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos){return pos->x>position.x+85 && pos->x<position.x+145 && pos->z<position.z+30 && pos->z>position.z-30;}
 
 void LaunchTunnelHangar::SetPosition(VECTOR3 position){this->position=position;}
