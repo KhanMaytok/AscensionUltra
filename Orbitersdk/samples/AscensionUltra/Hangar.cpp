@@ -21,6 +21,7 @@ Hangar::Hangar(void)
 
 	cur_door=-1;
 	cur_room=-1;
+	cur_checklist=-1;
 
 	position=_V(0,0,0);
 }
@@ -57,17 +58,22 @@ void Hangar::clbkPostStep (double simt, double simdt, double mjd)
 	for(int i=0;i<k;i++) GetDoor(i)->PostStep(simt, simdt, mjd);	
 	k=GetRooms();
 	for(int i=0;i<k;i++) GetRoom(i)->PostStep(simt, simdt, mjd);	
+	k=GetChecklists();
+	for(int i=0;i<k;i++) GetChecklist(i)->PostStep(simt, simdt, mjd);	
 }
 
 bool Hangar::clbkLoadStateEx (char *line)
 {
 	int k=GetDoors();
 	int l=GetRooms();
+	int m=GetChecklists();
     if (!strnicmp (line, "DOOR", 4)) sscanf (line+4, "%d", &cur_door);
 	else if (cur_door>=0 && cur_door<k) return GetDoor(cur_door)->clbkLoadStateEx(line);
 	else if (!strnicmp (line, "ROOM", 4)) sscanf (line+4, "%d", &cur_room);
 	else if (cur_room>=0 && cur_room<l) return GetRoom(cur_room)->GetCrew()->LoadAllMembersFromOrbiterScenario(line);	
-	else return false;	
+	else if (!strnicmp (line, "CHECKLIST", 9)) sscanf (line+9, "%d", &cur_checklist);
+	else if (cur_checklist>=0 && cur_checklist<m) return GetChecklist(cur_checklist)->clbkLoadStateEx(line);
+	else return false;
 }
 
 void Hangar::clbkSaveState (FILEHANDLE scn)
@@ -75,6 +81,7 @@ void Hangar::clbkSaveState (FILEHANDLE scn)
 	char cbuf[256];
 	int k=GetDoors();
 	int l=GetRooms();
+	int m=GetChecklists();
 	int i;
 	// Write custom parameters
 	for(i=0;i<k;i++)
@@ -93,6 +100,14 @@ void Hangar::clbkSaveState (FILEHANDLE scn)
 	}
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "\tROOM", cbuf);
+	for(i=0;i<m;i++)
+	{
+		sprintf (cbuf, "%d", i);
+		oapiWriteScenario_string (scn, "\tCHECKLIST", cbuf);		
+		GetChecklist(i)->clbkSaveState(scn);;
+	}
+	sprintf (cbuf, "%d", i);
+	oapiWriteScenario_string (scn, "\tCHECKLIST", cbuf);
 }
 
 void Hangar::clbkPostCreation ()
@@ -121,16 +136,26 @@ Door *Hangar::GetDoor(int index){throw "GetDoor(1) not allowed on abstract hanga
 int Hangar::GetRooms(){return 0;}
 Room *Hangar::GetRoom(int index){throw "GetRoom(1) not allowed on abstract hangar class!";}
 
+int Hangar::GetChecklists(){return 0;}
+Checklist *Hangar::GetChecklist(int index){throw "GetChecklist(1) not allowed on abstract hangar class!";}
+
 VECTOR3 Hangar::GetPosition(){return position;}
 
 bool Hangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	int k=GetDoors();
 	if (!strnicmp (event_type, "DOOR", 4))
 	{
 		//Door event
+		int k=GetDoors();
 		int door=(int)(event_type+4)[0]-0x30;
 		if (door>=0 && door<k) return GetDoor(door)->clbkPlaybackEvent(simt, event_t, event_type+5, event);
+	}
+	if (!strnicmp (event_type, "CHECKLIST", 9))
+	{
+		//Checklist event
+		int k=GetChecklists();
+		int checklist=(int)(event_type+9)[0]-0x30;
+		if (checklist>=0 && checklist<k) return GetChecklist(checklist)->clbkPlaybackEvent(simt, event_t, event_type+10, event);
 	}
 	return false;
 }

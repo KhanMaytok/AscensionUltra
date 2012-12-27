@@ -13,6 +13,7 @@
 #include "UMmuSDK.h"
 #include "BeaconArray.h"
 #include "Group.h"
+#include "Checklist.h"
 #include <vector>
 
 #define HANGARTYPETA	0x01
@@ -45,12 +46,14 @@ public:
 	virtual int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	virtual bool ActionAreaActivated(int action);
 	virtual bool CheckVincinity(VECTOR3 *pos);
+	int GetChecklists();
+	virtual Checklist *GetChecklist(int index);
 protected:
 	VESSEL* owner;
 	UINT meshIndex;
 	char *event_prefix, *name, *classname;
 	int instance; 
-	int cur_door, cur_room;
+	int cur_door, cur_room, cur_checklist;
 	int areaStart, areaEnd;
 	VECTOR3 position;
 	std::vector<BeaconArray *> beacons;
