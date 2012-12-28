@@ -23,6 +23,7 @@
 #include "CranePage.h"
 #include "CraneListPage.h"
 #include "CraneGrapplePage.h"
+#include "HangarLaunchPage.h"
 #pragma warning(disable : 4482)
 
 //TODO: implement base auto-select and paxfer auto-clear
@@ -46,9 +47,9 @@ AscensionTowerData::AscensionTowerData()
 	pages[HangarForPersonSelection]=new PersonHangarPage(this);
 	pages[RoomForPersonSelection]=new PersonRoomPage(this);
 	pages[PassengerTransfer]=new PaXferPage(this);
-	pages[PassengerTerminal]=new TemplatePage(this);
-	pages[Fueling]=new TemplatePage(this);
-	pages[LaunchPrepare]=new TemplatePage(this);
+	pages[HangarForLaunchSelection]=new HangarLaunchPage(this);
+	pages[LaunchTunnelWizard]=new TemplatePage(this);
+	pages[VerticalLaunchWizard]=new TemplatePage(this);
 	pages[Bearing]=new TemplatePage(this);
 	pages[Launch]=new TemplatePage(this);
 	pages[DoorControl]=new DoorPage(this);

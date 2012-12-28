@@ -76,7 +76,7 @@ protected:
 			case 0: return HangarForDoorSelection;
 			case 1: return TaxiRouteStartSelection;
 			case 2: return HangarForCraneSelection;
-			case 3: return PassengerTerminal;
+			case 3: return HangarForLaunchSelection;
 			case 4:
 				data->GetPage(PassengerTransfer)->SetDataRoot(ascension->GetNearestHangar(HANGARS, vessel));
 				return PassengerTransfer;

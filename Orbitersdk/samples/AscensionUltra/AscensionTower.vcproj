@@ -300,6 +300,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Pages\HangarLaunchPage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Pages\HangarRoomPage.h"
 				>
 			</File>
