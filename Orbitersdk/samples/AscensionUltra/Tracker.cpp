@@ -33,6 +33,13 @@ void Tracker::Init(VESSEL *owner, const char *name, MGROUP_ROTATE *azimuth, MGRO
 	mgroupElevation=elevation;
 	this->rotationOffset=rotationOffset;
 	target=NULL;
+
+	// ATTENTION: You might need / want to load these values from the config / scenario file.
+
+	VerticalAxisRotationRate = 0.6;		// One revolution in about 10 seconds.
+	HorizontalAxisRotationRate = 0.3;		// From looking straight to looking up in about 5 seconds.
+	CurrentElevation = 0;			// Load this from scenario, save it when you quit. That way, when the simulation is restarted from the same point, the dish won't spwan at 0, 0 as written in clbkPostCreation, but will actually resume from where it was before the simulation ended.
+	CurrentAzimuth = 0;			// Load this from scenario, save it when you quit. 
 }
 
 Tracker::~Tracker(void)
@@ -71,22 +78,102 @@ void Tracker::clbkPostStep (double simt, double simdt, double mjd)
 		loc-=position;
 		normalise(loc);
 
-		double azimuth=90*RAD; //Default for gimbal lock position
-		if (loc.x<-1E-6 || loc.x>1E-6) azimuth=atan(loc.z/loc.x); //If not locked, calculate arctan
+		double DesiredAzimuth = CurrentAzimuth;		// ATTENTION: Changed gimbal lock azimuth to whatever it was the last frame. No need to rotate east for no reason.
+		if (loc.x<-1E-6 || loc.x>1E-6) DesiredAzimuth=atan(loc.z/loc.x); //If not locked, calculate arctan
 		//Check quadrants
-		if (azimuth>0 && loc.z<0) azimuth+=PI;
-		if (azimuth<0 && loc.z<0) azimuth+=2*PI;
-		if (azimuth<0 && loc.z>0) azimuth+=PI;
+		if (DesiredAzimuth>0 && loc.z<0) DesiredAzimuth+=PI;
+		if (DesiredAzimuth<0 && loc.z<0) DesiredAzimuth+=2*PI;
+		if (DesiredAzimuth<0 && loc.z>0) DesiredAzimuth+=PI;
 
-		azimuth+=rotationOffset;
-		if (azimuth<0) azimuth+=2*PI;
-		if (azimuth>2*PI) azimuth-=2*PI;
+		/*DesiredAzimuth+=rotationOffset;
+		if (DesiredAzimuth<0) DesiredAzimuth+=2*PI;
+		if (DesiredAzimuth>2*PI) DesiredAzimuth-=2*PI;*/
 
-		double elevator=asin(loc.y);
-		if (elevator<0) elevator=0;
+		double DesiredElevation=asin(loc.y);
+		if (DesiredElevation<0) DesiredElevation=0;
 
-		owner->SetAnimation (anim_azimuth, azimuth/2/PI);
-		owner->SetAnimation (anim_elevation, elevator*2/PI);
+		double AngleChange = HorizontalAxisRotationRate * simdt;
+		double AngleDifference = DesiredElevation - CurrentElevation;
+
+		if (AngleChange < abs(AngleDifference))
+		{
+			// In this simdt, the dish cannot rotate enough to match the elevation of the target. Therefore it is moved a maximum angle.
+
+			int Sign = 1;
+
+			if ((DesiredElevation - CurrentElevation) < 0)
+			{
+				Sign = -1;
+			}
+
+			CurrentElevation = CurrentElevation + Sign * AngleChange;
+		}
+
+		else
+		{
+			// The angle difference is small enough that the dish would catch up in a single frame. 
+
+			CurrentElevation = DesiredElevation;
+		}
+
+		AngleChange = VerticalAxisRotationRate * simdt;
+
+		// Calculate the angle difference between current and desired azimuth.
+
+		AngleDifference = CurrentAzimuth - DesiredAzimuth;
+
+		if (DesiredAzimuth > CurrentAzimuth) 
+		{
+			AngleDifference = DesiredAzimuth - CurrentAzimuth;
+		}
+
+		if (AngleDifference > PI)
+		{
+			AngleDifference = (2 * PI) - AngleDifference;
+		}
+
+		if (AngleChange < AngleDifference)
+		{
+			// Determine the direction the dish has to rotate.
+
+			double Direction = sin(DesiredAzimuth + ((2 * PI) - CurrentAzimuth));	
+
+			if (DesiredAzimuth > CurrentAzimuth)
+			{
+				Direction = sin(DesiredAzimuth - CurrentAzimuth);
+			}
+
+			int Dir = 1;
+
+			if (Direction < 0)
+			{
+				Dir = -1;
+			}
+
+			CurrentAzimuth = CurrentAzimuth + Dir * AngleChange;
+		}
+
+		else
+		{
+			CurrentAzimuth = DesiredAzimuth;
+		}
+
+		// Add the offset, correct the angle so it's between 0 and 2Pi.
+
+		double OffsetAzimuth = CurrentAzimuth + rotationOffset;
+
+		if (OffsetAzimuth < 0)
+		{
+			OffsetAzimuth += 2 * PI;
+		}
+
+		if (OffsetAzimuth > 2 * PI)
+		{
+			OffsetAzimuth -= 2 * PI;
+		}
+
+		owner->SetAnimation (anim_azimuth, OffsetAzimuth);
+		owner->SetAnimation (anim_elevation, CurrentElevation);
 	}
 }
 

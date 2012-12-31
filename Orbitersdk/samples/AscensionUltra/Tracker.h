@@ -41,4 +41,8 @@ private:
 	double rotationOffset;
 	char *event_prefix, *name, *classname, *instancename;	
 	std::vector<BeaconArray *> beacons;
+	double VerticalAxisRotationRate;			// Rotation rate around the vertical axis. This changes the azimuth.
+	double HorizontalAxisRotationRate;			// Rotation rate around the horizontal axis. This changes the elevation. ATTENTION: Currently the two rates are hard coded. Feel free to change them or load from config.
+	double CurrentElevation;			// ATTENTION: Current initial values for azimuth and elevation are 0 and 0. You'll have to change this to load them from scenario / config and save them on exit, so that the dish starts where it was when simulation ended. 
+	double CurrentAzimuth;
 };
