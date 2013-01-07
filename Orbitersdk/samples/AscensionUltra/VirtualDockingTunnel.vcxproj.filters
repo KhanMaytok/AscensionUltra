@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SDK">
+      <UniqueIdentifier>{5bb02281-8596-40b0-a443-14c701a625f1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\orbiter.lib">
+      <Filter>SDK</Filter>
+    </Library>
+    <Library Include="..\..\lib\Orbitersdk.lib">
+      <Filter>SDK</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\Orbitersdk.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="VirtualDockingTunnel.cpp" />
+  </ItemGroup>
+</Project>

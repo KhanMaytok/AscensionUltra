@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{289C4462-1F37-46FF-AA15-2EDE4AEA5D56}</ProjectGuid>
+    <RootNamespace>DeltaGlider</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\..\..\..\Modules\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\..\..\Modules\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\..\..\Modules/AscensionUltra.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\include ; ..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example ; ..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\Release/AscensionUltra.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>.\..\..\..\Modules/AscensionUltra.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <IgnoreSpecificDefaultLibraries>msvcirt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ProgramDatabaseFile>.\Release/AscensionUltra.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>.\..\..\..\Modules/AscensionUltra.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\..\..\Modules/AscensionUltra.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\..\..\..\Modules/AscensionUltra.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\include ; ..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example ; ..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>.\Debug/AscensionUltra.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>.\..\..\..\Modules/AscensionUltra.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;msvcrt.lib; msvcirt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\..\..\..\Modules/AscensionUltra.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>.\..\..\..\Modules/AscensionUltra.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\..\..\..\Modules/AscensionUltra.bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\DlgCtrl.h" />
+    <ClInclude Include="..\..\include\Orbitersdk.h" />
+    <ClInclude Include="..\..\include\ScnEditorAPI.h" />
+    <ClInclude Include="..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO\UCGOCargoSDK.h" />
+    <ClInclude Include="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.h" />
+    <ClInclude Include="VirtualDockingTunnel.h" />
+    <ClInclude Include="AirportHangar.h" />
+    <ClInclude Include="AscensionUltra.h" />
+    <ClInclude Include="BeaconArray.h" />
+    <ClInclude Include="BeaconPath.h" />
+    <ClInclude Include="Checklist.h" />
+    <ClInclude Include="Crane.h" />
+    <ClInclude Include="DocksHangar.h" />
+    <ClInclude Include="Door.h" />
+    <ClInclude Include="Group.h" />
+    <ClInclude Include="GroupElement.h" />
+    <ClInclude Include="Hangar.h" />
+    <ClInclude Include="KeyboardFilter.h" />
+    <ClInclude Include="LaunchTunnelHangar.h" />
+    <ClInclude Include="LeaseHeavyHangar.h" />
+    <ClInclude Include="LeaseLightHangar.h" />
+    <ClInclude Include="meshres.h" />
+    <ClInclude Include="Module.h" />
+    <ClInclude Include="Person.h" />
+    <ClInclude Include="Room.h" />
+    <ClInclude Include="Routes.h" />
+    <ClInclude Include="Runways.h" />
+    <ClInclude Include="SmallVerticalLaunchHangar.h" />
+    <ClInclude Include="Taxiways.h" />
+    <ClInclude Include="Tracker.h" />
+    <ClInclude Include="TransferDefaultRoom.h" />
+    <ClInclude Include="TurnAroundHangar.h" />
+    <ClInclude Include="VerticalLaunchDoor.h" />
+    <ClInclude Include="VerticalLaunchHangar.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\DlgCtrl.lib" />
+    <Library Include="..\..\lib\orbiter.lib" />
+    <Library Include="..\..\lib\Orbitersdk.lib" />
+    <Library Include="..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO\UCGOCargoSDK.lib" />
+    <Library Include="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib" />
+    <Library Include="VirtualDockingTunnel.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AirportHangar.cpp" />
+    <ClCompile Include="AscensionUltra.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="BeaconArray.cpp" />
+    <ClCompile Include="BeaconPath.cpp" />
+    <ClCompile Include="Checklist.cpp" />
+    <ClCompile Include="Crane.cpp" />
+    <ClCompile Include="DocksHangar.cpp" />
+    <ClCompile Include="Door.cpp" />
+    <ClCompile Include="Group.cpp" />
+    <ClCompile Include="Hangar.cpp" />
+    <ClCompile Include="KeyboardFilter.cpp" />
+    <ClCompile Include="LaunchTunnelHangar.cpp" />
+    <ClCompile Include="LeaseHeavyHangar.cpp" />
+    <ClCompile Include="LeaseLightHangar.cpp" />
+    <ClCompile Include="Module.cpp" />
+    <ClCompile Include="Person.cpp" />
+    <ClCompile Include="Room.cpp" />
+    <ClCompile Include="Routes.cpp" />
+    <ClCompile Include="Runways.cpp" />
+    <ClCompile Include="SmallVerticalLaunchHangar.cpp" />
+    <ClCompile Include="Taxiways.cpp" />
+    <ClCompile Include="Tracker.cpp" />
+    <ClCompile Include="TransferDefaultRoom.cpp" />
+    <ClCompile Include="TurnAroundHangar.cpp" />
+    <ClCompile Include="VerticalLaunchDoor.cpp" />
+    <ClCompile Include="VerticalLaunchHangar.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AscensionUltra.rc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="AscensionUltraConfigurator.vcxproj">
+      <Project>{5f7fe97c-3677-4ffe-80cf-f8d89b6ec460}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="VirtualDockingTunnelLibrary.vcxproj">
+      <Project>{c53852ea-b625-4ccd-a4f9-e0045c47edfb}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
