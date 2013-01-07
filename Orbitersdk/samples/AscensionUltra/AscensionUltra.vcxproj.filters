@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SDK">
+      <UniqueIdentifier>{4c572367-14f4-41e7-86a2-be7cf7fa790f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{196bd914-9250-4fa2-bd55-b09352efd642}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{f1412f87-b5ff-4593-b010-640f326bfd3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{42659f09-a95b-4f0b-9122-222e708e94ca}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\DlgCtrl.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Orbitersdk.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\ScnEditorAPI.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO\UCGOCargoSDK.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualDockingTunnel.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="AirportHangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AscensionUltra.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="BeaconArray.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="BeaconPath.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Checklist.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Crane.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="DocksHangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Door.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Group.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupElement.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardFilter.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="LaunchTunnelHangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="LeaseHeavyHangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="LeaseLightHangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Module.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Person.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Routes.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Runways.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="SmallVerticalLaunchHangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Taxiways.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Tracker.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="TransferDefaultRoom.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="TurnAroundHangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VerticalLaunchDoor.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VerticalLaunchHangar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\DlgCtrl.lib">
+      <Filter>SDK</Filter>
+    </Library>
+    <Library Include="..\..\lib\orbiter.lib">
+      <Filter>SDK</Filter>
+    </Library>
+    <Library Include="..\..\lib\Orbitersdk.lib">
+      <Filter>SDK</Filter>
+    </Library>
+    <Library Include="..\..\..\Doc\UniversalCarsAndCargos\SDK\ShuttlePB_Example_UCGO\UCGOCargoSDK.lib">
+      <Filter>SDK</Filter>
+    </Library>
+    <Library Include="..\..\..\Doc\UMmu_SDK\UMmu_ShuttlePB_Example\UMmuSDK.lib">
+      <Filter>SDK</Filter>
+    </Library>
+    <Library Include="VirtualDockingTunnel.lib">
+      <Filter>SDK</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AirportHangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AscensionUltra.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="BeaconArray.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="BeaconPath.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Checklist.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Crane.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DocksHangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Door.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Group.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Hangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardFilter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="LaunchTunnelHangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="LeaseHeavyHangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="LeaseLightHangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Module.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Person.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Routes.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Runways.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SmallVerticalLaunchHangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Taxiways.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Tracker.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="TransferDefaultRoom.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="TurnAroundHangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="VerticalLaunchDoor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="VerticalLaunchHangar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AscensionUltra.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

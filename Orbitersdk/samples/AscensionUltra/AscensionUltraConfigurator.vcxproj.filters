@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SDK">
+      <UniqueIdentifier>{ccd3ee24-a0e7-4f3b-8e0b-568e29e588bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\lib\orbiter.lib">
+      <Filter>SDK</Filter>
+    </Library>
+    <Library Include="..\..\lib\Orbitersdk.lib">
+      <Filter>SDK</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\Orbitersdk.h">
+      <Filter>SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="AscensionUltraConfig.h" />
+    <ClInclude Include="AscensionUltraConfigurator.h" />
+    <ClInclude Include="AscensionUltraSpawner.h" />
+    <ClInclude Include="Conf_resource.h" />
+    <ClInclude Include="RootConfig.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AscensionUltraConfig.cpp" />
+    <ClCompile Include="AscensionUltraConfigurator.cpp" />
+    <ClCompile Include="AscensionUltraSpawner.cpp" />
+    <ClCompile Include="RootConfig.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AscensionUltraConfigurator.rc" />
+  </ItemGroup>
+</Project>
