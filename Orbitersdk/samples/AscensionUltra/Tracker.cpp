@@ -193,9 +193,44 @@ bool Tracker::clbkLoadStateEx (char *line)
 {
     if (!strnicmp (line, "TGT", 3))
 	{
-		target=oapiGetObjectByName(line+4);
-		return true;
+		// target=oapiGetObjectByName(line+4);	// WARNING: This doesn't work! Don't ask me why...
+		// target = oapiGetFocusObject();		// WARNING: This doesn't work either!
+		target = owner->GetHandle();		// This works fine, however. 
+
+		if ((target != NULL) && (owner != NULL))
+		{	
+			// Snap the dish directly to the target when the scenario loads. 
+
+			VECTOR3 pos, loc;
+			oapiGetGlobalPos(target, &pos);
+			owner->Global2Local(pos, loc);
+			loc-=position;
+			normalise(loc);
+
+			double DesiredAzimuth = 0;
+			if (loc.x<-1E-6 || loc.x>1E-6) DesiredAzimuth=atan(loc.z/loc.x); //If not locked, calculate arctan
+			//Check quadrants
+			if (DesiredAzimuth>0 && loc.z<0) DesiredAzimuth+=PI;
+			if (DesiredAzimuth<0 && loc.z<0) DesiredAzimuth+=2*PI;
+			if (DesiredAzimuth<0 && loc.z>0) DesiredAzimuth+=PI;
+
+			DesiredAzimuth+=rotationOffset;
+			if (DesiredAzimuth<0) DesiredAzimuth+=2*PI;
+			if (DesiredAzimuth>2*PI) DesiredAzimuth-=2*PI;
+
+			double DesiredElevation=asin(loc.y);
+			if (DesiredElevation<0) DesiredElevation=0;
+
+			CurrentAzimuth = DesiredAzimuth;
+			CurrentElevation = DesiredElevation;
+
+			owner->SetAnimation (anim_azimuth, DesiredAzimuth / (2 * PI));
+			owner->SetAnimation (anim_elevation, DesiredElevation);
+
+			return true;
+		}
 	}
+
 	return false;
 }
 
