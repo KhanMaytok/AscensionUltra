@@ -85,9 +85,9 @@ void Tracker::clbkPostStep (double simt, double simdt, double mjd)
 		if (DesiredAzimuth<0 && loc.z<0) DesiredAzimuth+=2*PI;
 		if (DesiredAzimuth<0 && loc.z>0) DesiredAzimuth+=PI;
 
-		/*DesiredAzimuth+=rotationOffset;
+		DesiredAzimuth+=rotationOffset;
 		if (DesiredAzimuth<0) DesiredAzimuth+=2*PI;
-		if (DesiredAzimuth>2*PI) DesiredAzimuth-=2*PI;*/
+		if (DesiredAzimuth>2*PI) DesiredAzimuth-=2*PI;
 
 		double DesiredElevation=asin(loc.y);
 		if (DesiredElevation<0) DesiredElevation=0;
@@ -158,21 +158,17 @@ void Tracker::clbkPostStep (double simt, double simdt, double mjd)
 			CurrentAzimuth = DesiredAzimuth;
 		}
 
-		// Add the offset, correct the angle so it's between 0 and 2Pi.
-
-		double OffsetAzimuth = CurrentAzimuth + rotationOffset;
-
-		if (OffsetAzimuth < 0)
+		if (CurrentAzimuth < 0)
 		{
-			OffsetAzimuth += 2 * PI;
+			CurrentAzimuth += 2 * PI;
 		}
 
-		if (OffsetAzimuth > 2 * PI)
+		if (CurrentAzimuth > 2 * PI)
 		{
-			OffsetAzimuth -= 2 * PI;
+			CurrentAzimuth -= 2 * PI;
 		}
 
-		owner->SetAnimation (anim_azimuth, OffsetAzimuth);
+		owner->SetAnimation (anim_azimuth, CurrentAzimuth / (2 * PI));
 		owner->SetAnimation (anim_elevation, CurrentElevation);
 	}
 }
