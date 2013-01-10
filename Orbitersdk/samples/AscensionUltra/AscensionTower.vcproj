@@ -308,6 +308,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Pages\LaunchTunnelWizardPage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Pages\MainPage.h"
 				>
 			</File>
@@ -374,6 +378,10 @@
 		</File>
 		<File
 			RelativePath=".\Door.h"
+			>
+		</File>
+		<File
+			RelativePath=".\LFMCChecklistStates.h"
 			>
 		</File>
 	</Files>
