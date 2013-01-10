@@ -11,6 +11,8 @@
 #pragma once
 #include "orbitersdk.h"
 
+class Hangar;
+
 class Checklist
 {
 public:
@@ -19,8 +21,10 @@ public:
 	int GetState(void);
 	virtual bool SetEvent(int event);
 	virtual bool SetSubject(OBJHANDLE subject);
-	virtual void Init(VESSEL *owner, const char *event_prefix, int state=0);
+	OBJHANDLE GetSubject(void);
+	virtual void Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, int state=0);
 	virtual void PostStep (double simt, double simdt, double mjd);
+	virtual Hangar *GetHangar(void);
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
@@ -30,7 +34,8 @@ private:
 
 protected:
 	void RecordEvent(int event);
-	VESSEL* owner;
+	VESSEL *owner;
+	Hangar *hangar;
 	OBJHANDLE subject;
 	int state;
 };
