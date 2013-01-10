@@ -35,11 +35,7 @@ Checklist::~Checklist(void){delete [] event_prefix;}
 
 bool Checklist::SetEvent(int event){return false;}
 
-bool Checklist::SetSubject(OBJHANDLE subject)
-{
-	this->subject=subject;
-	return true;
-}
+void Checklist::SetSubject(OBJHANDLE subject){this->subject=NULL;}
 OBJHANDLE Checklist::GetSubject(void){return subject;}
 
 void Checklist::RecordEvent(int event)
