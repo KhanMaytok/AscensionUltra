@@ -18,10 +18,10 @@ class Checklist
 public:
 	Checklist(void);
 	~Checklist(void);
-	int GetState(void);
+	virtual int GetState(void);
 	virtual bool SetEvent(int event);
-	virtual bool SetSubject(OBJHANDLE subject);
-	OBJHANDLE GetSubject(void);
+	virtual void SetSubject(OBJHANDLE subject);
+	virtual OBJHANDLE GetSubject(void);
 	virtual void Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, int state=0);
 	virtual void PostStep (double simt, double simdt, double mjd);
 	virtual Hangar *GetHangar(void);
