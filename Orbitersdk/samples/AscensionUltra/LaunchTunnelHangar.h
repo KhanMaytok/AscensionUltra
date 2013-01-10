@@ -14,17 +14,27 @@
 #include "BeaconArray.h"
 #include <vector>
 #include "Checklist.h"
+#include "LFMCChecklistStates.h"
 
 #define DOORS	4
 #define ROOMS	2
 
-class PrepareChecklist:public Checklist
+namespace LaunchTunnel
 {
-};
+	namespace PrepareChecklist
+	{
+		class List:public Checklist
+		{
+		};
+	}
 
-class LaunchChecklist:public Checklist
-{
-};
+	namespace LaunchChecklist
+	{
+		class List:public Checklist
+		{
+		};
+	}
+}
 
 class LaunchTunnelHangar:public Hangar
 {
@@ -42,6 +52,6 @@ public:
 private:
 	Door doors[DOORS];	
 	Room rooms[ROOMS];
-	PrepareChecklist prepare;
-	LaunchChecklist launch;
+	LaunchTunnel::PrepareChecklist::List prepare;
+	LaunchTunnel::LaunchChecklist::List launch;
 };
