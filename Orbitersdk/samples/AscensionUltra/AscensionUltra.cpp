@@ -913,6 +913,59 @@ Hangar *AscensionUltra::GetNearestHangar(int type, VESSEL *vessel)
 	return NULL;
 }
 
+int AscensionUltra::GetChecklists(int type, VESSEL *vessel)
+{
+	int count=0;
+	int hangars=GetHangars(type);
+	for(int i=0;i<hangars;i++) count+=GetChecklists(GetHangar(type, i),vessel);
+	return count;
+}
+
+Checklist *AscensionUltra::GetChecklist(int type, int index, VESSEL *vessel)
+{
+	int hangars=GetHangars(type);
+	for(int i=0;i<hangars;i++)
+	{
+		Hangar *hangar=GetHangar(type, i);
+		int lists=GetChecklists(hangar,vessel);
+		if (index<lists) return GetChecklist(hangar, index, vessel);
+		index-=lists;
+		if (index<0) break;
+	}
+	return NULL;
+}
+
+int AscensionUltra::GetChecklists(Hangar *hangar, VESSEL *vessel)
+{
+	int lists=hangar->GetChecklists();
+	if (vessel==NULL) return lists;
+
+	int count=0;
+	OBJHANDLE filter=vessel->GetHandle();
+	for(int i=0;i<lists;i++)
+		if (hangar->GetChecklist(i)->GetSubject()==filter) count++;
+	return count;
+}
+
+Checklist *AscensionUltra::GetChecklist(Hangar *hangar, int index, VESSEL *vessel)
+{
+	if (vessel==NULL) return hangar->GetChecklist(index);
+	
+	int lists=hangar->GetChecklists();
+	OBJHANDLE filter=vessel->GetHandle();
+	for(int i=0;i<lists;i++)
+	{
+		Checklist *list=hangar->GetChecklist(i);
+		if (list->GetSubject()==filter)
+		{
+			if (index==0) return list;
+			else index--;
+			if (index<0) break;
+		}
+	}
+	return NULL;
+}
+
 void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 {
 	//Check Orbiter extensions version
