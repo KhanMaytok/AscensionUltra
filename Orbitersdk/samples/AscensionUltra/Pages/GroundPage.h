@@ -53,7 +53,7 @@ protected:
 
 	char *GetSubtitle(){return "Select request";}
 
-	int GetListSize(){return ascension->GetNearestHangar(HANGARS, vessel)==NULL?4:5;}
+	int GetListSize(){return vessel==ascension?3:(ascension->GetNearestHangar(HANGARS, vessel)==NULL?4:5);}
 
 	AscensionTowerListPair GetListItem(int index)
 	{
@@ -76,7 +76,22 @@ protected:
 			case 0: return HangarForDoorSelection;
 			case 1: return TaxiRouteStartSelection;
 			case 2: return HangarForCraneSelection;
-			case 3: return HangarForLaunchSelection;
+			case 3:
+				{
+					Checklist *list=ascension->GetChecklist(HANGARTYPELFMC, 0, vessel);
+					if (list!=NULL)
+					{
+						data->GetPage(LaunchTunnelWizard)->SetDataRoot(list->GetHangar());
+						return LaunchTunnelWizard;
+					}
+					list=ascension->GetChecklist(HANGARTYPEVLC, 0, vessel);
+					if (list!=NULL)
+					{
+						data->GetPage(VerticalLaunchWizard)->SetDataRoot(list->GetHangar());
+						return VerticalLaunchWizard;
+					}
+				}
+				return HangarForLaunchSelection;
 			case 4:
 				data->GetPage(PassengerTransfer)->SetDataRoot(ascension->GetNearestHangar(HANGARS, vessel));
 				return PassengerTransfer;
