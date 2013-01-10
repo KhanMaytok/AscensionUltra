@@ -32,7 +32,7 @@ protected:
 			{"Reset to default", "values", 'R'}
 		};
 		
-		mnu[0].line1="Select hangar";
+		mnu[0].line1="Select facility";
 		for(int i=0;i<3;i++) mnu[6+i]=menu[i];	
 		return AscensionTowerPage::MenuRenderer(mnu);
 	}
@@ -52,7 +52,7 @@ protected:
 
 	char *GetTitle(){return GetNameSafeTitle("Ground");}
 
-	char *GetSubtitle(){return "Select Hangar for Launch";}
+	char *GetSubtitle(){return "Select Facility to launch from";}
 
 	int GetListSize(){return ascension->GetHangars(HANGARS);}
 
