@@ -534,6 +534,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\LFMCChecklistStates.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
