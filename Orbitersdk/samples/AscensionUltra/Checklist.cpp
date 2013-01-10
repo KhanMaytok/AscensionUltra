@@ -13,16 +13,19 @@
 Checklist::Checklist(void)
 {
 	owner=NULL;
+	hangar=NULL;
 	event_prefix=NULL;
 	state=0;
 	subject=NULL;
 }
 
 int Checklist::GetState(void){return state;}
+Hangar *Checklist::GetHangar(void){return hangar;}
 
-void Checklist::Init(VESSEL *owner, const char *event_prefix, int state)
+void Checklist::Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, int state)
 {
 	this->owner=owner;
+	this->hangar=hangar;
 	this->state=state;
 	sprintf(this->event_prefix=new char[strlen(event_prefix)+6], "%sEVENT", event_prefix);
 	subject=NULL;
@@ -37,6 +40,7 @@ bool Checklist::SetSubject(OBJHANDLE subject)
 	this->subject=subject;
 	return true;
 }
+OBJHANDLE Checklist::GetSubject(void){return subject;}
 
 void Checklist::RecordEvent(int event)
 {
