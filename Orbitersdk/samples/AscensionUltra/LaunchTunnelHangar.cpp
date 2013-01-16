@@ -33,6 +33,11 @@ void LaunchTunnelHangar::DefineAnimations ()
 	rooms[0].Init(owner, this, "Control Room", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
 	rooms[1].Init(owner, this, "Control Tower", _V(111,218,70), _V(0,0,-1));
 
+	sprintf(prefix, "%sPREPARE", event_prefix);
+	prepare.Init(owner, this, prefix, LaunchTunnel::PrepareChecklist::Empty);
+	sprintf(prefix, "%sLAUNCH", event_prefix);
+	launch.Init(owner, this, prefix, LaunchTunnel::LaunchChecklist::Empty);
+
 	Hangar::DefineAnimations();
 }
 
