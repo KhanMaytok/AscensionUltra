@@ -22,7 +22,13 @@ namespace LaunchTunnel
 			Entry,
 			CloseEntry,
 			Occupied,
-			Ready,	
+			Ready,
+		};
+
+		typedef enum Event
+		{
+			Abort,
+			Proceed,
 		};
 	}
 
@@ -40,6 +46,11 @@ namespace LaunchTunnel
 			Beacons,
 			Speeding,
 			TakeOff,	
+		};
+
+		typedef enum Event
+		{
+			Abort,
 		};
 	}
 }
