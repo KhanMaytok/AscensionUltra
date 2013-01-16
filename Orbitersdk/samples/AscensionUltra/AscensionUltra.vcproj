@@ -454,6 +454,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LFMCChecklistStates.h"
+				>
+			</File>
+			<File
 				RelativePath=".\meshres.h"
 				>
 			</File>
@@ -534,10 +538,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\LFMCChecklistStates.h"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
