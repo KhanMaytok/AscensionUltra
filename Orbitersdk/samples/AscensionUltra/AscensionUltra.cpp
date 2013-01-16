@@ -777,9 +777,9 @@ Room *AscensionUltra::GetPersonLocation(int &index)
 	return NULL;	
 }
 
-Person AscensionUltra::GetPerson(int index)
+Person AscensionUltra::GetPerson(int index, Room *room)
 {
-	Room *room=GetPersonLocation(index);
+	if (room==NULL) room=GetPersonLocation(index);
 	return Person(room, index);
 }
 
