@@ -792,9 +792,14 @@ Person AscensionUltra::GetPerson(int index, Room *room)
 // >0 .. new index of modified person
 int AscensionUltra::ChangePerson(int index, int flags, ...)
 {	
-	Person person=GetPerson(index);
-	UMMUCREWMANAGMENT *crew=person.Location->GetCrew();
 	int result=0;
+	va_list args;
+	va_start(args, flags);
+	Room *room=NULL;
+	if ((flags & PERSON_FILTER) > 0) room=va_arg(args, Room*);
+	flags = flags & ~PERSON_FILTER;
+	Person person=GetPerson(index, room);
+	UMMUCREWMANAGMENT *crew=person.Location->GetCrew();
 
 	switch (flags)
 	{
@@ -822,9 +827,6 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		crew->RemoveCrewMember(person.Name);		
 		break;
 	default:
-		va_list args;
-		va_start(args, flags);
-
 		//Set new location if necessary
 		if ((flags & PERSON_LOCATION)>0)
 		{
@@ -862,8 +864,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		if ((flags & PERSON_MISCID)>0) person.MiscId=va_arg(args, char*);
 		if ((flags & PERSON_AGE)>0) person.Age=atoi(va_arg(args, char*));
 		if ((flags & PERSON_PULS)>0) person.Puls=atoi(va_arg(args, char*));
-		if ((flags & PERSON_WEIGHT)>0) person.Weight=atoi(va_arg(args, char*));
-		va_end(args);
+		if ((flags & PERSON_WEIGHT)>0) person.Weight=atoi(va_arg(args, char*));		
 
 		crew->AddCrewMember(person.Name, person.Age, person.Puls, person.Weight, person.MiscId);
 		
@@ -881,6 +882,7 @@ int AscensionUltra::ChangePerson(int index, int flags, ...)
 		delete [] miscId;
 		break;
 	}
+	va_end(args);
 	return result;
 }
 
