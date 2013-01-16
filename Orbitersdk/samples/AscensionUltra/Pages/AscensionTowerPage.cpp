@@ -53,7 +53,7 @@ void AscensionTowerPage::MFDRenderer()
 		sprintf(line, "p.%d/%d", page+1, pages);
 		mfd->Write(line, 27, -1, WRITEMFD_RIGHTALIGNED);
 	}
-	else mfd->Write("N O   B A S E S   A V A I L A B L E");
+	else mfd->Write("N O N E   A V A I L A B L E");
 }
 
 int AscensionTowerPage::GetListSize() {return 0;}
