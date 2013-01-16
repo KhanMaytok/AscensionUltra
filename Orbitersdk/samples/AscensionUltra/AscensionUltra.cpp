@@ -715,48 +715,46 @@ int AscensionUltra::GetPersons()
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
 		rooms=turnAround[i].GetRooms();
-		for(j=0;j<rooms;j++) persons+=turnAround[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+		for(j=0;j<rooms;j++) persons+=turnAround[i].GetRoom(j)->GetPersons();
 	}
 
 	for(i=0;i<LEASELIGHTHANGARS;i++)
 	{
 		rooms=leaseLight[i].GetRooms();
-		for(j=0;j<rooms;j++) persons+=leaseLight[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+		for(j=0;j<rooms;j++) persons+=leaseLight[i].GetRoom(j)->GetPersons();
 	}
 
 	for(i=0;i<LEASEHEAVYHANGARS;i++)
 	{
 		rooms=leaseHeavy[i].GetRooms();
-		for(j=0;j<rooms;j++) persons+=leaseHeavy[i].GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+		for(j=0;j<rooms;j++) persons+=leaseHeavy[i].GetRoom(j)->GetPersons();
 	}
 
 	rooms=launchTunnel.GetRooms();
-	for(j=0;j<rooms;j++) persons+=launchTunnel.GetRoom(j)->GetCrew()->GetCrewTotalNumber();	
+	for(j=0;j<rooms;j++) persons+=launchTunnel.GetRoom(j)->GetPersons();	
 
 	rooms=vertical.GetRooms();
-	for(j=0;j<rooms;j++) persons+=vertical.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	for(j=0;j<rooms;j++) persons+=vertical.GetRoom(j)->GetPersons();
 	rooms=verticalSmall.GetRooms();
-	for(j=0;j<rooms;j++) persons+=verticalSmall.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	for(j=0;j<rooms;j++) persons+=verticalSmall.GetRoom(j)->GetPersons();
 
 	rooms=docks.GetRooms();
-	for(j=0;j<rooms;j++) persons+=docks.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	for(j=0;j<rooms;j++) persons+=docks.GetRoom(j)->GetPersons();
 
 	rooms=airport.GetRooms();
-	for(j=0;j<rooms;j++) persons+=airport.GetRoom(j)->GetCrew()->GetCrewTotalNumber();
+	for(j=0;j<rooms;j++) persons+=airport.GetRoom(j)->GetPersons();
 	
 	return ++persons;	//First entry is always the ADD PERSON entry
 }
 
 Room* AscensionUltra::GetPersonLocationFromHangar(int &index, Hangar *hangar)
 {	
-	UMMUCREWMANAGMENT *crew;
 	int rooms=hangar->GetRooms();
 	for(int j=0;j<rooms;j++)
 	{
 		Room *room=hangar->GetRoom(j);
-		crew=room->GetCrew();
-		if (crew->GetCrewTotalNumber()>index) return room;
-		index-=crew->GetCrewTotalNumber();
+		if (room->GetPersons()>index) return room;
+		index-=room->GetPersons();
 	}
 	return NULL;
 }

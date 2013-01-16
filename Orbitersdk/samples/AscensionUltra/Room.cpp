@@ -96,6 +96,7 @@ VECTOR3 Room::GetCameraPosition(){return cameraPosition;}
 VECTOR3 Room::GetViewDirection(){return viewDirection;}
 UMMUCREWMANAGMENT *Room::GetCrew(){return &crew;}
 int Room::GetMaxPersons(){return capacity;}
+int Room::GetPersons(){return crew.GetCrewTotalNumber();}
 void Room::SetDock(VESSEL *vessel){docked = vessel;}
 VESSEL *Room::GetDock(){return docked;}
 VesselRoomTransfer *Room::GetTransfered(){return &vesselRoomTransfer[owner];}

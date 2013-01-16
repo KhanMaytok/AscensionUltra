@@ -28,6 +28,7 @@ public:
 	VECTOR3 GetCameraPosition();
 	VECTOR3 GetViewDirection();
 	int GetMaxPersons();
+	virtual int GetPersons();
 	void PostStep (double simt, double simdt, double mjd);
 	virtual void PostPostStep();
 	void SetDock(VESSEL *vessel); //Not virtual for a reason! Should not be used outside AU, because AU keeps central hook information
