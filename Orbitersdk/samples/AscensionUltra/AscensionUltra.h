@@ -81,7 +81,7 @@ public:
 	virtual Room *GetControlRoom();
 	virtual void SwitchView(Room *room);
 	virtual int GetPersons();
-	virtual Person GetPerson(int index);
+	virtual Person GetPerson(int index, Room *room=NULL);
 	virtual int ChangePerson(int index, int flags, ...);
 	virtual Hangar *GetNearestHangar(int type, VESSEL *vessel);	
 	virtual void DockVessel(Room *room, VESSEL *vessel);
