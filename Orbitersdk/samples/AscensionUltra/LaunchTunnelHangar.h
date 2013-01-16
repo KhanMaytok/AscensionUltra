@@ -25,6 +25,14 @@ namespace LaunchTunnel
 	{
 		class List:public Checklist
 		{
+			bool SetEvent(int event)
+			{
+				if (event!=Event::Abort) return false;
+				if (state++>State::Ready) state=State::Ready;
+				if (state==State::Ready) GetHangar()->GetChecklist(1)->SetSubject(subject);
+				sprintf(oapiDebugString(), "Prepare %d", state);
+				return true;
+			}
 		};
 	}
 
@@ -32,6 +40,18 @@ namespace LaunchTunnel
 	{
 		class List:public Checklist
 		{
+			bool SetEvent(int event)
+			{
+				if (event!=Event::Abort) return false;
+				if (state++>State::TakeOff)
+				{
+					state=State::Empty;
+					GetHangar()->GetChecklist(1)->SetSubject(NULL);
+				}
+				if (state==State::OpenExit) GetHangar()->GetChecklist(0)->Init(owner, hangar, "SOMETHING", 1); //TODO: this is unsafe and just for tests
+				sprintf(oapiDebugString(), "Launch %d", state);
+				return true;
+			}
 		};
 	}
 }
