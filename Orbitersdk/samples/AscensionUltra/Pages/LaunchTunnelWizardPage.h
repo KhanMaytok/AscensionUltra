@@ -97,20 +97,20 @@ protected:
 				OBJHANDLE subject=list->GetSubject();
 				if (subject==NULL) return;
 				mfd->SetWriteStyle(0);					
-				mfd->Write(oapiGetVesselInterface(subject)->GetName(), 12, 2);
+				mfd->Write(oapiGetVesselInterface(subject)->GetName(), 13, 2);
 				LaunchTunnel::LaunchChecklist::State state=(LaunchTunnel::LaunchChecklist::State) list->GetState();
 				switch (state)
 				{
-				case LaunchTunnel::LaunchChecklist::AbortOpen: mfd->Write("issued abort and clears area", 13, 2);break;
+				case LaunchTunnel::LaunchChecklist::AbortOpen: mfd->Write("issued abort and clears area", 14, 2);break;
 				case LaunchTunnel::LaunchChecklist::Empty:
 				case LaunchTunnel::LaunchChecklist::OpenExit:
-				case LaunchTunnel::LaunchChecklist::Exit: mfd->Write("exits gate area", 13, 2);break;
+				case LaunchTunnel::LaunchChecklist::Exit: mfd->Write("exits gate area", 14, 2);break;
 				case LaunchTunnel::LaunchChecklist::CloseExit:
 				case LaunchTunnel::LaunchChecklist::DeployShield:
-				case LaunchTunnel::LaunchChecklist::Launch: mfd->Write("waits for launch clearance", 13, 2);break;
-				case LaunchTunnel::LaunchChecklist::Beacons: mfd->Write("is starting engines", 13, 2);break;
-				case LaunchTunnel::LaunchChecklist::Speeding: mfd->Write("is accelerating", 13, 2);break;
-				case LaunchTunnel::LaunchChecklist::TakeOff: mfd->Write("is airborne and clears area", 13, 2);break;
+				case LaunchTunnel::LaunchChecklist::Launch: mfd->Write("waits for launch clearance", 14, 2);break;
+				case LaunchTunnel::LaunchChecklist::Beacons: mfd->Write("is starting engines", 14, 2);break;
+				case LaunchTunnel::LaunchChecklist::Speeding: mfd->Write("is accelerating", 14, 2);break;
+				case LaunchTunnel::LaunchChecklist::TakeOff: mfd->Write("is airborne and clears area", 14, 2);break;
 				}
 				break;
 			}
