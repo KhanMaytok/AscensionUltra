@@ -147,19 +147,19 @@ protected:
 			case 3:
 			case 4:
 			case 5:
-			case 9:
 			case 10:
 			case 11: return "";
 			case 6: return "HOM";
 			case 7: return "BCK";
-			case 8: return (state==0 && prepare==0) || (state==1 && launch==0)?"":"ABT";
+			case 8: return (state==0 && prepare==LaunchTunnel::PrepareChecklist::AbortOpen) || (state==1 && launch==LaunchTunnel::LaunchChecklist::AbortOpen)?"":"ABT";
+			case 9: return (state==0 && prepare==LaunchTunnel::PrepareChecklist::Ready)?"RVT":"";
 			default: return NULL;
 		}
 	}
 
 	int MenuRenderer (MFDBUTTONMENU *mnu)
 	{	
-		static MFDBUTTONMENU menu[7] = 
+		static MFDBUTTONMENU menu[8] = 
 		{
 			{"Main menu", NULL, 'H'},
 			{"Go back", NULL, 'B'},
@@ -167,14 +167,17 @@ protected:
 			{"Proceed to", "launch", 'G'},
 			{NULL, NULL, 0},
 			{"Switch to fuel", "mode", 'M'},
-			{"Switch to PAX", "mode", 'M'}
+			{"Switch to PAX", "mode", 'M'},
+			{"Revert to", "boarding", 'R'},
 		};
 		
 		int state=GetChecklistStates();
-		int k=(state==0 && prepare==0) || (state==1 && launch==0)?2:3; // In abort pages, just copy the first 2 right hand buttons, otherwise 3
+		int k=	(state==0 && prepare==LaunchTunnel::PrepareChecklist::AbortOpen) ||
+				(state==1 && launch==LaunchTunnel::LaunchChecklist::AbortOpen)?2:3; // In abort pages, just copy the first 2 right hand buttons, otherwise 3
 		if (state==0 && (	prepare==LaunchTunnel::PrepareChecklist::CloseEntry ||
 							prepare==LaunchTunnel::PrepareChecklist::Occupied		)) k=5; // In fuel or pax page, copy all button except the switch labels
 		for(int i=0;i<k;i++) mnu[6+i]=menu[i];
+		if (state==0 && prepare==LaunchTunnel::PrepareChecklist::Ready) mnu[6+(k=4)]=menu[7];
 		if (k<5) return 6+k;
 
 		//Call default renderer for fuel or pax page
@@ -203,6 +206,7 @@ protected:
 			case 6: return SetKey(OAPI_KEY_H);
 			case 7: return SetKey(OAPI_KEY_B);
 			case 8: return SetKey(OAPI_KEY_A);
+			case 9: return (state==0 && (prepare==LaunchTunnel::PrepareChecklist::Ready))?SetKey(OAPI_KEY_R):Undefined;
 			default: return Undefined;
 		}
 	}
@@ -239,6 +243,10 @@ protected:
 			return MainMenu;
 		case OAPI_KEY_B:
 			return GroundMenu;
+		case OAPI_KEY_R:
+			if (state==0 && prepare==LaunchTunnel::PrepareChecklist::Ready) hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Revert);
+			else return Undefined;
+			return NoChange;			
 		case OAPI_KEY_A:
 			switch (state)
 			{
