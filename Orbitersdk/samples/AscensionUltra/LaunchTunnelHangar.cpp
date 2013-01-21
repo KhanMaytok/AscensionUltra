@@ -7,9 +7,123 @@
 // LaunchTunnel.cpp
 // Class implementation of launch tunnel building.
 // ==============================================================
+#pragma once
 #include "LaunchTunnelHangar.h"
 #include "Module.h"
+#include "AscensionUltra.h"
 
+//Redefinition, because AscensionUltra.h unfortunately overwrites them
+#define DOORS	4
+#define ROOMS	2
+
+bool LaunchTunnel::PrepareChecklist::List::SetEvent(int event)
+{
+	switch(state)
+	{
+	case Occupied:
+		if (event==Event::Revert) return false;
+		if (event==Event::Proceed)
+		{
+			RecordEvent(event);
+			((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
+			state=Ready;
+			return true;
+		}
+		//intentional fall-through
+	case Ready:
+		if (event==Event::Proceed) return false;
+		if (event==Event::Revert)
+		{
+			RecordEvent(event);
+			((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
+			state=Occupied;
+			return true;
+		}
+		//intentional fall-through
+	case OpenEntry:
+	case Entry:
+	case CloseEntry:				
+		if (event!=Event::Abort) return false;
+		
+		//Undock and open entry
+		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
+		hangar->GetDoor(0)->Open();
+
+		RecordEvent(event);
+		state=AbortOpen;
+		return true;
+	default:
+		return false;
+	}
+}
+
+void LaunchTunnel::PrepareChecklist::List::PostStep (double simt, double simdt, double mjd)
+{
+	if (subject==NULL) return;
+	
+	//Calculate local coordinates of subject w.r.t. hangar
+	VECTOR3 global, local;
+	oapiGetGlobalPos(subject, &global);
+	owner->Global2Local(global, local);
+	global=local-hangar->GetPosition();
+
+	bool vincinity=hangar->CheckVincinity(&local);
+	switch(state)
+	{
+	case AbortOpen:
+		//TODO: check area clearance
+		return;
+	case Empty:
+		//If the overall condition of a valid subject is met, the next state is activated immediately
+		hangar->GetDoor(0)->Open();
+		state=OpenEntry;
+		return;
+	case OpenEntry:
+		if (hangar->GetDoor(0)->GetPosition()>=1) state=Entry;
+		//intentional fall-through
+	case Entry:
+		if (!vincinity) return;
+		hangar->GetDoor(0)->Close(); //Door 0 is entry
+		state=CloseEntry;
+		return;
+	case CloseEntry:
+		if (hangar->GetDoor(0)->GetPosition()>0) return; //Door 0 is entry
+		state=Occupied;
+		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
+		return;
+	case Ready:
+		if (vincinity) return;
+		state=Empty;
+		subject=NULL;
+		return;
+	case Occupied:
+		//Nothing to do here
+		break;
+	}
+}		
+	
+bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
+{
+	switch(state)
+	{
+	case OpenExit:
+	case Exit:
+	case CloseExit:
+	case DeployShield:
+	case Launch:
+	case Beacons:
+	case Speeding:
+	case TakeOff:
+		if (event!=Event::Abort) return false;
+		RecordEvent(event);
+		state=AbortOpen;
+		GetHangar()->GetChecklist(0)->SetEvent(PrepareChecklist::AbortOpen);
+		return true;
+	default:
+		return false;
+	}				
+}
+	
 int LaunchTunnelHangar::GetType(){return HANGARTYPELFMC;}
 
 void LaunchTunnelHangar::DefineAnimations ()
