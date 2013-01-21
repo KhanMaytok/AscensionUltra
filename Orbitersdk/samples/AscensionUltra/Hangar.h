@@ -46,7 +46,7 @@ public:
 	virtual int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	virtual bool ActionAreaActivated(int action);
 	virtual bool CheckVincinity(VECTOR3 *pos);
-	int GetChecklists();
+	virtual int GetChecklists();
 	virtual Checklist *GetChecklist(int index);
 protected:
 	VESSEL* owner;
