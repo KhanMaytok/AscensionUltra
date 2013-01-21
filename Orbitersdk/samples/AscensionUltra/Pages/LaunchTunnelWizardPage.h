@@ -257,7 +257,7 @@ protected:
 			case 1:
 				if (launch!=LaunchTunnel::LaunchChecklist::AbortOpen)
 				{
-					//hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Abort); //TODO: deactivated just for tests
+					hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Abort);
 					hangar->GetChecklist(1)->SetEvent(LaunchTunnel::LaunchChecklist::Abort);
 				}
 				else return Undefined;
