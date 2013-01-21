@@ -29,6 +29,7 @@ namespace LaunchTunnel
 		{
 			Abort,
 			Proceed,
+			Revert,
 		};
 	}
 
