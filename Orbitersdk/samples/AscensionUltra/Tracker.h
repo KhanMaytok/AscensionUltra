@@ -24,6 +24,7 @@ public:
 	virtual double GetSpeed();
 	void clbkPostStep (double simt, double simdt, double mjd);
 	void clbkPostCreation ();
+	void clbkVisualCreated (VISHANDLE vis, int refcount){}
 	void DefineAnimations();
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
