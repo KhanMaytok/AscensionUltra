@@ -447,13 +447,15 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 void AscensionUltra::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
 	visual = vis;
-	//Close tunnel door
-	MESHGROUP_TRANSFORM mt;
-	mt.nmesh=STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS;
-	mt.ngrp=3;
-	mt.transform=mt.TRANSLATE;
-	mt.P.transparam.shift=_V(47,0,0);	
-	MeshgroupTransform(vis, mt);
+	for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].clbkVisualCreated(vis, refcount);
+	for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].clbkVisualCreated(vis, refcount);
+	for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].clbkVisualCreated(vis, refcount);
+	launchTunnel.clbkVisualCreated(vis, refcount);
+	for(int i=0;i<DRADARS;i++) dradar[i].clbkVisualCreated(vis, refcount);
+	vertical.clbkVisualCreated(vis, refcount);
+	verticalSmall.clbkVisualCreated(vis, refcount);
+	docks.clbkVisualCreated(vis, refcount);
+	airport.clbkVisualCreated(vis, refcount);
 }
 
 // Destroy DG visual
