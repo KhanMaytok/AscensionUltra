@@ -28,6 +28,7 @@ const double AIRLOCK_OPERATING_SPEED = 0.1; // Opening/closing speed of outer ai
 #define AREA_WEST _V(116,0,15)
 #define ROOM_EAST {_V(-88,22,0),_V(1,0,0),_V(-72,0,-33)}
 #define ROOM_WEST {_V(88,22,0),_V(-1,0,0),_V(72,0,-33)}
+#define TEXTURE_OFFSET 0.125
 
 class TurnAroundHangar:public Hangar
 {
@@ -39,6 +40,7 @@ public:
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	void clbkPostCreation ();
+	void clbkVisualCreated (VISHANDLE vis, int refcount);
 	virtual Crane *GetCrane();
 	int GetDoors();
 	Door *GetDoor(int index);

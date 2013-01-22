@@ -84,6 +84,23 @@ void TurnAroundHangar::clbkPostCreation ()
 	crane1.clbkPostCreation();
 }
 
+void TurnAroundHangar::clbkVisualCreated (VISHANDLE vis, int refcount)
+{
+	//Texture handling for TA	
+	DEVMESHHANDLE mesh=owner->GetDevMesh(vis, meshIndex);
+	for(int k=8;k<10;k++)
+	{
+		MESHGROUPEX *group=oapiMeshGroupEx(mesh, k); //Get original vertices
+		for(int i=0;i<group->nVtx;i++) group->Vtx[i].tu+=TEXTURE_OFFSET*instance; //Offset the U coordinate
+		GROUPEDITSPEC change;
+		change.flags=GRPEDIT_VTXTEXU; //Change only U coordinates
+		change.nVtx=group->nVtx;
+		change.vIdx=NULL; //Just use the mesh order
+		change.Vtx=group->Vtx;
+		oapiEditMeshGroup(mesh, k, &change);
+	}
+}
+
 Crane *TurnAroundHangar::GetCrane(){return &crane1;}
 
 int TurnAroundHangar::GetDoors(){return DOORS;}
