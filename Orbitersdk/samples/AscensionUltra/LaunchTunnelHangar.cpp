@@ -155,6 +155,17 @@ void LaunchTunnelHangar::DefineAnimations ()
 	Hangar::DefineAnimations();
 }
 
+void LaunchTunnelHangar::clbkVisualCreated (VISHANDLE vis, int refcount)
+{
+	//Close tunnel door
+	MESHGROUP_TRANSFORM mt;
+	mt.nmesh=meshIndex;
+	mt.ngrp=3;
+	mt.transform=mt.TRANSLATE;
+	mt.P.transparam.shift=_V(47,0,0);	
+	owner->MeshgroupTransform(vis, mt);
+}
+
 int LaunchTunnelHangar::GetDoors(){return DOORS;}
 
 Door *LaunchTunnelHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}

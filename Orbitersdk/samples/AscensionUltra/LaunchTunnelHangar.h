@@ -44,6 +44,7 @@ class LaunchTunnelHangar:public Hangar
 public:
 	int GetType();
 	void DefineAnimations ();
+	void clbkVisualCreated (VISHANDLE vis, int refcount);
 	int GetDoors();
 	Door *GetDoor(int index);	
 	int GetRooms();
