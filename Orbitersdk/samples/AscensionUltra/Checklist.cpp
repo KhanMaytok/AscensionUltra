@@ -64,8 +64,11 @@ void Checklist::clbkSaveState (FILEHANDLE scn)
 	char cbuf[256];	
 	sprintf (cbuf, "%d", state);
 	oapiWriteScenario_string (scn, "\t\tSTATE", cbuf);
-	oapiGetObjectName(subject, cbuf, 256);
-	oapiWriteScenario_string (scn, "\t\tSUBJECT", cbuf);
+	if (subject!=NULL)
+	{
+		oapiGetObjectName(subject, cbuf, 256);
+		oapiWriteScenario_string (scn, "\t\tSUBJECT", cbuf);
+	}
 }
 bool Checklist::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
