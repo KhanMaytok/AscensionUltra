@@ -116,6 +116,8 @@ void Hangar::clbkPostCreation ()
 	for(int i=0;i<k;i++) GetDoor(i)->clbkPostCreation();
 }
 
+void Hangar::clbkVisualCreated (VISHANDLE vis, int refcount){}
+
 void Hangar::Init(VESSEL* owner, const char *name, UINT meshIndex, const char *classname, int instance, const char *event_prefix)
 {
 	this->owner=owner;

@@ -35,6 +35,7 @@ public:
 	virtual bool clbkLoadStateEx (char *line);
 	virtual void clbkSaveState (FILEHANDLE scn);
 	virtual void clbkPostCreation ();
+	virtual void clbkVisualCreated (VISHANDLE vis, int refcount);
 	virtual void Init(VESSEL* owner, const char *name, UINT meshIndex, const char *classname, int instance, const char *event_prefix=NULL);
 	virtual int GetDoors();
 	virtual Door *GetDoor(int index);
