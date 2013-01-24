@@ -493,7 +493,7 @@ GEOM 48 26 ; access door frame
 37 34 15
 31 15 34
 LABEL main door frame
-MATERIAL 2
+MATERIAL 1
 TEXTURE 1
 GEOM 78 84 ; main door frame
 -12.52 8.58 11.21 -0.874128 0.390084 0.289369 0.224517 -0.15923
