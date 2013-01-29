@@ -143,4 +143,4 @@ bool TurnAroundHangar::ActionAreaActivated(int action)
 	return true;
 }
 
-bool TurnAroundHangar::CheckVincinity(VECTOR3 *pos){return pos->x>position.x-45 && pos->x<position.x+45 && pos->z<position.z+40 && pos->z>position.z-40;}
+bool TurnAroundHangar::CheckVincinity(VECTOR3 *pos, int index){return pos->x>position.x-45 && pos->x<position.x+45 && pos->z<position.z+40 && pos->z>position.z-40;}

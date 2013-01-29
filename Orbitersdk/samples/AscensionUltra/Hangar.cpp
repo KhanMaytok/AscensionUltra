@@ -167,4 +167,4 @@ char *Hangar::GetName(){return name;}
 int Hangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index){return index;}
 bool Hangar::ActionAreaActivated(int action){return false;}
 
-bool Hangar::CheckVincinity(VECTOR3 *pos){return false;}
+bool Hangar::CheckVincinity(VECTOR3 *pos, int index){return false;}

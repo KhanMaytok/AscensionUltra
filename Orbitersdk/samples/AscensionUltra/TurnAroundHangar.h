@@ -50,7 +50,7 @@ public:
 	void SetPosition(VECTOR3 position);
 	int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	bool ActionAreaActivated(int action);
-	bool CheckVincinity(VECTOR3 *pos);
+	bool CheckVincinity(VECTOR3 *pos, int index=0);
 private:
 	Crane crane1;
 	Door doors[DOORS];

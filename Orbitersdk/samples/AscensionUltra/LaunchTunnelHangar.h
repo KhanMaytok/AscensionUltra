@@ -19,6 +19,20 @@
 #define DOORS	4
 #define ROOMS	2
 
+#define DOCKRANGE		{ _V(  85, -1000, -30 ) , _V( 145, 1000, 30 ) }
+#define PREPARERANGE	{ _V(-180, -1000, -60 ) , _V( 180, 1000, 60 ) }
+#define HOLDRANGE		{ _V( 180, -1000, -30 ) , _V( 240, 1000, 30 ) }
+#define EXHAUSTRANGE	{ _V( 180, -1000, -60 ) , _V( 360, 1000, 60 ) }
+#define TAKEOFFRANGE	{ _V( 180,   -10, -200) , _V(4000, 1000, 200) }
+#define LAUNCHRANGE		{ _V( 145, -1000, -60 ) , _V( 240, 1000, 60 ) }
+
+#define VINCINITYDOCK		0
+#define VINCINITYPREPARE	1
+#define VINCINITYHOLD		2
+#define VINCINITYEXHAUST	3
+#define VINCINITYTAKEOFF	4
+#define VINCINITYLAUNCH		5
+
 namespace LaunchTunnel
 {
 	namespace PrepareChecklist
@@ -49,7 +63,7 @@ public:
 	Door *GetDoor(int index);	
 	int GetRooms();
 	Room *GetRoom(int index);
-	bool CheckVincinity(VECTOR3 *pos);
+	bool CheckVincinity(VECTOR3 *pos, int index=0);
 	void SetPosition(VECTOR3 position);
 	int GetChecklists();
 	Checklist *GetChecklist(int index);
