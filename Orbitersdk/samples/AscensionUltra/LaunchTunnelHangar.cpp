@@ -67,11 +67,14 @@ void LaunchTunnel::PrepareChecklist::List::PostStep (double simt, double simdt, 
 	owner->Global2Local(global, local);
 	global=local-hangar->GetPosition();
 
-	bool vincinity=hangar->CheckVincinity(&local);
+	bool vincinity=hangar->CheckVincinity(&global, VINCINITYDOCK);
+	bool inPrepareArea=hangar->CheckVincinity(&global, VINCINITYPREPARE);
 	switch(state)
 	{
 	case AbortOpen:
-		//TODO: check area clearance
+		if (inPrepareArea) return;
+		state=Empty;
+		subject=NULL;
 		return;
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
