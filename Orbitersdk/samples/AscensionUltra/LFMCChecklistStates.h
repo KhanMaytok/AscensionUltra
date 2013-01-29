@@ -52,6 +52,7 @@ namespace LaunchTunnel
 		typedef enum Event
 		{
 			Abort,
+			Proceed,
 		};
 	}
 }

@@ -96,6 +96,12 @@ void LaunchTunnel::PrepareChecklist::List::PostStep (double simt, double simdt, 
 		return;
 	case Ready:
 		if (vincinity) return;
+		{
+			//Hand-over to launch checklist
+			Checklist *list=hangar->GetChecklist(1);
+			list->SetSubject(subject);
+			if (list->GetSubject()!=subject) return;
+		}
 		state=Empty;
 		subject=NULL;
 		return;
@@ -114,13 +120,19 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 	case CloseExit:
 	case DeployShield:
 	case Launch:
+		if (event==Proceed)
+		{
+			state=Beacons;
+			//TODO: Beacons and exhaust simulation on
+			break;
+		}
+		//intentional fall-through
 	case Beacons:
 	case Speeding:
 	case TakeOff:
 		if (event!=Abort) return false;
 		RecordEvent(event);
 		state=AbortOpen;
-		GetHangar()->GetChecklist(0)->SetEvent(PrepareChecklist::AbortOpen);
 		return true;
 	default:
 		return false;
