@@ -40,7 +40,7 @@ namespace LaunchTunnel
 		class List:public Checklist
 		{
 			bool SetEvent(int event);
-			void PostStep (double simt, double simdt, double mjd);			
+			void PostStep (double simt, double simdt, double mjd);
 		};
 	}
 
@@ -49,6 +49,7 @@ namespace LaunchTunnel
 		class List:public Checklist
 		{
 			bool SetEvent(int event);
+			void PostStep (double simt, double simdt, double mjd);
 		};
 	}
 }

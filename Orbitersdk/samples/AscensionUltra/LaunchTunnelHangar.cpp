@@ -138,6 +138,71 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 		return false;
 	}				
 }
+
+void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, double mjd)
+{
+	if (subject==NULL) return;
+	
+	//Calculate local coordinates of subject w.r.t. hangar
+	VECTOR3 global, local;
+	oapiGetGlobalPos(subject, &global);
+	owner->Global2Local(global, local);
+	global=local-hangar->GetPosition();
+
+	bool vincinity=hangar->CheckVincinity(&global, VINCINITYHOLD);
+	bool inExhaustArea=hangar->CheckVincinity(&global, VINCINITYEXHAUST);
+	bool inTakeoffArea=hangar->CheckVincinity(&global, VINCINITYTAKEOFF);
+	bool inLaunchArea=hangar->CheckVincinity(&global, VINCINITYLAUNCH);
+	switch(state)
+	{
+	case AbortOpen:
+		if (inLaunchArea) return;
+		state=Empty;
+		subject=NULL;
+		return;
+	case Empty:
+		if (hangar->GetDoor(2)->GetPosition()>0) return; //Door 2 is shield
+		hangar->GetDoor(1)->Open(); //Door 1 is exit
+		state=OpenExit;
+		return;
+	case OpenExit:
+		if (hangar->GetDoor(1)->GetPosition()>=1) state=Exit;
+		//intentional fall-through
+	case Exit:
+		if (!vincinity) return;
+		hangar->GetDoor(1)->Close(); //Door 1 is exit
+		state=CloseExit;
+		return;
+	case CloseExit:
+		if (hangar->GetDoor(1)->GetPosition()>0) return; //Door 1 is exit
+		state=DeployShield;
+		hangar->GetDoor(2)->Open(); //Door 2 is shield
+		return;
+	case DeployShield:
+		if (hangar->GetDoor(2)->GetPosition()<1) return; //Door 2 is shield
+		state=Launch;
+		return;
+	case Launch:
+		//Nothing to do here
+		break;
+	case Beacons:
+		if (inExhaustArea) return;
+		//TODO: Exhaust simulation off
+		state=Speeding;
+		return;
+	case Speeding:
+		if (oapiGetVesselInterface(subject)->GroundContact()) return;
+		hangar->GetDoor(2)->Close(); //Door 2 is shield
+		state=TakeOff;
+		return;
+	case TakeOff:
+		if (inTakeoffArea) return;
+		//TODO: Beacons off
+		state=Empty;
+		subject=NULL;
+		return;
+	}
+}
 	
 int LaunchTunnelHangar::GetType(){return HANGARTYPELFMC;}
 
