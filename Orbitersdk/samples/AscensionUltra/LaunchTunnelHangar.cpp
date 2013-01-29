@@ -177,6 +177,14 @@ Room *LaunchTunnelHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?ro
 int LaunchTunnelHangar::GetChecklists(){return 2;}
 Checklist *LaunchTunnelHangar::GetChecklist(int index){return index==0?(Checklist *)&prepare:(index==1?(Checklist *)&launch:NULL);}
 
-bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos){return pos->x>position.x+85 && pos->x<position.x+145 && pos->z<position.z+30 && pos->z>position.z-30;}
+bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos, int index)
+{
+	VECTOR3 range[6][2]={ DOCKRANGE , PREPARERANGE , HOLDRANGE , EXHAUSTRANGE , TAKEOFFRANGE , LAUNCHRANGE };
+	range[index][0]=position+range[index][0];
+	range[index][1]=position+range[index][1];
+	return	pos->x>range[index][0].x && pos->x<range[index][1].x &&
+			pos->y>range[index][0].y && pos->y<range[index][1].y &&
+			pos->z>range[index][0].z && pos->z<range[index][1].z;
+}
 
 void LaunchTunnelHangar::SetPosition(VECTOR3 position){this->position=position;}

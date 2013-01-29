@@ -46,7 +46,7 @@ public:
 	virtual VECTOR3 GetPosition();
 	virtual int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	virtual bool ActionAreaActivated(int action);
-	virtual bool CheckVincinity(VECTOR3 *pos);
+	virtual bool CheckVincinity(VECTOR3 *pos, int index=0);
 	virtual int GetChecklists();
 	virtual Checklist *GetChecklist(int index);
 protected:
