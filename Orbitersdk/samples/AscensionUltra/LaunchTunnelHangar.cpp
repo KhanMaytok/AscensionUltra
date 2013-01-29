@@ -21,8 +21,8 @@ bool LaunchTunnel::PrepareChecklist::List::SetEvent(int event)
 	switch(state)
 	{
 	case Occupied:
-		if (event==Event::Revert) return false;
-		if (event==Event::Proceed)
+		if (event==Revert) return false;
+		if (event==Proceed)
 		{
 			RecordEvent(event);
 			((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
@@ -31,8 +31,8 @@ bool LaunchTunnel::PrepareChecklist::List::SetEvent(int event)
 		}
 		//intentional fall-through
 	case Ready:
-		if (event==Event::Proceed) return false;
-		if (event==Event::Revert)
+		if (event==Proceed) return false;
+		if (event==Revert)
 		{
 			RecordEvent(event);
 			((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
@@ -43,7 +43,7 @@ bool LaunchTunnel::PrepareChecklist::List::SetEvent(int event)
 	case OpenEntry:
 	case Entry:
 	case CloseEntry:				
-		if (event!=Event::Abort) return false;
+		if (event!=Abort) return false;
 		
 		//Undock and open entry
 		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
@@ -114,7 +114,7 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 	case Beacons:
 	case Speeding:
 	case TakeOff:
-		if (event!=Event::Abort) return false;
+		if (event!=Abort) return false;
 		RecordEvent(event);
 		state=AbortOpen;
 		GetHangar()->GetChecklist(0)->SetEvent(PrepareChecklist::AbortOpen);
