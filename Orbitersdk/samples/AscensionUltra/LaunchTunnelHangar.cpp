@@ -65,10 +65,9 @@ void LaunchTunnel::PrepareChecklist::List::PostStep (double simt, double simdt, 
 	VECTOR3 global, local;
 	oapiGetGlobalPos(subject, &global);
 	owner->Global2Local(global, local);
-	global=local-hangar->GetPosition();
-
-	bool vincinity=hangar->CheckVincinity(&global, VINCINITYDOCK);
-	bool inPrepareArea=hangar->CheckVincinity(&global, VINCINITYPREPARE);
+	
+	bool vincinity=hangar->CheckVincinity(&local, VINCINITYDOCK);
+	bool inPrepareArea=hangar->CheckVincinity(&local, VINCINITYPREPARE);
 	switch(state)
 	{
 	case AbortOpen:
@@ -147,12 +146,11 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	VECTOR3 global, local;
 	oapiGetGlobalPos(subject, &global);
 	owner->Global2Local(global, local);
-	global=local-hangar->GetPosition();
-
-	bool vincinity=hangar->CheckVincinity(&global, VINCINITYHOLD);
-	bool inExhaustArea=hangar->CheckVincinity(&global, VINCINITYEXHAUST);
-	bool inTakeoffArea=hangar->CheckVincinity(&global, VINCINITYTAKEOFF);
-	bool inLaunchArea=hangar->CheckVincinity(&global, VINCINITYLAUNCH);
+	
+	bool vincinity=hangar->CheckVincinity(&local, VINCINITYHOLD);
+	bool inExhaustArea=hangar->CheckVincinity(&local, VINCINITYEXHAUST);
+	bool inTakeoffArea=hangar->CheckVincinity(&local, VINCINITYTAKEOFF);
+	bool inLaunchArea=hangar->CheckVincinity(&local, VINCINITYLAUNCH);
 	switch(state)
 	{
 	case AbortOpen:
