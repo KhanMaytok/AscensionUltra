@@ -1,7 +1,7 @@
 #pragma once
 #include "AscensionTowerPage.h"
 #pragma warning(disable : 4482)
-#define HANGARS HANGARTYPETA | HANGARTYPELL | HANGARTYPELFMC | HANGARTYPELH | HANGARTYPEVLC
+#define HANGARS HANGARTYPETA | HANGARTYPELL | HANGARTYPELH | HANGARTYPEVLC
 
 class HangarDoorPage: public AscensionTowerPage
 {

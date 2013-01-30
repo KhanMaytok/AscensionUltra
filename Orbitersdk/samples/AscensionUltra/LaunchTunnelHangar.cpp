@@ -59,7 +59,15 @@ bool LaunchTunnel::PrepareChecklist::List::SetEvent(int event)
 
 void LaunchTunnel::PrepareChecklist::List::PostStep (double simt, double simdt, double mjd)
 {
-	if (subject==NULL) return;
+	Door *entry=hangar->GetDoor(0);
+
+	if (subject==NULL)
+	{
+		state=Empty;
+		//Fail-safe reset		
+		if (entry->GetPosition()>0 && entry->GetMovement()>=0) entry->Close();
+		return;
+	}
 	
 	//Calculate local coordinates of subject w.r.t. hangar
 	VECTOR3 global, local;
@@ -77,19 +85,19 @@ void LaunchTunnel::PrepareChecklist::List::PostStep (double simt, double simdt, 
 		return;
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
-		hangar->GetDoor(0)->Open();
+		entry->Open();
 		state=OpenEntry;
 		return;
 	case OpenEntry:
-		if (hangar->GetDoor(0)->GetPosition()>=1) state=Entry;
+		if (entry->GetPosition()>=1) state=Entry;
 		//intentional fall-through
 	case Entry:
 		if (!vincinity) return;
-		hangar->GetDoor(0)->Close(); //Door 0 is entry
+		entry->Close();
 		state=CloseEntry;
 		return;
 	case CloseEntry:
-		if (hangar->GetDoor(0)->GetPosition()>0) return; //Door 0 is entry
+		if (entry->GetPosition()>0) return;
 		state=Occupied;
 		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
 		return;
@@ -140,7 +148,19 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 
 void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, double mjd)
 {
-	if (subject==NULL) return;
+	Door *exit=hangar->GetDoor(1);
+	Door *shield=hangar->GetDoor(2); //Note that shield door opening is "getting out of the way", closing is "putting into place for function"
+	Door *door=hangar->GetDoor(3); //Note that tunnel door operation is reversed: open is closing, closing is opening
+
+	if (subject==NULL)
+	{
+		state=Empty;
+		//Fail-safe reset of animation		
+		if (exit->GetPosition()>0 && exit->GetMovement()>=0) exit->Close();
+		if (shield->GetPosition()<1 && shield->GetMovement()<=0) shield->Open();
+		if (door->GetPosition()<1 && door->GetMovement()<=0) door->Open();
+		return;
+	}
 	
 	//Calculate local coordinates of subject w.r.t. hangar
 	VECTOR3 global, local;
@@ -159,25 +179,25 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		subject=NULL;
 		return;
 	case Empty:
-		if (hangar->GetDoor(2)->GetPosition()>0) return; //Door 2 is shield
-		hangar->GetDoor(1)->Open(); //Door 1 is exit
+		if (shield->GetPosition()<1) return;
+		exit->Open();
 		state=OpenExit;
 		return;
 	case OpenExit:
-		if (hangar->GetDoor(1)->GetPosition()>=1) state=Exit;
+		if (exit->GetPosition()>=1) state=Exit;
 		//intentional fall-through
 	case Exit:
 		if (!vincinity) return;
-		hangar->GetDoor(1)->Close(); //Door 1 is exit
+		exit->Close();
 		state=CloseExit;
 		return;
 	case CloseExit:
-		if (hangar->GetDoor(1)->GetPosition()>0) return; //Door 1 is exit
+		if (exit->GetPosition()>0) return;
 		state=DeployShield;
-		hangar->GetDoor(2)->Open(); //Door 2 is shield
+		shield->Close();
 		return;
 	case DeployShield:
-		if (hangar->GetDoor(2)->GetPosition()<1) return; //Door 2 is shield
+		if (shield->GetPosition()>0) return;
 		state=Launch;
 		return;
 	case Launch:
@@ -190,7 +210,7 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		return;
 	case Speeding:
 		if (oapiGetVesselInterface(subject)->GroundContact()) return;
-		hangar->GetDoor(2)->Close(); //Door 2 is shield
+		shield->Open();
 		state=TakeOff;
 		return;
 	case TakeOff:
@@ -231,17 +251,6 @@ void LaunchTunnelHangar::DefineAnimations ()
 	launch.Init(owner, this, prefix, LaunchTunnel::LaunchChecklist::Empty);
 
 	Hangar::DefineAnimations();
-}
-
-void LaunchTunnelHangar::clbkVisualCreated (VISHANDLE vis, int refcount)
-{
-	//Close tunnel door
-	MESHGROUP_TRANSFORM mt;
-	mt.nmesh=meshIndex;
-	mt.ngrp=3;
-	mt.transform=mt.TRANSLATE;
-	mt.P.transparam.shift=_V(47,0,0);	
-	owner->MeshgroupTransform(vis, mt);
 }
 
 int LaunchTunnelHangar::GetDoors(){return DOORS;}
