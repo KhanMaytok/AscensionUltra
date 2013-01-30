@@ -25,6 +25,7 @@ public:
 	virtual void Open();
 	virtual void Close();
 	virtual double GetPosition();
+	virtual double GetMovement();
 	virtual void PostStep (double simt, double simdt, double mjd);
 	virtual void DefineAnimations();
 	bool clbkLoadStateEx (char *line);
