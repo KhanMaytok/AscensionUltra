@@ -65,6 +65,7 @@ void Door::RecordEvent(double command)
 }
 
 double Door::GetPosition(){return position;}
+double Door::GetMovement(){return command;}
 
 void Door::PostStep (double simt, double simdt, double mjd)
 {
