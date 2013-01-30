@@ -536,8 +536,8 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 		VECTOR3 global, local;
 		oapiGetFocusInterface()->GetGlobalPos(global);
 		Global2Local(global, local);
-		local-=OFFSET+LH1OFFSET;
-		sprintf(oapiDebugString(),"MAP coordinates: %f , %f , %f", -local.x, local.y, local.z);
+		local-=OFFSET+LFMCOFFSET;
+		sprintf(oapiDebugString(),"MAP coordinates (w.r.t LFMC): %f , %f , %f", -local.x, local.y, local.z);
 	}
 	
 	if (orbiterExtensionsResult<0) sprintf(oapiDebugString(), "WARNING! Orbiter extensions not loaded. Error %d", orbiterExtensionsResult);
