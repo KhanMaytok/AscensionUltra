@@ -177,7 +177,7 @@ protected:
 		if (state==0 && (	prepare==LaunchTunnel::PrepareChecklist::CloseEntry ||
 							prepare==LaunchTunnel::PrepareChecklist::Occupied		)) k=5; // In fuel or pax page, copy all button except the switch labels
 		for(int i=0;i<k;i++) mnu[6+i]=menu[i];
-		if (state==0 && prepare==LaunchTunnel::PrepareChecklist::Ready) mnu[6+(k=4)]=menu[7];
+		if (state==0 && prepare==LaunchTunnel::PrepareChecklist::Ready) mnu[6+k++]=menu[7];
 		if (k<5) return 6+k;
 
 		//Call default renderer for fuel or pax page
