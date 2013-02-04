@@ -43,6 +43,7 @@ bool LaunchTunnel::PrepareChecklist::List::SetEvent(int event)
 	case OpenEntry:
 	case Entry:
 	case CloseEntry:				
+	case Empty: //Abort allowed even in empty state due to coupling with launch checklist aborts
 		if (event!=Abort) return false;
 		
 		//Undock and open entry
@@ -139,6 +140,10 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 	case TakeOff:
 		if (event!=Abort) return false;
 		RecordEvent(event);
+		hangar->GetDoor(1)->Open(); //Open exit door
+		hangar->GetDoor(2)->Open(); //"Open" (get out of the way) shield door
+		//No need to open or close tunnel door, because it should be in a proper place already
+		//TODO: exhaust and beacons off
 		state=AbortOpen;
 		return true;
 	default:

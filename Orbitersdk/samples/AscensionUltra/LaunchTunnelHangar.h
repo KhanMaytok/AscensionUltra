@@ -20,7 +20,7 @@
 #define ROOMS	2
 
 #define DOCKRANGE		{ _V(   -20, -1000, -25 ) , _V( 180, 1000, 25 ) }
-#define PREPARERANGE	{ _V(   -50, -1000, -78 ) , _V( 330, 1000, 78 ) }
+#define PREPARERANGE	{ _V( -4280, -1000, -78 ) , _V( 330, 1000, 78 ) }
 #define HOLDRANGE		{ _V(  -275, -1000, -25 ) , _V(-200, 1000, 25 ) }
 #define EXHAUSTRANGE	{ _V(  -350, -1000, -50 ) , _V(-200, 1000, 50 ) }
 #define TAKEOFFRANGE	{ _V(-10000, -1000, -200) , _V(-200, 2000, 200) }
