@@ -16,16 +16,15 @@ AscensionTowerPage::AscensionTowerPage(AscensionTowerData *data)
 	for(int i=0;i<10;i++) AT_BUTTONDOUBLED[i]=bdp[i];
 }
 
-void AscensionTowerPage::RefreshHandles()
+void AscensionTowerPage::RefreshHandles(AscensionUltra *ascension)
 {
 	mfd=data->GetMFD();
 	vessel=mfd->GetVessel();
-	ascension=data->GetAscension();
+	this->ascension=ascension;
 }
 
 void AscensionTowerPage::Update()
 {
-	RefreshHandles();
 	MFDRenderer();
 
 	mfd->SetWriteStyle(1,2);
@@ -72,11 +71,7 @@ AscensionTowerPageInstance AscensionTowerPage::Select(int index)
 	return NoChange;
 }
 
-char *AscensionTowerPage::GetButtonLabel (int bt)
-{
-	if (bt==0) RefreshHandles();
-	return LabelRenderer(bt);
-}
+char *AscensionTowerPage::GetButtonLabel (int bt){return LabelRenderer(bt);}
 
 char *AscensionTowerPage::LabelRenderer (int bt) 
 {
@@ -95,11 +90,7 @@ char *AscensionTowerPage::LabelRenderer (int bt)
 	}
 }
 
-int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu)
-{
-	RefreshHandles();
-	return MenuRenderer(mnu);
-}
+int AscensionTowerPage::GetButtonMenu (MFDBUTTONMENU *mnu){return MenuRenderer(mnu);}
 
 int AscensionTowerPage::MenuRenderer (MFDBUTTONMENU *mnu)
 {
@@ -127,11 +118,7 @@ int AscensionTowerPage::MenuRenderer (MFDBUTTONMENU *mnu)
 	return 12;
 }
 
-AscensionTowerPageInstance AscensionTowerPage::SetButton(int bt)
-{
-	RefreshHandles();
-	return ButtonHandler(bt);
-}
+AscensionTowerPageInstance AscensionTowerPage::SetButton(int bt){return ButtonHandler(bt);}
 
 AscensionTowerPageInstance AscensionTowerPage::ButtonHandler(int bt)
 {
@@ -152,11 +139,7 @@ AscensionTowerPageInstance AscensionTowerPage::ButtonHandler(int bt)
 	return Undefined;
 }
 
-AscensionTowerPageInstance AscensionTowerPage::SetKey(DWORD key)
-{
-	RefreshHandles();
-	return KeyHandler(key);
-}
+AscensionTowerPageInstance AscensionTowerPage::SetKey(DWORD key){return KeyHandler(key);}
 
 AscensionTowerPageInstance AscensionTowerPage::KeyHandler(DWORD key)
 {
