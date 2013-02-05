@@ -26,4 +26,5 @@ private:
 	enum AscensionTowerPageInstance state;
 	std::map<AscensionTowerPageInstance, AscensionTowerPage *> pages;
 	bool StateChange(AscensionTowerPageInstance newstate);
+	void PreCheck();
 };

@@ -27,11 +27,10 @@
 #include "LaunchTunnelWizardPage.h"
 #pragma warning(disable : 4482)
 
-//TODO: implement base auto-select and paxfer auto-clear
+//TODO: implement launch request auto-clear
 
 AscensionTowerData::AscensionTowerData()
 {
-	state=BaseSelect;
 	pages[BaseSelect]=new BasePage(this);
 	pages[MainMenu]=new MainPage(this);
 	pages[GroundMenu]=new GroundPage(this);
@@ -59,12 +58,36 @@ AscensionTowerData::AscensionTowerData()
 	pages[CraneList]=new CraneListPage(this);
 	pages[CraneGrapple]=new CraneGrapplePage(this);
 	pages[Reset]=new TemplatePage(this);
+
+	//Auto-detect base on start-up
+	AscensionUltra *au=GetAscension();
+	state=BaseSelect;
+	if (au!=NULL) state=MainMenu;
 }
 
-char *AscensionTowerData::GetButtonLabel (int bt){return pages[state]->GetButtonLabel(bt);}
-int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu){return pages[state]->GetButtonMenu(mnu);}
-bool AscensionTowerData::SetButton(int bt){return StateChange(pages[state]->SetButton(bt));}
-bool AscensionTowerData::SetKey(DWORD key){return StateChange(pages[state]->SetKey(key));}
+char *AscensionTowerData::GetButtonLabel (int bt)
+{
+	PreCheck();
+	return pages[state]->GetButtonLabel(bt);
+}
+
+int AscensionTowerData::GetButtonMenu (MFDBUTTONMENU *mnu)
+{
+	PreCheck();
+	return pages[state]->GetButtonMenu(mnu);
+}
+
+bool AscensionTowerData::SetButton(int bt)
+{
+	PreCheck();
+	return StateChange(pages[state]->SetButton(bt));
+}
+
+bool AscensionTowerData::SetKey(DWORD key)
+{
+	PreCheck();
+	return StateChange(pages[state]->SetKey(key));
+}
 
 bool AscensionTowerData::StateChange(AscensionTowerPageInstance newstate)
 {
@@ -75,7 +98,21 @@ bool AscensionTowerData::StateChange(AscensionTowerPageInstance newstate)
 }
 
 AscensionTowerPage *AscensionTowerData::GetPage(AscensionTowerPageInstance page){return pages[page];}
-void AscensionTowerData::Update(){pages[state]->Update();}
+
+void AscensionTowerData::Update()
+{
+	PreCheck();
+	pages[state]->Update();
+}
+
 AscensionTower *AscensionTowerData::GetMFD(){return mfd;}
 void AscensionTowerData::SetMFD(AscensionTower *mfd){this->mfd=mfd;}
 AscensionUltra *AscensionTowerData::GetAscension(){return ((BasePage *)pages[BaseSelect])->GetAscension();}
+
+void AscensionTowerData::PreCheck()
+{
+	AscensionUltra *au=GetAscension();
+	if (au==NULL) state=BaseSelect;
+	if (state==PassengerTransfer && au->GetNearestHangar(HANGARS, GetMFD()->GetVessel())==NULL) state==GroundMenu;
+	pages[state]->RefreshHandles(au);
+}

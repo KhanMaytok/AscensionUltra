@@ -61,6 +61,7 @@ public:
 	AscensionTowerPageInstance SetKey(DWORD key);
 	void SetDataRoot(void *dataRoot); // Sets the root object of the page data items, e.g. the hangar the doors are in on the doors list page
 	void SetIndex(int index=-1);
+	void RefreshHandles(AscensionUltra *ascension);
 	
 protected:
 	AscensionTowerData *data;
@@ -84,5 +85,5 @@ protected:
 	void *dataRoot;
 
 private:
-	void RefreshHandles();
+	
 };
