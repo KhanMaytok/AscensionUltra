@@ -73,6 +73,8 @@ protected:
 		switch(hangar->GetType())
 		{
 		case HANGARTYPELFMC:
+			//We only come here if the vessel is not subject to the checklists, so it is safe to set the subject unconditionally
+			hangar->GetChecklist(0)->SetSubject(vessel->GetHandle());
 			data->GetPage(LaunchTunnelWizard)->SetDataRoot(hangar);
 			return LaunchTunnelWizard;
 		case HANGARTYPEVLC:
