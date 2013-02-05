@@ -24,7 +24,7 @@ public:
 	// 3. return NULL
 	AscensionUltra *GetAscension()
 	{	
-		if (oapiIsVessel(ascensionHandle)) return ascension;
+		if (oapiIsVessel(ascensionHandle) && oapiGetVesselInterface(ascensionHandle)==ascension) return ascension;
 		Scan();
 		int detected=-1;
 		if (ascensionName!=NULL) for (std::vector<AscensionTowerListPair>::iterator i=scanList.begin(); i!=scanList.end(); i++)
