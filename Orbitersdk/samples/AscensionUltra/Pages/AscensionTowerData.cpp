@@ -27,7 +27,11 @@
 #include "LaunchTunnelWizardPage.h"
 #pragma warning(disable : 4482)
 
-//TODO: implement launch request auto-clear
+void EventHandler(BaseVessel::EventHandler::Arguments args, void *context)
+{
+	AscensionTowerData *data=(AscensionTowerData *) context;
+	data->StateChange(data->GetPage(CurrentState)->SetEvent(args));
+}
 
 AscensionTowerData::AscensionTowerData()
 {
@@ -60,9 +64,13 @@ AscensionTowerData::AscensionTowerData()
 	pages[Reset]=new TemplatePage(this);
 
 	//Auto-detect base on start-up
-	AscensionUltra *au=GetAscension();
 	state=BaseSelect;
-	if (au!=NULL) state=MainMenu;
+	if (GetAscension()!=NULL) StateChange(MainMenu);	
+}
+
+AscensionTowerData::~AscensionTowerData ()
+{
+	GetAscension()->UnregisterEventHandler(EventHandler, this);
 }
 
 char *AscensionTowerData::GetButtonLabel (int bt)
@@ -93,11 +101,15 @@ bool AscensionTowerData::StateChange(AscensionTowerPageInstance newstate)
 {
 	if (newstate==Undefined) return false;
 	if (newstate==NoChange) return true;
+	//If we are switching FROM base menu, register handler
+	if (state==BaseSelect) GetAscension()->RegisterEventHandler(EventHandler, this);
+	//If we are switching TO base menu, unregister handler
+	if (newstate==BaseSelect) GetAscension()->UnregisterEventHandler(EventHandler, this);
 	state=newstate;
 	return true;
 }
 
-AscensionTowerPage *AscensionTowerData::GetPage(AscensionTowerPageInstance page){return pages[page];}
+AscensionTowerPage *AscensionTowerData::GetPage(AscensionTowerPageInstance page){return pages[page!=CurrentState?page:state];}
 
 void AscensionTowerData::Update()
 {

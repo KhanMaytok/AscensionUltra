@@ -11,6 +11,7 @@ class AscensionTowerData
 {
 public:
 	AscensionTowerData();
+	~AscensionTowerData();
 	void Update();
 	char *GetButtonLabel (int bt);
 	int GetButtonMenu (MFDBUTTONMENU *mnu);
@@ -20,11 +21,11 @@ public:
 	void SetMFD(AscensionTower *mfd);
 	AscensionUltra *GetAscension();
 	AscensionTowerPage *GetPage(enum AscensionTowerPageInstance page);
+	bool StateChange(AscensionTowerPageInstance newstate);
 	
 private:
 	AscensionTower *mfd;
 	enum AscensionTowerPageInstance state;
 	std::map<AscensionTowerPageInstance, AscensionTowerPage *> pages;
-	bool StateChange(AscensionTowerPageInstance newstate);
 	void PreCheck();
 };
