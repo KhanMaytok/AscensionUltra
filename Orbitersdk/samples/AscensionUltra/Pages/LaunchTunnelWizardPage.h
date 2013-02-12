@@ -358,6 +358,27 @@ protected:
 		return NoChange;
 	}
 
+	AscensionTowerPageInstance EventHandler(BaseVessel::EventHandler::Arguments args)
+	{
+		if (args.SourceType!=BaseVessel::EventHandler::Checklist) return NoChange;
+		Checklist *list=(Checklist *)args.Source;
+		Hangar *hangar=list->GetHangar();
+		if (hangar->GetType()!=HANGARTYPELFMC) return NoChange;
+		//Check event and subject according to list
+		OBJHANDLE handle=vessel->GetHandle();
+		if (hangar->GetChecklist(0)==list)
+		{
+			if (args.Event!=LaunchTunnel::PrepareChecklist::Aborted) return NoChange;			
+		}
+		else
+		{
+			if (args.Event!=LaunchTunnel::LaunchChecklist::Aborted &&
+				args.Event!=LaunchTunnel::LaunchChecklist::Left) return NoChange;
+		}
+		if (list->GetSubject()!=handle) return NoChange;
+		return HangarForLaunchSelection;
+	}
+
 private:	
 	AscensionTowerCallbackData setTankLevel;
 	char buffer[BUFFERLEN+1];
