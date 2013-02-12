@@ -30,6 +30,7 @@ namespace LaunchTunnel
 			Abort,
 			Proceed,
 			Revert,
+			Aborted,
 		};
 	}
 
@@ -53,6 +54,8 @@ namespace LaunchTunnel
 		{
 			Abort,
 			Proceed,
+			Aborted,
+			Left,
 		};
 	}
 }
