@@ -62,6 +62,7 @@ public:
 	void SetDataRoot(void *dataRoot); // Sets the root object of the page data items, e.g. the hangar the doors are in on the doors list page
 	void SetIndex(int index=-1);
 	void RefreshHandles(AscensionUltra *ascension);
+	AscensionTowerPageInstance SetEvent(BaseVessel::EventHandler::Arguments args);
 	
 protected:
 	AscensionTowerData *data;
@@ -80,6 +81,7 @@ protected:
 	virtual int MenuRenderer (MFDBUTTONMENU *mnu);
 	virtual AscensionTowerPageInstance ButtonHandler(int bt);
 	virtual AscensionTowerPageInstance KeyHandler(DWORD key);
+	virtual AscensionTowerPageInstance EventHandler(BaseVessel::EventHandler::Arguments args);
 	int AT_BUTTON[6];
 	int AT_BUTTONDOUBLED[10];
 	void *dataRoot;
