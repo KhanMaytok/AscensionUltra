@@ -32,6 +32,7 @@ typedef enum AscensionTowerPageInstance
 	Reset,
 	NoChange,
 	Undefined,
+	CurrentState,
 };
 
 struct AscensionTowerListPair
