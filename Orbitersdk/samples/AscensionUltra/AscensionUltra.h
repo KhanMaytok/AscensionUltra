@@ -54,6 +54,24 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define PERSON_FILTER   0x80
 #define ERROR_CHANGE_FAIL	-7
 
+namespace BaseVessel
+{
+	namespace EventHandler
+	{
+		enum SourceType
+		{
+			Checklist,
+		};
+
+		struct Arguments
+		{
+			int Event;
+			enum SourceType SourceType;
+			void *Source;
+		};
+	}
+}	
+
 class AscensionUltra: public VESSEL2 {
 public:
 	AscensionUltra (OBJHANDLE hObj, int fmodel);
@@ -88,6 +106,10 @@ public:
 	virtual void DockVessel(Room *room, VESSEL *vessel);
 	virtual int GetChecklists(int type, VESSEL *vessel=NULL);
 	virtual Checklist *GetChecklist(int type, int index, VESSEL *vessel=NULL);
+	virtual void RegisterEventHandler(void (*handler)(BaseVessel::EventHandler::Arguments args, void *context), void *context);
+	virtual void UnregisterEventHandler(void (*handler)(BaseVessel::EventHandler::Arguments args, void *context), void *context);
+
+	void SendEvent(BaseVessel::EventHandler::Arguments args);
 		
 private:
 	void InitSubObjects();
@@ -119,6 +141,7 @@ private:
 	float orbiterExtensionsVersion;
 	std::map<Room*,VESSEL*> roomVessel;
 	std::map<VESSEL*, Room*> vesselRoom;
+	std::map<void*, void (*)(BaseVessel::EventHandler::Arguments args, void *context)> eventHandlers;
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
