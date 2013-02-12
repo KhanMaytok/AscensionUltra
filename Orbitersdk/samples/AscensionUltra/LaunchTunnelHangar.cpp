@@ -77,10 +77,12 @@ void LaunchTunnel::PrepareChecklist::List::PostStep (double simt, double simdt, 
 	
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYDOCK);
 	bool inPrepareArea=hangar->CheckVincinity(&local, VINCINITYPREPARE);
+	BaseVessel::EventHandler::Arguments args={Aborted, BaseVessel::EventHandler::Checklist, this};
 	switch(state)
 	{
 	case AbortOpen:
 		if (inPrepareArea) return;
+		((AscensionUltra *)owner)->SendEvent(args);
 		state=Empty;
 		subject=NULL;
 		return;
@@ -176,10 +178,12 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	bool inExhaustArea=hangar->CheckVincinity(&local, VINCINITYEXHAUST);
 	bool inTakeoffArea=hangar->CheckVincinity(&local, VINCINITYTAKEOFF);
 	bool inLaunchArea=hangar->CheckVincinity(&local, VINCINITYLAUNCH);
+	BaseVessel::EventHandler::Arguments args={Aborted, BaseVessel::EventHandler::Checklist, this};
 	switch(state)
 	{
 	case AbortOpen:
 		if (inLaunchArea) return;
+		((AscensionUltra *)owner)->SendEvent(args);
 		state=Empty;
 		subject=NULL;
 		return;
@@ -221,8 +225,10 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	case TakeOff:
 		if (inTakeoffArea) return;
 		//TODO: Beacons off
+		args.Event=Left;
+		((AscensionUltra *)owner)->SendEvent(args);
 		state=Empty;
-		subject=NULL;
+		subject=NULL;		
 		return;
 	}
 }
