@@ -171,6 +171,10 @@ AscensionTowerPageInstance AscensionTowerPage::KeyHandler(DWORD key)
 	return Undefined;
 }
 
+AscensionTowerPageInstance AscensionTowerPage::SetEvent(BaseVessel::EventHandler::Arguments args){return EventHandler(args);}
+
+AscensionTowerPageInstance AscensionTowerPage::EventHandler(BaseVessel::EventHandler::Arguments args){return NoChange;}
+
 char *AscensionTowerPage::GetTitle() { return GetNameSafeTitle("");}
 
 char *AscensionTowerPage::GetSubtitle() {return "";}
