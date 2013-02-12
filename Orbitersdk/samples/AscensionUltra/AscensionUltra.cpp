@@ -968,6 +968,15 @@ Checklist *AscensionUltra::GetChecklist(Hangar *hangar, int index, VESSEL *vesse
 	return NULL;
 }
 
+void AscensionUltra::RegisterEventHandler(void (*handler)(BaseVessel::EventHandler::Arguments args, void *context), void *context){eventHandlers[context]=handler;}
+
+void AscensionUltra::UnregisterEventHandler(void (*handler)(BaseVessel::EventHandler::Arguments args, void *context), void *context){eventHandlers.erase(context);}
+
+void AscensionUltra::SendEvent(BaseVessel::EventHandler::Arguments args)
+{
+	for(std::map<void*, void (*)(BaseVessel::EventHandler::Arguments args, void *context)>::iterator i=eventHandlers.begin(); i!=eventHandlers.end(); i++) i->second(args, i->first);
+}
+
 void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 {
 	//Check Orbiter extensions version
