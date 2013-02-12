@@ -47,6 +47,7 @@ DLLCLBK void ExitModule (HINSTANCE hDLL)
 
 DLLCLBK void opcCloseRenderViewport (void)
 {
+	//TODO: implement proper destructors for deleted vessels instead of this poor-man's garbgage collector
 	for(std::map<VESSEL *, std::map<UINT, AscensionTowerData *> *>::iterator i=g_MFDData.begin();i!=g_MFDData.end();i++)
 	{
 		for (std::map<UINT, AscensionTowerData *>::iterator j=i->second->begin();j!=i->second->end();j++) delete j->second;
