@@ -34,6 +34,7 @@ private:
 
 protected:
 	void RecordEvent(int event);
+	VECTOR3 GetNosePoint();
 	VESSEL *owner;
 	Hangar *hangar;
 	OBJHANDLE subject;
