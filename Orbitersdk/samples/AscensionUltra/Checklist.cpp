@@ -19,6 +19,7 @@ Checklist::Checklist(void)
 	subject=NULL;
 }
 
+int Checklist::GetType(void){return -1;}
 int Checklist::GetState(void){return state;}
 Hangar *Checklist::GetHangar(void){return hangar;}
 

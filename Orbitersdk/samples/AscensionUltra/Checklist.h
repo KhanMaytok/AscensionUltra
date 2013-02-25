@@ -18,6 +18,7 @@ class Checklist
 public:
 	Checklist(void);
 	~Checklist(void);
+	virtual int GetType(void);
 	virtual int GetState(void);
 	virtual bool SetEvent(int event);
 	virtual void SetSubject(OBJHANDLE subject);
