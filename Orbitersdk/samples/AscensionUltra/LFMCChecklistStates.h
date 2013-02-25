@@ -12,6 +12,16 @@
 #pragma once
 namespace LaunchTunnel
 {
+	typedef enum ListType
+	{
+		None=-1,
+		Request,
+		Preflight,
+		Boarding,
+		Fueling,
+		Launch,
+	};
+
 	namespace RequestChecklist
 	{
 		typedef enum State

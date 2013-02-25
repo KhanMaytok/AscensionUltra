@@ -42,6 +42,7 @@ namespace LaunchTunnel
 	{
 		class List:public Checklist
 		{
+			int GetType(void){return Request;}
 			bool SetEvent(int event);
 			void PostStep (double simt, double simdt, double mjd);
 		};
@@ -51,6 +52,7 @@ namespace LaunchTunnel
 	{
 		class List:public Checklist
 		{
+			int GetType(void){return Preflight;}
 			bool SetEvent(int event);
 			void PostStep (double simt, double simdt, double mjd);
 		};
@@ -60,6 +62,7 @@ namespace LaunchTunnel
 	{
 		class List:public Checklist
 		{
+			int GetType(void){return Boarding;}
 			bool SetEvent(int event);
 			void PostStep (double simt, double simdt, double mjd);
 		};
@@ -69,6 +72,7 @@ namespace LaunchTunnel
 	{
 		class List:public Checklist
 		{
+			int GetType(void){return Fueling;}
 			bool SetEvent(int event);
 			void PostStep (double simt, double simdt, double mjd);
 		};
@@ -78,6 +82,7 @@ namespace LaunchTunnel
 	{
 		class List:public Checklist
 		{
+			int GetType(void){return Launch;}
 			bool SetEvent(int event);
 			void PostStep (double simt, double simdt, double mjd);
 		};
