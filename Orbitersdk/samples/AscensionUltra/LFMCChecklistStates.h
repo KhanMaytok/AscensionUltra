@@ -12,7 +12,23 @@
 #pragma once
 namespace LaunchTunnel
 {
-	namespace PrepareChecklist
+	namespace RequestChecklist
+	{
+		typedef enum State
+		{
+			Empty,
+			LFHold,
+			Wait,
+			Roll,
+		};
+
+		typedef enum Event
+		{
+			Abort,
+		};
+	};
+
+	namespace PreflightChecklist
 	{
 		typedef enum State
 		{
@@ -20,19 +36,55 @@ namespace LaunchTunnel
 			Empty,
 			OpenEntry,
 			Entry,
-			CloseEntry,
-			Occupied,
-			Ready,
+			PFHold,
+			Wait,
+			Roll,
 		};
 
 		typedef enum Event
 		{
 			Abort,
 			Proceed,
-			Revert,
-			Aborted,
 		};
-	}
+	};
+
+	namespace BoardingChecklist
+	{
+		typedef enum State
+		{
+			AbortWait,
+			Empty,
+			Taxi,
+			PAXHold,
+			Wait,
+			Roll,
+		};
+
+		typedef enum Event
+		{
+			Abort,
+			Proceed,
+		};
+	};
+
+	namespace FuelingChecklist
+	{
+		typedef enum State
+		{
+			AbortWait,
+			Empty,
+			Taxi,
+			FuelHold,
+			Wait,
+			Roll,
+		};
+
+		typedef enum Event
+		{
+			Abort,
+			Proceed,
+		};
+	};
 
 	namespace LaunchChecklist
 	{
@@ -42,9 +94,8 @@ namespace LaunchTunnel
 			Empty,
 			OpenExit,
 			Exit,
-			CloseExit,
-			DeployShield,
-			Launch,
+			Blast,
+			LaunchHold,
 			Beacons,
 			Speeding,
 			TakeOff,	
@@ -57,5 +108,5 @@ namespace LaunchTunnel
 			Aborted,
 			Left,
 		};
-	}
+	};
 }
