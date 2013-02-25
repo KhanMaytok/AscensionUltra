@@ -16,138 +16,319 @@
 #define DOORS	4
 #define ROOMS	2
 
-bool LaunchTunnel::PrepareChecklist::List::SetEvent(int event)
+bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 {
+	if (event!=Abort) return false;
+	if (state==Empty) return false;
+	RecordEvent(event);
+	state=Empty;
+	subject=NULL;
+	return true;
+}
+
+void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, double mjd)
+{
+	if (subject==NULL)
+	{
+		//fail-safe
+		state=Empty;
+		return;
+	}
+	
+	VECTOR3 local=GetNosePoint();	
+	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLFHOLD);
+	Checklist *next=hangar->GetChecklist(1);
 	switch(state)
 	{
-	case Occupied:
-		if (event==Revert) return false;
+	case Empty:
+		//If the overall condition of a valid subject is met, the next state is activated immediately
+		state=LFHold;
+		//fall-through
+	case LFHold:
+		if (!vincinity) return;
+		next->SetSubject(subject);
+		state=Wait;
+		//fall-through
+	case Wait:
+		if (next->GetSubject()!=subject) return;
+		state=Roll;		
+		return;
+	case Roll:
+		if (vincinity) return;
+		state=Empty;
+		subject=NULL;
+		return;
+	}
+}
+
+bool LaunchTunnel::PreflightChecklist::List::SetEvent(int event)
+{
+	Checklist *next=hangar->GetChecklist(2);
+	switch(state)
+	{
+	case PFHold:
 		if (event==Proceed)
 		{
-			RecordEvent(event);
-			((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
-			state=Ready;
+			RecordEvent(event);			
+			next->SetSubject(subject);
+			state=Wait;
+			if (next->GetSubject()!=subject) return true;
+			state=Roll;
 			return true;
 		}
-		//intentional fall-through
-	case Ready:
-		if (event==Proceed) return false;
-		if (event==Revert)
-		{
-			RecordEvent(event);
-			((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
-			state=Occupied;
-			return true;
-		}
-		//intentional fall-through
+		//fall-through
+	case Empty: //Abort allowed even in empty state due to coupling with launch checklist aborts
 	case OpenEntry:
 	case Entry:
-	case CloseEntry:				
-	case Empty: //Abort allowed even in empty state due to coupling with launch checklist aborts
+	case Wait:
+	case Roll:
 		if (event!=Abort) return false;
-		
-		//Undock and open entry
-		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
-		hangar->GetDoor(0)->Open();
-
 		RecordEvent(event);
 		state=AbortOpen;
+		next->SetSubject(subject);
+		hangar->GetDoor(0)->Open();
 		return true;
 	default:
 		return false;
 	}
 }
 
-void LaunchTunnel::PrepareChecklist::List::PostStep (double simt, double simdt, double mjd)
+void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt, double mjd)
 {
 	Door *entry=hangar->GetDoor(0);
 
 	if (subject==NULL)
 	{
+		//fail-safe
 		state=Empty;
-		//Fail-safe reset		
 		if (entry->GetPosition()>0 && entry->GetMovement()>=0) entry->Close();
 		return;
 	}
 	
-	//Calculate local coordinates of subject w.r.t. hangar
-	VECTOR3 global, local;
-	oapiGetGlobalPos(subject, &global);
-	owner->Global2Local(global, local);
-	
-	bool vincinity=hangar->CheckVincinity(&local, VINCINITYDOCK);
-	bool inPrepareArea=hangar->CheckVincinity(&local, VINCINITYPREPARE);
-	BaseVessel::EventHandler::Arguments args={Aborted, BaseVessel::EventHandler::Checklist, this};
+	VECTOR3 local=GetNosePoint();
+	bool vincinity=hangar->CheckVincinity(&local, VINCINITYPFHOLD);
+	Checklist *next=hangar->GetChecklist(2);
 	switch(state)
 	{
-	case AbortOpen:
-		if (inPrepareArea) return;
-		((AscensionUltra *)owner)->SendEvent(args);
-		state=Empty;
-		subject=NULL;
-		return;
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
-		entry->Open();
 		state=OpenEntry;
+		entry->Open();
 		return;
 	case OpenEntry:
 		if (entry->GetPosition()>=1) state=Entry;
-		//intentional fall-through
+		return;
 	case Entry:
 		if (!vincinity) return;
+		state=PFHold;
 		entry->Close();
-		state=CloseEntry;
 		return;
-	case CloseEntry:
-		if (entry->GetPosition()>0) return;
-		state=Occupied;
-		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
+	case PFHold:
+		//Nothing to do here
+		break;
+	case Wait:
+		if (next->GetSubject()!=subject) return;
+		state=Roll;		
 		return;
-	case Ready:
+	case Roll:
 		if (vincinity) return;
-		{
-			//Hand-over to launch checklist
-			Checklist *list=hangar->GetChecklist(1);
-			list->SetSubject(subject);
-			if (list->GetSubject()!=subject) return;
-		}
 		state=Empty;
 		subject=NULL;
 		return;
-	case Occupied:
+	case AbortOpen:
+		if (vincinity) return;
+		if (next->GetSubject()!=subject) return;
+		state=Empty;
+		next->SetEvent(LaunchTunnel::BoardingChecklist::Abort);
+		subject==NULL;
+		return;
+	}
+}
+
+bool LaunchTunnel::BoardingChecklist::List::SetEvent(int event)
+{
+	Checklist *next=hangar->GetChecklist(3);
+	switch(state)
+	{
+	case PAXHold:
+		if (event==Proceed)
+		{
+			RecordEvent(event);			
+			next->SetSubject(subject);
+			state=Wait;
+			if (next->GetSubject()!=subject) return true;
+			state=Roll;
+			return true;
+		}
+		//fall-through
+	case Empty: //Abort allowed even in empty state due to coupling with launch checklist aborts
+	case Taxi:
+	case Wait:
+	case Roll:
+		if (event!=Abort) return false;
+		RecordEvent(event);
+		state=AbortWait;
+		next->SetSubject(subject);
+		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
+		return true;
+	default:
+		return false;
+	}
+}
+
+void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt, double mjd)
+{
+	if (subject==NULL)
+	{
+		//fail-safe
+		state=Empty;
+		return;
+	}
+	
+	VECTOR3 local=GetNosePoint();
+	bool vincinity=hangar->CheckVincinity(&local, VINCINITYPAXHOLD);
+	Checklist *next=hangar->GetChecklist(3);
+	switch(state)
+	{
+	case Empty:
+		//If the overall condition of a valid subject is met, the next state is activated immediately
+		state=Taxi;
+		return;
+	case Taxi:
+		if (!vincinity) return;
+		state=PAXHold;
+		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
+		return;
+	case PAXHold:
 		//Nothing to do here
 		break;
+	case Wait:
+		if (next->GetSubject()!=subject) return;
+		state=Roll;		
+		return;
+	case Roll:
+		if (vincinity) return;
+		state=Empty;
+		subject=NULL;
+		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
+		return;
+	case AbortWait:
+		if (vincinity) return;
+		if (next->GetSubject()!=subject) return;
+		state=Empty;
+		next->SetEvent(LaunchTunnel::FuelingChecklist::Abort);
+		subject==NULL;
+		return;
 	}
-}		
+}
+
+bool LaunchTunnel::FuelingChecklist::List::SetEvent(int event)
+{
+	Checklist *next=hangar->GetChecklist(4);
+	switch(state)
+	{
+	case FuelHold:
+		if (event==Proceed)
+		{
+			RecordEvent(event);			
+			next->SetSubject(subject);
+			state=Wait;
+			if (next->GetSubject()!=subject) return true;
+			state=Roll;
+			return true;
+		}
+		//fall-through
+	case Empty: //Abort allowed even in empty state due to coupling with launch checklist aborts
+	case Taxi:
+	case Wait:
+	case Roll:
+		if (event!=Abort) return false;
+		RecordEvent(event);
+		state=AbortWait;
+		next->SetSubject(subject);
+		return true;
+	default:
+		return false;
+	}
+}
+
+void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, double mjd)
+{
+	if (subject==NULL)
+	{
+		//fail-safe
+		state=Empty;
+		return;
+	}
+	
+	VECTOR3 local=GetNosePoint();
+	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLAUNCHHOLD);
+	Checklist *next=hangar->GetChecklist(4);
+	switch(state)
+	{
+	case Empty:
+		//If the overall condition of a valid subject is met, the next state is activated immediately
+		state=Taxi;
+		return;
+	case Taxi:
+		if (!vincinity) return;
+		state=FuelHold;
+		return;
+	case FuelHold:
+		//Nothing to do here
+		break;
+	case Wait:
+		if (next->GetSubject()!=subject) return;
+		state=Roll;		
+		return;
+	case Roll:
+		if (vincinity) return;
+		state=Empty;
+		subject=NULL;
+		return;
+	case AbortWait:
+		if (vincinity) return;
+		if (next->GetSubject()!=subject) return;
+		state=Empty;
+		next->SetEvent(LaunchTunnel::LaunchChecklist::Abort);
+		subject==NULL;
+		return;
+	}
+}
 	
 bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 {
 	switch(state)
 	{
-	case OpenExit:
-	case Exit:
-	case CloseExit:
-	case DeployShield:
-	case Launch:
+	case TakeOff:
+		return false; //No abort after take-off	
+	case LaunchHold:
 		if (event==Proceed)
 		{
 			state=Beacons;
-			//TODO: Beacons and exhaust simulation on
-			break;
+			//TODO: Beacons on
+			//TODO: Exhaust on
+			return true;
 		}
-		//intentional fall-through
+		goto blast; //Skipping exhaust toggle, not on yet.
 	case Beacons:
-	case Speeding:
-	case TakeOff:
+	case Speeding:	
+		if (event!=Abort) return false;		
+		//TODO: Exhaust off
+		//fall-through
+	case Blast:
+ blast: if (event!=Abort) return false;
+		hangar->GetDoor(1)->Open(); //Open exit door
+		hangar->GetDoor(2)->Open(); //"Open" (get out of the way) blast shield
+		hangar->GetDoor(3)->Open(); //Close tunnel door
+		//fall-through
+	case Exit:
+	case OpenExit:
 		if (event!=Abort) return false;
 		RecordEvent(event);
-		hangar->GetDoor(1)->Open(); //Open exit door
-		hangar->GetDoor(2)->Open(); //"Open" (get out of the way) shield door
-		//No need to open or close tunnel door, because it should be in a proper place already
-		//TODO: exhaust and beacons off
 		state=AbortOpen;
-		return true;
+		//TODO: Beacons error
+		return true;	
 	default:
 		return false;
 	}				
@@ -156,7 +337,7 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, double mjd)
 {
 	Door *exit=hangar->GetDoor(1);
-	Door *shield=hangar->GetDoor(2); //Note that shield door opening is "getting out of the way", closing is "putting into place for function"
+	Door *shield=hangar->GetDoor(2); //Note that blast shield opening is "getting out of the way", closing is "putting into place for function"
 	Door *door=hangar->GetDoor(3); //Note that tunnel door operation is reversed: open is closing, closing is opening
 
 	if (subject==NULL)
@@ -169,21 +350,17 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		return;
 	}
 	
-	//Calculate local coordinates of subject w.r.t. hangar
-	VECTOR3 global, local;
-	oapiGetGlobalPos(subject, &global);
-	owner->Global2Local(global, local);
-	
-	bool vincinity=hangar->CheckVincinity(&local, VINCINITYHOLD);
+	VECTOR3 local=GetNosePoint();
+	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLAUNCHHOLD);
 	bool inExhaustArea=hangar->CheckVincinity(&local, VINCINITYEXHAUST);
 	bool inTakeoffArea=hangar->CheckVincinity(&local, VINCINITYTAKEOFF);
-	bool inLaunchArea=hangar->CheckVincinity(&local, VINCINITYLAUNCH);
 	BaseVessel::EventHandler::Arguments args={Aborted, BaseVessel::EventHandler::Checklist, this};
 	switch(state)
 	{
 	case AbortOpen:
-		if (inLaunchArea) return;
+		if (inTakeoffArea) return;
 		((AscensionUltra *)owner)->SendEvent(args);
+		//TODO: Beacons off
 		state=Empty;
 		subject=NULL;
 		return;
@@ -194,22 +371,21 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		return;
 	case OpenExit:
 		if (exit->GetPosition()>=1) state=Exit;
-		//intentional fall-through
+		return;
 	case Exit:
 		if (!vincinity) return;
 		exit->Close();
-		state=CloseExit;
-		return;
-	case CloseExit:
-		if (exit->GetPosition()>0) return;
-		state=DeployShield;
 		shield->Close();
+		door->Close();
+		state=Blast;
 		return;
-	case DeployShield:
+	case Blast:
+		if (exit->GetPosition()>0) return;
 		if (shield->GetPosition()>0) return;
-		state=Launch;
+		if (door->GetPosition()>0) return;
+		state=LaunchHold;
 		return;
-	case Launch:
+	case LaunchHold:
 		//Nothing to do here
 		break;
 	case Beacons:
@@ -220,6 +396,7 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	case Speeding:
 		if (oapiGetVesselInterface(subject)->GroundContact()) return;
 		shield->Open();
+		door->Open();
 		state=TakeOff;
 		return;
 	case TakeOff:
@@ -238,7 +415,7 @@ int LaunchTunnelHangar::GetType(){return HANGARTYPELFMC;}
 void LaunchTunnelHangar::DefineAnimations ()
 {
 	static UINT DoorGrp[4] = {0,1,2,3};
-	char prefix[20]="";
+	char prefix[40]="";
 	int i=0;
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);	
 	doors[0].Init(owner, "Main Door", prefix, 1,
@@ -255,11 +432,23 @@ void LaunchTunnelHangar::DefineAnimations ()
 
 	rooms[0].Init(owner, this, "Control Room", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
 	rooms[1].Init(owner, this, "Control Tower", _V(111,218,70), _V(0,0,-1));
-
-	sprintf(prefix, "%sPREPARE", event_prefix);
-	prepare.Init(owner, this, prefix, LaunchTunnel::PrepareChecklist::Empty);
+	
+	i=0;
+	sprintf(prefix, "%sREQUEST", event_prefix);
+	request.Init(owner, this, prefix, LaunchTunnel::RequestChecklist::Empty);
+	lists[i++]=&request;
+	sprintf(prefix, "%sPREFLIGHT", event_prefix);
+	preflight.Init(owner, this, prefix, LaunchTunnel::PreflightChecklist::Empty);
+	lists[i++]=&preflight;
+	sprintf(prefix, "%sBOARDING", event_prefix);
+	boarding.Init(owner, this, prefix, LaunchTunnel::BoardingChecklist::Empty);
+	lists[i++]=&boarding;
+	sprintf(prefix, "%sFUELING", event_prefix);
+	fueling.Init(owner, this, prefix, LaunchTunnel::FuelingChecklist::Empty);
+	lists[i++]=&fueling;
 	sprintf(prefix, "%sLAUNCH", event_prefix);
 	launch.Init(owner, this, prefix, LaunchTunnel::LaunchChecklist::Empty);
+	lists[i++]=&launch;
 
 	Hangar::DefineAnimations();
 }
@@ -272,12 +461,12 @@ int LaunchTunnelHangar::GetRooms(){return ROOMS;}
 
 Room *LaunchTunnelHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
 
-int LaunchTunnelHangar::GetChecklists(){return 2;}
-Checklist *LaunchTunnelHangar::GetChecklist(int index){return index==0?(Checklist *)&prepare:(index==1?(Checklist *)&launch:NULL);}
+int LaunchTunnelHangar::GetChecklists(){return LISTS;}
+Checklist *LaunchTunnelHangar::GetChecklist(int index){return (index>=0 && index<LISTS)?lists[index]:NULL;}
 
 bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos, int index)
 {
-	VECTOR3 range[6][2]={ DOCKRANGE , PREPARERANGE , HOLDRANGE , EXHAUSTRANGE , TAKEOFFRANGE , LAUNCHRANGE };
+	VECTOR3 range[7][2]={ PAXHOLDRANGE , PFHOLDRANGE , LAUNCHHOLDRANGE , EXHAUSTRANGE , TAKEOFFRANGE , FUELHOLDRANGE, LFHOLDRANGE };
 	range[index][0]=position+range[index][0];
 	range[index][1]=position+range[index][1];
 	return	pos->x>range[index][0].x && pos->x<range[index][1].x &&

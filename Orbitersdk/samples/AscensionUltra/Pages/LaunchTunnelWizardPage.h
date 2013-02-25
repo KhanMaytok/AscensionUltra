@@ -63,31 +63,11 @@ protected:
 			switch (launch)
 			{
 			case LaunchTunnel::LaunchChecklist::AbortOpen: mfd->Write("Launch aborted - clear the area");break;
-
-			case LaunchTunnel::LaunchChecklist::Empty:
-			case LaunchTunnel::LaunchChecklist::OpenExit: mfd->Write("Launchway free - wait for clearance");break;
-
-			case LaunchTunnel::LaunchChecklist::Exit: mfd->Write("Clear to enter - taxi to hold");break;
-
-			case LaunchTunnel::LaunchChecklist::CloseExit:
-			case LaunchTunnel::LaunchChecklist::DeployShield: mfd->Write("Contact ATC for clearance");break;
-
 			default: mfd->Write("Contact ATC for launch");break;
 			}
 			break;
 		
-		case 0: //only subject of prepare checklist, check state
-			switch (prepare)
-			{
-			case LaunchTunnel::PrepareChecklist::AbortOpen: mfd->Write("Boarding aborted - clear the area");break;
-
-			case LaunchTunnel::PrepareChecklist::Empty:
-			case LaunchTunnel::PrepareChecklist::OpenEntry: mfd->Write("Gate free - wait for clearance");break;
-
-			case LaunchTunnel::PrepareChecklist::Entry: mfd->Write("Clear to enter - taxi to gate");break;
-
-			case LaunchTunnel::PrepareChecklist::CloseEntry:
-			case LaunchTunnel::PrepareChecklist::Occupied:
+/*			case LaunchTunnel::PrepareChecklist::Occupied:
 				AscensionTowerPage::MFDRenderer(); //Simply do default list rendering
 				break;
 			case LaunchTunnel::PrepareChecklist::Ready:
@@ -114,7 +94,7 @@ protected:
 				}
 				break;
 			}
-			break;
+			break; */
 		default:
 			//implicitly set prepare checklist subject			
 			hangar->GetChecklist(0)->SetSubject(vessel->GetHandle());
@@ -126,7 +106,7 @@ protected:
 	char *LabelRenderer (int bt)
 	{
 		int state=GetChecklistStates();
-		if (state==0 && (prepare==LaunchTunnel::PrepareChecklist::CloseEntry || prepare==LaunchTunnel::PrepareChecklist::Occupied))
+		if (state==0)
 		{
 			//Call default renderer for passenger and fuel list
 			switch (bt)
@@ -151,8 +131,8 @@ protected:
 			case 11: return "";
 			case 6: return "HOM";
 			case 7: return "BCK";
-			case 8: return (state==0 && prepare==LaunchTunnel::PrepareChecklist::AbortOpen) || (state==1 && launch==LaunchTunnel::LaunchChecklist::AbortOpen)?"":"ABT";
-			case 9: return (state==0 && prepare==LaunchTunnel::PrepareChecklist::Ready)?"RVT":"";
+			case 8: return (state==0) || (state==1 && launch==LaunchTunnel::LaunchChecklist::AbortOpen)?"":"ABT";
+			case 9: return (state==0)?"RVT":"";
 			default: return NULL;
 		}
 	}
@@ -172,12 +152,11 @@ protected:
 		};
 		
 		int state=GetChecklistStates();
-		int k=	(state==0 && prepare==LaunchTunnel::PrepareChecklist::AbortOpen) ||
+		int k=	(state==0) ||
 				(state==1 && launch==LaunchTunnel::LaunchChecklist::AbortOpen)?2:3; // In abort pages, just copy the first 2 right hand buttons, otherwise 3
-		if (state==0 && (	prepare==LaunchTunnel::PrepareChecklist::CloseEntry ||
-							prepare==LaunchTunnel::PrepareChecklist::Occupied		)) k=5; // In fuel or pax page, copy all button except the switch labels
+		if (state==0) k=5; // In fuel or pax page, copy all button except the switch labels
 		for(int i=0;i<k;i++) mnu[6+i]=menu[i];
-		if (state==0 && prepare==LaunchTunnel::PrepareChecklist::Ready) mnu[6+k++]=menu[7];
+		if (state==0) mnu[6+k++]=menu[7];
 		if (k<5) return 6+k;
 
 		//Call default renderer for fuel or pax page
@@ -190,7 +169,7 @@ protected:
 	AscensionTowerPageInstance ButtonHandler(int bt)
 	{
 		int state=GetChecklistStates();
-		if (state==0 && (prepare==LaunchTunnel::PrepareChecklist::CloseEntry || prepare==LaunchTunnel::PrepareChecklist::Occupied))
+		if (state==0)
 		{
 			//Call default renderer for passenger and fuel list
 			switch (bt)
@@ -206,7 +185,7 @@ protected:
 			case 6: return SetKey(OAPI_KEY_H);
 			case 7: return SetKey(OAPI_KEY_B);
 			case 8: return SetKey(OAPI_KEY_A);
-			case 9: return (state==0 && (prepare==LaunchTunnel::PrepareChecklist::Ready))?SetKey(OAPI_KEY_R):Undefined;
+			case 9: return (state==0)?SetKey(OAPI_KEY_R):Undefined;
 			default: return Undefined;
 		}
 	}
@@ -214,7 +193,7 @@ protected:
 	AscensionTowerPageInstance KeyHandler(DWORD key)
 	{
 		int state=GetChecklistStates();
-		if (state==0 && (prepare==LaunchTunnel::PrepareChecklist::CloseEntry || prepare==LaunchTunnel::PrepareChecklist::Occupied))
+		if (state==0)
 		{
 			//Call default renderer for passenger and fuel list
 			switch(key)
@@ -224,10 +203,10 @@ protected:
 			case OAPI_KEY_B:
 				return GroundMenu;
 			case OAPI_KEY_A:
-				hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Abort);
+				//hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Abort);
 				return NoChange;
 			case OAPI_KEY_G:
-				hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Proceed);
+				//hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Proceed);
 				return NoChange;
 			case OAPI_KEY_M:
 				if (mode==MODEPERSONS) mode=MODEPROPELLANT;
@@ -244,22 +223,22 @@ protected:
 		case OAPI_KEY_B:
 			return GroundMenu;
 		case OAPI_KEY_R:
-			if (state==0 && prepare==LaunchTunnel::PrepareChecklist::Ready) hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Revert);
+			if (state==0) /*hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Revert)*/;
 			else return Undefined;
 			return NoChange;			
 		case OAPI_KEY_A:
 			switch (state)
 			{
 			case 0:
-				if (prepare!=LaunchTunnel::PrepareChecklist::AbortOpen) hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Abort);
-				else return Undefined;
+				//hangar->GetChecklist(0)->SetEvent(LaunchTunnel::PrepareChecklist::Abort);
+				return Undefined;
 				return NoChange;
 			case 1:
 				if (launch!=LaunchTunnel::LaunchChecklist::AbortOpen)
 				{
 					Checklist *list=hangar->GetChecklist(0);
 					list->SetSubject(vessel->GetHandle()); //Set the subject of the prepare checklist in order to abort even if empty 
-					list->SetEvent(LaunchTunnel::PrepareChecklist::Abort);
+					//list->SetEvent(LaunchTunnel::PrepareChecklist::Abort);
 					hangar->GetChecklist(1)->SetEvent(LaunchTunnel::LaunchChecklist::Abort);
 				}
 				else return Undefined;
@@ -280,25 +259,9 @@ protected:
 		case 1: //already subject of launch checklist, check state
 			switch (launch)
 			{
-			case LaunchTunnel::LaunchChecklist::AbortOpen: return "Status: Abort";
-			case LaunchTunnel::LaunchChecklist::Empty: return "Status: Empty";
-			case LaunchTunnel::LaunchChecklist::OpenExit: return "Status: Opening Exit";
-			case LaunchTunnel::LaunchChecklist::Exit: return "Status: Exiting";
-			case LaunchTunnel::LaunchChecklist::CloseExit: return "Status: Closing Exit";
-			case LaunchTunnel::LaunchChecklist::DeployShield: return "Status: Deploying Shield";
+			case LaunchTunnel::LaunchChecklist::AbortOpen: return "Status: Abort";			
 			}
-			return "Status: Waiting";
-		case 0: //only subject of prepare checklist, check state
-			switch (prepare)
-			{
-			case LaunchTunnel::PrepareChecklist::AbortOpen: return "Status: Abort";
-			case LaunchTunnel::PrepareChecklist::Empty: return "Status: Empty";
-			case LaunchTunnel::PrepareChecklist::OpenEntry: return "Status: Opening Entry";
-			case LaunchTunnel::PrepareChecklist::Entry: return "Status: Entry";
-			case LaunchTunnel::PrepareChecklist::CloseEntry: return mode==MODEPERSONS?"Status: Closing Entry - Boarding":"Status: Closing Entry - Fuelling";
-			case LaunchTunnel::PrepareChecklist::Occupied: return mode==MODEPERSONS?"Status: Boarding":"Status: Fuelling";
-			case LaunchTunnel::PrepareChecklist::Ready: return "Status: Ready";
-			}
+			return "Status: Waiting";		
 		default: return "Status: Waiting";
 		}
 	}
@@ -368,7 +331,7 @@ protected:
 		OBJHANDLE handle=vessel->GetHandle();
 		if (hangar->GetChecklist(0)==list)
 		{
-			if (args.Event!=LaunchTunnel::PrepareChecklist::Aborted) return NoChange;			
+			//if (args.Event!=LaunchTunnel::PrepareChecklist::Aborted) return NoChange;			
 		}
 		else
 		{
@@ -385,11 +348,11 @@ private:
 	int mode;
 	Hangar *hangar;
 	LaunchTunnel::LaunchChecklist::State launch;
-	LaunchTunnel::PrepareChecklist::State prepare;
 
 	int GetChecklistStates()
 	{
-		hangar=(Hangar *)dataRoot;
+		return -1;
+		/*hangar=(Hangar *)dataRoot;
 		Checklist *list=hangar->GetChecklist(1);
 		OBJHANDLE handle=vessel->GetHandle();
 		if (list->GetSubject()==handle)
@@ -403,6 +366,6 @@ private:
 			prepare=(LaunchTunnel::PrepareChecklist::State) list->GetState();
 			return 0;
 		}
-		return -1;
+		return -1;*/
 	}
 };
