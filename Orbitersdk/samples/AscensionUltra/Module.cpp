@@ -55,6 +55,8 @@ DLLCLBK void InitModule (HINSTANCE hModule)
 	g_Param.brush[3] = CreateSolidBrush (RGB(160,120,64)); // brown
 	g_Param.pen[0] = CreatePen (PS_SOLID, 1, RGB(224,224,224));
 	g_Param.pen[1] = CreatePen (PS_SOLID, 3, RGB(164,164,164));
+
+	::CoInitialize(NULL);
 }
 
 void RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref)
@@ -301,6 +303,8 @@ void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const 
 DLLCLBK void ExitModule (HINSTANCE hModule)
 {
 //	oapiUnregisterCustomControls (hModule);
+
+	::CoUninitialize();
 
 	int i;
 	// deallocate GDI resources
