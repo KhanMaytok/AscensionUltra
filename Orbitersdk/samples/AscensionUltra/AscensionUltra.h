@@ -106,6 +106,8 @@ public:
 	virtual void DockVessel(Room *room, VESSEL *vessel);
 	virtual int GetChecklists(int type, VESSEL *vessel=NULL);
 	virtual Checklist *GetChecklist(int type, int index, VESSEL *vessel=NULL);
+	virtual int GetChecklists(Hangar *hangar, VESSEL *vessel);
+	virtual Checklist *GetChecklist(Hangar *hangar, int index, VESSEL *vessel);
 	virtual void RegisterEventHandler(void (*handler)(BaseVessel::EventHandler::Arguments args, void *context), void *context);
 	virtual void UnregisterEventHandler(void (*handler)(BaseVessel::EventHandler::Arguments args, void *context), void *context);
 
@@ -116,8 +118,6 @@ private:
 	void MoveGroup(int mesh, VECTOR3 v);	
 	Room *GetPersonLocation(int &index);
 	Room* GetPersonLocationFromHangar(int &index, Hangar *hangar);
-	int GetChecklists(Hangar *hangar, VESSEL *vessel);
-	Checklist *GetChecklist(Hangar *hangar, int index, VESSEL *vessel);
 	
 	enum {CAM_GENERIC, CAM_PANELMAIN, CAM_PANELUP, CAM_PANELDN, CAM_VCPILOT, CAM_VCPSNGR1, CAM_VCPSNGR2, CAM_VCPSNGR3, CAM_VCPSNGR4} campos;
 
