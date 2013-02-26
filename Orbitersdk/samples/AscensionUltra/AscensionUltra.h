@@ -28,6 +28,7 @@
 #include "UMmuSDK.h"
 #include <map>
 #include <vector>
+#include "sapi.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -112,7 +113,10 @@ public:
 	virtual void UnregisterEventHandler(void (*handler)(BaseVessel::EventHandler::Arguments args, void *context), void *context);
 
 	void SendEvent(BaseVessel::EventHandler::Arguments args);
-		
+
+	void Talk(LPCWSTR message, ...);
+	bool Talking(void);
+
 private:
 	void InitSubObjects();
 	void MoveGroup(int mesh, VECTOR3 v);	
@@ -148,7 +152,9 @@ private:
 	
 	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical, cur_DopplerRadar, cur_VerticalSmall, cur_Docks;
 	bool oldCameraMode;
-	
+
+	ISpVoice *ATC;
+
 	//DEBUG
 
 	int cur_Path;

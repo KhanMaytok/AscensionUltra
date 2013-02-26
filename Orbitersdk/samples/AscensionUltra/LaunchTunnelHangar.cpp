@@ -23,6 +23,7 @@ bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 	RecordEvent(event);
 	state=Empty;
 	subject=NULL;
+	((AscensionUltra *)owner)->Talk(L"<pitch absmiddle=\"-10\">Wideawake, DG, scratch that request.<pitch absmiddle=\"10\">Roger, DG, give it some more thought before calling, next time.");
 	return true;
 }
 
@@ -38,20 +39,47 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	VECTOR3 local=GetNosePoint();	
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLFHOLD);
 	Checklist *next=hangar->GetChecklist(1);
+	AscensionUltra *au=(AscensionUltra *)owner;
 	switch(state)
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
 		state=LFHold;
-		//fall-through
+		au->Talk(L"<pitch absmiddle=\"-10\">Wideawake Ground, DG, request clearance to enter launch facility.");		
+		if (vincinity)
+		{
+			state=Wait;
+			next->SetSubject(subject);
+			if (next->GetSubject()==subject)
+			{
+				state=Roll;
+				au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Affirmitive.");
+				return;
+			}
+			au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.");
+			return;
+		}
+		au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, taxi to launch facility hold.<pitch absmiddle=\"-10\">Roger.");
+		return;
 	case LFHold:
 		if (!vincinity) return;
-		next->SetSubject(subject);
+		if (au->Talking()) return;
+		au->Talk(L"<pitch absmiddle=\"-10\">Ground, DG, ready to enter launch facility.");
 		state=Wait;
-		//fall-through
+		next->SetSubject(subject);
+		if (next->GetSubject()==subject)
+		{
+			state=Roll;
+			au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.");
+			return;
+		}
+		au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Roger.");
+		return;
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
+		if (au->Talking()) return;
+		au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.");
 		state=Roll;		
 		return;
 	case Roll:
