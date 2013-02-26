@@ -50,6 +50,7 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 		state=Wait;
 		//fall-through
 	case Wait:
+		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		state=Roll;		
 		return;
@@ -127,6 +128,7 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 		//Nothing to do here
 		break;
 	case Wait:
+		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		state=Roll;		
 		return;
@@ -203,6 +205,7 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 		//Nothing to do here
 		break;
 	case Wait:
+		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		state=Roll;		
 		return;
@@ -278,6 +281,7 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 		//Nothing to do here
 		break;
 	case Wait:
+		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		state=Roll;		
 		return;
