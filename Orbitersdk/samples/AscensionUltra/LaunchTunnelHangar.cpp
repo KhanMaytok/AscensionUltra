@@ -293,7 +293,7 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	}
 	
 	VECTOR3 local=GetNosePoint();
-	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLAUNCHHOLD);
+	bool vincinity=hangar->CheckVincinity(&local, VINCINITYFUELHOLD);
 	Checklist *next=hangar->GetChecklist(4);
 	switch(state)
 	{
