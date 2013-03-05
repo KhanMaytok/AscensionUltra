@@ -291,9 +291,12 @@ protected:
 		switch(key)
 		{	
 		case OAPI_KEY_H:
+			if (listType==LaunchTunnel::Request) list->SetEvent(LaunchTunnel::RequestChecklist::Abort);
 			return MainMenu;
 		case OAPI_KEY_B:
-			return GroundMenu;
+			if (listType!=LaunchTunnel::Request) return GroundMenu;
+			list->SetEvent(LaunchTunnel::RequestChecklist::Abort);
+			return HangarForLaunchSelection;
 		case OAPI_KEY_G:
 			if (!hasGo) return Undefined;
 			list->SetEvent(LaunchTunnel::PreflightChecklist::Proceed); //Could only be the preflight list currently
