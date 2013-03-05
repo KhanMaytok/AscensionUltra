@@ -22,6 +22,13 @@ namespace LaunchTunnel
 		Launch,
 	};
 
+	typedef enum Event
+	{
+		Aborted,
+		Left,
+		Step,
+	};
+
 	namespace RequestChecklist
 	{
 		typedef enum State
@@ -115,8 +122,6 @@ namespace LaunchTunnel
 		{
 			Abort,
 			Proceed,
-			Aborted,
-			Left,
 		};
 	};
 }

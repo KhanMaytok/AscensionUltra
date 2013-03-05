@@ -173,7 +173,7 @@ AscensionTowerPageInstance AscensionTowerPage::KeyHandler(DWORD key)
 
 AscensionTowerPageInstance AscensionTowerPage::SetEvent(BaseVessel::EventHandler::Arguments args){return EventHandler(args);}
 
-AscensionTowerPageInstance AscensionTowerPage::EventHandler(BaseVessel::EventHandler::Arguments args){return NoChange;}
+AscensionTowerPageInstance AscensionTowerPage::EventHandler(BaseVessel::EventHandler::Arguments args){return Undefined;}
 
 char *AscensionTowerPage::GetTitle() { return GetNameSafeTitle("");}
 

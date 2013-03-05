@@ -267,6 +267,7 @@ protected:
 			case OAPI_KEY_S:
 				if (listType==LaunchTunnel::Boarding) return Roster;
 				//TODO: stop fillings here by setting target levels to current levels
+				return NoChange;
 			default:
 				return AscensionTowerPage::KeyHandler(key);
 			}		
@@ -295,7 +296,7 @@ protected:
 				}
 				list->SetEvent(event);
 			}
-			//fall-through
+			return NoChange;
 		default: return Undefined;
 		}
 	}
@@ -411,16 +412,15 @@ protected:
 
 	AscensionTowerPageInstance EventHandler(BaseVessel::EventHandler::Arguments args)
 	{
-		if (args.SourceType!=BaseVessel::EventHandler::Checklist) return NoChange;
+		if (args.SourceType!=BaseVessel::EventHandler::Checklist) return Undefined;
 		Checklist *list=(Checklist *)args.Source;
 		Hangar *hangar=list->GetHangar();
-		if (hangar->GetType()!=HANGARTYPELFMC) return NoChange;
+		if (hangar->GetType()!=HANGARTYPELFMC) return Undefined;
 		//Check event and subject according to list
 		OBJHANDLE handle=vessel->GetHandle();
-		if (list->GetType()!=LaunchTunnel::Launch ||
-			(args.Event!=LaunchTunnel::LaunchChecklist::Aborted && args.Event!=LaunchTunnel::LaunchChecklist::Left))
-			return NoChange;
-		if (list->GetSubject()!=handle) return NoChange;
+		if (list->GetSubject()!=handle) return Undefined;
+		if (args.Event==LaunchTunnel::Step) return NoChange; //Refresh display
+		if (args.Event!=LaunchTunnel::Aborted && args.Event!=LaunchTunnel::Left) return Undefined;
 		return HangarForLaunchSelection;
 	}
 
