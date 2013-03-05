@@ -50,7 +50,11 @@ class LaunchTunnelWizardPage: public AscensionTowerPage
 
 public:
 
-	LaunchTunnelWizardPage(AscensionTowerData *data):AscensionTowerPage(data){ticker=false;}
+	LaunchTunnelWizardPage(AscensionTowerData *data):AscensionTowerPage(data)
+	{
+		ticker=false;
+		abortConfirmation=false;
+	}
 
 protected:
 
@@ -58,6 +62,13 @@ protected:
 	{
 		ticker=!ticker;
 		mfd->SetWriteStyle(0, 2);
+		if (abortConfirmation)
+		{
+			mfd->Write("DO YOU REALLY WISH TO", 10);
+			mfd->Write("ABORT THE LAUNCH", 11);
+			mfd->Write("PROCEDURE ?", 12);
+			return;
+		}
 		GetChecklistStates();
 		switch(listType)
 		{
@@ -176,21 +187,33 @@ protected:
 
 	char *LabelRenderer (int bt)
 	{
+		if (abortConfirmation) switch (bt)
+		{
+			case 0:
+			case 1:
+			
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7: return "";
+			case 2: return "YES";
+			case 8: return "NO";
+			default: return NULL;
+		}		
+
 		GetChecklistStates();
 		
-		if (isSelect)
+		if (isSelect) switch (bt) //Call default renderer for passenger and fuel list
 		{
-			//Call default renderer for passenger and fuel list
-			switch (bt)
-			{
-				case 6: return "HOM";
-				case 7: return "BCK";
-				case 8: return "ABT";
-				case 9: return "GO";
-				case 11: return listType==LaunchTunnel::Boarding?"ROS":"STP";
-				default: return AscensionTowerPage::LabelRenderer(bt);
-			}
+			case 6: return "HOM";
+			case 7: return "BCK";
+			case 8: return "ABT";
+			case 9: return "GO";
+			case 11: return listType==LaunchTunnel::Boarding?"ROS":"STP";
+			default: return AscensionTowerPage::LabelRenderer(bt);
 		}
+		
 		switch (bt)
 		{
 			case 0:
@@ -211,7 +234,7 @@ protected:
 
 	int MenuRenderer (MFDBUTTONMENU *mnu)
 	{	
-		static MFDBUTTONMENU menu[7] = 
+		static MFDBUTTONMENU menu[9] = 
 		{
 			{"Main menu", NULL, 'H'},
 			{"Go back", NULL, 'B'},
@@ -220,7 +243,16 @@ protected:
 			{NULL, NULL, 0},
 			{"Switch to person", "roster page", 'S'},
 			{"Stop all fueling", NULL, 'S'},
+			{"Confirm abort", NULL, 'Y'},
+			{"Cancel abort", NULL, 'N'},
 		};
+
+		if (abortConfirmation)
+		{
+			mnu[2]=menu[7];
+			mnu[8]=menu[8];
+			return 9;
+		}
 		
 		GetChecklistStates();
 		int k=noAbort?2:		// Without abort button, just copy the first 2 right hand buttons, otherwise
@@ -239,18 +271,17 @@ protected:
 
 	AscensionTowerPageInstance ButtonHandler(int bt)
 	{
+		if (abortConfirmation) return bt!=2?(bt!=8?Undefined:SetKey(OAPI_KEY_N)):SetKey(OAPI_KEY_Y);
+
 		GetChecklistStates();
-		if (isSelect)
+		if (isSelect) switch (bt) //Call default renderer for passenger and fuel list
 		{
-			//Call default renderer for passenger and fuel list
-			switch (bt)
-			{
-			case 8: return SetKey(OAPI_KEY_A);
-			case 9: return SetKey(OAPI_KEY_G);
-			case 11: return SetKey(OAPI_KEY_S);
-			default: return AscensionTowerPage::ButtonHandler(bt);
-			}
+		case 8: return SetKey(OAPI_KEY_A);
+		case 9: return SetKey(OAPI_KEY_G);
+		case 11: return SetKey(OAPI_KEY_S);
+		default: return AscensionTowerPage::ButtonHandler(bt);
 		}
+		
 		switch (bt)
 		{
 			case 6: return SetKey(OAPI_KEY_H);
@@ -264,30 +295,52 @@ protected:
 	AscensionTowerPageInstance KeyHandler(DWORD key)
 	{
 		GetChecklistStates();
-		if (isSelect)
+		if (abortConfirmation)
 		{
-			//Call default renderer for passenger and fuel list
-			switch(key)
-			{	
-			case OAPI_KEY_H:
-				return MainMenu;
-			case OAPI_KEY_B:
-				return GroundMenu;
-			case OAPI_KEY_A:
-				//TODO: implement abort display change here
-				list->SetEvent(LaunchTunnel::BoardingChecklist::Abort); //Takes advantage of boarding and fueling list having the same event definition
+			if (key==OAPI_KEY_N)
+			{
+				abortConfirmation=false;
 				return NoChange;
-			case OAPI_KEY_G:
-				list->SetEvent(LaunchTunnel::BoardingChecklist::Proceed); //Takes advantage of boarding and fueling list having the same event definition
+			}
+			if (key==OAPI_KEY_Y)
+			{
+				int event=0;
+				switch (listType)
+				{
+				case LaunchTunnel::Request:   event=LaunchTunnel::RequestChecklist::Abort; break;
+				case LaunchTunnel::Preflight: event=LaunchTunnel::PreflightChecklist::Abort; break;
+				case LaunchTunnel::Boarding:  event=LaunchTunnel::BoardingChecklist::Abort; break;
+				case LaunchTunnel::Fueling:   event=LaunchTunnel::FuelingChecklist::Abort; break;
+				case LaunchTunnel::Launch:    event=LaunchTunnel::LaunchChecklist::Abort; break;
+				}
+				list->SetEvent(event);
+				abortConfirmation=false;
 				return NoChange;
-			case OAPI_KEY_S:
-				if (listType==LaunchTunnel::Boarding) return Roster;
-				//TODO: stop fillings here by setting target levels to current levels
-				return NoChange;
-			default:
-				return AscensionTowerPage::KeyHandler(key);
-			}		
+			}
+			return Undefined;
 		}
+		
+		if (isSelect) switch(key) //Call default renderer for passenger and fuel list
+		{
+		case OAPI_KEY_H:
+			return MainMenu;
+		case OAPI_KEY_B:
+			return GroundMenu;
+		case OAPI_KEY_A:
+			//TODO: implement abort display change here
+			list->SetEvent(LaunchTunnel::BoardingChecklist::Abort); //Takes advantage of boarding and fueling list having the same event definition
+			return NoChange;
+		case OAPI_KEY_G:
+			list->SetEvent(LaunchTunnel::BoardingChecklist::Proceed); //Takes advantage of boarding and fueling list having the same event definition
+			return NoChange;
+		case OAPI_KEY_S:
+			if (listType==LaunchTunnel::Boarding) return Roster;
+			//TODO: stop fillings here by setting target levels to current levels
+			return NoChange;
+		default:
+			return AscensionTowerPage::KeyHandler(key);
+		}
+		
 		switch(key)
 		{	
 		case OAPI_KEY_H:
@@ -303,18 +356,7 @@ protected:
 			return NoChange;
 		case OAPI_KEY_A:
 			if (noAbort) return Undefined;
-			{
-				int event=0;
-				switch (listType)
-				{
-				case LaunchTunnel::Request:   event=LaunchTunnel::RequestChecklist::Abort; break;
-				case LaunchTunnel::Preflight: event=LaunchTunnel::PreflightChecklist::Abort; break;
-				case LaunchTunnel::Boarding:  event=LaunchTunnel::BoardingChecklist::Abort; break;
-				case LaunchTunnel::Fueling:   event=LaunchTunnel::FuelingChecklist::Abort; break;
-				case LaunchTunnel::Launch:    event=LaunchTunnel::LaunchChecklist::Abort; break;
-				}
-				list->SetEvent(event);
-			}
+			abortConfirmation=true;
 			return NoChange;
 		default: return Undefined;
 		}
@@ -324,6 +366,7 @@ protected:
 
 	char *GetSubtitle()
 	{
+		if (abortConfirmation) return "Status: ABORT";
 		switch(listType)
 		{
 		case LaunchTunnel::Request:
@@ -455,7 +498,7 @@ private:
 	LaunchTunnel::ListType listType;
 	Checklist *list;
 	int state;
-	bool noAbort, hasGo, isSelect;
+	bool noAbort, hasGo, isSelect, abortConfirmation;
 	
 	void GetChecklistStates()
 	{
