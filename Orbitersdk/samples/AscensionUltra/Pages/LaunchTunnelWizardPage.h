@@ -92,6 +92,10 @@ protected:
 				mfd->Write("Passenger Hold occupied,", 10);
 				mfd->Write(GetTicker("awaiting clearance"), 11);
 				break;
+			case LaunchTunnel::PreflightChecklist::AbortOpen:
+				mfd->Write("Pre-Flight aborted,", 10);
+				mfd->Write(GetTicker("Proceed to Escape Hold"), 11);
+				break;
 			}
 			break;
 		case LaunchTunnel::Boarding:
@@ -108,6 +112,10 @@ protected:
 				mfd->Write("Fueling Hold occupied,", 10);
 				mfd->Write(GetTicker("awaiting clearance"), 11);
 				break;
+			case LaunchTunnel::BoardingChecklist::AbortWait:
+				mfd->Write("Boarding aborted,", 10);
+				mfd->Write(GetTicker("Proceed to Escape Hold"), 11);
+				break;
 			}
 			break;
 		case LaunchTunnel::Fueling:
@@ -123,6 +131,10 @@ protected:
 			case LaunchTunnel::FuelingChecklist::Wait:
 				mfd->Write("Launch Hold occupied,", 10);
 				mfd->Write(GetTicker("awaiting clearance"), 11);
+				break;
+			case LaunchTunnel::FuelingChecklist::AbortWait:
+				mfd->Write("Fueling aborted,", 10);
+				mfd->Write(GetTicker("Proceed to Escape Hold"), 11);
 				break;
 			}
 			break;
@@ -148,6 +160,10 @@ protected:
 				mfd->Write("Launchway clear.", 10);
 				mfd->Write("Contact Air Traffic Control", 11);
 				mfd->Write("for launch clearance.", 12);
+				break;
+			case LaunchTunnel::LaunchChecklist::AbortOpen:
+				mfd->Write("Launch aborted,", 10);
+				mfd->Write(GetTicker("Proceed to Escape Hold"), 11);
 				break;
 			}
 			break;
@@ -321,6 +337,7 @@ protected:
 			case LaunchTunnel::PreflightChecklist::Entry: return "Status: Taxi to Pre-Flight";
 			case LaunchTunnel::PreflightChecklist::PFHold: return "Status: Pre-Flight check";
 			case LaunchTunnel::PreflightChecklist::Wait: return "Status: Wait";
+			case LaunchTunnel::PreflightChecklist::AbortOpen: return "Status: ABORT";
 			}
 			break;
 		case LaunchTunnel::Boarding:
@@ -329,6 +346,7 @@ protected:
 			case LaunchTunnel::BoardingChecklist::Taxi: return "Status: Taxi to PAX";
 			case LaunchTunnel::BoardingChecklist::PAXHold: return "Status: Boarding";
 			case LaunchTunnel::BoardingChecklist::Wait: return "Status: Wait";
+			case LaunchTunnel::BoardingChecklist::AbortWait: return "Status: ABORT";
 			}
 			break;
 		case LaunchTunnel::Fueling:
@@ -337,6 +355,7 @@ protected:
 			case LaunchTunnel::FuelingChecklist::Taxi: return "Status: Taxi to Fueling";
 			case LaunchTunnel::FuelingChecklist::FuelHold: return "Status: Fueling";
 			case LaunchTunnel::FuelingChecklist::Wait: return "Status: Wait";
+			case LaunchTunnel::FuelingChecklist::AbortWait: return "Status: ABORT";
 			}
 			break;
 		case LaunchTunnel::Launch:
@@ -349,6 +368,7 @@ protected:
 			case LaunchTunnel::LaunchChecklist::Beacons:
 			case LaunchTunnel::LaunchChecklist::Speeding:
 			case LaunchTunnel::LaunchChecklist::TakeOff: return "Status: Ready to Launch";
+			case LaunchTunnel::LaunchChecklist::AbortOpen: return "Status: ABORT";
 			}
 			break;
 		default: return "Status: Request";
