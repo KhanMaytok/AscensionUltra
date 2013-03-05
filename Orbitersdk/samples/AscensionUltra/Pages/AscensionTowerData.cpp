@@ -30,7 +30,9 @@
 void EventHandler(BaseVessel::EventHandler::Arguments args, void *context)
 {
 	AscensionTowerData *data=(AscensionTowerData *) context;
-	data->StateChange(data->GetPage(CurrentState)->SetEvent(args));
+	if (!data->StateChange(data->GetPage(CurrentState)->SetEvent(args))) return;
+	data->GetMFD()->InvalidateButtons();
+	data->GetMFD()->InvalidateDisplay();
 }
 
 AscensionTowerData::AscensionTowerData()

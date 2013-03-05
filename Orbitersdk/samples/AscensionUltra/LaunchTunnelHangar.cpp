@@ -40,6 +40,7 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLFHOLD);
 	Checklist *next=hangar->GetChecklist(1);
 	AscensionUltra *au=(AscensionUltra *)owner;
+	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
 	switch(state)
 	{
 	case Empty:
@@ -71,16 +72,19 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 		{
 			state=Roll;
 			au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.");
+			au->SendEvent(args);
 			return;
 		}
 		au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Roger.");
+		au->SendEvent(args);
 		return;
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		if (au->Talking()) return;
 		au->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.");
-		state=Roll;		
+		state=Roll;
+		au->SendEvent(args);
 		return;
 	case Roll:
 		if (vincinity) return;
@@ -137,6 +141,8 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 	VECTOR3 local=GetNosePoint();
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYPFHOLD);
 	Checklist *next=hangar->GetChecklist(2);
+	AscensionUltra *au=(AscensionUltra *)owner;
+	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
 	switch(state)
 	{
 	case Empty:
@@ -145,12 +151,15 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 		entry->Open();
 		return;
 	case OpenEntry:
-		if (entry->GetPosition()>=1) state=Entry;
+		if (entry->GetPosition()<1) return;
+		state=Entry;
+		au->SendEvent(args);
 		return;
 	case Entry:
 		if (!vincinity) return;
 		state=PFHold;
 		entry->Close();
+		au->SendEvent(args);
 		return;
 	case PFHold:
 		//Nothing to do here
@@ -158,7 +167,8 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Roll;		
+		state=Roll;
+		au->SendEvent(args);
 		return;
 	case Roll:
 		if (vincinity) return;
@@ -218,6 +228,8 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 	VECTOR3 local=GetNosePoint();
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYPAXHOLD);
 	Checklist *next=hangar->GetChecklist(3);
+	AscensionUltra *au=(AscensionUltra *)owner;
+	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
 	switch(state)
 	{
 	case Empty:
@@ -228,6 +240,7 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 		if (!vincinity) return;
 		state=PAXHold;
 		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
+		au->SendEvent(args);
 		return;
 	case PAXHold:
 		//Nothing to do here
@@ -235,7 +248,8 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Roll;		
+		state=Roll;
+		au->SendEvent(args);
 		return;
 	case Roll:
 		if (vincinity) return;
@@ -295,6 +309,8 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	VECTOR3 local=GetNosePoint();
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYFUELHOLD);
 	Checklist *next=hangar->GetChecklist(4);
+	AscensionUltra *au=(AscensionUltra *)owner;
+	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
 	switch(state)
 	{
 	case Empty:
@@ -304,6 +320,7 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	case Taxi:
 		if (!vincinity) return;
 		state=FuelHold;
+		au->SendEvent(args);
 		return;
 	case FuelHold:
 		//Nothing to do here
@@ -311,7 +328,8 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Roll;		
+		state=Roll;
+		au->SendEvent(args);
 		return;
 	case Roll:
 		if (vincinity) return;
@@ -386,13 +404,16 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLAUNCHHOLD);
 	bool inExhaustArea=hangar->CheckVincinity(&local, VINCINITYEXHAUST);
 	bool inTakeoffArea=hangar->CheckVincinity(&local, VINCINITYTAKEOFF);
-	BaseVessel::EventHandler::Arguments args={Aborted, BaseVessel::EventHandler::Checklist, this};
+	AscensionUltra *au=(AscensionUltra *)owner;
+	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
 	switch(state)
 	{
 	case AbortOpen:
 		if (inTakeoffArea) return;
-		((AscensionUltra *)owner)->SendEvent(args);
 		//TODO: Beacons off
+		args.Event=Aborted;
+		//The order before clearing the subject here is important! The event handler needs the subject in order to determine if it is a valid checklist event.
+		au->SendEvent(args);
 		state=Empty;
 		subject=NULL;
 		return;
@@ -400,9 +421,12 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		if (shield->GetPosition()<1) return;
 		exit->Open();
 		state=OpenExit;
+		au->SendEvent(args);
 		return;
 	case OpenExit:
-		if (exit->GetPosition()>=1) state=Exit;
+		if (exit->GetPosition()<1) return;
+		state=Exit;
+		au->SendEvent(args);
 		return;
 	case Exit:
 		if (!vincinity) return;
@@ -410,12 +434,14 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		shield->Close();
 		door->Close();
 		state=Blast;
+		au->SendEvent(args);
 		return;
 	case Blast:
 		if (exit->GetPosition()>0) return;
 		if (shield->GetPosition()>0) return;
 		if (door->GetPosition()>0) return;
 		state=LaunchHold;
+		au->SendEvent(args);
 		return;
 	case LaunchHold:
 		//Nothing to do here
@@ -424,20 +450,23 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		if (inExhaustArea) return;
 		//TODO: Exhaust simulation off
 		state=Speeding;
+		au->SendEvent(args);
 		return;
 	case Speeding:
 		if (oapiGetVesselInterface(subject)->GroundContact()) return;
 		shield->Open();
 		door->Open();
 		state=TakeOff;
+		au->SendEvent(args);
 		return;
 	case TakeOff:
 		if (inTakeoffArea) return;
 		//TODO: Beacons off
 		args.Event=Left;
-		((AscensionUltra *)owner)->SendEvent(args);
+		//The order before clearing the subject here is important! The event handler needs the subject in order to determine if it is a valid checklist event.
+		au->SendEvent(args);
 		state=Empty;
-		subject=NULL;		
+		subject=NULL;
 		return;
 	}
 }
