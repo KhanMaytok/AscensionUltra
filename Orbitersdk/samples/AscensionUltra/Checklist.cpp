@@ -87,7 +87,7 @@ VECTOR3 Checklist::GetNosePoint()
 	//Calculate local coordinates of subject nose w.r.t. hangar - nose is half size in front of origin
 	VECTOR3 global, local;
 	VESSEL *vessel=oapiGetVesselInterface(subject);
-	vessel->Local2Global(_V(0,0,vessel->GetSize()/2), global);
+	vessel->Local2Global(_V(0,0,vessel->GetSize()), global);
 	owner->Global2Local(global, local);
 	return local;
 }
