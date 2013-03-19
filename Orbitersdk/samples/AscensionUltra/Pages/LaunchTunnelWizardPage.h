@@ -327,8 +327,7 @@ protected:
 		case OAPI_KEY_B:
 			return GroundMenu;
 		case OAPI_KEY_A:
-			//TODO: implement abort display change here
-			list->SetEvent(LaunchTunnel::BoardingChecklist::Abort); //Takes advantage of boarding and fueling list having the same event definition
+			abortConfirmation=true;
 			return NoChange;
 		case OAPI_KEY_G:
 			list->SetEvent(LaunchTunnel::BoardingChecklist::Proceed); //Takes advantage of boarding and fueling list having the same event definition
