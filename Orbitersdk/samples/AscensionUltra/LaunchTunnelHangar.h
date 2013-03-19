@@ -20,13 +20,19 @@
 #define ROOMS	2
 #define LISTS	5
 
-#define PAXHOLDRANGE	{ _V(     0, -1000, -25 ) , _V( 180, 1000, 25 ) }
-#define PFHOLDRANGE		{ _V(   180, -1000, -78 ) , _V( 300, 1000, 78 ) }
-#define LAUNCHHOLDRANGE	{ _V(  -275, -1000, -25 ) , _V(-200, 1000, 25 ) }
-#define EXHAUSTRANGE	{ _V(  -350, -1000, -50 ) , _V(-200, 1000, 50 ) }
-#define TAKEOFFRANGE	{ _V(-10000, -1000, -200) , _V(-200, 2000, 200) }
-#define FUELHOLDRANGE	{ _V(  -100, -1000, -70 ) , _V(   0, 1000, 70 ) }
-#define LFHOLDRANGE		{ _V(   300, -1000, -78 ) , _V( 330, 1000, 78 ) }
+
+
+#define LFHOLDRANGE		{ _V(   315, -1000, -25 ) , _V( 325, 1000, 25 ) }
+#define PFHOLDRANGE		{ _V(   175, -1000, -25 ) , _V( 185, 1000, 25 ) }
+#define PAXHOLDRANGE	{ _V(    70, -1000, -25 ) , _V(  80, 1000, 25 ) }
+#define FUELHOLDRANGE	{ _V(   -40, -1000, -25 ) , _V( -30, 1000, 25 ) }
+#define LAUNCHHOLDRANGE	{ _V(  -280, -1000, -25 ) , _V(-270, 1000, 25 ) }
+#define EXHAUSTRANGE	{ _V(  -350, -1000, -50 ) , _V(-280, 1000, 50 ) }
+
+#define PFAREARANGE		{ _V(   175, -1000, -80 ) , _V( 325, 1000, 80 ) }
+#define PAXAREARANGE	{ _V(   -40, -1000, -80 ) , _V( 325, 1000, 80 ) }
+#define FUELAREARANGE	{ _V(  -280, -1000, -80 ) , _V( 325, 1000, 80 ) }
+#define TAKEOFFRANGE	{ _V(-10000, -1000, -200) , _V( 325, 2000, 200) }
 
 #define VINCINITYPAXHOLD	0
 #define VINCINITYPFHOLD		1
@@ -35,6 +41,9 @@
 #define VINCINITYTAKEOFF	4
 #define VINCINITYFUELHOLD	5
 #define VINCINITYLFHOLD		6
+#define VINCINITYPFAREA		7
+#define VINCINITYPAXAREA	8
+#define VINCINITYFUELAREA	9
 
 namespace LaunchTunnel
 {

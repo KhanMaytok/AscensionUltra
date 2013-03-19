@@ -118,7 +118,6 @@ bool LaunchTunnel::PreflightChecklist::List::SetEvent(int event)
 		if (event!=Abort) return false;
 		RecordEvent(event);
 		state=AbortOpen;
-		next->SetSubject(subject);
 		hangar->GetDoor(0)->Open();
 		return true;
 	default:
@@ -140,6 +139,7 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 	
 	VECTOR3 local=GetNosePoint();
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYPFHOLD);
+	bool area=hangar->CheckVincinity(&local, VINCINITYPFAREA);
 	Checklist *next=hangar->GetChecklist(2);
 	AscensionUltra *au=(AscensionUltra *)owner;
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
@@ -176,10 +176,11 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 		subject=NULL;
 		return;
 	case AbortOpen:
-		if (vincinity) return;
+		if (area) return;
+		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Empty;
 		next->SetEvent(LaunchTunnel::BoardingChecklist::Abort);
+		state=Empty;		
 		subject==NULL;
 		return;
 	}
@@ -208,7 +209,6 @@ bool LaunchTunnel::BoardingChecklist::List::SetEvent(int event)
 		if (event!=Abort) return false;
 		RecordEvent(event);
 		state=AbortWait;
-		next->SetSubject(subject);
 		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
 		return true;
 	default:
@@ -227,6 +227,7 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 	
 	VECTOR3 local=GetNosePoint();
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYPAXHOLD);
+	bool area=hangar->CheckVincinity(&local, VINCINITYPAXAREA);
 	Checklist *next=hangar->GetChecklist(3);
 	AscensionUltra *au=(AscensionUltra *)owner;
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
@@ -258,7 +259,8 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 		((AscensionUltra *)owner)->DockVessel(hangar->GetRoom(0), NULL);
 		return;
 	case AbortWait:
-		if (vincinity) return;
+		if (area) return;
+		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		state=Empty;
 		next->SetEvent(LaunchTunnel::FuelingChecklist::Abort);
@@ -290,7 +292,6 @@ bool LaunchTunnel::FuelingChecklist::List::SetEvent(int event)
 		if (event!=Abort) return false;
 		RecordEvent(event);
 		state=AbortWait;
-		next->SetSubject(subject);
 		return true;
 	default:
 		return false;
@@ -308,6 +309,7 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	
 	VECTOR3 local=GetNosePoint();
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYFUELHOLD);
+	bool area=hangar->CheckVincinity(&local, VINCINITYFUELAREA);
 	Checklist *next=hangar->GetChecklist(4);
 	AscensionUltra *au=(AscensionUltra *)owner;
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
@@ -337,7 +339,8 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 		subject=NULL;
 		return;
 	case AbortWait:
-		if (vincinity) return;
+		if (area) return;
+		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		state=Empty;
 		next->SetEvent(LaunchTunnel::LaunchChecklist::Abort);
@@ -527,7 +530,10 @@ Checklist *LaunchTunnelHangar::GetChecklist(int index){return (index>=0 && index
 
 bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos, int index)
 {
-	VECTOR3 range[7][2]={ PAXHOLDRANGE , PFHOLDRANGE , LAUNCHHOLDRANGE , EXHAUSTRANGE , TAKEOFFRANGE , FUELHOLDRANGE, LFHOLDRANGE };
+	VECTOR3 range[10][2]=
+	{ PAXHOLDRANGE , PFHOLDRANGE , LAUNCHHOLDRANGE , 
+	  EXHAUSTRANGE , TAKEOFFRANGE , FUELHOLDRANGE, 
+	  LFHOLDRANGE, PFAREARANGE, PAXAREARANGE, FUELAREARANGE };
 	range[index][0]=position+range[index][0];
 	range[index][1]=position+range[index][1];
 	return	pos->x>range[index][0].x && pos->x<range[index][1].x &&
