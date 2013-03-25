@@ -40,14 +40,14 @@ void Hangar::DefineAnimations ()
 {	
 	int k=GetDoors();
 	for (int i=0;i<k;i++) GetDoor(i)->DefineAnimations();
-	ReadBeaconDefinition(beacons, classname, position, owner);
-	ReadBeaconGroups(beaconGroup, beacons, classname);
+	ReadBeaconDefinition(beacons, ini, classname, position, owner);
+	ReadBeaconGroups(beaconGroup, beacons, ini, classname);
 	if (instance>=0)
 	{
 		char *line=new char[strlen(classname)+40];
 		sprintf(line, "%s%d", classname, instance);
-		ReadBeaconDefinition(beacons, line, position, owner);
-		ReadBeaconGroups(beaconGroup, beacons, line);
+		ReadBeaconDefinition(beacons, ini, line, position, owner);
+		ReadBeaconGroups(beaconGroup, beacons, ini, line);
 		delete [] line;
 	}
 }
@@ -118,11 +118,12 @@ void Hangar::clbkPostCreation ()
 
 void Hangar::clbkVisualCreated (VISHANDLE vis, int refcount){}
 
-void Hangar::Init(VESSEL* owner, const char *name, UINT meshIndex, const char *classname, int instance, const char *event_prefix)
+void Hangar::Init(VESSEL* owner, const char *ini, const char *name, UINT meshIndex, const char *classname, int instance, const char *event_prefix)
 {
 	this->owner=owner;
 	this->meshIndex=meshIndex;
 	this->instance=instance;
+	this->ini=ini;
 	int i=strlen(classname);
 	strcpy(this->classname=new char[i+1], classname);
 	if (event_prefix==NULL) event_prefix=classname;

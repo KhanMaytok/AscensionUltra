@@ -8,7 +8,7 @@ class Taxiways :
 public:
 	Taxiways(void);
 	~Taxiways(void);
-	void Init(VESSEL* owner, const char *classname, VECTOR3 &position);
+	void Init(VESSEL* owner, const char *ini, const char *classname, VECTOR3 &position);
 private:
 	std::vector<char *> endPoints;
 	std::vector<BeaconArray *> beacons;

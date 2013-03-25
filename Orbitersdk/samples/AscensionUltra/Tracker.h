@@ -17,7 +17,7 @@ class Tracker
 {
 public:
 	~Tracker(void);
-	void Init(VESSEL *owner, const char *name, MGROUP_ROTATE *azimuth, MGROUP_ROTATE *elevation, double rotationOffset, const char *classname, int instance);
+	void Init(VESSEL *owner, const char *ini, const char *name, MGROUP_ROTATE *azimuth, MGROUP_ROTATE *elevation, double rotationOffset, const char *classname, int instance);
 	virtual void SetTarget(OBJHANDLE target);
 	virtual OBJHANDLE GetTarget();
 	virtual double GetDistance();
@@ -46,4 +46,6 @@ private:
 	double HorizontalAxisRotationRate;			// Rotation rate around the horizontal axis. This changes the elevation. ATTENTION: Currently the two rates are hard coded. Feel free to change them or load from config.
 	double CurrentElevation;			// ATTENTION: Current initial values for azimuth and elevation are 0 and 0. You'll have to change this to load them from scenario / config and save them on exit, so that the dish starts where it was when simulation ended. 
 	double CurrentAzimuth;
+
+	const char *ini;
 };

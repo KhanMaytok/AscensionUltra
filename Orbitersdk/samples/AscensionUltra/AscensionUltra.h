@@ -155,6 +155,9 @@ private:
 
 	ISpVoice *ATC;
 
+	char *ini;
+	bool scnsave, recsave;
+
 	//DEBUG
 
 	int cur_Path;
