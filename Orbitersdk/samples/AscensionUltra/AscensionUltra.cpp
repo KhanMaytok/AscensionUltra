@@ -34,12 +34,16 @@
 #define DRADARPIVOT 10
 #define DOCKSOFFSET _V(-130.5,0,645)
 #define AIRPORTOFFSET _V(-4653,0,605)
-#define SECTION		"Settings"
-#define SPAWN		"auto-spawn"
-#define RESET		"fast-reset"
-#define SCNSAVE		"scenario-save"
-#define RECSAVE		"recorder-save"
-#define INIFILE		"Modules\\AscensionUltra.ini"
+#define SPAWN		"BaseAutoSpawn"
+#define RESET		"BaseFastReset"
+#define SCNSAVE		"BaseScenarioSave"
+#define RECSAVE		"BaseRecorderSave"
+#define CONFIGDIRTAG   "ConfigDir"
+#define CONFIGDIRDEFAULT   ".\\Config\\"
+#define CONFIGPATH    "%s%s.cfg"
+#define CONFIG2PATH   "%sVessels\\%s.cfg"
+#define ORBITERCONFIG "Orbiter.cfg"
+#define CONFIGEXCEPTION "abort: neither vessel configuration \"%s%s.cfg\" nor \"%sVessels\\%s.cfg\" was found!"  
 
 // Static methods
 
@@ -70,6 +74,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	coords=false;
 
+	ini=NULL;
+
 	if(!SUCCEEDED(CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&ATC))) ATC=NULL;	
 }
 
@@ -80,6 +86,7 @@ AscensionUltra::~AscensionUltra ()
 {	
 	if (ATC) ATC->Release();
 	//Remove dynamic INI parameters
+	delete [] ini;
 	OrbiterExtensions::Exit(this);
 }
 
@@ -93,7 +100,7 @@ void AscensionUltra::InitSubObjects()
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
 		name[k]=0x31+i;
-		turnAround[i].Init(this, name, i+STATICMESHES, "HANGAR", i);
+		turnAround[i].Init(this, ini, name, i+STATICMESHES, "HANGAR", i);
 	}
 
 	strcpy(name, "Lease Hangar #x ");
@@ -102,24 +109,24 @@ void AscensionUltra::InitSubObjects()
 	{
 		name[i>8?k+1:k]=0x30+((i+1) % 10);
 		if (i>8) name[k]=0x31;
-		leaseLight[i].Init(this, name, i+STATICMESHES+TURNAROUNDHANGARS, "LIGHTLEASE", i, "LEASE");
+		leaseLight[i].Init(this, ini, name, i+STATICMESHES+TURNAROUNDHANGARS, "LIGHTLEASE", i, "LEASE");
 	}
 
 	for(;i<LEASELIGHTHANGARS+LEASEHEAVYHANGARS;i++)
 	{
 		name[i>8?k+1:k]=0x30+((i+1) % 10);
 		if (i>8) name[k]=0x31;
-		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, name, i+STATICMESHES+TURNAROUNDHANGARS, "HEAVYLEASE", i, "LEASE");
+		leaseHeavy[i-LEASELIGHTHANGARS].Init(this, ini, name, i+STATICMESHES+TURNAROUNDHANGARS, "HEAVYLEASE", i, "LEASE");
 	}
 
 	strcpy(name, "Winged Launch Facility");
-	launchTunnel.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS, "LAUNCHTUNNEL", -1);
+	launchTunnel.Init(this, ini, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS, "LAUNCHTUNNEL", -1);
 
 	strcpy(name, "Vertical Launch Facility 1");
-	vertical.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS, "VERTICALLAUNCH", 0);
+	vertical.Init(this, ini, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS, "VERTICALLAUNCH", 0);
 
 	strcpy(name, "Vertical Launch Facility 2");
-	verticalSmall.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+1, "VERTICALLAUNCH", 1);
+	verticalSmall.Init(this, ini, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+1, "VERTICALLAUNCH", 1);
 
 	/* Tracker definition */
 	//0-1,7-10 groups are dishes, 4 is static plate, 2-3/5-6 is rotation stand
@@ -129,17 +136,17 @@ void AscensionUltra::InitSubObjects()
 	for(i=0;i<DRADARS;i++)
 	{
 		name[k]=0x31+i;
-		dradar[i].Init(this, name,
+		dradar[i].Init(this, ini, name,
 			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), -360*RAD),
 			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), 90*RAD),
 			90*RAD, "DRADAR", i);
 	}
 
 	strcpy(name, "Dockyard");
-	docks.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES+DRADARS, "DOCKYARD", -1);
+	docks.Init(this, ini, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES+DRADARS, "DOCKYARD", -1);
 
 	strcpy(name, "Airport");
-	airport.Init(this, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES+DRADARS+DOCKYARDS, "AIRPORT", -1);
+	airport.Init(this, ini, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES+DRADARS+DOCKYARDS, "AIRPORT", -1);
 	crew=airport.GetEntrance()->GetCrew();
 
 	controlRoom=launchTunnel.GetRoom(1); //Tower
@@ -149,9 +156,9 @@ void AscensionUltra::InitSubObjects()
 
 	if ((orbiterExtensionsVersion=OrbiterExtensions::GetVersion())<0) orbiterExtensionsVersion=0.0;
 
-	taxiways.Init(this, "TAXIWAYS", OFFSET);
+	taxiways.Init(this, ini, "TAXIWAYS", OFFSET);
 
-	runways.Init(this, "RUNWAYS", OFFSET);
+	runways.Init(this, ini, "RUNWAYS", OFFSET);
 
 	//DEBUG
 	disx=0.0;
@@ -187,6 +194,40 @@ void AscensionUltra::clbkDrawHUD (int mode, const HUDPAINTSPEC *hps, HDC hDC)
 // Set vessel class parameters
 void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 {
+	// Get INI file location
+	char *className=GetClassName(), *cn, configDir[1024];
+	strcpy(cn=new char[strlen(className)+1], className);
+	strlwr(cn);
+	
+	//configuration file is also INI file, read orbiter.cfg first to get custom config paths
+	FILEHANDLE f=oapiOpenFile(ORBITERCONFIG, FILE_IN);
+	if (!oapiReadItem_string(f, CONFIGDIRTAG, configDir)) strcpy(configDir, CONFIGDIRDEFAULT);
+	if (!oapiReadItem_bool(f, SCNSAVE, scnsave)) scnsave=true; //Scenario saving default is true
+	oapiCloseFile(f, FILE_IN);
+	//try standard path
+	ini=new char[strlen(cn)+strlen(configDir)+strlen(CONFIGPATH)];
+	sprintf(ini, CONFIGPATH, configDir, cn);
+	FILE *test=fopen(ini, "r");
+	if (test==NULL)
+	{
+		//try alternate vessel config path
+		delete [] ini;
+		ini=new char[strlen(cn)+strlen(configDir)+strlen(CONFIG2PATH)];
+		sprintf(ini, CONFIG2PATH, configDir, cn);
+		test=fopen(ini, "r");
+		if (test==NULL)
+		{
+			//vessel configuration not found - this is a severe error, as it should be there
+			delete [] ini;
+			ini=new char[strlen(cn)*2+strlen(configDir)*2+strlen(CONFIGEXCEPTION)];
+			sprintf(ini, CONFIGEXCEPTION, configDir, cn, configDir, cn);
+			oapiWriteLog(ini);
+			exit(-1); //Bail out
+		}
+	}
+	fclose(test); //We don't really need the handle
+	delete [] cn;
+
 	// *************** physical parameters **********************
 
 	VESSEL2::SetEmptyMass (EMPTY_MASS);
@@ -327,7 +368,7 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 {
 	// Write default vessel parameters
 	VESSEL2::clbkSaveState (scn);
-	if (GetPrivateProfileInt(SECTION, SCNSAVE, 1, INIFILE)==0) return;
+	if (!scnsave) return;
 
 	char cbuf[256];
 	int i;

@@ -7,7 +7,7 @@ class Runways :
 public:
 	Runways(void);
 	~Runways(void);
-	void Init(VESSEL* owner, const char *classname, VECTOR3 &position);
+	void Init(VESSEL* owner, const char *ini, const char *classname, VECTOR3 &position);
 	virtual void Activate(int index);
 	virtual bool On(const char *point, bool isEnd=false);
 	virtual int GetPoints(bool isEnd=false, char *fromPoint=NULL);

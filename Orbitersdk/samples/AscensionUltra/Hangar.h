@@ -36,7 +36,7 @@ public:
 	virtual void clbkSaveState (FILEHANDLE scn);
 	virtual void clbkPostCreation ();
 	virtual void clbkVisualCreated (VISHANDLE vis, int refcount);
-	virtual void Init(VESSEL* owner, const char *name, UINT meshIndex, const char *classname, int instance, const char *event_prefix=NULL);
+	virtual void Init(VESSEL* owner, const char *ini, const char *name, UINT meshIndex, const char *classname, int instance, const char *event_prefix=NULL);
 	virtual int GetDoors();
 	virtual Door *GetDoor(int index);
 	virtual bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
@@ -53,6 +53,7 @@ protected:
 	VESSEL* owner;
 	UINT meshIndex;
 	char *event_prefix, *name, *classname;
+	const char *ini;
 	int instance; 
 	int cur_door, cur_room, cur_checklist;
 	int areaStart, areaEnd;

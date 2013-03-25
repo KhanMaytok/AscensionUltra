@@ -1,11 +1,10 @@
 #pragma once
 #include "orbitersdk.h"
-#define SECTION		"Settings"
-#define SPAWN		"auto-spawn"
-#define RESET		"fast-reset"
-#define SCNSAVE		"scenario-save"
-#define RECSAVE		"recorder-save"
-#define INIFILE		"Modules\\AscensionUltra.ini"
+#define SPAWN		"BaseAutoSpawn"
+#define RESET		"BaseFastReset"
+#define SCNSAVE		"BaseScenarioSave"
+#define RECSAVE		"BaseRecorderSave"
+#define ORBITERCONFIG "Orbiter.cfg"
 #define CLASSNAME	"AscensionUltra"
 #define AUNAME		"Wideawake_Int(AU)"
 #define LONGITUDE	(-14.405L*RAD)
@@ -17,6 +16,7 @@ class RootConfig;
 
 struct gParamsType{
 	HINSTANCE hInst;
-	AscensionUltraConfig *item;
-	RootConfig *root;
+	AscensionUltraConfig *Item;
+	RootConfig *Root;
+	bool SCNSave, RecSave, Spawn, Reset;
 };

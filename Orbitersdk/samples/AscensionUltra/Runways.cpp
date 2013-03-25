@@ -12,18 +12,18 @@ Runways::~Runways(void)
 	for(std::vector<char *>::iterator i=endPoints.begin();i!=endPoints.end();i++) delete [] *i;
 }
 
-void Runways::Init(VESSEL* owner, const char *classname, VECTOR3 &position)
+void Runways::Init(VESSEL* owner, const char *ini, const char *classname, VECTOR3 &position)
 {
-	ReadBeaconDefinition(beacons, classname, position, owner);
-	ReadBeaconPaths(paths, beacons, classname, owner);
-	ReadBeaconEndPoints(endPoints, classname);
+	ReadBeaconDefinition(beacons, ini, classname, position, owner);
+	ReadBeaconPaths(paths, beacons, ini, classname, owner);
+	ReadBeaconEndPoints(endPoints, ini, classname);
 	Routes::Init(
 		beacons[0]->GetSize(),
 		beacons[0]->GetFallOff(),
 		beacons[0]->GetPeriod(),
 		beacons[0]->GetDuration(),
 		beacons[0]->GetPropagate());
-	ReadBeaconRoutes(*this, paths, endPoints, classname);
+	ReadBeaconRoutes(*this, paths, endPoints, ini, classname);
 
 	//Detect and activate static beacons
 	int k=endPoints.size();
@@ -40,7 +40,7 @@ void Runways::Init(VESSEL* owner, const char *classname, VECTOR3 &position)
 	for(int i=0;i<k;i++)
 		Routes::Switch(endPoints[staticIndex], Routes::GetPoint(i, false, endPoints[staticIndex]), true);
 	
-	OverwriteBeaconParamsDefinition(beacons, classname);
+	OverwriteBeaconParamsDefinition(beacons, ini, classname);
 	PriorityFinalize();
 }
 

@@ -2,7 +2,6 @@
 #define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
 #define PREFIXSIZE	40
 #define LINESIZE	1024
-#define INIFILE		"Modules\\AscensionUltra.ini"
 
 #include "AscensionUltra.h"
 #include "Module.h"
@@ -89,23 +88,23 @@ void RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref)
 	}	
 }
 
-void ReadBeaconDefinition(std::vector<BeaconArray *> &beacons, const char *section, VECTOR3 position, VESSEL *owner)
+void ReadBeaconDefinition(std::vector<BeaconArray *> &beacons, const char *ini, const char *section, VECTOR3 position, VESSEL *owner)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
 	char defaults[LINESIZE]="";
 	int i=0;
-	GetPrivateProfileString(section, "BeaconParams", "1,1,1,1,0", defaults, LINESIZE, INIFILE);
+	GetPrivateProfileString(section, "BeaconParams", "1,1,1,1,0", defaults, LINESIZE, ini);
 	while(true)
 	{
 		sprintf(pf, "BeaconArray%d", i);
-		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) break;
 		VECTOR3 start, end, color;
 		int length;
 		sscanf(line, "%lf,%lf,%lf %lf,%lf,%lf %lf,%lf,%lf %d", &start.x, &start.y, &start.z, &end.x, &end.y, &end.z, &color.x, &color.y, &color.z, &length);
 		sprintf(pf, "BeaconParams%d", i++);
-		GetPrivateProfileString(section, pf, defaults, line, LINESIZE, INIFILE);
+		GetPrivateProfileString(section, pf, defaults, line, LINESIZE, ini);
 		double size, falloff, period, duration, propagation;
 		sscanf(line, "%lf,%lf,%lf,%lf,%lf", &size, &falloff, &period, &duration, &propagation);
 		//Coordinate transformation
@@ -126,7 +125,7 @@ void ReadBeaconDefinition(std::vector<BeaconArray *> &beacons, const char *secti
 	}
 }
 
-void ReadBeaconPaths(std::vector<BeaconPath *> &paths, std::vector<BeaconArray *> &beacons, const char *section, VESSEL *owner)
+void ReadBeaconPaths(std::vector<BeaconPath *> &paths, std::vector<BeaconArray *> &beacons, const char *ini, const char *section, VESSEL *owner)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
@@ -134,7 +133,7 @@ void ReadBeaconPaths(std::vector<BeaconPath *> &paths, std::vector<BeaconArray *
 	while(true)
 	{
 		sprintf(pf, "BeaconPath%d", i++);
-		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) break;
 		BeaconPath *path=new BeaconPath();
 		path->Init(owner, NULL, _V(0,0,0), 0, 0);
@@ -175,7 +174,7 @@ void ReadBeaconPaths(std::vector<BeaconPath *> &paths, std::vector<BeaconArray *
 	}
 }
 
-void ReadBeaconEndPoints(std::vector<char *> &endPoints, const char *section)
+void ReadBeaconEndPoints(std::vector<char *> &endPoints, const char *ini, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
@@ -183,7 +182,7 @@ void ReadBeaconEndPoints(std::vector<char *> &endPoints, const char *section)
 	while(true)
 	{
 		sprintf(pf, "BeaconEndPoint%d", i++);
-		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) break;
 		char *p=new char[strlen(line)+1];
 		strcpy(p, line);
@@ -191,7 +190,7 @@ void ReadBeaconEndPoints(std::vector<char *> &endPoints, const char *section)
 	}
 }
 
-void ReadBeaconRoutes(Routes &routes, std::vector<BeaconPath *> &paths, std::vector<char *> &endPoints, const char *section)
+void ReadBeaconRoutes(Routes &routes, std::vector<BeaconPath *> &paths, std::vector<char *> &endPoints, const char *ini, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
@@ -199,7 +198,7 @@ void ReadBeaconRoutes(Routes &routes, std::vector<BeaconPath *> &paths, std::vec
 	while(true)
 	{
 		sprintf(pf, "BeaconRoute%d", i++);
-		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) break;
 		int path, start, end, reverse, priority;
 		sscanf(line, "%d %d:%d %d %d", &path, &start, &end, &reverse, &priority);
@@ -207,7 +206,7 @@ void ReadBeaconRoutes(Routes &routes, std::vector<BeaconPath *> &paths, std::vec
 	}
 }
 
-void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const char *section)
+void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const char *ini, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
@@ -215,7 +214,7 @@ void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const 
 	for(int i=0;i<k;i++)
 	{
 		sprintf(pf, "BeaconParams%d", i);
-		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) continue;
 		double size, falloff, period, duration, propagation;
 		sscanf(line, "%lf,%lf,%lf,%lf,%lf", &size, &falloff, &period, &duration, &propagation);
@@ -227,7 +226,7 @@ void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const 
 	}
 }
 
-void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *section)
+void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *ini, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
@@ -235,7 +234,7 @@ void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const 
 	while(true)
 	{
 		sprintf(pf, "BeaconGroup%d", i++);
-		GetPrivateProfileString(section, pf, "", line, LINESIZE, INIFILE);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) break;
 		int k=strlen(line);
 		int s=0;

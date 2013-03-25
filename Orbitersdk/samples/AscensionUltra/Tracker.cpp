@@ -11,13 +11,14 @@
 #include "Tracker.h"
 #include "Module.h"
 
-void Tracker::Init(VESSEL *owner, const char *name, MGROUP_ROTATE *azimuth, MGROUP_ROTATE *elevation, double rotationOffset, const char *classname, int instance)
+void Tracker::Init(VESSEL *owner, const char *ini, const char *name, MGROUP_ROTATE *azimuth, MGROUP_ROTATE *elevation, double rotationOffset, const char *classname, int instance)
 {
 	this->owner=owner;
 	int i=strlen(classname);
 	strcpy(this->classname=new char[i+1], classname);
 	this->event_prefix=new char[i+40];
 	this->instancename=new char[i+40];
+	this->ini=ini;
 	if (instance<0)
 	{
 		sprintf(this->event_prefix, "%sTGT", classname);
@@ -181,8 +182,8 @@ void Tracker::clbkPostCreation ()
 
 void Tracker::DefineAnimations()
 {	
-	ReadBeaconDefinition(beacons, classname, position, owner);
-	if (instancename!=NULL) ReadBeaconDefinition(beacons, instancename, position, owner);
+	ReadBeaconDefinition(beacons, ini, classname, position, owner);
+	if (instancename!=NULL) ReadBeaconDefinition(beacons, ini, instancename, position, owner);
 	anim_azimuth = owner->CreateAnimation (0);
 	ANIMATIONCOMPONENT_HANDLE parent = owner->AddAnimationComponent (anim_azimuth, 0, 1, mgroupAzimuth);
 	anim_elevation = owner->CreateAnimation (0);

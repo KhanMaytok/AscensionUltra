@@ -20,29 +20,22 @@
 #include "RootConfig.h"
 #include "AscensionUltraSpawner.h"
 
-#define SECTION		"Settings"
-#define SPAWN		"auto-spawn"
-#define RESET		"fast-reset"
-#define SCNSAVE		"scenario-save"
-#define RECSAVE		"recorder-save"
-#define INIFILE		"Modules\\AscensionUltra.ini"
-
 gParamsType gParams;
 
 DLLCLBK void InitModule (HINSTANCE hDLL)
 {
 	gParams.hInst = hDLL;
-	gParams.item = new AscensionUltraConfig;	
-	gParams.root = NULL;
+	gParams.Item = new AscensionUltraConfig;	
+	gParams.Root = NULL;
 	
 	LAUNCHPADITEM_HANDLE root = oapiFindLaunchpadItem ("Base configuration");
 	if (root==NULL)
 	{
-		gParams.root = new RootConfig;
-		root=oapiRegisterLaunchpadItem(gParams.root);
+		gParams.Root = new RootConfig;
+		root=oapiRegisterLaunchpadItem(gParams.Root);
 	}
-		
-	oapiRegisterLaunchpadItem (gParams.item, root);
+
+	oapiRegisterLaunchpadItem (gParams.Item, root);
 
 	oapiRegisterModule(new AscensionUltraSpawner(hDLL));
 }
@@ -50,11 +43,11 @@ DLLCLBK void InitModule (HINSTANCE hDLL)
 DLLCLBK void ExitModule (HINSTANCE hDLL)
 {
 	// Unregister the launchpad items
-	oapiUnregisterLaunchpadItem (gParams.item);
-	delete gParams.item;
-	if (gParams.root!=NULL)
+	oapiUnregisterLaunchpadItem (gParams.Item);
+	delete gParams.Item;
+	if (gParams.Root!=NULL)
 	{
-		oapiUnregisterLaunchpadItem (gParams.root);	
-		delete gParams.root;
+		oapiUnregisterLaunchpadItem (gParams.Root);	
+		delete gParams.Root;
 	}
 }
