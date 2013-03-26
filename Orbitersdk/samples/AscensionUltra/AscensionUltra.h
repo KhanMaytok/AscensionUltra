@@ -45,7 +45,7 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 
 //Defines for person change API
 #define PERSON_EVA		0x00
-#define PERSON_DELETE	0xFF
+#define PERSON_DELETE	0x7F
 #define PERSON_NAME		0x01
 #define PERSON_MISCID	0x02
 #define PERSON_AGE		0x04
