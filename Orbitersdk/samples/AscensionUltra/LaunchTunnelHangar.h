@@ -30,8 +30,8 @@
 #define EXHAUSTRANGE	{ _V(  -350, -1000, -50 ) , _V(-280, 1000, 50 ) }
 
 #define PFAREARANGE		{ _V(   175, -1000, -80 ) , _V( 325, 1000, 80 ) }
-#define PAXAREARANGE	{ _V(   -40, -1000, -80 ) , _V( 325, 1000, 80 ) }
-#define FUELAREARANGE	{ _V(  -280, -1000, -80 ) , _V( 325, 1000, 80 ) }
+#define PAXAREARANGE	{ _V(    70, -1000, -80 ) , _V( 325, 1000, 80 ) }
+#define FUELAREARANGE	{ _V(   -30, -1000, -80 ) , _V( 325, 1000, 80 ) }
 #define TAKEOFFRANGE	{ _V(-10000, -1000, -200) , _V( 325, 2000, 200) }
 
 #define VINCINITYPAXHOLD	0
