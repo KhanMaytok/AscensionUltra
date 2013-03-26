@@ -181,7 +181,7 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 		if (next->GetSubject()!=subject) return;
 		next->SetEvent(LaunchTunnel::BoardingChecklist::Abort);
 		state=Empty;		
-		subject==NULL;
+		subject=NULL;
 		return;
 	}
 }
@@ -264,7 +264,7 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 		if (next->GetSubject()!=subject) return;
 		state=Empty;
 		next->SetEvent(LaunchTunnel::FuelingChecklist::Abort);
-		subject==NULL;
+		subject=NULL;
 		return;
 	}
 }
@@ -342,9 +342,9 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 		if (area) return;
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Empty;
 		next->SetEvent(LaunchTunnel::LaunchChecklist::Abort);
-		subject==NULL;
+		state=Empty;		
+		subject=NULL;
 		return;
 	}
 }
@@ -377,9 +377,11 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 		//fall-through
 	case Exit:
 	case OpenExit:
+	case Empty:
 		if (event!=Abort) return false;
 		RecordEvent(event);
 		state=AbortOpen;
+		hangar->GetDoor(1)->Open();
 		//TODO: Beacons error
 		return true;	
 	default:
