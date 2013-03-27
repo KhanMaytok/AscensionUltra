@@ -494,7 +494,7 @@ void LaunchTunnelHangar::DefineAnimations ()
 		new MGROUP_ROTATE(meshIndex, DoorGrp+2, 1,	_V(-189.3,0,47.5), _V(0,1,0), (float)(-90*RAD)));
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
 	doors[3].Init(owner, "Tunnel Door", prefix, 1,
-		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1,	_V(-47,0,0)));
+		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1,	_V(47,0,0)));
 
 	rooms[0].Init(owner, this, "Control Room", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
 	rooms[1].Init(owner, this, "Control Tower", _V(111,218,70), _V(0,0,-1));
