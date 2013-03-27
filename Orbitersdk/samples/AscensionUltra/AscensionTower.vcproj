@@ -308,6 +308,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Pages\LaunchTunnelATCPage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Pages\LaunchTunnelWizardPage.h"
 				>
 			</File>

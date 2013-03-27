@@ -52,7 +52,7 @@ protected:
 
 	char *GetSubtitle(){return "Select ATC request";}
 
-	int GetListSize(){return 3;}
+	int GetListSize(){return GetLaunchList()==NULL?2:3;}
 
 	AscensionTowerListPair GetListItem(int index)
 	{
@@ -67,9 +67,38 @@ protected:
 		{
 			case 0: return Bearing;
 			case 1: return LandingRunwaySelection;
-			case 2: return Launch;
+			case 2:
+				{
+					Checklist *list=GetLaunchList();
+					if (list!=NULL)
+					{
+						if (list->GetState()==LaunchTunnel::LaunchChecklist::LaunchHold) list->SetEvent(LaunchTunnel::LaunchChecklist::Proceed);
+						return LaunchTunnelATC;
+					}
+				}
+				//fall-through
 			default: return Undefined;
 		}
+	}
+
+private:
+
+	Checklist *GetLaunchList()
+	{
+		for(int i=ascension->GetChecklists(HANGARTYPELFMC | HANGARTYPEVLC, vessel);i-->0;)
+		{
+			Checklist *list=ascension->GetChecklist(HANGARTYPELFMC | HANGARTYPEVLC, i, vessel);
+			if (list->GetType()==LaunchTunnel::Launch)
+			{
+				data->GetPage(LaunchTunnelATC)->SetDataRoot(list);
+				LaunchTunnel::LaunchChecklist::State state=(LaunchTunnel::LaunchChecklist::State)list->GetState();
+				return (state==LaunchTunnel::LaunchChecklist::LaunchHold	||
+						state==LaunchTunnel::LaunchChecklist::Beacons		||
+						state==LaunchTunnel::LaunchChecklist::Speeding		||
+						state==LaunchTunnel::LaunchChecklist::TakeOff			) ? list : NULL;
+			}
+		}
+		return NULL;
 	}
 
 };
