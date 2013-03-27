@@ -19,7 +19,7 @@ typedef enum AscensionTowerPageInstance
 	VerticalLaunchWizard,
 	Bearing,
 	LandingRunwaySelection,
-	Launch,
+	LaunchTunnelATC,
 	DoorControl,
 	CraneControl,
 	Roster,

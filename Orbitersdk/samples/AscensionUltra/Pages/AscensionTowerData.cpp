@@ -25,6 +25,7 @@
 #include "CraneGrapplePage.h"
 #include "HangarLaunchPage.h"
 #include "LaunchTunnelWizardPage.h"
+#include "LaunchTunnelATCPage.h"
 #pragma warning(disable : 4482)
 
 void EventHandler(BaseVessel::EventHandler::Arguments args, void *context)
@@ -57,7 +58,7 @@ AscensionTowerData::AscensionTowerData()
 	pages[LaunchTunnelWizard]=new LaunchTunnelWizardPage(this);
 	pages[VerticalLaunchWizard]=new TemplatePage(this);
 	pages[Bearing]=new TemplatePage(this);
-	pages[Launch]=new TemplatePage(this);
+	pages[LaunchTunnelATC]=new LaunchTunnelATCPage(this);
 	pages[DoorControl]=new DoorPage(this);
 	pages[CraneControl]=new CranePage(this);
 	pages[PersonControl]=new PersonPage(this);
