@@ -23,7 +23,7 @@ bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 	RecordEvent(event);
 	state=Empty;
 	subject=NULL;
-	((AscensionUltra *)owner)->Talk(L"<pitch absmiddle=\"-10\">Wideawake, DG, scratch that request.<pitch absmiddle=\"10\">Roger, DG, give it some more thought before calling, next time.");
+	((AscensionUltra *)owner)->Talk(L"<pitch absmiddle=\"-10\">Wideawake, DG, scratch that request.<pitch absmiddle=\"10\">Roger, DG, give it some more thoughts before calling next time.");
 	return true;
 }
 
