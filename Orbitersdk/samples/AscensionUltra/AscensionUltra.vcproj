@@ -426,6 +426,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FoldingDoor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Group.h"
 				>
 			</File>

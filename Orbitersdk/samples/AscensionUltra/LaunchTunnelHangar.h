@@ -10,6 +10,7 @@
 #pragma once
 #include "Hangar.h"
 #include "Door.h"
+#include "FoldingDoor.h"
 #include "Room.h"
 #include "BeaconArray.h"
 #include <vector>
@@ -17,6 +18,7 @@
 #include "LFMCChecklistStates.h"
 
 #define DOORS	4
+#define FDOORS	1
 #define ROOMS	2
 #define LISTS	5
 
@@ -112,7 +114,8 @@ public:
 	int GetChecklists();
 	Checklist *GetChecklist(int index);
 private:
-	Door doors[DOORS];	
+	Door doors[DOORS];
+	FoldingDoor foldingDoors[FDOORS];
 	Room rooms[ROOMS];
 	LaunchTunnel::RequestChecklist::List request;
 	LaunchTunnel::PreflightChecklist::List preflight;
