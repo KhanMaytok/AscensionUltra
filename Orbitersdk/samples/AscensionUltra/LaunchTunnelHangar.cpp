@@ -14,7 +14,9 @@
 
 //Redefinition, because AscensionUltra.h unfortunately overwrites them
 #define DOORS	4
+#define FDOORS	1
 #define ROOMS	2
+#define LISTS	5
 
 bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 {
@@ -381,7 +383,8 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 		if (event!=Abort) return false;
 		RecordEvent(event);
 		state=AbortOpen;
-		hangar->GetDoor(1)->Open();
+		hangar->GetDoor(1)->Open(); //Open exit door
+		hangar->GetDoor(4)->Open(); //Open escape door
 		//TODO: Beacons error
 		return true;	
 	default:
@@ -393,7 +396,8 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 {
 	Door *exit=hangar->GetDoor(1);
 	Door *shield=hangar->GetDoor(2); //Note that blast shield opening is "getting out of the way", closing is "putting into place for function"
-	Door *door=hangar->GetDoor(3); //Note that tunnel door operation is reversed: open is closing, closing is opening
+	Door *door=hangar->GetDoor(3);   //Note that tunnel door operation is reversed: open is closing, closing is opening
+	Door *escape=hangar->GetDoor(4);
 
 	if (subject==NULL)
 	{
@@ -402,6 +406,7 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		if (exit->GetPosition()>0 && exit->GetMovement()>=0) exit->Close();
 		if (shield->GetPosition()<1 && shield->GetMovement()<=0) shield->Open();
 		if (door->GetPosition()<1 && door->GetMovement()<=0) door->Open();
+		if (escape->GetPosition()>0 && escape->GetMovement()>=0) escape->Close();
 		return;
 	}
 	
@@ -480,7 +485,7 @@ int LaunchTunnelHangar::GetType(){return HANGARTYPELFMC;}
 
 void LaunchTunnelHangar::DefineAnimations ()
 {
-	static UINT DoorGrp[4] = {0,1,2,3};
+	static UINT DoorGrp[8] = {0,1,2,3,4,5,6,7};
 	char prefix[40]="";
 	int i=0;
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);	
@@ -495,6 +500,12 @@ void LaunchTunnelHangar::DefineAnimations ()
 	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
 	doors[3].Init(owner, "Tunnel Door", prefix, 1,
 		new MGROUP_TRANSLATE(meshIndex, DoorGrp+3, 1,	_V(47,0,0)));
+	sprintf(prefix, "%sDOOR%d", event_prefix, i++);
+	foldingDoors[0].Init(owner, "Escape Door", prefix, 4,
+		new MGROUP_ROTATE(meshIndex, DoorGrp+4, 1,	_V( -943.6,0,-59.52), _V(0,1,0), (float)( -90*RAD)),
+		new MGROUP_ROTATE(meshIndex, DoorGrp+5, 1,	_V( -967.6,0,-57.52), _V(0,1,0), (float)( 180*RAD)),
+		new MGROUP_ROTATE(meshIndex, DoorGrp+6, 1,	_V(-1039.6,0,-59.52), _V(0,1,0), (float)(  90*RAD)),
+		new MGROUP_ROTATE(meshIndex, DoorGrp+7, 1,	_V(-1015.6,0,-57.52), _V(0,1,0), (float)(-180*RAD)));
 
 	rooms[0].Init(owner, this, "Control Room", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
 	rooms[1].Init(owner, this, "Control Tower", _V(111,218,70), _V(0,0,-1));
@@ -519,9 +530,9 @@ void LaunchTunnelHangar::DefineAnimations ()
 	Hangar::DefineAnimations();
 }
 
-int LaunchTunnelHangar::GetDoors(){return DOORS;}
+int LaunchTunnelHangar::GetDoors(){return DOORS+FDOORS;}
 
-Door *LaunchTunnelHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+Door *LaunchTunnelHangar::GetDoor(int index){return index<0?NULL:(index<DOORS?doors+index:(index<DOORS+FDOORS?foldingDoors+index-DOORS:NULL));}
 
 int LaunchTunnelHangar::GetRooms(){return ROOMS;}
 
