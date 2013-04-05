@@ -1,7 +1,7 @@
 #pragma once
 #include "AscensionTowerPage.h"
 #pragma warning(disable : 4482)
-#define HANGARS HANGARTYPELFMC | HANGARTYPEVLC
+#define HLHANGARS HANGARTYPELFMC | HANGARTYPEVLC
 
 class HangarLaunchPage: public AscensionTowerPage
 {
@@ -54,14 +54,14 @@ protected:
 
 	char *GetSubtitle(){return "Select Facility to launch from";}
 
-	int GetListSize(){return ascension->GetHangars(HANGARS);}
+	int GetListSize(){return ascension->GetHangars(HLHANGARS);}
 
 	AscensionTowerListPair GetListItem(int index)
 	{
 		AscensionTowerListPair item =
 		{
 			index,
-			ascension->GetHangar(HANGARS, index)->GetName()
+			ascension->GetHangar(HLHANGARS, index)->GetName()
 		};
 		return item;
 	}
@@ -69,7 +69,7 @@ protected:
 	AscensionTowerPageInstance Select(int index=-1)
 	{
 		AscensionTowerPage::Select(index);
-		Hangar *hangar=ascension->GetHangar(HANGARS, selectedIndex);
+		Hangar *hangar=ascension->GetHangar(HLHANGARS, selectedIndex);
 		switch(hangar->GetType())
 		{
 		case HANGARTYPELFMC:

@@ -12,12 +12,6 @@
 #include "Module.h"
 #include "AscensionUltra.h"
 
-//Redefinition, because AscensionUltra.h unfortunately overwrites them
-#define DOORS	4
-#define FDOORS	1
-#define ROOMS	2
-#define LISTS	5
-
 bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 {
 	if (event!=Abort) return false;
@@ -530,16 +524,16 @@ void LaunchTunnelHangar::DefineAnimations ()
 	Hangar::DefineAnimations();
 }
 
-int LaunchTunnelHangar::GetDoors(){return DOORS+FDOORS;}
+int LaunchTunnelHangar::GetDoors(){return LFMCDOORS+LFMCFDOORS;}
 
-Door *LaunchTunnelHangar::GetDoor(int index){return index<0?NULL:(index<DOORS?doors+index:(index<DOORS+FDOORS?foldingDoors+index-DOORS:NULL));}
+Door *LaunchTunnelHangar::GetDoor(int index){return index<0?NULL:(index<LFMCDOORS?doors+index:(index<LFMCDOORS+LFMCFDOORS?foldingDoors+index-LFMCDOORS:NULL));}
 
-int LaunchTunnelHangar::GetRooms(){return ROOMS;}
+int LaunchTunnelHangar::GetRooms(){return LFMCROOMS;}
 
-Room *LaunchTunnelHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
+Room *LaunchTunnelHangar::GetRoom(int index){return (index>=0 && index<LFMCROOMS)?rooms+index:NULL;}
 
-int LaunchTunnelHangar::GetChecklists(){return LISTS;}
-Checklist *LaunchTunnelHangar::GetChecklist(int index){return (index>=0 && index<LISTS)?lists[index]:NULL;}
+int LaunchTunnelHangar::GetChecklists(){return LFMCLISTS;}
+Checklist *LaunchTunnelHangar::GetChecklist(int index){return (index>=0 && index<LFMCLISTS)?lists[index]:NULL;}
 
 bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos, int index)
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include "AscensionTowerPage.h"
 #pragma warning(disable : 4482)
-#define HANGARS HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT
+#define GHANGARS HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT
 
 class GroundPage: public AscensionTowerPage
 {
@@ -53,7 +53,7 @@ protected:
 
 	char *GetSubtitle(){return "Select request";}
 
-	int GetListSize(){return vessel==ascension?3:(ascension->GetNearestHangar(HANGARS, vessel)==NULL?4:5);}
+	int GetListSize(){return vessel==ascension?3:(ascension->GetNearestHangar(GHANGARS, vessel)==NULL?4:5);}
 
 	AscensionTowerListPair GetListItem(int index)
 	{
@@ -93,7 +93,7 @@ protected:
 				}
 				return HangarForLaunchSelection;
 			case 4:
-				data->GetPage(PassengerTransfer)->SetDataRoot(ascension->GetNearestHangar(HANGARS, vessel));
+				data->GetPage(PassengerTransfer)->SetDataRoot(ascension->GetNearestHangar(GHANGARS, vessel));
 				return PassengerTransfer;
 			default: return Undefined;
 		}

@@ -14,8 +14,8 @@
 #include "BeaconArray.h"
 #include <vector>
 
-#define DOORS	1
-#define ROOMS	1
+#define VLCDOORS	1
+#define VLCROOMS	1
 
 class VerticalLaunchHangar:public Hangar
 {
@@ -28,6 +28,6 @@ public:
 	Room *GetRoom(int index);
 	void SetPosition(VECTOR3 position);
 private:
-	VerticalLaunchDoor doors[DOORS];
-	Room rooms[ROOMS];
+	VerticalLaunchDoor doors[VLCDOORS];
+	Room rooms[VLCROOMS];
 };

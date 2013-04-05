@@ -1,7 +1,7 @@
 #pragma once
 #include "AscensionTowerPage.h"
 #pragma warning(disable : 4482)
-#define HANGARS HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT | HANGARTYPEVLC
+#define HRHANGARS HANGARTYPETA | HANGARTYPELFMC | HANGARTYPEPORT | HANGARTYPEVLC
 
 class HangarRoomPage: public AscensionTowerPage
 {
@@ -53,14 +53,14 @@ protected:
 
 	char *GetSubtitle(){return "Select Hangar for Control Room";}
 
-	int GetListSize(){return ascension->GetHangars(HANGARS);}
+	int GetListSize(){return ascension->GetHangars(HRHANGARS);}
 
 	AscensionTowerListPair GetListItem(int index)
 	{
 		AscensionTowerListPair item =
 		{
 			index,
-			ascension->GetHangar(HANGARS, index)->GetName()
+			ascension->GetHangar(HRHANGARS, index)->GetName()
 		};
 		return item;
 	}
@@ -68,7 +68,7 @@ protected:
 	AscensionTowerPageInstance Select(int index=-1)
 	{
 		AscensionTowerPage::Select(index);
-		data->GetPage(RoomSelection)->SetDataRoot(ascension->GetHangar(HANGARS, selectedIndex));
+		data->GetPage(RoomSelection)->SetDataRoot(ascension->GetHangar(HRHANGARS, selectedIndex));
 		return RoomSelection;
 	}
 

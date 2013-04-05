@@ -41,9 +41,9 @@ void TurnAroundHangar::DefineAnimations ()
 		new MGROUP_SCALE(meshIndex, DoorGrp+2, 1, _V(0,CRANEREELUPPERPOINT,0), _V(1,CRANEREELUPPERPOINT/CRANEREELHEIGHT,1)),
 		prefix);
 
-	char *name[ROOMS]={"East Control Room","West Control Room"};
-	VECTOR3 room[ROOMS][3]={ ROOM_EAST , ROOM_WEST };
-	for(int i=0;i<ROOMS;i++) rooms[i].Init(owner, this, name[i], room[i][0], room[i][1], room[i][2], 4 );
+	char *name[TAROOMS]={"East Control Room","West Control Room"};
+	VECTOR3 room[TAROOMS][3]={ TAROOM_EAST , TAROOM_WEST };
+	for(int i=0;i<TAROOMS;i++) rooms[i].Init(owner, this, name[i], room[i][0], room[i][1], room[i][2], 4 );
 
 	crane1.DefineAnimations();
 }
@@ -103,13 +103,13 @@ void TurnAroundHangar::clbkVisualCreated (VISHANDLE vis, int refcount)
 
 Crane *TurnAroundHangar::GetCrane(){return &crane1;}
 
-int TurnAroundHangar::GetDoors(){return DOORS;}
+int TurnAroundHangar::GetDoors(){return TADOORS;}
 
-Door *TurnAroundHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+Door *TurnAroundHangar::GetDoor(int index){return (index>=0 && index<TADOORS)?doors+index:NULL;}
 
-int TurnAroundHangar::GetRooms(){return ROOMS;}
+int TurnAroundHangar::GetRooms(){return TAROOMS;}
 
-Room *TurnAroundHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
+Room *TurnAroundHangar::GetRoom(int index){return (index>=0 && index<TAROOMS)?rooms+index:NULL;}
 
 void TurnAroundHangar::SetPosition(VECTOR3 position){this->position=position;}
 
@@ -126,9 +126,9 @@ bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const cha
 
 int TurnAroundHangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index)
 {
-	VECTOR3 areas[4]={AREA_SOUTH, AREA_NORTH, AREA_EAST, AREA_WEST};
+	VECTOR3 areas[4]={TAAREA_SOUTH, TAAREA_NORTH, TAAREA_EAST, TAAREA_WEST};
 	areaStart=index;
-	for(int i=0;i<DOORS;i++) doors[i].LinkActionArea(crew, index++, position+areas[i], 5);
+	for(int i=0;i<TADOORS;i++) doors[i].LinkActionArea(crew, index++, position+areas[i], 5);
 	areaEnd=index-1;
 	return index;
 }

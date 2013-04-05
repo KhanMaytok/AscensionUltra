@@ -1,7 +1,7 @@
 #pragma once
 #include "AscensionTowerPage.h"
 #pragma warning(disable : 4482)
-#define HANGARS HANGARTYPETA
+#define HCHANGARS HANGARTYPETA
 
 class HangarCranePage: public AscensionTowerPage
 {
@@ -58,14 +58,14 @@ protected:
 
 	char *GetSubtitle(){return "Select Hangar for Cargo Crane";}
 
-	int GetListSize(){return ascension->GetHangars(HANGARS);}
+	int GetListSize(){return ascension->GetHangars(HCHANGARS);}
 
 	AscensionTowerListPair GetListItem(int index)
 	{
 		AscensionTowerListPair item =
 		{
 			index,
-			ascension->GetHangar(HANGARS, index)->GetName()
+			ascension->GetHangar(HCHANGARS, index)->GetName()
 		};
 		return item;
 	}
@@ -73,7 +73,7 @@ protected:
 	AscensionTowerPageInstance Select(int index=-1)
 	{
 		AscensionTowerPage::Select(index);
-		dataRoot = ascension->GetHangar(HANGARS, selectedIndex);
+		dataRoot = ascension->GetHangar(HCHANGARS, selectedIndex);
 		void *crane=((TurnAroundHangar *)dataRoot)->GetCrane();
 		dataSet[0]=dataRoot;
 		dataSet[1]=crane;

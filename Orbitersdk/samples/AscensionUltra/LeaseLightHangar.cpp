@@ -27,17 +27,17 @@ void LeaseLightHangar::DefineAnimations ()
 	Hangar::DefineAnimations();
 }
 
-int LeaseLightHangar::GetDoors(){return DOORS;}
+int LeaseLightHangar::GetDoors(){return LLDOORS;}
 
-Door *LeaseLightHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+Door *LeaseLightHangar::GetDoor(int index){return (index>=0 && index<LLDOORS)?doors+index:NULL;}
 
 void LeaseLightHangar::SetPosition(VECTOR3 position){this->position=position;}
 
 int LeaseLightHangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index)
 {
-	VECTOR3 areas[2]={AREA_MAIN, AREA_ACCESS};
+	VECTOR3 areas[2]={LLAREA_MAIN, LLAREA_ACCESS};
 	areaStart=index;
-	for(int i=0;i<DOORS;i++) doors[i].LinkActionArea(crew, index++, position+areas[i], 5);
+	for(int i=0;i<LLDOORS;i++) doors[i].LinkActionArea(crew, index++, position+areas[i], 5);
 	areaEnd=index-1;
 	return index;
 }
