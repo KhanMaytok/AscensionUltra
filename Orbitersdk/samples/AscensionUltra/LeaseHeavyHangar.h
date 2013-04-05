@@ -10,8 +10,8 @@
 #pragma once
 #include "Hangar.h"
 #include "Door.h"
-#define DOORS 1
-#define AREA_MAIN _V(43,0,-49.5)
+#define LHDOORS 1
+#define LHAREA_MAIN _V(43,0,-49.5)
 
 class LeaseHeavyHangar:public Hangar
 {
@@ -24,5 +24,5 @@ public:
 	int InitActionAreas(UMMUCREWMANAGMENT *crew, int index);
 	bool ActionAreaActivated(int action);
 private:
-	Door doors[DOORS];
+	Door doors[LHDOORS];
 };

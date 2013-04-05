@@ -128,6 +128,6 @@ void AscensionTowerData::PreCheck()
 {
 	AscensionUltra *au=GetAscension();
 	if (au==NULL) state=BaseSelect;
-	if (state==PassengerTransfer && au->GetNearestHangar(HANGARS, GetMFD()->GetVessel())==NULL) state==GroundMenu;
+	if (state==PassengerTransfer && au->GetNearestHangar(HDHANGARS, GetMFD()->GetVessel())==NULL) state==GroundMenu;
 	pages[state]->RefreshHandles(au);
 }

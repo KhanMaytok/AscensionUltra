@@ -39,12 +39,12 @@ void VerticalLaunchHangar::DefineAnimations ()
 	doors[0].SetSpeed(0.02); //50s for full animation
 }
 
-int VerticalLaunchHangar::GetDoors(){return DOORS;}
+int VerticalLaunchHangar::GetDoors(){return VLCDOORS;}
 
-Door *VerticalLaunchHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+Door *VerticalLaunchHangar::GetDoor(int index){return (index>=0 && index<VLCDOORS)?doors+index:NULL;}
 
-int VerticalLaunchHangar::GetRooms(){return ROOMS;}
+int VerticalLaunchHangar::GetRooms(){return VLCROOMS;}
 
-Room *VerticalLaunchHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
+Room *VerticalLaunchHangar::GetRoom(int index){return (index>=0 && index<VLCROOMS)?rooms+index:NULL;}
 
 void VerticalLaunchHangar::SetPosition(VECTOR3 position){this->position=position;}

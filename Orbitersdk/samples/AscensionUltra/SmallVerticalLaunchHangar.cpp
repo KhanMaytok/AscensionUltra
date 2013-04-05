@@ -37,12 +37,12 @@ void SmallVerticalLaunchHangar::DefineAnimations ()
 	doors[0].SetSpeed(0.02); //50s for full animation
 }
 
-int SmallVerticalLaunchHangar::GetDoors(){return DOORS;}
+int SmallVerticalLaunchHangar::GetDoors(){return SVLCDOORS;}
 
-Door *SmallVerticalLaunchHangar::GetDoor(int index){return (index>=0 && index<DOORS)?doors+index:NULL;}
+Door *SmallVerticalLaunchHangar::GetDoor(int index){return (index>=0 && index<SVLCDOORS)?doors+index:NULL;}
 
-int SmallVerticalLaunchHangar::GetRooms(){return ROOMS;}
+int SmallVerticalLaunchHangar::GetRooms(){return SVLCROOMS;}
 
-Room *SmallVerticalLaunchHangar::GetRoom(int index){return (index>=0 && index<ROOMS)?rooms+index:NULL;}
+Room *SmallVerticalLaunchHangar::GetRoom(int index){return (index>=0 && index<SVLCROOMS)?rooms+index:NULL;}
 
 void SmallVerticalLaunchHangar::SetPosition(VECTOR3 position){this->position=position;}

@@ -17,10 +17,10 @@
 #include "Checklist.h"
 #include "LFMCChecklistStates.h"
 
-#define DOORS	4
-#define FDOORS	1
-#define ROOMS	2
-#define LISTS	5
+#define LFMCDOORS	4
+#define LFMCFDOORS	1
+#define LFMCROOMS	2
+#define LFMCLISTS	5
 
 
 
@@ -114,13 +114,13 @@ public:
 	int GetChecklists();
 	Checklist *GetChecklist(int index);
 private:
-	Door doors[DOORS];
-	FoldingDoor foldingDoors[FDOORS];
-	Room rooms[ROOMS];
+	Door doors[LFMCDOORS];
+	FoldingDoor foldingDoors[LFMCFDOORS];
+	Room rooms[LFMCROOMS];
 	LaunchTunnel::RequestChecklist::List request;
 	LaunchTunnel::PreflightChecklist::List preflight;
 	LaunchTunnel::BoardingChecklist::List boarding;
 	LaunchTunnel::FuelingChecklist::List fueling;
 	LaunchTunnel::LaunchChecklist::List launch;
-	Checklist *lists[LISTS];
+	Checklist *lists[LFMCLISTS];
 };

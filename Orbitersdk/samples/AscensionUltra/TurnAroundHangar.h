@@ -15,19 +15,19 @@
 
 const double AIRLOCK_OPERATING_SPEED = 0.1; // Opening/closing speed of outer airlock (1/sec) => cycle = 10 sec
 
-#define DOORS 4
-#define ROOMS 2
+#define TADOORS 4
+#define TAROOMS 2
 #define CRANEXOFFSET 130.0
 #define CRANEYOFFSET 18.0
 #define CRANEREELUPPERPOINT 31.0
 #define CRANEREELLOWERPOINT 29.0
 #define CRANEREELHEIGHT (CRANEREELUPPERPOINT-CRANEREELLOWERPOINT)
-#define AREA_NORTH _V(45,0,-51.5)
-#define AREA_SOUTH _V(-45,0,51.5)
-#define AREA_EAST _V(-116,0,-15)
-#define AREA_WEST _V(116,0,15)
-#define ROOM_EAST {_V(-88,22,0),_V(1,0,0),_V(-72,0,-33)}
-#define ROOM_WEST {_V(88,22,0),_V(-1,0,0),_V(72,0,-33)}
+#define TAAREA_NORTH _V(45,0,-51.5)
+#define TAAREA_SOUTH _V(-45,0,51.5)
+#define TAAREA_EAST _V(-116,0,-15)
+#define TAAREA_WEST _V(116,0,15)
+#define TAROOM_EAST {_V(-88,22,0),_V(1,0,0),_V(-72,0,-33)}
+#define TAROOM_WEST {_V(88,22,0),_V(-1,0,0),_V(72,0,-33)}
 #define TEXTURE_OFFSET 0.125
 
 class TurnAroundHangar:public Hangar
@@ -53,7 +53,7 @@ public:
 	bool CheckVincinity(VECTOR3 *pos, int index=0);
 private:
 	Crane crane1;
-	Door doors[DOORS];
+	Door doors[TADOORS];
 	int cur_crane;
-	Room rooms[ROOMS];
+	Room rooms[TAROOMS];
 };
