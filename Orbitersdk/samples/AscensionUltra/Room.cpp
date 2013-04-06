@@ -18,7 +18,7 @@ void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraP
 {
 	this->owner=owner;
 	this->capacity=capacity;
-	if (capacity>0);
+	if (capacity>0)
 	{
 		crew.InitUmmu(owner->GetHandle());
 		doorPosition+=hangar->GetPosition();
