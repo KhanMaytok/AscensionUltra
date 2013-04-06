@@ -49,7 +49,7 @@
 
 void OnLeaseHeavyLoad(MESHHANDLE hMesh, bool firstload)
 {
-	if (firstload) RotateMesh(hMesh, PI, _V(0,1,0), _V(0,0,0));
+	if (firstload) RotateMesh(hMesh, (float)PI, _V(0,1,0), _V(0,0,0));
 }
 
 // Constructor
@@ -137,8 +137,8 @@ void AscensionUltra::InitSubObjects()
 	{
 		name[k]=0x31+i;
 		dradar[i].Init(this, ini, name,
-			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), -360*RAD),
-			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), 90*RAD),
+			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), (float)(-360*RAD)),
+			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), (float)(90*RAD)),
 			90*RAD, "DRADAR", i);
 	}
 
@@ -197,7 +197,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	// Get INI file location
 	char *className=GetClassName(), *cn, configDir[1024];
 	strcpy(cn=new char[strlen(className)+1], className);
-	strlwr(cn);
+	_strlwr(cn);
 	
 	//configuration file is also INI file, read orbiter.cfg first to get custom config paths
 	FILEHANDLE f=oapiOpenFile(ORBITERCONFIG, FILE_IN);
@@ -324,33 +324,33 @@ void AscensionUltra::clbkLoadStateEx (FILEHANDLE scn, void *vs)
     char *line;
 	
 	while (oapiReadScenario_nextline (scn, line)) {		
-		if (!strnicmp (line, "HANGAR", 6)) {
+		if (!_strnicmp (line, "HANGAR", 6)) {
 			sscanf (line+6, "%d", &cur_TurnAround);
 		} else if (cur_TurnAround>=0 && cur_TurnAround<TURNAROUNDHANGARS) {
 			if (!turnAround[cur_TurnAround].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "LEASE", 5)) {
+		} else if (!_strnicmp (line, "LEASE", 5)) {
 			sscanf (line+5, "%X", &cur_Lease);
 		} else if (cur_Lease>=0 && cur_Lease<LEASELIGHTHANGARS) {
 			if (!leaseLight[cur_Lease].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
 		} else if (cur_Lease>=LEASELIGHTHANGARS && cur_Lease<LEASELIGHTHANGARS+LEASEHEAVYHANGARS) {
 			if (!leaseHeavy[cur_Lease-LEASELIGHTHANGARS].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "LAUNCHTUNNEL", 12)) {
+		} else if (!_strnicmp (line, "LAUNCHTUNNEL", 12)) {
 			sscanf (line+12, "%X", &cur_LaunchTunnel);
 		} else if (cur_LaunchTunnel>=0 && cur_LaunchTunnel<1) {
 			if (!launchTunnel.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "DRADAR", 6)) {
+		} else if (!_strnicmp (line, "DRADAR", 6)) {
 			sscanf (line+6, "%X", &cur_DopplerRadar);
 		} else if (cur_DopplerRadar>=0 && cur_DopplerRadar<2) {
 			if (!dradar[cur_DopplerRadar].clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "AIRPORT", 7)) {
+		} else if (!_strnicmp (line, "AIRPORT", 7)) {
 			sscanf (line+7, "%X", &cur_Airport);
 		} else if (cur_Airport>=0 && cur_Airport<1) {
 			if (!airport.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "DOCKYARD", 8)) {
+		} else if (!_strnicmp (line, "DOCKYARD", 8)) {
 			sscanf (line+8, "%X", &cur_Docks);
 		} else if (cur_Docks>=0 && cur_Docks<1) {
 			if (!docks.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
-		} else if (!strnicmp (line, "VERTICALLAUNCH", 14)) {
+		} else if (!_strnicmp (line, "VERTICALLAUNCH", 14)) {
 			sscanf (line+14, "%X", &cur_Vertical);
 		} else if (cur_Vertical>=0 && cur_Vertical<1) {
 			if (!vertical.clbkLoadStateEx(line)) ParseScenarioLineEx (line, vs);
@@ -443,43 +443,43 @@ void AscensionUltra::clbkPostCreation ()
 // Respond to playback event
 bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!strnicmp (event_type, "HANGAR", 6))
+	if (!_strnicmp (event_type, "HANGAR", 6))
 	{
 		//Hangar event
 		int hangar=(int)(event_type+6)[0]-0x30;
 		if (hangar>=0 && hangar<TURNAROUNDHANGARS) return turnAround[hangar].clbkPlaybackEvent(simt, event_t, event_type+7, event);
 	}
-	if (!strnicmp (event_type, "LEASE", 5))
+	if (!_strnicmp (event_type, "LEASE", 5))
 	{
 		//Hangar event
 		int hangar=(int)(event_type+5)[0]-0x30;
 		if (hangar>=0 && hangar<LEASELIGHTHANGARS) return leaseLight[hangar].clbkPlaybackEvent(simt, event_t, event_type+6, event);
 		if (hangar>=LEASELIGHTHANGARS && hangar<LEASEHEAVYHANGARS) return leaseHeavy[hangar-LEASELIGHTHANGARS].clbkPlaybackEvent(simt, event_t, event_type+6, event);
 	}	
-	if (!strnicmp (event_type, "LAUNCHTUNNEL", 12))
+	if (!_strnicmp (event_type, "LAUNCHTUNNEL", 12))
 	{
 		//Tunnel event
 		return launchTunnel.clbkPlaybackEvent(simt, event_t, event_type+12, event);
 	}
-	if (!strnicmp (event_type, "DRADAR", 6))
+	if (!_strnicmp (event_type, "DRADAR", 6))
 	{
 		//Tunnel event
 		int radar=(int)(event_type+6)[0]-0x30;
 		if (radar>=0 && radar<DRADARS) return dradar[radar].clbkPlaybackEvent(simt, event_t, event_type+6, event);
 	}
-	if (!strnicmp (event_type, "VERTICALLAUNCH", 14))
+	if (!_strnicmp (event_type, "VERTICALLAUNCH", 14))
 	{
 		//Hangar event
 		int hangar=(int)(event_type+14)[0]-0x30;
 		if (hangar==0) return vertical.clbkPlaybackEvent(simt, event_t, event_type+15, event);
 		if (hangar==1) return verticalSmall.clbkPlaybackEvent(simt, event_t, event_type+15, event);
 	}	
-	if (!strnicmp (event_type, "AIRPORT", 7))
+	if (!_strnicmp (event_type, "AIRPORT", 7))
 	{
 		//Airport event
 		return airport.clbkPlaybackEvent(simt, event_t, event_type+7, event);
 	}
-	if (!strnicmp (event_type, "DOCKYARD", 8))
+	if (!_strnicmp (event_type, "DOCKYARD", 8))
 	{
 		//Airport event
 		return docks.clbkPlaybackEvent(simt, event_t, event_type+8, event);
@@ -600,14 +600,16 @@ bool AscensionUltra::clbkLoadGenericCockpit ()
 // Process buffered key events
 int AscensionUltra::clbkConsumeBufferedKey (DWORD key, bool down, char *kstate)
 {
-	char inputBoxBuffer[81], inputBoxTitle[81];
+	//char inputBoxBuffer[81], inputBoxTitle[81];
 	
 	if (!down) return 0; // only process keydown events
 	if (Playback()) return 0; // don't allow manual user input during a playback
 
 	if (KEYMOD_SHIFT (kstate)) {
 	} else if (KEYMOD_CONTROL (kstate)) {
-		switch (key) {		
+		switch (key) {
+			case OAPI_KEY_1: break; //TODO: CTRL+1 key
+			default: break; //TODO: CTRL keys
 		}
 	} else {
 		switch (key) {

@@ -24,7 +24,7 @@ void Room::Init(VESSEL *owner, Hangar *hangar, const char *name, VECTOR3 cameraP
 		doorPosition+=hangar->GetPosition();
 		VECTOR3 n=_V(-1,0,-1)+doorPosition;
 		VECTOR3 p=_V(1,2,1)+doorPosition;
-		crew.DefineAirLockShape(true, n.x,p.x,n.y,p.y,n.z,p.z);
+		crew.DefineAirLockShape(true, (float)n.x,(float)p.x,(float)n.y,(float)p.y,(float)n.z,(float)p.z);
 		VECTOR3 d=_V(0,0,1)-viewDirection;
 		if (EVADirection.x==DBL_MAX && EVADirection.y==DBL_MAX && EVADirection.z==DBL_MAX)
 			EVADirection=_V(0,asin(length(d)/(d.x<0?2:-2))*2,0);

@@ -185,7 +185,7 @@ char *AscensionTowerPage::GetNameSafeTitle(char *trailer)
 	char *name=ascension->GetName();
 	int i=55-strlen(trailer); //55=57-EOL-Space
 	bool longer=false;
-	if (strlen(name)>i)
+	if ((int)strlen(name)>i)
 	{
 		i-=2;
 		longer=true;

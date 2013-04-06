@@ -49,11 +49,11 @@ void Checklist::RecordEvent(int event)
 void Checklist::PostStep (double simt, double simdt, double mjd){}
 bool Checklist::clbkLoadStateEx (char *line)
 {
-	if (!strnicmp (line, "STATE", 5))
+	if (!_strnicmp (line, "STATE", 5))
 	{
 		sscanf (line+6, "%d", &state);
 		return true;
-	} else if (!strnicmp (line, "SUBJECT", 7))
+	} else if (!_strnicmp (line, "SUBJECT", 7))
 	{
 		subject=oapiGetObjectByName(line+8);
 		return true;
@@ -73,7 +73,7 @@ void Checklist::clbkSaveState (FILEHANDLE scn)
 }
 bool Checklist::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!strnicmp (event_type, "EVENT", 5))
+	if (!_strnicmp (event_type, "EVENT", 5))
 	{
 		int e=0;
 		sscanf (event, "%d", &e);

@@ -291,30 +291,30 @@ int Crane::ConsumeDirectKey (char *kstate)
 
 bool Crane::clbkLoadStateEx (char *line)
 {
-    if (!strnicmp (line, "POS", 3))
+    if (!_strnicmp (line, "POS", 3))
 	{		
 		sscanf (line+4, "%lf%lf%lf", &position.x, &position.y, &position.z);		
 		return true;
 	}
-	else if (!strnicmp (line, "L", 1))
+	else if (!_strnicmp (line, "L", 1))
 	{
 		int index;
 		char cmd[256];
 		sscanf (line+2, "%d %s", &index, cmd);
-		if (!strnicmp(strupr(cmd), "STOP", 4)) waypoints[index]=_V(LISTSTOP, 0, 0);
-		else if (!strnicmp(strupr(cmd), "GRAPPLE", 7)) waypoints[index]=_V(LISTGRAPPLE, 0, 0);
-		else if (!strnicmp(strupr(cmd), "RELEASE", 7)) waypoints[index]=_V(LISTRELEASE, 0, 0);
-		else if (!strnicmp(strupr(cmd), "JUMP", 4))
+		if (!_strnicmp(_strupr(cmd), "STOP", 4)) waypoints[index]=_V(LISTSTOP, 0, 0);
+		else if (!_strnicmp(_strupr(cmd), "GRAPPLE", 7)) waypoints[index]=_V(LISTGRAPPLE, 0, 0);
+		else if (!_strnicmp(_strupr(cmd), "RELEASE", 7)) waypoints[index]=_V(LISTRELEASE, 0, 0);
+		else if (!_strnicmp(_strupr(cmd), "JUMP", 4))
 		{
 			waypoints[index]=_V(LISTJUMP, 0, 0);
 			sscanf (line+2, "%d %s %lf", &index, cmd, &waypoints[index].y);			
 		}
-		else if (!strnicmp(strupr(cmd), "PAUSE", 5))
+		else if (!_strnicmp(_strupr(cmd), "PAUSE", 5))
 		{
 			waypoints[index]=_V(LISTPAUSE, 0, 0);
 			sscanf (line+2, "%d %s %lf", &index, cmd, &waypoints[index].y);			
 		}
-		else if (!strnicmp(strupr(cmd), "SPEED", 5))
+		else if (!_strnicmp(_strupr(cmd), "SPEED", 5))
 		{
 			waypoints[index]=_V(LISTSPEEDS, 0, 0);
 			sscanf (line+2, "%d %s %lf %lf", &index, cmd, &waypoints[index].y, &waypoints[index].z);
@@ -359,12 +359,12 @@ void Crane::clbkPostCreation ()
 
 bool Crane::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!strnicmp (event_type, "CMD", 3))
+	if (!_strnicmp (event_type, "CMD", 3))
 	{
 		sscanf (event, "%lf%lf%lf", &command.x, &command.y, &command.z);
 		return true;
 	}
-	if (!strnicmp (event_type, "POS", 3))
+	if (!_strnicmp (event_type, "POS", 3))
 	{
 		sscanf (event, "%lf%lf%lf", &position.x, &position.y, &position.z);
 		return true;

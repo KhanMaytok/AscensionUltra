@@ -10,8 +10,6 @@
 #include "meshres.h"
 #include "resource.h"
 
-#define STRICT
-
 // ==============================================================
 // Global parameters
 // ==============================================================
@@ -78,12 +76,12 @@ void RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref)
 			VECTOR3 n=_V(m->Vtx[j].nx, m->Vtx[j].ny, m->Vtx[j].nz);
 			p=mul(M, (p-ref))+ref;
 			n=mul(M, n);
-			m->Vtx[j].x=p.x;
-			m->Vtx[j].y=p.y;
-			m->Vtx[j].z=p.z;
-			m->Vtx[j].nx=n.x;
-			m->Vtx[j].ny=n.y;
-			m->Vtx[j].nz=n.z;
+			m->Vtx[j].x=(float)p.x;
+			m->Vtx[j].y=(float)p.y;
+			m->Vtx[j].z=(float)p.z;
+			m->Vtx[j].nx=(float)n.x;
+			m->Vtx[j].ny=(float)n.y;
+			m->Vtx[j].nz=(float)n.z;
 		}
 	}	
 }
@@ -365,9 +363,6 @@ BOOL CALLBACK EdPg1Proc (HWND hTab, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // Message procedure for editor page 2 (passengers)
 BOOL CALLBACK EdPg2Proc (HWND hTab, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	AscensionUltra *dg;
-	int i;
-
 	switch (uMsg) {
 	case WM_INITDIALOG:
 		break;
