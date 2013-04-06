@@ -57,9 +57,9 @@ void TurnAroundHangar::clbkPostStep (double simt, double simdt, double mjd)
 bool TurnAroundHangar::clbkLoadStateEx (char *line)
 {
 	if (Hangar::clbkLoadStateEx(line)) return true;
-	else if (!strnicmp (line, "CRANE", 5)) sscanf (line+5, "%d", &cur_crane);
+	else if (!_strnicmp (line, "CRANE", 5)) sscanf (line+5, "%d", &cur_crane);
 	else if (cur_crane>=0 && cur_crane<1) return crane1.clbkLoadStateEx(line);
-	else return false;	
+	return false;
 }
 
 void TurnAroundHangar::clbkSaveState (FILEHANDLE scn)
@@ -91,7 +91,7 @@ void TurnAroundHangar::clbkVisualCreated (VISHANDLE vis, int refcount)
 	for(int k=8;k<10;k++)
 	{
 		MESHGROUPEX *group=oapiMeshGroupEx(mesh, k); //Get original vertices
-		for(int i=0;i<group->nVtx;i++) group->Vtx[i].tu+=TEXTURE_OFFSET*instance; //Offset the U coordinate
+		for(int i=0;i<(int)group->nVtx;i++) group->Vtx[i].tu+=(float)(TEXTURE_OFFSET*instance); //Offset the U coordinate
 		GROUPEDITSPEC change;
 		change.flags=GRPEDIT_VTXTEXU; //Change only U coordinates
 		change.nVtx=group->nVtx;
@@ -115,7 +115,7 @@ void TurnAroundHangar::SetPosition(VECTOR3 position){this->position=position;}
 
 bool TurnAroundHangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!strnicmp (event_type, "CRANE", 5))
+	if (!_strnicmp (event_type, "CRANE", 5))
 	{
 		//Crane event
 		int crane=(int)(event_type+5)[0]-0x30;

@@ -96,11 +96,11 @@ void Door::DefineAnimations()
 
 bool Door::clbkLoadStateEx (char *line)
 {
-    if (!strnicmp (line, "POS", 3))
+    if (!_strnicmp (line, "POS", 3))
 	{
 		sscanf (line+4, "%lf", &position);
 		return true;
-	} else if (!strnicmp (line, "CMD", 3))
+	} else if (!_strnicmp (line, "CMD", 3))
 	{
 		sscanf (line+4, "%lf", &command);
 		return true;
@@ -134,7 +134,7 @@ void Door::clbkPostCreation ()
 
 bool Door::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!strnicmp (event_type, "CMD", 3))
+	if (!_strnicmp (event_type, "CMD", 3))
 	{
 		sscanf (event, "%lf", &command);
 		return true;

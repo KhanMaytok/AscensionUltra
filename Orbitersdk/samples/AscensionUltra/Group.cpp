@@ -35,7 +35,7 @@ void Group::Add(GroupElement *element)
 
 GroupElement * Group::operator [] (int index)
 {
-	if (index<0 || index>byIndex.size()) return NULL;
+	if (index<0 || index>(int)byIndex.size()) return NULL;
 	return byIndex[index];
 }
 

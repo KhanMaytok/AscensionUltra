@@ -202,7 +202,7 @@ void Routes::LinkPriorityFinalize(std::map<const char *, std::map<const char *, 
 		b.priority=i->second.begin()->second->Priority;
 		b.text=i->first;
 		int j=0;
-		for(;j<s.size();j++) if (s[j].priority<b.priority) break;
+		for(;j<(int)s.size();j++) if (s[j].priority<b.priority) break;
 		s.insert(s.begin()+j, b);
 		std::vector<sortblock> e;
 		for(std::map<const char *, Route *>::iterator j=i->second.begin();j!=i->second.end();j++)
@@ -211,14 +211,14 @@ void Routes::LinkPriorityFinalize(std::map<const char *, std::map<const char *, 
 			b.priority=j->second->Priority;
 			b.text=j->first;
 			int k=0;
-			for(;k<e.size();k++) if (e[k].priority<b.priority) break;
+			for(;k<(int)e.size();k++) if (e[k].priority<b.priority) break;
 			e.insert(e.begin()+k, b);
 		}
 		const char **l=endsForStarts[b.text]=new const char*[e.size()];
-		for(int j=0;j<e.size();j++) l[j]=e[j].text;
+		for(int j=0;j<(int)e.size();j++) l[j]=e[j].text;
 	}
 	starts=new const char*[s.size()];
-	for(int j=0;j<s.size();j++) starts[j]=s[j].text;
+	for(int j=0;j<(int)s.size();j++) starts[j]=s[j].text;
 }
 
 void Routes::PriorityFinalize()

@@ -67,13 +67,13 @@ bool Hangar::clbkLoadStateEx (char *line)
 	int k=GetDoors();
 	int l=GetRooms();
 	int m=GetChecklists();
-    if (!strnicmp (line, "DOOR", 4)) sscanf (line+4, "%d", &cur_door);
+    if (!_strnicmp (line, "DOOR", 4)) sscanf (line+4, "%d", &cur_door);
 	else if (cur_door>=0 && cur_door<k) return GetDoor(cur_door)->clbkLoadStateEx(line);
-	else if (!strnicmp (line, "ROOM", 4)) sscanf (line+4, "%d", &cur_room);
-	else if (cur_room>=0 && cur_room<l) return GetRoom(cur_room)->GetCrew()->LoadAllMembersFromOrbiterScenario(line);	
-	else if (!strnicmp (line, "CHECKLIST", 9)) sscanf (line+9, "%d", &cur_checklist);
+	else if (!_strnicmp (line, "ROOM", 4)) sscanf (line+4, "%d", &cur_room);
+	else if (cur_room>=0 && cur_room<l) return GetRoom(cur_room)->GetCrew()->LoadAllMembersFromOrbiterScenario(line)==TRUE;
+	else if (!_strnicmp (line, "CHECKLIST", 9)) sscanf (line+9, "%d", &cur_checklist);
 	else if (cur_checklist>=0 && cur_checklist<m) return GetChecklist(cur_checklist)->clbkLoadStateEx(line);
-	else return false;
+	return false;
 }
 
 void Hangar::clbkSaveState (FILEHANDLE scn)
@@ -146,14 +146,14 @@ VECTOR3 Hangar::GetPosition(){return position;}
 
 bool Hangar::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!strnicmp (event_type, "DOOR", 4))
+	if (!_strnicmp (event_type, "DOOR", 4))
 	{
 		//Door event
 		int k=GetDoors();
 		int door=(int)(event_type+4)[0]-0x30;
 		if (door>=0 && door<k) return GetDoor(door)->clbkPlaybackEvent(simt, event_t, event_type+5, event);
 	}
-	if (!strnicmp (event_type, "CHECKLIST", 9))
+	if (!_strnicmp (event_type, "CHECKLIST", 9))
 	{
 		//Checklist event
 		int k=GetChecklists();

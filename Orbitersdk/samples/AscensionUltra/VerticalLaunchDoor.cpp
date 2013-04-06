@@ -57,9 +57,9 @@ void VerticalLaunchDoor::PostStep (double simt, double simdt, double mjd)
 	if (i>=beaconTransforms) return;
 	MGROUP_TRANSLATE *t=(MGROUP_TRANSLATE *)beaconTransform[i++];
 	char **beaconGrp=(char **)t->grp;
-	for(int j=0;j<t->ngrp;j++) (*beaconGroups)[beaconGrp[j]]->Displace(t->shift*positionRoot);
+	for(int j=0;j<(int)t->ngrp;j++) (*beaconGroups)[beaconGrp[j]]->Displace(t->shift*positionRoot);
 	if (i>=beaconTransforms) return;
 	MGROUP_TRANSLATE *t2=(MGROUP_TRANSLATE *)beaconTransform[i++];
 	beaconGrp=(char **)t2->grp;
-	for(int j=0;j<t2->ngrp;j++) (*beaconGroups)[beaconGrp[j]]->Displace(t->shift*positionRoot+t2->shift*positionCover);
+	for(int j=0;j<(int)t2->ngrp;j++) (*beaconGroups)[beaconGrp[j]]->Displace(t->shift*positionRoot+t2->shift*positionCover);
 }

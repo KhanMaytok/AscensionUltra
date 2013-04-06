@@ -415,9 +415,9 @@ protected:
 			case LaunchTunnel::LaunchChecklist::TakeOff: return "Status: Ready to Launch";
 			case LaunchTunnel::LaunchChecklist::AbortOpen: return "Status: ABORT";
 			}
-			break;
-		default: return "Status: Request";
+			break;		
 		}
+		return "Status: Request";
 	}
 
 	int GetListSize(){return listType==LaunchTunnel::Boarding?((Hangar *)dataRoot)->GetRoom(0)->GetPersons():vessel->GetPropellantCount();}

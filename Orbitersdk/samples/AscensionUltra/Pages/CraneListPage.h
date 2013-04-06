@@ -178,8 +178,8 @@ protected:
 			}
 			return NoChange;
 		case OAPI_KEY_M: return CraneGrapple;
-		default: return CraneBasePage::KeyHandler(key);
 		}
+		return CraneBasePage::KeyHandler(key);
 	}
 
 	char *GetSubtitle(){return strcat(CraneBasePage::GetSubtitle(), "List");}

@@ -192,7 +192,7 @@ void Tracker::DefineAnimations()
 
 bool Tracker::clbkLoadStateEx (char *line)
 {
-    if (!strnicmp (line, "TGT", 3))
+    if (!_strnicmp (line, "TGT", 3))
 	{
 		// target=oapiGetObjectByName(line+4);	// WARNING: This doesn't work! Don't ask me why...
 		// target = oapiGetFocusObject();		// WARNING: This doesn't work either!
@@ -247,7 +247,7 @@ void Tracker::clbkSaveState (FILEHANDLE scn)
 
 bool Tracker::clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event)
 {
-	if (!strnicmp (event_type, "TGT", 3))
+	if (!_strnicmp (event_type, "TGT", 3))
 	{
 		target=oapiGetObjectByName((char *)event);
 		return true;
