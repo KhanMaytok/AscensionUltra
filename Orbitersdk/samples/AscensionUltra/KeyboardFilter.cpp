@@ -57,7 +57,7 @@ void KeyboardFilter::Preprocess(WPARAM &wparam, LPARAM &lparam)
 
 int KeyboardFilter::Process(short key, bool down)
 {
-	if (down) kstate[VK2OAPI[key]]=0x80;
+	if (down) kstate[VK2OAPI[key]]=-1;
 	else kstate[VK2OAPI[key]]=0x00;
 	return ConsumeDirectKey(object, kstate);
 }
