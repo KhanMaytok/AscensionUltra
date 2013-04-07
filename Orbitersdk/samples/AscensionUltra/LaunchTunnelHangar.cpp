@@ -501,7 +501,7 @@ void LaunchTunnelHangar::DefineAnimations ()
 		new MGROUP_ROTATE(meshIndex, DoorGrp+6, 1,	_V(-1039.6,0,-59.52), _V(0,1,0), (float)(  90*RAD)),
 		new MGROUP_ROTATE(meshIndex, DoorGrp+7, 1,	_V(-1015.6,0,-57.52), _V(0,1,0), (float)(-180*RAD)));
 
-	rooms[0].Init(owner, this, "Control Room", _V(111,20,47), _V(0,0,-1), _V(115,0,50), 20);
+	rooms[0].Init(owner, this, "Control Room", _V(111,20,47), _V(0,0,-1), _V(112.96,0,49.28), 20);
 	rooms[1].Init(owner, this, "Control Tower", _V(111,218,70), _V(0,0,-1));
 	
 	i=0;
