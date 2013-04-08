@@ -12,6 +12,7 @@
 #include "orbitersdk.h"
 
 class Hangar;
+class AscensionUltra;
 
 class Checklist
 {
@@ -36,7 +37,7 @@ private:
 protected:
 	void RecordEvent(int event);
 	VECTOR3 GetNosePoint();
-	VESSEL *owner;
+	AscensionUltra *owner;
 	Hangar *hangar;
 	OBJHANDLE subject;
 	int state;
