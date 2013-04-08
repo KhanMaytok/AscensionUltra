@@ -9,6 +9,7 @@
 // ==============================================================
 
 #include "Checklist.h"
+#include "AscensionUltra.h"
 
 Checklist::Checklist(void)
 {
@@ -25,7 +26,7 @@ Hangar *Checklist::GetHangar(void){return hangar;}
 
 void Checklist::Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, int state)
 {
-	this->owner=owner;
+	this->owner=(AscensionUltra *)owner;
 	this->hangar=hangar;
 	this->state=state;
 	sprintf(this->event_prefix=new char[strlen(event_prefix)+6], "%sEVENT", event_prefix);
