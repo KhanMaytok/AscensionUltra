@@ -58,30 +58,79 @@ public:
 
 protected:
 
+	void SelectionRenderer()
+	{
+		char line[40];
+		int size=GetListSize();
+		int pages=(size+3)/4;
+		if (page>=pages)
+		{
+			page=max(pages-1,0);
+			mfd->InvalidateButtons();
+		}
+			
+		mfd->SetWriteStyle(0);
+		for(int i=0; i+page*4<size && i<4; i++)
+			mfd->Write(GetListItem(i+page*4).Name, AT_BUTTON[i+1], 1, WRITEMFD_HALFLINES | (i==selection?WRITEMFD_HIGHLIGHTED:0));
+		if (pages>0)
+		{
+			sprintf(line, "p.%d/%d", page+1, pages);
+			mfd->Write(line, 27, -1, WRITEMFD_RIGHTALIGNED);
+		}
+		else
+		{
+			mfd->Write("No passengers in terminal,", 12);
+			mfd->Write("select roster for check-in", 14);
+		}
+	}
+
+#define MPROCEED mfd->SetWriteStyle(0); \
+				 mfd->Write("PROCEED TO NEXT HOLD", 4);
+
+#define MBRAKES mfd->SetWriteStyle(0, 3); \
+				mfd->Write("HOLD HERE", 4); \
+				mfd->Write("WHEEL BRAKES ON", 6);
+
 	void MFDRenderer()
 	{
 		ticker=!ticker;
-		mfd->SetWriteStyle(0, 2);
 		if (abortConfirmation)
 		{
-			mfd->Write("DO YOU REALLY WISH TO", 10);
-			mfd->Write("ABORT THE LAUNCH", 11);
-			mfd->Write("PROCEDURE ?", 12);
+			mfd->SetWriteStyle(0, 2);
+			mfd->Write("DO YOU REALLY WISH TO", 11);
+			mfd->Write("ABORT THE LAUNCH", 13);
+			mfd->Write("PROCEDURE ?", 15);
 			return;
 		}
 		GetChecklistStates();
+		int i=27;
+		if (!noAbort)
+		{
+			mfd->SetWriteStyle(0, 3);
+			mfd->Write("press ABT to abort launch", i--);
+		}
+		if (hasGo || isSelect)
+		{
+			mfd->SetWriteStyle(0, 0);
+			mfd->Write("press GO when ready to proceed", --i);
+		}
+		mfd->SetWriteStyle(0, 2);
+		mfd->Write(GetWizardTitle(), 0);
+		mfd->Write(GetWizardSubtitle(), 2);
 		switch(listType)
 		{
 		case LaunchTunnel::Request:
 			switch ((LaunchTunnel::RequestChecklist::State)state)
 			{
 			case LaunchTunnel::RequestChecklist::LFHold:
-				mfd->Write("Clearance granted,", 10);
-				mfd->Write("Proceed to LF stop line", 11);
+				mfd->Write("Clearance granted,", 12);
+				mfd->Write("Proceed to LF stop line", 14);
+				MPROCEED;
 				break;
 			case LaunchTunnel::RequestChecklist::Wait:
-				mfd->Write("Pre-Flight Hold occupied", 10);
-				mfd->Write(GetTicker("awaiting clearance"), 11);
+				mfd->Write("Pre-Flight Hold occupied", 12);
+				mfd->Write(GetTicker("awaiting clearance"), 14);
+				MBRAKES;
 				break;
 			}
 			break;
@@ -89,23 +138,28 @@ protected:
 			switch((LaunchTunnel::PreflightChecklist::State)state)
 			{
 			case LaunchTunnel::PreflightChecklist::OpenEntry:
-				mfd->Write("Request granted,", 10);
-				mfd->Write(GetTicker("awaiting clearance"), 11);
+				mfd->Write("Request granted,", 12);
+				mfd->Write(GetTicker("awaiting clearance"), 14);
+				MBRAKES;
 				break;
 			case LaunchTunnel::PreflightChecklist::Entry:
-				mfd->Write("Clearance granted,", 10);
-				mfd->Write("Proceed to Pre-Flight Hold", 11);
+				mfd->Write("Clearance granted,", 12);
+				mfd->Write("Proceed to Pre-Flight Hold", 14);
+				MPROCEED;
 				break;
 			case LaunchTunnel::PreflightChecklist::PFHold:
-				mfd->Write("Carry out pre-flight checks", 10);				
+				mfd->Write("Carry out pre-flight checks", 13);
+				MBRAKES;
 				break;
 			case LaunchTunnel::PreflightChecklist::Wait:
-				mfd->Write("Passenger Hold occupied,", 10);
-				mfd->Write(GetTicker("awaiting clearance"), 11);
+				mfd->Write("Passenger Hold occupied,", 12);
+				mfd->Write(GetTicker("awaiting clearance"), 14);
+				MBRAKES;
 				break;
 			case LaunchTunnel::PreflightChecklist::AbortOpen:
-				mfd->Write("Pre-Flight aborted,", 10);
-				mfd->Write(GetTicker("Proceed to Escape Hold"), 11);
+				mfd->Write("Pre-Flight aborted,", 12);
+				mfd->Write(GetTicker("Proceed to Escape Hold"), 14);
+				MPROCEED;
 				break;
 			}
 			break;
@@ -113,19 +167,23 @@ protected:
 			switch((LaunchTunnel::BoardingChecklist::State)state)
 			{
 			case LaunchTunnel::BoardingChecklist::Taxi:
-				mfd->Write("Clearance granted,", 10);
-				mfd->Write("Proceed to Passenger Hold", 11);
+				mfd->Write("Clearance granted,", 12);
+				mfd->Write("Proceed to Passenger Hold", 14);
+				MPROCEED;
 				break;
 			case LaunchTunnel::BoardingChecklist::PAXHold:
-				AscensionTowerPage::MFDRenderer(); //Simply do default list rendering
+				SelectionRenderer();
+				MBRAKES;
 				break;
 			case LaunchTunnel::BoardingChecklist::Wait:
-				mfd->Write("Fueling Hold occupied,", 10);
-				mfd->Write(GetTicker("awaiting clearance"), 11);
+				mfd->Write("Fueling Hold occupied,", 12);
+				mfd->Write(GetTicker("awaiting clearance"), 14);
+				MBRAKES;
 				break;
 			case LaunchTunnel::BoardingChecklist::AbortWait:
-				mfd->Write("Boarding aborted,", 10);
-				mfd->Write(GetTicker("Proceed to Escape Hold"), 11);
+				mfd->Write("Boarding aborted,", 12);
+				mfd->Write(GetTicker("Proceed to Escape Hold"), 14);
+				MPROCEED;
 				break;
 			}
 			break;
@@ -133,19 +191,23 @@ protected:
 			switch((LaunchTunnel::FuelingChecklist::State)state)
 			{
 			case LaunchTunnel::FuelingChecklist::Taxi:
-				mfd->Write("Clearance granted,", 10);
-				mfd->Write("Proceed to Fueling Hold", 11);
+				mfd->Write("Clearance granted,", 12);
+				mfd->Write("Proceed to Fueling Hold", 14);
+				MPROCEED;
 				break;
 			case LaunchTunnel::FuelingChecklist::FuelHold:
-				AscensionTowerPage::MFDRenderer(); //Simply do default list rendering
+				SelectionRenderer();
+				MBRAKES;
 				break;
 			case LaunchTunnel::FuelingChecklist::Wait:
-				mfd->Write("Launch Hold occupied,", 10);
-				mfd->Write(GetTicker("awaiting clearance"), 11);
+				mfd->Write("Launch Hold occupied,", 12);
+				mfd->Write(GetTicker("awaiting clearance"), 14);
+				MBRAKES;
 				break;
 			case LaunchTunnel::FuelingChecklist::AbortWait:
-				mfd->Write("Fueling aborted,", 10);
-				mfd->Write(GetTicker("Proceed to Escape Hold"), 11);
+				mfd->Write("Fueling aborted,", 12);
+				mfd->Write(GetTicker("Proceed to Escape Hold"), 14);
+				MPROCEED;
 				break;
 			}
 			break;
@@ -153,34 +215,40 @@ protected:
 			switch((LaunchTunnel::LaunchChecklist::State)state)
 			{
 			case LaunchTunnel::LaunchChecklist::OpenExit:
-				mfd->Write("Request granted,", 10);
-				mfd->Write(GetTicker("awaiting clearance"), 11);
+				mfd->Write("Request granted,", 12);
+				mfd->Write(GetTicker("awaiting clearance"), 14);
+				MBRAKES;
 				break;
 			case LaunchTunnel::LaunchChecklist::Exit:
-				mfd->Write("Clearance granted,", 10);
-				mfd->Write("Proceed to Launch Hold", 11);
+				mfd->Write("Clearance granted,", 12);
+				mfd->Write("Proceed to Launch Hold", 14);
+				MPROCEED;
 				break;
 			case LaunchTunnel::LaunchChecklist::Blast:
-				mfd->Write("Closing blast door,", 10);
-				mfd->Write(GetTicker("awaiting clearance"), 11);
+				mfd->Write("Closing blast door,", 12);
+				mfd->Write(GetTicker("awaiting clearance"), 14);
+				MBRAKES;
 				break;
 			case LaunchTunnel::LaunchChecklist::LaunchHold:
 			case LaunchTunnel::LaunchChecklist::Beacons:
 			case LaunchTunnel::LaunchChecklist::Speeding:
 			case LaunchTunnel::LaunchChecklist::TakeOff:
-				mfd->Write("Launchway clear.", 10);
-				mfd->Write("Contact Air Traffic Control", 11);
-				mfd->Write("for launch clearance.", 12);
+				mfd->Write("Launchway clear.", 11);
+				mfd->Write("Contact Air Traffic Control", 13);
+				mfd->Write("for launch clearance.", 15);
+				MBRAKES;
 				break;
 			case LaunchTunnel::LaunchChecklist::AbortOpen:
-				mfd->Write("Launch aborted,", 10);
-				mfd->Write(GetTicker("Proceed to Escape Hold"), 11);
+				mfd->Write("Launch aborted,", 12);
+				mfd->Write(GetTicker("Proceed to Escape Hold"), 14);
+				MPROCEED;
 				break;
 			}
 			break;
 		default:
 			hangar->GetChecklist(0)->SetSubject(vessel->GetHandle());
-			mfd->Write(GetTicker("Awaiting clearance"), 10);
+			mfd->Write(GetTicker("Awaiting clearance"), 13);
+			MBRAKES;
 			break;
 		}
 	}
@@ -190,8 +258,7 @@ protected:
 		if (abortConfirmation) switch (bt)
 		{
 			case 0:
-			case 1:
-			
+			case 1:			
 			case 3:
 			case 4:
 			case 5:
@@ -204,14 +271,26 @@ protected:
 
 		GetChecklistStates();
 		
-		if (isSelect) switch (bt) //Call default renderer for passenger and fuel list
+		if (isSelect) 
 		{
-			case 6: return "HOM";
-			case 7: return "BCK";
-			case 8: return "ABT";
-			case 9: return "GO";
-			case 11: return listType==LaunchTunnel::Boarding?"ROS":"STP";
-			default: return AscensionTowerPage::LabelRenderer(bt);
+			int size=GetListSize();
+	
+			switch (bt) //Call default renderer for passenger and fuel list
+			{
+				case 0:
+				case 5: return NULL;
+				case 1:
+				case 2:
+				case 3:
+				case 4: return size>page*4+bt-1?" > ":NULL;
+				case 6: return "HOM";
+				case 7: return "BCK";
+				case 8: return "ABT";
+				case 9: return "GO";
+				case 10: return size>4?"NXT":NULL;
+				case 11: return listType==LaunchTunnel::Boarding?"ROS":"STP";
+				default: return NULL;
+			}
 		}
 		
 		switch (bt)
@@ -234,13 +313,18 @@ protected:
 
 	int MenuRenderer (MFDBUTTONMENU *mnu)
 	{	
-		static MFDBUTTONMENU menu[9] = 
+		static MFDBUTTONMENU menu[14] = 
 		{
+			{NULL, "next to the button", '1'},
+			{NULL, menu[0].line2, '2'},
+			{NULL, menu[0].line2, '3'},
+			{NULL, menu[0].line2, '4'},
 			{"Main menu", NULL, 'H'},
 			{"Go back", NULL, 'B'},
 			{"Abort checklist", "procedure", 'A'},
 			{"Proceed to", "next hold", 'G'},
 			{NULL, NULL, 0},
+			{"Switch to", "next page", 'N'},
 			{"Switch to person", "roster page", 'S'},
 			{"Stop all fueling", NULL, 'S'},
 			{"Confirm abort", NULL, 'Y'},
@@ -249,8 +333,8 @@ protected:
 
 		if (abortConfirmation)
 		{
-			mnu[2]=menu[7];
-			mnu[8]=menu[8];
+			mnu[2]=menu[12];
+			mnu[8]=menu[13];
 			return 9;
 		}
 		
@@ -259,13 +343,20 @@ protected:
 			(hasGo?4:			// with proceed button, copy 4 right hand buttons, otherwise	
 			(isSelect?5:3));	// in select pages, copy 5 entries, with the last one clearing the NXT button for the default renderer
 		
-		for(int i=0;i<k;i++) mnu[6+i]=menu[i];
+		for(int i=0;i<k;i++) mnu[6+i]=menu[i+4];
 		if (k<5) return 6+k;
 
-		//Call default renderer for fuel or pax page
-		mnu[0].line1=listType==LaunchTunnel::Boarding?"EVA/Transfer person":"Change propellant level";
-		AscensionTowerPage::MenuRenderer(mnu);
-		mnu[11]=menu[listType==LaunchTunnel::Boarding?5:6]; //Overwrite the last button with mode switcher
+		//Renderer for fuel or pax page
+		const char *label=listType==LaunchTunnel::Boarding?"EVA/Transfer person":"Change propellant level";
+		for(int i=1;i<5;i++)
+		{
+			mnu[i]=menu[i-1];
+			mnu[i].line1=label;
+		}
+		int size=GetListSize();
+		for(int i=min(size-page*4, 4)+1;i<5;i++) mnu[i]=menu[8];
+		if (size>4) mnu[10]=menu[9];		
+		mnu[11]=menu[listType==LaunchTunnel::Boarding?10:11]; //Overwrite the last button with mode switcher
 		return 12;
 	}
 
@@ -275,11 +366,20 @@ protected:
 
 		GetChecklistStates();
 		if (isSelect) switch (bt) //Call default renderer for passenger and fuel list
-		{
+		{	
+		case 0:
+		case 5: return Undefined;
+		case 1:
+		case 2:
+		case 3:
+		case 4: return SetKey(OAPI_KEY_1+bt-1);
+		case 6: return SetKey(OAPI_KEY_H);
+		case 7: return SetKey(OAPI_KEY_B);
 		case 8: return SetKey(OAPI_KEY_A);
 		case 9: return SetKey(OAPI_KEY_G);
+		case 10: return SetKey(OAPI_KEY_N);
 		case 11: return SetKey(OAPI_KEY_S);
-		default: return AscensionTowerPage::ButtonHandler(bt);
+		default: return Undefined;
 		}
 		
 		switch (bt)
@@ -320,24 +420,41 @@ protected:
 			return Undefined;
 		}
 		
-		if (isSelect) switch(key) //Call default renderer for passenger and fuel list
+		if (isSelect) //Renderer for passenger and fuel list
 		{
-		case OAPI_KEY_H:
-			return MainMenu;
-		case OAPI_KEY_B:
-			return GroundMenu;
-		case OAPI_KEY_A:
-			abortConfirmation=true;
-			return NoChange;
-		case OAPI_KEY_G:
-			list->SetEvent(LaunchTunnel::BoardingChecklist::Proceed); //Takes advantage of boarding and fueling list having the same event definition
-			return NoChange;
-		case OAPI_KEY_S:
-			if (listType==LaunchTunnel::Boarding) return Roster;
-			//TODO: stop fillings here by setting target levels to current levels
-			return NoChange;
-		default:
-			return AscensionTowerPage::KeyHandler(key);
+			int size=GetListSize();
+			int pages=(size+3)/4;
+			switch(key)
+			{
+			case OAPI_KEY_H:
+				return MainMenu;
+			case OAPI_KEY_B:
+				return GroundMenu;
+			case OAPI_KEY_A:
+				abortConfirmation=true;
+				return NoChange;
+			case OAPI_KEY_G:
+				list->SetEvent(LaunchTunnel::BoardingChecklist::Proceed); //Takes advantage of boarding and fueling list having the same event definition
+				return NoChange;
+			case OAPI_KEY_S:
+				if (listType==LaunchTunnel::Boarding) return Roster;
+				//TODO: stop fillings here by setting target levels to current levels
+				return NoChange;
+			case OAPI_KEY_N://Next page
+				if (size<5) return Undefined;
+				if (page<pages-1) page++;
+				else page=0;
+				selection=0;
+				return NoChange;
+			default:
+				if (key<OAPI_KEY_1 || key>OAPI_KEY_4) return Undefined;
+				{
+					int bt=key-OAPI_KEY_1;
+					if (bt>=min(size-page*4, 4)) return Undefined;
+					selection=bt;
+					return Select();
+				}
+			}
 		}
 		
 		switch(key)
@@ -361,63 +478,65 @@ protected:
 		}
 	}
 
-	char *GetTitle(){return GetNameSafeTitle("Winged Launch");}
+	char *GetTitle(){return "";}
+	char *GetWizardTitle(){return GetNameSafeTitle("Winged Launch Control");}
 
-	char *GetSubtitle()
+	char *GetSubtitle(){return "";}
+	char *GetWizardSubtitle()
 	{
-		if (abortConfirmation) return "Status: ABORT";
+		if (abortConfirmation) return "Launch Phase: ABORT";
 		switch(listType)
 		{
 		case LaunchTunnel::Request:
 			switch ((LaunchTunnel::RequestChecklist::State)state)
 			{
-			case LaunchTunnel::RequestChecklist::LFHold: return "Status: Taxi to LF";
-			case LaunchTunnel::RequestChecklist::Wait: return "Status: Wait";
+			case LaunchTunnel::RequestChecklist::LFHold: return "Launch Phase: Taxi to LF";
+			case LaunchTunnel::RequestChecklist::Wait: return "Launch Phase: Wait";
 			}
 			break;
 		case LaunchTunnel::Preflight:
 			switch((LaunchTunnel::PreflightChecklist::State)state)
 			{
-			case LaunchTunnel::PreflightChecklist::OpenEntry: return "Status: Opening Entry";
-			case LaunchTunnel::PreflightChecklist::Entry: return "Status: Taxi to Pre-Flight";
-			case LaunchTunnel::PreflightChecklist::PFHold: return "Status: Pre-Flight check";
-			case LaunchTunnel::PreflightChecklist::Wait: return "Status: Wait";
-			case LaunchTunnel::PreflightChecklist::AbortOpen: return "Status: ABORT";
+			case LaunchTunnel::PreflightChecklist::OpenEntry: return "Launch Phase: Opening Entry";
+			case LaunchTunnel::PreflightChecklist::Entry: return "Launch Phase: Taxi to Pre-Flight";
+			case LaunchTunnel::PreflightChecklist::PFHold: return "Launch Phase: Pre-Flight check";
+			case LaunchTunnel::PreflightChecklist::Wait: return "Launch Phase: Wait";
+			case LaunchTunnel::PreflightChecklist::AbortOpen: return "Launch Phase: ABORT";
 			}
 			break;
 		case LaunchTunnel::Boarding:
 			switch((LaunchTunnel::BoardingChecklist::State)state)
 			{
-			case LaunchTunnel::BoardingChecklist::Taxi: return "Status: Taxi to PAX";
-			case LaunchTunnel::BoardingChecklist::PAXHold: return "Status: Boarding";
-			case LaunchTunnel::BoardingChecklist::Wait: return "Status: Wait";
-			case LaunchTunnel::BoardingChecklist::AbortWait: return "Status: ABORT";
+			case LaunchTunnel::BoardingChecklist::Taxi: return "Launch Phase: Taxi to PAX";
+			case LaunchTunnel::BoardingChecklist::PAXHold: return "Launch Phase: Boarding";
+			case LaunchTunnel::BoardingChecklist::Wait: return "Launch Phase: Wait";
+			case LaunchTunnel::BoardingChecklist::AbortWait: return "Launch Phase: ABORT";
 			}
 			break;
 		case LaunchTunnel::Fueling:
 			switch((LaunchTunnel::FuelingChecklist::State)state)
 			{
-			case LaunchTunnel::FuelingChecklist::Taxi: return "Status: Taxi to Fueling";
-			case LaunchTunnel::FuelingChecklist::FuelHold: return "Status: Fueling";
-			case LaunchTunnel::FuelingChecklist::Wait: return "Status: Wait";
-			case LaunchTunnel::FuelingChecklist::AbortWait: return "Status: ABORT";
+			case LaunchTunnel::FuelingChecklist::Taxi: return "Launch Phase: Taxi to Fueling";
+			case LaunchTunnel::FuelingChecklist::FuelHold: return "Launch Phase: Fueling";
+			case LaunchTunnel::FuelingChecklist::Wait: return "Launch Phase: Wait";
+			case LaunchTunnel::FuelingChecklist::AbortWait: return "Launch Phase: ABORT";
 			}
 			break;
 		case LaunchTunnel::Launch:
 			switch((LaunchTunnel::LaunchChecklist::State)state)
 			{
-			case LaunchTunnel::LaunchChecklist::OpenExit: return "Status: Opening Exit";
-			case LaunchTunnel::LaunchChecklist::Exit: return "Status: Taxi to Launch";
-			case LaunchTunnel::LaunchChecklist::Blast: return "Status: Blast Shielding";
+			case LaunchTunnel::LaunchChecklist::OpenExit: return "Launch Phase: Opening Exit";
+			case LaunchTunnel::LaunchChecklist::Exit: return "Launch Phase: Taxi to Launch";
+			case LaunchTunnel::LaunchChecklist::Blast: return "Launch Phase: Blast Shielding";
 			case LaunchTunnel::LaunchChecklist::LaunchHold:
 			case LaunchTunnel::LaunchChecklist::Beacons:
 			case LaunchTunnel::LaunchChecklist::Speeding:
-			case LaunchTunnel::LaunchChecklist::TakeOff: return "Status: Ready to Launch";
-			case LaunchTunnel::LaunchChecklist::AbortOpen: return "Status: ABORT";
+			case LaunchTunnel::LaunchChecklist::TakeOff: return "Launch Phase: Ready to Launch";
+			case LaunchTunnel::LaunchChecklist::AbortOpen: return "Launch Phase: ABORT";
 			}
 			break;		
 		}
-		return "Status: Request";
+		return "Launch Phase: Request";
 	}
 
 	int GetListSize(){return listType==LaunchTunnel::Boarding?((Hangar *)dataRoot)->GetRoom(0)->GetPersons():vessel->GetPropellantCount();}
