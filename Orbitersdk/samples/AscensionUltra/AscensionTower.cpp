@@ -157,7 +157,7 @@ void AscensionTower::Write(char *text, int line, int column, int flags)
 
 void AscensionTower::SetWriteStyle(int font, int color, int intensity, int style)
 {
-	static DWORD colors[4] = {0x0000FF00, 0x0000FFFF, 0x00FFFFFF, 0x00FF0000};
+	static DWORD colors[4] = {0x0000FF00, 0x0000FFFF, 0x00FFFFFF, 0x000000FF};
 	pad->SetFont(GetDefaultFont(font));
 	pad->SetTextColor(colors[color]);
 	pad->SetPen(GetDefaultPen(color, intensity, style));
