@@ -29,27 +29,36 @@ protected:
 		ascension->Global2Local(global, local);
 		local-=list->GetHangar()->GetPosition();
 		local.x=-local.x;
+
+		if (abort)
+		{
+			mfd->SetWriteStyle(0, 3);
+			mfd->Write("press ABT to abort launch", 27);
+		}
+		mfd->SetWriteStyle(0, 2);
+		mfd->Write(GetWizardTitle(), 0);
+		mfd->Write(GetWizardSubtitle(), 2);
 			
 		switch(state)
 		{
 		case LaunchTunnel::LaunchChecklist::Beacons:
-			mfd->Write("Cleared to launch.", 10);
-			mfd->Write("Heading  130", 11);
-			mfd->Write("Maintain 1000", 12);
+			mfd->Write("Cleared to launch.", 11);
+			mfd->Write("Heading  130", 13);
+			mfd->Write("Maintain 1000", 15);
 			break;
 		case LaunchTunnel::LaunchChecklist::Speeding:
-			mfd->Write("Cleared to launch.", 10);
-			sprintf(line, "Speed  %.3d m/s", (int)vessel->GetAirspeed()); mfd->Write(line, 11);
-			sprintf(line, "Runway %.3d %%  ", max(100-(int)((local.x-RUNWAYSTART)*100/RUNWAYLENGTH),0)); mfd->Write(line, 12);
+			mfd->Write("Cleared to launch.", 11);
+			sprintf(line, "Speed  %.3d m/s", (int)vessel->GetAirspeed()); mfd->Write(line, 13);
+			sprintf(line, "Runway %.3d %%  ", max(100-(int)((local.x-RUNWAYSTART)*100/RUNWAYLENGTH),0)); mfd->Write(line, 15);
 			break;
 		case LaunchTunnel::LaunchChecklist::TakeOff:
-			mfd->Write("You are cleared to", 9);
-			mfd->Write("your destination.", 10);
-			sprintf(line, "Altitude %.4d / 2000 m ", (int)local.y); mfd->Write(line, 12);
-			sprintf(line, "Distance   %.2d / 10   km", (int)(abs(local.x-RUNWAYEND)/1000));	mfd->Write(line, 13);
+			mfd->Write("You are cleared to", 10);
+			mfd->Write("your destination.", 12);
+			sprintf(line, "Altitude %.4d / 2000 m ", (int)local.y); mfd->Write(line, 14);
+			sprintf(line, "Distance   %.2d / 10   km", (int)(abs(local.x-RUNWAYEND)/1000));	mfd->Write(line, 16);
 			break;
 		default:
-			mfd->Write("Contact Ground Control", 10);
+			mfd->Write("Contact Ground Control", 13);
 			break;
 		}
 	}
@@ -121,9 +130,11 @@ protected:
 		}
 	}
 
-	char *GetTitle(){return GetNameSafeTitle("ATC");}
+	char *GetTitle(){return "";}
+	char *GetWizardTitle(){return GetNameSafeTitle("ATC");}
 
-	char *GetSubtitle(){return "Winged Launch";}
+	char *GetSubtitle(){return "";}
+	char *GetWizardSubtitle(){return "Launch Phase: Start";}
 
 	AscensionTowerPageInstance EventHandler(BaseVessel::EventHandler::Arguments args)
 	{
