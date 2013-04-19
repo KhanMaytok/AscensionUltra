@@ -28,7 +28,6 @@
 #include "UMmuSDK.h"
 #include <map>
 #include <vector>
-#include "sapi.h"
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
@@ -152,8 +151,6 @@ private:
 	
 	int cur_TurnAround, cur_Lease, cur_LaunchTunnel, cur_Airport, cur_Vertical, cur_DopplerRadar, cur_VerticalSmall, cur_Docks;
 	bool oldCameraMode;
-
-	ISpVoice *ATC;
 
 	char *ini;
 	bool scnsave, recsave;

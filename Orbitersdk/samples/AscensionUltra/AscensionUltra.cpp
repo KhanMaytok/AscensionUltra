@@ -75,8 +75,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	coords=false;
 
 	ini=NULL;
-
-	if(!SUCCEEDED(CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&ATC))) ATC=NULL;	
 }
 
 // --------------------------------------------------------------
@@ -84,7 +82,6 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 // --------------------------------------------------------------
 AscensionUltra::~AscensionUltra ()
 {	
-	if (ATC) ATC->Release();
 	//Remove dynamic INI parameters
 	delete [] ini;
 	OrbiterExtensions::Exit(this);
@@ -1081,12 +1078,10 @@ void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 void AscensionUltra::Talk(LPCWSTR message, ...)
 {
 	//TODO: parse message for format qualifiers and create message string
-	ATC->Speak(message, SPF_ASYNC, NULL);
+	
 }
 
 bool AscensionUltra::Talking()
 {
-	SPVOICESTATUS status;
-	if (!SUCCEEDED(ATC->GetStatus(&status, NULL))) return true;
-	return status.dwRunningState==SPRS_IS_SPEAKING;
+	return false;
 }
