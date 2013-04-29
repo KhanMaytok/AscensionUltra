@@ -9,8 +9,6 @@
 #include "DlgCtrl.h"
 #include "meshres.h"
 #include "resource.h"
-#include "sapi.h"
-#include <map>
 
 // ==============================================================
 // Global parameters
@@ -23,14 +21,6 @@ struct GDIParams {
 	HBRUSH brush[4];
 	HPEN pen[2];*/
 } g_Param;
-
-struct TalkerParams {
-	std::map<OBJHANDLE, int> registered;
-	HANDLE event;
-	HANDLE stopped;
-	HANDLE thread;
-	bool   active;
-} g_Talker;
 
 static HELPCONTEXT g_hc = {
 	"html/vessels/AscensionUltra.chm",
@@ -45,30 +35,6 @@ static HELPCONTEXT g_hc = {
 BOOL CALLBACK Ctrl_DlgProc (HWND, UINT, WPARAM, LPARAM);
 void UpdateCtrlDialog (AscensionUltra *au, HWND hWnd = 0);
 
-DWORD WINAPI TalkerThread(LPVOID params)
-{
-	ISpVoice *ATC;
-	SPVOICESTATUS status;
-	//if (!SUCCEEDED(ATC->GetStatus(&status, NULL))) return true;
-	//return status.dwRunningState==SPRS_IS_SPEAKING;
-
-	CoInitialize(NULL);
-	if(!SUCCEEDED(CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&ATC))) ATC=NULL;
-	ResetEvent(g_Talker.stopped);
-	while(g_Talker.active)
-	{
-		WaitForSingleObject(g_Talker.event, INFINITE);
-		if (g_Talker.active)
-		{
-			//ATC->Speak(message, SPF_ASYNC, NULL);
-		}
-		ResetEvent(g_Talker.event);
-	}
-	if (ATC) ATC->Release();
-	::CoUninitialize();
-	SetEvent(g_Talker.stopped);
-	return 0;
-}
 
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
@@ -350,15 +316,6 @@ DLLCLBK VESSEL *ovcInit (OBJHANDLE hvessel, int flightmodel)
 	/*g_Param.col[2] = oapiGetColour(80,80,224);
 	g_Param.col[3] = oapiGetColour(160,120,64);*/
 
-	if (g_Talker.registered.size()==0)
-	{
-		//Activate talker thread
-		g_Talker.event  = CreateEvent(NULL, TRUE, FALSE, NULL);
-		g_Talker.stopped= CreateEvent(NULL, TRUE, FALSE, NULL);
-		g_Talker.active = true;
-		g_Talker.thread = CreateThread(NULL, 0, TalkerThread, NULL, NULL, NULL);
-	}
-	g_Talker.registered[hvessel]++;
 	return new AscensionUltra (hvessel, flightmodel);
 }
 
@@ -367,22 +324,7 @@ DLLCLBK VESSEL *ovcInit (OBJHANDLE hvessel, int flightmodel)
 // --------------------------------------------------------------
 DLLCLBK void ovcExit (VESSEL *vessel)
 {
-	if (vessel)
-	{
-		OBJHANDLE obj=vessel->GetHandle();
-		if (--g_Talker.registered[obj]<=0) g_Talker.registered.erase(obj);
-		if (g_Talker.registered.size()==0)
-		{
-			//Deactivate the talker thread
-			g_Talker.active = false;
-			SetEvent(g_Talker.event);
-			WaitForSingleObject(g_Talker.stopped, 100000);
-			CloseHandle(g_Talker.thread);
-			CloseHandle(g_Talker.stopped);
-			CloseHandle(g_Talker.event);
-		}
-		delete (AscensionUltra*)vessel;
-	}
+	if (vessel)	delete (AscensionUltra*)vessel;
 }
 
 AscensionUltra *GetDG (HWND hDlg)

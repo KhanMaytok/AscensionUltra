@@ -5,8 +5,9 @@ class AscensionUltraSpawner : public oapi::Module
 {
 public:
 	AscensionUltraSpawner(HINSTANCE hDLL);
-	~AscensionUltraSpawner(){Save();}
-	virtual void clbkSimulationStart (RenderMode mode);
+	~AscensionUltraSpawner();
+	void clbkSimulationStart (RenderMode mode);
+	void clbkFocusChanged(OBJHANDLE new_focus, OBJHANDLE old_focus);
 private:
 	void Save();
 };
