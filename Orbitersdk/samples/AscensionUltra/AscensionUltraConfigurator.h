@@ -1,5 +1,8 @@
 #pragma once
 #include "orbitersdk.h"
+#include "sapi.h"
+#include <map>
+#include <queue>
 #define SPAWN		"BaseAutoSpawn"
 #define RESET		"BaseFastReset"
 #define SCNSAVE		"BaseScenarioSave"
@@ -14,9 +17,29 @@
 class AscensionUltraConfig;
 class RootConfig;
 
+struct TalkerEntry {
+	LPCWSTR message;
+	OBJHANDLE sender;
+	OBJHANDLE receiver;
+	bool valid;
+};
+
 struct gParamsType{
 	HINSTANCE hInst;
 	AscensionUltraConfig *Item;
 	RootConfig *Root;
 	bool SCNSave, RecSave, Spawn, Reset;
+
+	/* Main message queue structure.
+	   One queue per object in order to only talk out text for focussed vessels. Pusher must create new entries and
+	   allocate heap wide-character strings as well as valid TalkerEntries per sender/receiver pair. Note that the
+	   entries for both objects must be made!
+	   Talker removes entries or mark TalkerEntries as invalid, so no text get talked twice.*/
+	std::map<OBJHANDLE, std::queue<TalkerEntry *>> messages;
+	                                             
+	HANDLE event;
+	HANDLE stopped;
+	HANDLE thread;
+	bool   active;
+	CRITICAL_SECTION lock;
 };
