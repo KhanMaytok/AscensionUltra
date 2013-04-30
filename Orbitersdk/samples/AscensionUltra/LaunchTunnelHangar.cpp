@@ -18,8 +18,8 @@ bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 	if (state==Empty) return false;
 	RecordEvent(event);
 	state=Empty;
+	owner->Talk(L"<pitch absmiddle=\"-10\">Wideawake, DG, scratch that request.<pitch absmiddle=\"10\">Roger, DG, give it some more thoughts before calling next time.", subject);
 	subject=NULL;
-	owner->Talk(L"<pitch absmiddle=\"-10\">Wideawake, DG, scratch that request.<pitch absmiddle=\"10\">Roger, DG, give it some more thoughts before calling next time.");
 	return true;
 }
 
@@ -41,7 +41,7 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
 		state=LFHold;
-		owner->Talk(L"<pitch absmiddle=\"-10\">Wideawake Ground, DG, request clearance to enter launch facility.");		
+		owner->Talk(L"<pitch absmiddle=\"-10\">Wideawake Ground, DG, request clearance to enter launch facility.", subject);
 		if (vincinity)
 		{
 			state=Wait;
@@ -49,35 +49,33 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 			if (next->GetSubject()==subject)
 			{
 				state=Roll;
-				owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Affirmitive.");
+				owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Affirmitive.", subject);
 				return;
 			}
-			owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.");
+			owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.", subject);
 			return;
 		}
-		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, taxi to launch facility hold.<pitch absmiddle=\"-10\">Roger.");
+		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, taxi to launch facility hold.<pitch absmiddle=\"-10\">Roger.", subject);
 		return;
 	case LFHold:
 		if (!vincinity) return;
-		if (owner->Talking()) return;
-		owner->Talk(L"<pitch absmiddle=\"-10\">Ground, DG, ready to enter launch facility.");
+		owner->Talk(L"<pitch absmiddle=\"-10\">Ground, DG, ready to enter launch facility.", subject);
 		state=Wait;
 		next->SetSubject(subject);
 		if (next->GetSubject()==subject)
 		{
 			state=Roll;
-			owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.");
+			owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.", subject);
 			owner->SendEvent(args);
 			return;
 		}
-		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Roger.");
+		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Roger.", subject);
 		owner->SendEvent(args);
 		return;
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		if (owner->Talking()) return;
-		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.");
+		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.", subject);
 		state=Roll;
 		owner->SendEvent(args);
 		return;

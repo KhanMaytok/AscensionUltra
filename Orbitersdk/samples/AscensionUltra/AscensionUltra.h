@@ -113,8 +113,8 @@ public:
 
 	void SendEvent(BaseVessel::EventHandler::Arguments args);
 
-	void Talk(LPCWSTR message, ...);
-	bool Talking(void);
+	void Talk(LPCWSTR message, OBJHANDLE subject, ...);
+	virtual void SetTalker(void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int));
 
 private:
 	void InitSubObjects();
@@ -145,6 +145,7 @@ private:
 	std::map<Room*,VESSEL*> roomVessel;
 	std::map<VESSEL*, Room*> vesselRoom;
 	std::map<void*, void (*)(BaseVessel::EventHandler::Arguments args, void *context)> eventHandlers;
+	void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int);
 
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
