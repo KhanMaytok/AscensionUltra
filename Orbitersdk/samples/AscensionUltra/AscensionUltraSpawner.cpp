@@ -1,6 +1,7 @@
 #pragma unmanaged
 #include "AscensionUltraSpawner.h"
 #include "AscensionUltraConfigurator.h"
+#include "AscensionUltra.h"
 
 extern gParamsType gParams;
 
@@ -129,12 +130,14 @@ void AscensionUltraSpawner::clbkSimulationStart(oapi::Module::RenderMode mode)
 			VESSEL *vessel=oapiGetVesselInterface(obj);
 			if (strcmp(vessel->GetClassNameA(), CLASSNAME)==0)
 			{
-				//Check for proper location, could be another instance of the base!
-				vessel->GetStatusEx(&stat);
-				if (stat.status==1 &&
-					abs(stat.surf_lat-LATITUDE)<0.1 &&
-					abs(stat.surf_lng-LONGITUDE)<0.1 &&
-					abs(stat.surf_hdg-HEADING)<1) return;
+				((AscensionUltra *)vessel)->SetTalker(Talk);
+				if (!found)
+				{
+					//Check for proper location, could be another instance of the base!
+					vessel->GetStatusEx(&stat);
+					found = stat.status==1 && stat.rbody==earth &&	abs(stat.surf_lat-LATITUDE)<0.1 &&
+							abs(stat.surf_lng-LONGITUDE)<0.1 &&	abs(stat.surf_hdg-HEADING)<1;
+				}
 			}
 		}
 	}

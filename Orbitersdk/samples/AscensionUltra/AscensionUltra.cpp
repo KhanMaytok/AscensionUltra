@@ -75,6 +75,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	coords=false;
 
 	ini=NULL;
+
+	talker=NULL;
 }
 
 // --------------------------------------------------------------
@@ -1075,13 +1077,10 @@ void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 	}
 }
 
-void AscensionUltra::Talk(LPCWSTR message, ...)
+void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, ...)
 {
 	//TODO: parse message for format qualifiers and create message string
-	
+	if (talker) talker(message, GetHandle(), subject, NULL);	
 }
 
-bool AscensionUltra::Talking()
-{
-	return false;
-}
+void AscensionUltra::SetTalker(void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int)){this->talker=talker;}
