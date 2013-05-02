@@ -15,9 +15,9 @@
 bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 {
 	if (event!=Abort) return false;
-	if (state==Empty) return false;
+	if (GetState()==Empty) return false;
 	RecordEvent(event);
-	state=Empty;
+	SetState(Empty);
 	owner->Talk(L"<pitch absmiddle=\"-10\">Wideawake, DG, scratch that request.<pitch absmiddle=\"10\">Roger, DG, give it some more thoughts before calling next time.", subject);
 	subject=NULL;
 	return true;
@@ -28,7 +28,7 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	if (subject==NULL)
 	{
 		//fail-safe
-		state=Empty;
+		SetState(Empty);
 		return;
 	}
 	
@@ -36,19 +36,19 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLFHOLD);
 	Checklist *next=hangar->GetChecklist(1);
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
-	switch(state)
+	switch(GetState())
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
-		state=LFHold;
+		SetState(LFHold);
 		owner->Talk(L"<pitch absmiddle=\"-10\">Wideawake Ground, DG, request clearance to enter launch facility.", subject);
 		if (vincinity)
 		{
-			state=Wait;
+			SetState(Wait);
 			next->SetSubject(subject);
 			if (next->GetSubject()==subject)
 			{
-				state=Roll;
+				SetState(Roll);
 				owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Affirmitive.", subject);
 				return;
 			}
@@ -60,11 +60,11 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	case LFHold:
 		if (!vincinity) return;
 		owner->Talk(L"<pitch absmiddle=\"-10\">Ground, DG, ready to enter launch facility.", subject);
-		state=Wait;
+		SetState(Wait);
 		next->SetSubject(subject);
 		if (next->GetSubject()==subject)
 		{
-			state=Roll;
+			SetState(Roll);
 			owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.", subject);
 			owner->SendEvent(args);
 			return;
@@ -76,12 +76,12 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.", subject);
-		state=Roll;
+		SetState(Roll);
 		owner->SendEvent(args);
 		return;
 	case Roll:
 		if (vincinity) return;
-		state=Empty;
+		SetState(Empty);
 		subject=NULL;
 		return;
 	}
@@ -90,16 +90,16 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 bool LaunchTunnel::PreflightChecklist::List::SetEvent(int event)
 {
 	Checklist *next=hangar->GetChecklist(2);
-	switch(state)
+	switch(GetState())
 	{
 	case PFHold:
 		if (event==Proceed)
 		{
 			RecordEvent(event);			
 			next->SetSubject(subject);
-			state=Wait;
+			SetState(Wait);
 			if (next->GetSubject()!=subject) return true;
-			state=Roll;
+			SetState(Roll);
 			return true;
 		}
 		//fall-through
@@ -110,7 +110,7 @@ bool LaunchTunnel::PreflightChecklist::List::SetEvent(int event)
 	case Roll:
 		if (event!=Abort) return false;
 		RecordEvent(event);
-		state=AbortOpen;
+		SetState(AbortOpen);
 		hangar->GetDoor(0)->Open();
 		return true;
 	default:
@@ -125,7 +125,7 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 	if (subject==NULL)
 	{
 		//fail-safe
-		state=Empty;
+		SetState(Empty);
 		if (entry->GetPosition()>0 && entry->GetMovement()>=0) entry->Close();
 		return;
 	}
@@ -135,21 +135,21 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 	bool area=hangar->CheckVincinity(&local, VINCINITYPFAREA);
 	Checklist *next=hangar->GetChecklist(2);
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
-	switch(state)
+	switch(GetState())
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
-		state=OpenEntry;
+		SetState(OpenEntry);
 		entry->Open();
 		return;
 	case OpenEntry:
 		if (entry->GetPosition()<1) return;
-		state=Entry;
+		SetState(Entry);
 		owner->SendEvent(args);
 		return;
 	case Entry:
 		if (!vincinity) return;
-		state=PFHold;
+		SetState(PFHold);
 		entry->Close();
 		owner->SendEvent(args);
 		return;
@@ -159,12 +159,12 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Roll;
+		SetState(Roll);
 		owner->SendEvent(args);
 		return;
 	case Roll:
 		if (vincinity) return;
-		state=Empty;
+		SetState(Empty);
 		subject=NULL;
 		return;
 	case AbortOpen:
@@ -172,7 +172,7 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		next->SetEvent(LaunchTunnel::BoardingChecklist::Abort);
-		state=Empty;		
+		SetState(Empty);		
 		subject=NULL;
 		return;
 	}
@@ -181,16 +181,16 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 bool LaunchTunnel::BoardingChecklist::List::SetEvent(int event)
 {
 	Checklist *next=hangar->GetChecklist(3);
-	switch(state)
+	switch(GetState())
 	{
 	case PAXHold:
 		if (event==Proceed)
 		{
 			RecordEvent(event);			
 			next->SetSubject(subject);
-			state=Wait;
+			SetState(Wait);
 			if (next->GetSubject()!=subject) return true;
-			state=Roll;
+			SetState(Roll);
 			return true;
 		}
 		//fall-through
@@ -200,7 +200,7 @@ bool LaunchTunnel::BoardingChecklist::List::SetEvent(int event)
 	case Roll:
 		if (event!=Abort) return false;
 		RecordEvent(event);
-		state=AbortWait;
+		SetState(AbortWait);
 		owner->DockVessel(hangar->GetRoom(0), NULL);
 		return true;
 	default:
@@ -213,7 +213,7 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 	if (subject==NULL)
 	{
 		//fail-safe
-		state=Empty;
+		SetState(Empty);
 		return;
 	}
 	
@@ -222,15 +222,15 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 	bool area=hangar->CheckVincinity(&local, VINCINITYPAXAREA);
 	Checklist *next=hangar->GetChecklist(3);
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
-	switch(state)
+	switch(GetState())
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
-		state=Taxi;
+		SetState(Taxi);
 		return;
 	case Taxi:
 		if (!vincinity) return;
-		state=PAXHold;
+		SetState(PAXHold);
 		owner->DockVessel(hangar->GetRoom(0), oapiGetVesselInterface(subject));
 		owner->SendEvent(args);
 		return;
@@ -240,12 +240,12 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Roll;
+		SetState(Roll);
 		owner->SendEvent(args);
 		return;
 	case Roll:
 		if (vincinity) return;
-		state=Empty;
+		SetState(Empty);
 		subject=NULL;
 		owner->DockVessel(hangar->GetRoom(0), NULL);
 		return;
@@ -253,7 +253,7 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 		if (area) return;
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Empty;
+		SetState(Empty);
 		next->SetEvent(LaunchTunnel::FuelingChecklist::Abort);
 		subject=NULL;
 		return;
@@ -263,16 +263,16 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 bool LaunchTunnel::FuelingChecklist::List::SetEvent(int event)
 {
 	Checklist *next=hangar->GetChecklist(4);
-	switch(state)
+	switch(GetState())
 	{
 	case FuelHold:
 		if (event==Proceed)
 		{
 			RecordEvent(event);			
 			next->SetSubject(subject);
-			state=Wait;
+			SetState(Wait);
 			if (next->GetSubject()!=subject) return true;
-			state=Roll;
+			SetState(Roll);
 			return true;
 		}
 		//fall-through
@@ -282,7 +282,7 @@ bool LaunchTunnel::FuelingChecklist::List::SetEvent(int event)
 	case Roll:
 		if (event!=Abort) return false;
 		RecordEvent(event);
-		state=AbortWait;
+		SetState(AbortWait);
 		return true;
 	default:
 		return false;
@@ -294,7 +294,7 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	if (subject==NULL)
 	{
 		//fail-safe
-		state=Empty;
+		SetState(Empty);
 		return;
 	}
 	
@@ -303,15 +303,15 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	bool area=hangar->CheckVincinity(&local, VINCINITYFUELAREA);
 	Checklist *next=hangar->GetChecklist(4);
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
-	switch(state)
+	switch(GetState())
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
-		state=Taxi;
+		SetState(Taxi);
 		return;
 	case Taxi:
 		if (!vincinity) return;
-		state=FuelHold;
+		SetState(FuelHold);
 		owner->SendEvent(args);
 		return;
 	case FuelHold:
@@ -320,12 +320,12 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		state=Roll;
+		SetState(Roll);
 		owner->SendEvent(args);
 		return;
 	case Roll:
 		if (vincinity) return;
-		state=Empty;
+		SetState(Empty);
 		subject=NULL;
 		return;
 	case AbortWait:
@@ -333,7 +333,7 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
 		next->SetEvent(LaunchTunnel::LaunchChecklist::Abort);
-		state=Empty;		
+		SetState(Empty);		
 		subject=NULL;
 		return;
 	}
@@ -341,14 +341,14 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	
 bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 {
-	switch(state)
+	switch(GetState())
 	{
 	case TakeOff:
 		return false; //No abort after take-off	
 	case LaunchHold:
 		if (event==Proceed)
 		{
-			state=Beacons;
+			SetState(Beacons);
 			//TODO: Beacons on
 			//TODO: Exhaust on
 			return true;
@@ -370,7 +370,7 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 	case Empty:
 		if (event!=Abort) return false;
 		RecordEvent(event);
-		state=AbortOpen;
+		SetState(AbortOpen);
 		hangar->GetDoor(1)->Open(); //Open exit door
 		hangar->GetDoor(4)->Open(); //Open escape door
 		//TODO: Beacons error
@@ -389,7 +389,7 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 
 	if (subject==NULL)
 	{
-		state=Empty;
+		SetState(Empty);
 		//Fail-safe reset of animation		
 		if (exit->GetPosition()>0 && exit->GetMovement()>=0) exit->Close();
 		if (shield->GetPosition()<1 && shield->GetMovement()<=0) shield->Open();
@@ -403,7 +403,7 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	bool inExhaustArea=hangar->CheckVincinity(&local, VINCINITYEXHAUST);
 	bool inTakeoffArea=hangar->CheckVincinity(&local, VINCINITYTAKEOFF);
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
-	switch(state)
+	switch(GetState())
 	{
 	case AbortOpen:
 		if (inTakeoffArea) return;
@@ -411,18 +411,18 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		args.Event=Aborted;
 		//The order before clearing the subject here is important! The event handler needs the subject in order to determine if it is a valid checklist event.
 		owner->SendEvent(args);
-		state=Empty;
+		SetState(Empty);
 		subject=NULL;
 		return;
 	case Empty:
 		if (shield->GetPosition()<1) return;
 		exit->Open();
-		state=OpenExit;
+		SetState(OpenExit);
 		owner->SendEvent(args);
 		return;
 	case OpenExit:
 		if (exit->GetPosition()<1) return;
-		state=Exit;
+		SetState(Exit);
 		owner->SendEvent(args);
 		return;
 	case Exit:
@@ -430,14 +430,14 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		exit->Close();
 		shield->Close();
 		door->Close();
-		state=Blast;
+		SetState(Blast);
 		owner->SendEvent(args);
 		return;
 	case Blast:
 		if (exit->GetPosition()>0) return;
 		if (shield->GetPosition()>0) return;
 		if (door->GetPosition()>0) return;
-		state=LaunchHold;
+		SetState(LaunchHold);
 		owner->SendEvent(args);
 		return;
 	case LaunchHold:
@@ -446,14 +446,14 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	case Beacons:
 		if (inExhaustArea) return;
 		//TODO: Exhaust simulation off
-		state=Speeding;
+		SetState(Speeding);
 		owner->SendEvent(args);
 		return;
 	case Speeding:
 		if (oapiGetVesselInterface(subject)->GroundContact()) return;
 		shield->Open();
 		door->Open();
-		state=TakeOff;
+		SetState(TakeOff);
 		owner->SendEvent(args);
 		return;
 	case TakeOff:
@@ -462,7 +462,7 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		args.Event=Left;
 		//The order before clearing the subject here is important! The event handler needs the subject in order to determine if it is a valid checklist event.
 		owner->SendEvent(args);
-		state=Empty;
+		SetState(Empty);
 		subject=NULL;
 		return;
 	}

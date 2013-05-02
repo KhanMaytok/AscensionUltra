@@ -33,12 +33,13 @@ public:
 
 private:	
 	char *event_prefix;
+	int state;
 
 protected:
 	void RecordEvent(int event);
+	void SetState(int state);
 	VECTOR3 GetNosePoint();
 	AscensionUltra *owner;
 	Hangar *hangar;
-	OBJHANDLE subject;
-	int state;
+	OBJHANDLE subject;	
 };
