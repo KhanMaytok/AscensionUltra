@@ -22,6 +22,7 @@ Checklist::Checklist(void)
 
 int Checklist::GetType(void){return -1;}
 int Checklist::GetState(void){return state;}
+void Checklist::SetState(int state){this->state=state;}
 Hangar *Checklist::GetHangar(void){return hangar;}
 
 void Checklist::Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, int state)
