@@ -18,7 +18,6 @@ bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 	if (GetState()==Empty) return false;
 	RecordEvent(event);
 	SetState(Empty);
-	owner->Talk(L"<pitch absmiddle=\"-10\">Wideawake, DG, scratch that request.<pitch absmiddle=\"10\">Roger, DG, give it some more thoughts before calling next time.", subject);
 	subject=NULL;
 	return true;
 }
@@ -40,42 +39,34 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
-		SetState(LFHold);
-		owner->Talk(L"<pitch absmiddle=\"-10\">Wideawake Ground, DG, request clearance to enter launch facility.", subject);
 		if (vincinity)
 		{
-			SetState(Wait);
 			next->SetSubject(subject);
 			if (next->GetSubject()==subject)
 			{
 				SetState(Roll);
-				owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Affirmitive.", subject);
 				return;
 			}
-			owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.", subject);
+			SetState(Wait);
 			return;
 		}
-		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, taxi to launch facility hold.<pitch absmiddle=\"-10\">Roger.", subject);
+		SetState(LFHold);
 		return;
 	case LFHold:
 		if (!vincinity) return;
-		owner->Talk(L"<pitch absmiddle=\"-10\">Ground, DG, ready to enter launch facility.", subject);
-		SetState(Wait);
 		next->SetSubject(subject);
 		if (next->GetSubject()==subject)
 		{
 			SetState(Roll);
-			owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.", subject);
 			owner->SendEvent(args);
 			return;
 		}
-		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, pre-flight hold is occupied. Wait for clearance.<pitch absmiddle=\"-10\">Roger.", subject);
+		SetState(Wait);
 		owner->SendEvent(args);
 		return;
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
-		owner->Talk(L"<pitch absmiddle=\"10\">DG, Ground, request granted. Wait for clearance.<pitch absmiddle=\"-10\">Wilco.", subject);
 		SetState(Roll);
 		owner->SendEvent(args);
 		return;
