@@ -293,6 +293,62 @@ void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const 
 	}
 }
 
+void ReadATCChecklist(Checklist *checklist, const char *ini, const char *section)
+{
+	char pf[PREFIXSIZE]="";
+	char line[LINESIZE]="";
+	char *brk;
+	WCHAR *wline;
+	int from, to, i=0;
+	while(true)
+	{
+		sprintf(pf, "Checklist%d_%d", checklist->GetType(), i++);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
+		if (line[0]==0x00) break;
+		if ((brk=strpbrk(line, ":"))==NULL) continue; //Skip definitions without ':' delimiter
+		*brk=0x00;
+		from=to=0; //Default transition is 0 to 0
+		sscanf(line, "%d,%d", &from, &to);
+		brk++;
+		mbstowcs(wline=new WCHAR(strlen(brk)+1), brk, LINESIZE);
+		checklist->SetATCText(from, to, wline);
+	}
+}
+
+void ReadATCParameters(std::vector<LPCWSTR> &talkerSection, const char *ini, const char *section)
+{
+	char pf[PREFIXSIZE]="";
+	char line[LINESIZE]="";
+	WCHAR *wline;
+	
+	//Clear the talker parameters
+	for(std::vector<LPCWSTR>::iterator i=talkerSection.begin();i!=talkerSection.end();i++) delete [] *i;
+	talkerSection.clear();
+	
+	//Voice conversion from ANSI to UTF-16
+	GetPrivateProfileString(section, "Voice", "", line, LINESIZE, ini);
+	mbstowcs(wline=new WCHAR(strlen(line)+1), line, LINESIZE);
+	talkerSection.push_back(wline);
+
+	//Acknowledgments (with ANSI->UTF-16)
+	for(int i=0;;i++)
+	{
+		sprintf(pf, "ACK%d", i);
+		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
+		if (line[0]==0x00) break;
+		mbstowcs(wline=new WCHAR(strlen(line)+1), line, LINESIZE);
+		talkerSection.push_back(wline);
+	}
+
+	//Default acknowledgment is "Roger"
+	if (talkerSection.size()<2)
+	{
+		sprintf(line, "Roger");
+		mbstowcs(wline=new WCHAR(strlen(line)+1), line, LINESIZE);
+		talkerSection.push_back(wline);
+	}
+}
+
 // --------------------------------------------------------------
 // Module cleanup
 // --------------------------------------------------------------
