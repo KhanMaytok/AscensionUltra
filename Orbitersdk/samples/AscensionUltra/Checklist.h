@@ -10,6 +10,7 @@
 
 #pragma once
 #include "orbitersdk.h"
+#include <map>
 
 class Hangar;
 class AscensionUltra;
@@ -30,10 +31,12 @@ public:
 	bool clbkLoadStateEx (char *line);
 	void clbkSaveState (FILEHANDLE scn);
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
+	void SetATCText(int fromState, int toState, LPCWSTR text);
 
 private:	
 	char *event_prefix;
 	int state;
+	std::map<int, std::map<int, LPCWSTR>> atc;
 
 protected:
 	void RecordEvent(int event);
@@ -41,5 +44,5 @@ protected:
 	VECTOR3 GetNosePoint();
 	AscensionUltra *owner;
 	Hangar *hangar;
-	OBJHANDLE subject;	
+	OBJHANDLE subject;
 };
