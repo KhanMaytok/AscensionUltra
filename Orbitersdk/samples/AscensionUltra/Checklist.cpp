@@ -22,7 +22,13 @@ Checklist::Checklist(void)
 
 int Checklist::GetType(void){return -1;}
 int Checklist::GetState(void){return state;}
-void Checklist::SetState(int state){this->state=state;}
+void Checklist::SetState(int state)
+{
+	if (atc.find(this->state)!=atc.end())
+		if (atc[this->state].find(state)!=atc[this->state].end())
+			owner->Talk(atc[this->state][state], subject);
+	this->state=state;
+}
 Hangar *Checklist::GetHangar(void){return hangar;}
 
 void Checklist::Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, int state)
@@ -34,7 +40,14 @@ void Checklist::Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, in
 	subject=NULL;
 }
 
-Checklist::~Checklist(void){delete [] event_prefix;}
+Checklist::~Checklist(void)
+{
+	delete [] event_prefix;
+	for(std::map<int, std::map<int, LPCWSTR>>::iterator i=atc.begin();i!=atc.end();i++)
+		for(std::map<int, LPCWSTR>::iterator j=i->second.begin();j!=i->second.end();j++)
+			delete [] j->second;
+	atc.clear();
+}
 
 bool Checklist::SetEvent(int event){return false;}
 
@@ -92,4 +105,14 @@ VECTOR3 Checklist::GetNosePoint()
 	vessel->Local2Global(_V(0,0,vessel->GetSize()), global);
 	owner->Global2Local(global, local);
 	return local;
+}
+
+void Checklist::SetATCText(int fromState, int toState, LPCWSTR text)
+{
+	//Check for collision and delete old text
+	if (atc.find(fromState)!=atc.end())
+		if (atc[fromState].find(toState)!=atc[fromState].end())
+			delete [] atc[fromState][toState];
+	
+	atc[fromState][toState]=text;
 }
