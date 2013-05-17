@@ -42,12 +42,15 @@ void Hangar::DefineAnimations ()
 	for (int i=0;i<k;i++) GetDoor(i)->DefineAnimations();
 	ReadBeaconDefinition(beacons, ini, classname, position, owner);
 	ReadBeaconGroups(beaconGroup, beacons, ini, classname);
+	k=GetChecklists();
+	for (int i=0;i<k;i++) ReadATCChecklist(GetChecklist(i), ini, classname);
 	if (instance>=0)
 	{
 		char *line=new char[strlen(classname)+40];
 		sprintf(line, "%s%d", classname, instance);
 		ReadBeaconDefinition(beacons, ini, line, position, owner);
 		ReadBeaconGroups(beaconGroup, beacons, ini, line);
+		for (int i=0;i<k;i++) ReadATCChecklist(GetChecklist(i), ini, line);
 		delete [] line;
 	}
 }
