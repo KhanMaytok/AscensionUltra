@@ -94,6 +94,10 @@ double AscensionUltra::GetVersion(){return 1.0;}
 void AscensionUltra::InitSubObjects()
 {
 	int i;
+
+	ReadATCParameters(talkerVessel, ini, "TALKERVESSEL");
+	ReadATCParameters(talkerATC, ini, "TALKERATC");
+
 	char name[40]="Turn-around Hangar #x";
 	int k=strlen(name)-1;
 	for(i=0;i<TURNAROUNDHANGARS;i++)

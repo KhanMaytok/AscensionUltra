@@ -146,7 +146,7 @@ private:
 	std::map<VESSEL*, Room*> vesselRoom;
 	std::map<void*, void (*)(BaseVessel::EventHandler::Arguments args, void *context)> eventHandlers;
 	void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int);
-
+	
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
 	
@@ -155,7 +155,8 @@ private:
 
 	char *ini;
 	bool scnsave, recsave;
-
+	std::vector<LPCWSTR> talkerVessel, talkerATC;
+	
 	//DEBUG
 
 	int cur_Path;
