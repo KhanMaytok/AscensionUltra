@@ -9,6 +9,7 @@
 #include "DlgCtrl.h"
 #include "meshres.h"
 #include "resource.h"
+#include <ctime>
 
 // ==============================================================
 // Global parameters
@@ -39,6 +40,8 @@ void UpdateCtrlDialog (AscensionUltra *au, HWND hWnd = 0);
 // Module initialisation
 DLLCLBK void InitModule (HINSTANCE hModule)
 {
+	srand((unsigned)time(0)); //Seed the random generator with a timestamp
+
 	g_Param.hDLL = hModule;
 	
 //	oapiRegisterCustomControls (hModule);
