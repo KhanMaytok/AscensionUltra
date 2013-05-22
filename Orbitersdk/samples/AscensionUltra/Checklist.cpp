@@ -26,10 +26,12 @@ void Checklist::SetState(int state)
 {
 	if (atc.find(this->state)!=atc.end())
 		if (atc[this->state].find(state)!=atc[this->state].end())
-			owner->Talk(atc[this->state][state], subject);
+			Talk(atc[this->state][state]);
 	this->state=state;
 }
 Hangar *Checklist::GetHangar(void){return hangar;}
+
+void Checklist::Talk(LPCWSTR text){owner->Talk(text, subject);}
 
 void Checklist::Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, int state)
 {

@@ -39,6 +39,7 @@ private:
 	std::map<int, std::map<int, LPCWSTR>> atc;
 
 protected:
+	virtual void Talk(LPCWSTR text); //Override this for custom parameter calls
 	void RecordEvent(int event);
 	void SetState(int state);
 	VECTOR3 GetNosePoint();
