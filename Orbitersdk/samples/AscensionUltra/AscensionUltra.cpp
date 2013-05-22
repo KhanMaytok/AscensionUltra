@@ -1081,10 +1081,136 @@ void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 	}
 }
 
-void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, ...)
+// Formats and talks a message.
+// ${X} tags reference parameters. 0 to 4 are predefined as follows, 5 upwards must be supplied
+// as elipses wide character arguments:
+//   0 is the name of the subject vessel
+//   1 is the name of the AU vessel
+//   2 is the talker definition (normally just pitch change) for the subject vessel
+//   3 is the talker definition for the AU vessel
+//   4 is an arbitrary acknowledgment string, taken from talker definition
+void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex, ...)
 {
-	//TODO: parse message for format qualifiers and create message string
-	if (talker) talker(message, GetHandle(), subject, NULL);	
+	if (!talker) return;
+
+	//Note: this trick here only works with C++11, because the restriction of in-function structure usage in templates was lifted there
+	struct ReplaceItem
+	{
+		int start;
+		int width;
+		int length;
+		WCHAR *text;
+	} replacement;
+	std::vector<ReplaceItem> replacements;
+
+	replacement.start=0;
+	replacement.width=-2; //Works as state in parser: -2=idle, -1='$'read, >=0=characters in tag
+
+	std::vector<LPCWSTR> *params=&talkerATC, *p;
+
+	//Create argument index
+	std::vector<LPCWSTR> arguments;
+	va_list args;
+	va_start(args, maxIndex);
+	for(int i=4;i<maxIndex;i++)	arguments.push_back(va_arg(args, LPCWSTR));
+	va_end(args);
+
+	//Parse tags
+	int k=wcslen(message);
+	int change=0;
+	for(int i=0;i<k;i++)
+	{
+		switch(replacement.width)
+		{
+		case -2: //IDLE
+			replacement.start=i;
+			if (message[i]==L'$') replacement.width++;
+			break;
+		case -1: //'$'READ
+			if (message[i]!=L'{')
+			{
+				replacement.width--;
+				replacement.start=i;
+			}
+			replacement.width++;
+			break;
+		default:
+			if (replacement.width++<0 || message[i]!=L'}') continue;
+			else
+			{
+				int arg=0; //Wrong formated tags will default to argument 0
+				swscanf(message+replacement.start+2, L"%d}", &arg);
+				char *name=NULL;
+				if (arg<0 || arg>maxIndex)
+				{
+					//Create an empty string to replace the wrong argument reference
+					replacement.text=new WCHAR[(replacement.length=0)+1];
+					replacement.text[0]=0x00;
+				}
+				else switch(arg)
+				{
+				case 0:
+					name=oapiGetVesselInterface(subject)->GetName();
+					params=&talkerVessel;
+					goto convert;
+				case 1:
+					name=GetName();
+					params=&talkerATC;
+		 convert:	replacement.length=strlen(name);
+					replacement.text=new WCHAR[replacement.length+1];
+					mbstowcs(replacement.text, name, replacement.length);
+					replacement.length=wcslen(replacement.text);
+					break;
+				case 2:
+					params=p=&talkerVessel;
+					arg=0; //The talker voice definition
+					goto copy;
+				case 3:
+					params=p=&talkerATC;
+					arg=0; //The talker voice definition			
+					goto copy;
+				case 4:
+					p=params;
+					arg=(rand()%(p->size()-1))+1; //Random number between 1 and amount of defined acknowledgments
+					goto copy;
+				default: //Get argument from argument list
+					p=&arguments;
+					arg-=5;
+			copy:   replacement.length=wcslen((*p)[arg]);
+					replacement.text=new WCHAR[replacement.length+1];
+					wcscpy(replacement.text, (*p)[arg]);					
+					break;
+				}
+				replacement.width+=2; //add the "${" header to width				
+				change+=replacement.length-replacement.width; //Calculate how the length of the expanded string will change
+				replacements.push_back(replacement);
+				replacement.start=0;
+				replacement.width=-2;
+			}
+			break;
+		}
+	}
+	//We don't care for unclosed tags, so last replacement is ignored.
+
+	//Do the replacing
+	WCHAR *text=new WCHAR[k+change+1];
+	k=change=0;
+	for(int i=0;i<(int)replacements.size();i++)
+	{
+		ReplaceItem r=replacements[i];
+		int l=r.start-change;				//Remaining original text length up to the tag begin
+		wcsncpy(text+k, message+change, l);	//Copy original text
+		wcscpy(text+k+l, r.text);			//Copy replacement text
+		k+=r.length+l;						//Advance destination pointer beyond replacement text
+		change=r.start+r.width;				//Advance source pointer beyond tag end
+		delete [] r.text;
+	}
+	wcscpy(text+k, message+change);		//Copy the remaining source text
+	replacements.clear();
+
+	talker(text, GetHandle(), subject, NULL);
+
+	delete [] text;
 }
 
 void AscensionUltra::SetTalker(void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int)){this->talker=talker;}

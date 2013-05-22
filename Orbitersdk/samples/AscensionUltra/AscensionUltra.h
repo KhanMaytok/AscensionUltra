@@ -113,7 +113,7 @@ public:
 
 	void SendEvent(BaseVessel::EventHandler::Arguments args);
 
-	void Talk(LPCWSTR message, OBJHANDLE subject, ...);
+	void Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex=4, ...);
 	virtual void SetTalker(void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int));
 
 private:
