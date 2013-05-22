@@ -113,6 +113,21 @@ void Checklist::SetATCText(int fromState, int toState, LPCWSTR text)
 	if (atc.find(fromState)!=atc.end())
 		if (atc[fromState].find(toState)!=atc[fromState].end())
 			delete [] atc[fromState][toState];
+
+	//Check for ":O,N" text and replace
+	if (text[0]!=0x0 && text[0]==L':')
+	{
+		int from=0,to=0;
+		swscanf(text+1, L"%d,%d", &from, &to);
+		//Delete text and return if no reference was found
+		delete [] text;
+		LPCWSTR ref=(LPCWSTR)"";
+		if (atc.find(from)!=atc.end())
+			if (atc[from].find(to)!=atc[from].end())
+				ref=atc[from][to];
+		//Create copy from reference		
+		wcscpy((WCHAR *)(text=new WCHAR[wcslen(ref)+1]), ref);
+	}
 	
 	atc[fromState][toState]=text;
 }
