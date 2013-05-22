@@ -310,7 +310,7 @@ void ReadATCChecklist(Checklist *checklist, const char *ini, const char *section
 		from=to=0; //Default transition is 0 to 0
 		sscanf(line, "%d,%d", &from, &to);
 		brk++;
-		mbstowcs(wline=new WCHAR(strlen(brk)+1), brk, LINESIZE);
+		mbstowcs(wline=new WCHAR[strlen(brk)+1], brk, LINESIZE);
 		checklist->SetATCText(from, to, wline);
 	}
 }
@@ -327,7 +327,7 @@ void ReadATCParameters(std::vector<LPCWSTR> &talkerSection, const char *ini, con
 	
 	//Voice conversion from ANSI to UTF-16
 	GetPrivateProfileString(section, "Voice", "", line, LINESIZE, ini);
-	mbstowcs(wline=new WCHAR(strlen(line)+1), line, LINESIZE);
+	mbstowcs(wline=new WCHAR[strlen(line)+1], line, LINESIZE);
 	talkerSection.push_back(wline);
 
 	//Acknowledgments (with ANSI->UTF-16)
@@ -336,7 +336,7 @@ void ReadATCParameters(std::vector<LPCWSTR> &talkerSection, const char *ini, con
 		sprintf(pf, "ACK%d", i);
 		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) break;
-		mbstowcs(wline=new WCHAR(strlen(line)+1), line, LINESIZE);
+		mbstowcs(wline=new WCHAR[strlen(line)+1], line, LINESIZE);
 		talkerSection.push_back(wline);
 	}
 
@@ -344,7 +344,7 @@ void ReadATCParameters(std::vector<LPCWSTR> &talkerSection, const char *ini, con
 	if (talkerSection.size()<2)
 	{
 		sprintf(line, "Roger");
-		mbstowcs(wline=new WCHAR(strlen(line)+1), line, LINESIZE);
+		mbstowcs(wline=new WCHAR[strlen(line)+1], line, LINESIZE);
 		talkerSection.push_back(wline);
 	}
 }
