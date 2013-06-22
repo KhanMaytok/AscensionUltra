@@ -87,9 +87,12 @@ bool LaunchTunnel::PreflightChecklist::List::SetEvent(int event)
 		if (event==Proceed)
 		{
 			RecordEvent(event);			
-			next->SetSubject(subject);
-			SetState(Wait);
-			if (next->GetSubject()!=subject) return true;
+			next->SetSubject(subject);			
+			if (next->GetSubject()!=subject)
+			{
+				SetState(Wait);
+				return true;
+			}
 			SetState(Roll);
 			return true;
 		}
@@ -179,8 +182,11 @@ bool LaunchTunnel::BoardingChecklist::List::SetEvent(int event)
 		{
 			RecordEvent(event);			
 			next->SetSubject(subject);
-			SetState(Wait);
-			if (next->GetSubject()!=subject) return true;
+			if (next->GetSubject()!=subject)
+			{
+				SetState(Wait);
+				return true;
+			}
 			SetState(Roll);
 			return true;
 		}
@@ -261,8 +267,11 @@ bool LaunchTunnel::FuelingChecklist::List::SetEvent(int event)
 		{
 			RecordEvent(event);			
 			next->SetSubject(subject);
-			SetState(Wait);
-			if (next->GetSubject()!=subject) return true;
+			if (next->GetSubject()!=subject)
+			{
+				SetState(Wait);
+				return true;
+			}
 			SetState(Roll);
 			return true;
 		}
