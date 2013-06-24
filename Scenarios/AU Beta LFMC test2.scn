@@ -261,59 +261,6 @@ AU-Main:AscensionUltra
   	CHECKLIST 0
   DOCKYARD 1
 END
-loco01:SaganSpaceport\\loco01
-  STATUS Landed Earth
-  POS 169.5370000 -0.8578510
-  HEADING 270.00
-  AFCMODE 7
-  NAVFREQ 0 0
-  CradleP 0.00
-  CradleT 0
-  Angle 0.00
-  SpeedT 0
-  SpeedC 0
-END
-Crane:SaganSpaceport\\XR5_Crane
-  STATUS Landed Earth
-  POS 169.5270000 -0.8542000
-  HEADING 90.00
-  AFCMODE 7
-  NAVFREQ 0 0
-  X_P 0.50
-  Y_P 0.00
-  Z_P 0.50
-  X_T 0.50
-  Y_T 0.00
-  Z_T 0.50
-END
-LPad:SaganSpaceport\\ThemL_Pad
-  STATUS Landed Earth
-  POS 169.5375920 -0.8578510
-  HEADING 270.00
-  AFCMODE 7
-  PRPLEVEL 0:1.000000
-  NAVFREQ 0 0
-  Arms_P 0.999948
-  Arms_T 1.000000
-  Lights 0
-END
-Radar:SaganSpaceport\\Radar
-  STATUS Landed Earth
-  POS 169.5330990 -0.8597000
-  HEADING 270.00
-  AFCMODE 7
-  NAVFREQ 0 0
-END
-BPad:SaganSpaceport\\Big_Pad
-  STATUS Landed Earth
-  POS 169.5321950 -0.8686880
-  HEADING 180.00
-  AFCMODE 7
-  PRPLEVEL 0:1.000000
-  NAVFREQ 0 0
-  Lights 0
-  Config -1
-END
 GL-02:Deltaglider
   STATUS Landed Earth
   POS -14.4186410 -7.9472990
