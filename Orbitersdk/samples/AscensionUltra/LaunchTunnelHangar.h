@@ -30,11 +30,12 @@
 #define FUELHOLDRANGE	{ _V(   -40, -10, -25 ) , _V( -30, 20, 25 ) }
 #define LAUNCHHOLDRANGE	{ _V(  -280, -10, -25 ) , _V(-270, 20, 25 ) }
 #define EXHAUSTRANGE	{ _V(  -350, -10, -50 ) , _V(-270, 20, 50 ) }
+#define ABORTRANGE      { _V( -1015, -10, -148) , _V(-965, 20,-138) }
 
 #define PFAREARANGE		{ _V(   175, -10, -80 ) , _V( 325, 20, 80 ) }
 #define PAXAREARANGE	{ _V(    70, -10, -80 ) , _V( 325, 20, 80 ) }
 #define FUELAREARANGE	{ _V(   -30, -10, -80 ) , _V( 325, 20, 80 ) }
-#define TAKEOFFRANGE	{ _V(-14000, -10, -200) , _V( 325, 2000, 200) }
+#define TAKEOFFRANGE	{ _V(-14000, -10, -200) , _V( 325,2000,200) }
 
 #define VINCINITYPAXHOLD	0
 #define VINCINITYPFHOLD		1
@@ -46,6 +47,7 @@
 #define VINCINITYPFAREA		7
 #define VINCINITYPAXAREA	8
 #define VINCINITYFUELAREA	9
+#define VINCINITYABORT		10
 
 namespace LaunchTunnel
 {
