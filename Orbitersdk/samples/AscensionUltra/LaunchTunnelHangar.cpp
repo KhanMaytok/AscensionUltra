@@ -402,11 +402,12 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLAUNCHHOLD);
 	bool inExhaustArea=hangar->CheckVincinity(&local, VINCINITYEXHAUST);
 	bool inTakeoffArea=hangar->CheckVincinity(&local, VINCINITYTAKEOFF);
+	bool inAbortHold=hangar->CheckVincinity(&local, VINCINITYABORT);
 	BaseVessel::EventHandler::Arguments args={Step, BaseVessel::EventHandler::Checklist, this};
 	switch(GetState())
 	{
 	case AbortOpen:
-		if (inTakeoffArea) return;
+		if (inTakeoffArea && !inAbortHold) return;
 		//TODO: Beacons off
 		args.Event=Aborted;
 		//The order before clearing the subject here is important! The event handler needs the subject in order to determine if it is a valid checklist event.
@@ -530,10 +531,11 @@ Checklist *LaunchTunnelHangar::GetChecklist(int index){return (index>=0 && index
 
 bool LaunchTunnelHangar::CheckVincinity(VECTOR3 *pos, int index)
 {
-	VECTOR3 range[10][2]=
+	VECTOR3 range[11][2]=
 	{ PAXHOLDRANGE , PFHOLDRANGE , LAUNCHHOLDRANGE , 
 	  EXHAUSTRANGE , TAKEOFFRANGE , FUELHOLDRANGE, 
-	  LFHOLDRANGE, PFAREARANGE, PAXAREARANGE, FUELAREARANGE };
+	  LFHOLDRANGE, PFAREARANGE, PAXAREARANGE,
+	  FUELAREARANGE , ABORTRANGE };
 	range[index][0]=position+range[index][0];
 	range[index][1]=position+range[index][1];
 	return	pos->x>range[index][0].x && pos->x<range[index][1].x &&
