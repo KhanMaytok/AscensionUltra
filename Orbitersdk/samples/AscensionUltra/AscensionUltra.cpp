@@ -1158,7 +1158,7 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex, ...)
 					params=&talkerATC;
 		 convert:	replacement.length=strlen(name);
 					replacement.text=new WCHAR[replacement.length+1];
-					mbstowcs(replacement.text, name, replacement.length);
+					mbstowcs(replacement.text, name, replacement.length+1);
 					replacement.length=wcslen(replacement.text);
 					break;
 				case 2:
