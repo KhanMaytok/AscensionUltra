@@ -1208,9 +1208,15 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex, ...)
 	wcscpy(text+k, message+change);		//Copy the remaining source text
 	replacements.clear();
 
-	talker(text, GetHandle(), subject, NULL);
-
+	TalkerEntry entry;
+	entry.message=text;
+	entry.display=NULL; //TODO: do proper display text setting
+	entry.size=8;
+	entry.color=_V(0,0,0);
+	entry.flags=NULL;
+	talker(entry, GetHandle(), subject);
+	
 	delete [] text;
 }
 
-void AscensionUltra::SetTalker(void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int)){this->talker=talker;}
+void AscensionUltra::SetTalker(void (*talker)(const TalkerEntry &, const OBJHANDLE, const OBJHANDLE)){this->talker=talker;}

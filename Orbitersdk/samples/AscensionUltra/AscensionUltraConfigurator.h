@@ -1,5 +1,6 @@
 #pragma once
 #include "orbitersdk.h"
+#include "TalkerEntry.h"
 #include "sapi.h"
 #include <map>
 #include <queue>
@@ -17,14 +18,7 @@
 class AscensionUltraConfig;
 class RootConfig;
 
-struct TalkerEntry {
-	LPCWSTR message;
-	OBJHANDLE sender;
-	OBJHANDLE receiver;
-	bool valid;
-};
-
-struct gParamsType{
+struct gParamsType {
 	HINSTANCE hInst;
 	AscensionUltraConfig *Item;
 	RootConfig *Root;

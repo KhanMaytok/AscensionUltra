@@ -26,6 +26,7 @@
 #include "Runways.h"
 #include "Group.h"
 #include "UMmuSDK.h"
+#include "TalkerEntry.h"
 #include <map>
 #include <vector>
 
@@ -114,7 +115,7 @@ public:
 	void SendEvent(BaseVessel::EventHandler::Arguments args);
 
 	void Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex=4, ...);
-	virtual void SetTalker(void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int));
+	virtual void SetTalker(void (*talker)(const TalkerEntry &, const OBJHANDLE, const OBJHANDLE));
 
 private:
 	void InitSubObjects();
@@ -145,7 +146,7 @@ private:
 	std::map<Room*,VESSEL*> roomVessel;
 	std::map<VESSEL*, Room*> vesselRoom;
 	std::map<void*, void (*)(BaseVessel::EventHandler::Arguments args, void *context)> eventHandlers;
-	void (*talker)(LPCWSTR, OBJHANDLE, OBJHANDLE, int);
+	void (*talker)(const TalkerEntry &, const OBJHANDLE, const OBJHANDLE);
 	
 	int modelidx;                                // flight model index
 	VISHANDLE visual;                            // handle to DG visual representation	
