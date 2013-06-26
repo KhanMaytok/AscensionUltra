@@ -1082,14 +1082,18 @@ void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 }
 
 // Formats and talks a message.
-// ${X} tags reference parameters. 0 to 4 are predefined as follows, 5 upwards must be supplied
-// as elipses wide character arguments:
-//   0 is the name of the subject vessel
-//   1 is the name of the AU vessel
-//   2 is the talker definition (normally just pitch change) for the subject vessel
-//   3 is the talker definition for the AU vessel
-//   4 is an arbitrary acknowledgment string, taken from talker definition
-void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex, ...)
+// ${x..} tags reference parameters. The first character defines the parameter typ as follows:
+//   [vV] is the name of the subject vessel
+//   [aA] is the name of the AU vessel
+//   [sS] is the talker definition for the subject vessel
+//   [bB] is the talker definition for the AU vessel (the base)
+//   [rR] is an arbitrary acknowledgment string, taken from talker definition
+//   [wW] is "speaking" a sound (aka wave) file given in the tag's remaining characters as relative path to Orbiter's root
+//   [tT] switches to text-to-speech only mode - text will only be spoken
+//   [dD] switches to display only mode - text will only be displayed, possible XML-tags will NOT be filtered
+//   [cC] switches to combined mode - text will be both spoken and displayed as is, just XML-tags will be filtered for display
+//   [0-9] together with the tag's remaining characters defines a custom argument by number
+void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 {
 	if (!talker) return;
 
@@ -1111,8 +1115,8 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex, ...)
 	//Create argument index
 	std::vector<LPCWSTR> arguments;
 	va_list args;
-	va_start(args, maxIndex);
-	for(int i=4;i<maxIndex;i++)	arguments.push_back(va_arg(args, LPCWSTR));
+	va_start(args, argc);
+	for(int i=0;i<argc;i++)	arguments.push_back(va_arg(args, LPCWSTR));
 	va_end(args);
 
 	//Parse tags
@@ -1141,7 +1145,7 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex, ...)
 				int arg=0; //Wrong formated tags will default to argument 0
 				swscanf(message+replacement.start+2, L"%d}", &arg);
 				char *name=NULL;
-				if (arg<0 || arg>maxIndex)
+				if (arg<0/* || arg>argc*/)
 				{
 					//Create an empty string to replace the wrong argument reference
 					replacement.text=new WCHAR[(replacement.length=0)+1];
@@ -1174,8 +1178,7 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex, ...)
 					arg=(rand()%(p->size()-1))+1; //Random number between 1 and amount of defined acknowledgments
 					goto copy;
 				default: //Get argument from argument list
-					p=&arguments;
-					arg-=5;
+					p=&arguments;					
 			copy:   replacement.length=wcslen((*p)[arg]);
 					replacement.text=new WCHAR[replacement.length+1];
 					wcscpy(replacement.text, (*p)[arg]);					

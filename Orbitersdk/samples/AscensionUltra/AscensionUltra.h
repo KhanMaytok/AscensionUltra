@@ -114,7 +114,7 @@ public:
 
 	void SendEvent(BaseVessel::EventHandler::Arguments args);
 
-	void Talk(LPCWSTR message, OBJHANDLE subject, int maxIndex=4, ...);
+	void Talk(LPCWSTR message, OBJHANDLE subject, int argc=0, ...);
 	virtual void SetTalker(void (*talker)(const TalkerEntry &, const OBJHANDLE, const OBJHANDLE));
 
 private:
