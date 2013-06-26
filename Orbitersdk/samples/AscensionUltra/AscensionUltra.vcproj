@@ -490,6 +490,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TalkerEntry.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Taxiways.h"
 				>
 			</File>

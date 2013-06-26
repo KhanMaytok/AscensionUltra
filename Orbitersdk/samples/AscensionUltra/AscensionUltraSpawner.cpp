@@ -33,7 +33,8 @@ DWORD WINAPI TalkerThread(LPVOID params)
 						entry->valid=false; //Setting this before releasing the lock, so queue manipulators only delete valid entries.
 				LeaveCriticalSection(&gParams.lock);
 						ATC->Speak(entry->message, NULL, NULL);
-						delete [] entry->message; //Release message memory
+						delete [] entry->message;
+						delete [] entry->display;
 				EnterCriticalSection(&gParams.lock);
 					}
 					else delete entry; //Here is the only place where entries get deleted in simulation.
@@ -50,12 +51,14 @@ DWORD WINAPI TalkerThread(LPVOID params)
 	return 0;
 }
 
-void Talk(LPCWSTR message, OBJHANDLE sender, OBJHANDLE receiver, int flags)
+void Talk(const TalkerEntry &input, const OBJHANDLE sender, const OBJHANDLE receiver)
 {
-	TalkerEntry *entry=new TalkerEntry;
-	wcscpy((WCHAR *)(entry->message=new WCHAR[wcslen(message)+1]), message);
-	entry->sender=sender;
-	entry->receiver=receiver;
+	//Copy the input across DLL boundaries
+	TalkerEntry *entry=new TalkerEntry(input);
+	if (entry->message) wcscpy((WCHAR *)(entry->message=new WCHAR[wcslen(input.message)+1]), input.message);
+	else *((WCHAR *)(entry->message=new WCHAR[1]))=0x0000;
+	if (entry->display) strcpy(entry->display=new char[strlen(input.display)+1], input.display);
+	else *(entry->display=new char[1])=0x00;
 	entry->valid=true;
 
 	//TODO: clear queues with override flag set

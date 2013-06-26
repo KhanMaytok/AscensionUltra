@@ -276,6 +276,10 @@
 			RelativePath=".\RootConfig.h"
 			>
 		</File>
+		<File
+			RelativePath=".\TalkerEntry.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
