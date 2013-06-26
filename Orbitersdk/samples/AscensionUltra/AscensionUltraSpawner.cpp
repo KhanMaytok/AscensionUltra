@@ -38,7 +38,8 @@ DWORD WINAPI TalkerThread(LPVOID params)
 					}
 					else delete entry; //Here is the only place where entries get deleted in simulation.
 					if (!(go=!gParams.messages[focus].empty())) gParams.messages.erase(focus); //Check for empty queue, as somebody might have added while speaking.
-				LeaveCriticalSection(&gParams.lock);
+					if (!go) go=oapiGetFocusObject()!=focus; //This ensures loop entry if focus change happened while talking
+				LeaveCriticalSection(&gParams.lock);				
 			}
 			ResetEvent(gParams.event);
 		}
