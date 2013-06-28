@@ -55,24 +55,6 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define PERSON_FILTER   0x80
 #define ERROR_CHANGE_FAIL	-7
 
-namespace BaseVessel
-{
-	namespace EventHandler
-	{
-		enum SourceType
-		{
-			Checklist,
-		};
-
-		struct Arguments
-		{
-			int Event;
-			enum SourceType SourceType;
-			void *Source;
-		};
-	}
-}	
-
 class AscensionUltra: public VESSEL2 {
 public:
 	AscensionUltra (OBJHANDLE hObj, int fmodel);

@@ -7,6 +7,35 @@
 #include "Checklist.h"
 #include <vector>
 
+namespace BaseVessel
+{
+	namespace EventHandler
+	{
+		enum SourceType
+		{
+			Checklist,
+		};
+
+		struct Arguments
+		{
+			int Event;
+			enum SourceType SourceType;
+			void *Source;
+		};
+	}
+
+	namespace Talker
+	{
+		struct Voice
+		{
+			LPCWSTR Definition;
+			std::vector<LPCWSTR> Acknowledgement;
+			double FontSize;
+			VECTOR3 Color;
+		};
+	}
+}
+
 void RotateMesh(MESHHANDLE mesh, float angle, VECTOR3 v, VECTOR3 ref);
 void ReadBeaconDefinition(std::vector<BeaconArray *> &beacons, const char *ini, const char *section, VECTOR3 position, VESSEL *owner);
 void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const char *ini, const char *section);
