@@ -138,7 +138,7 @@ private:
 
 	char *ini;
 	bool scnsave, recsave;
-	std::vector<LPCWSTR> talkerVessel, talkerATC;
+	BaseVessel::Talker::Voice voiceVessel, voiceATC;
 	
 	//DEBUG
 

@@ -77,6 +77,9 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 	ini=NULL;
 
 	talker=NULL;
+
+	voiceVessel.Definition=NULL;
+	voiceATC.Definition=NULL;
 }
 
 // --------------------------------------------------------------
@@ -95,8 +98,8 @@ void AscensionUltra::InitSubObjects()
 {
 	int i;
 
-	ReadATCParameters(talkerVessel, ini, "TALKERVESSEL");
-	ReadATCParameters(talkerATC, ini, "TALKERATC");
+	ReadATCParameters(voiceVessel, ini, "TALKERVESSEL");
+	ReadATCParameters(voiceATC, ini, "TALKERATC");
 
 	char name[40]="Turn-around Hangar #x";
 	int k=strlen(name)-1;
@@ -1110,10 +1113,10 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 	replacement.start=0;
 	replacement.width=-2; //Works as state in parser: -2=idle, -1='$'read, >=0=characters in tag
 
-	std::vector<LPCWSTR> *params=&talkerATC, *p;
+	BaseVessel::Talker::Voice *voice=&voiceATC;
 
 	//Create argument index
-	std::vector<LPCWSTR> arguments;
+	std::vector<LPCWSTR> arguments, *p;
 	va_list args;
 	va_start(args, argc);
 	for(int i=0;i<argc;i++)	arguments.push_back(va_arg(args, LPCWSTR));
@@ -1155,27 +1158,28 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 				{
 				case 0:
 					name=oapiGetVesselInterface(subject)->GetName();
-					params=&talkerVessel;
+					voice=&voiceVessel;
 					goto convert;
 				case 1:
 					name=GetName();
-					params=&talkerATC;
+					voice=&voiceATC;
 		 convert:	replacement.length=strlen(name);
 					replacement.text=new WCHAR[replacement.length+1];
 					mbstowcs(replacement.text, name, replacement.length+1);
 					replacement.length=wcslen(replacement.text);
 					break;
 				case 2:
-					params=p=&talkerVessel;
-					arg=0; //The talker voice definition
-					goto copy;
+					voice=&voiceVessel;
+					goto select;
 				case 3:
-					params=p=&talkerATC;
-					arg=0; //The talker voice definition			
-					goto copy;
+					voice=&voiceATC;
+			select:	replacement.length=wcslen(voice->Definition);
+					replacement.text=new WCHAR[replacement.length+1];
+					wcscpy(replacement.text, voice->Definition);
+					break;
 				case 4:
-					p=params;
-					arg=(rand()%(p->size()-1))+1; //Random number between 1 and amount of defined acknowledgments
+					p=&voice->Acknowledgement;
+					arg=rand()%p->size(); //Random number between 0 and amount of defined acknowledgments minus 1
 					goto copy;
 				default: //Get argument from argument list
 					p=&arguments;					

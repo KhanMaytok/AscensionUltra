@@ -318,20 +318,20 @@ void ReadATCChecklist(Checklist *checklist, const char *ini, const char *section
 	}
 }
 
-void ReadATCParameters(std::vector<LPCWSTR> &talkerSection, const char *ini, const char *section)
+void ReadATCParameters(BaseVessel::Talker::Voice &voice, const char *ini, const char *section)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
 	WCHAR *wline;
 	
 	//Clear the talker parameters
-	for(std::vector<LPCWSTR>::iterator i=talkerSection.begin();i!=talkerSection.end();i++) delete [] *i;
-	talkerSection.clear();
+	delete [] voice.Definition;
+	for(std::vector<LPCWSTR>::iterator i=voice.Acknowledgement.begin();i!=voice.Acknowledgement.end();i++) delete [] *i;
+	voice.Acknowledgement.clear();
 	
 	//Voice conversion from ANSI to UTF-16
 	GetPrivateProfileString(section, "Voice", "", line, LINESIZE, ini);
-	mbstowcs(wline=new WCHAR[strlen(line)+1], line, LINESIZE);
-	talkerSection.push_back(wline);
+	mbstowcs((WCHAR *)(voice.Definition=new WCHAR[strlen(line)+1]), line, LINESIZE);
 
 	//Acknowledgments (with ANSI->UTF-16)
 	for(int i=0;;i++)
@@ -340,15 +340,15 @@ void ReadATCParameters(std::vector<LPCWSTR> &talkerSection, const char *ini, con
 		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) break;
 		mbstowcs(wline=new WCHAR[strlen(line)+1], line, LINESIZE);
-		talkerSection.push_back(wline);
+		voice.Acknowledgement.push_back(wline);
 	}
 
 	//Default acknowledgment is "Roger"
-	if (talkerSection.size()<2)
+	if (voice.Acknowledgement.size()<1)
 	{
 		sprintf(line, "Roger");
 		mbstowcs(wline=new WCHAR[strlen(line)+1], line, LINESIZE);
-		talkerSection.push_back(wline);
+		voice.Acknowledgement.push_back(wline);
 	}
 }
 

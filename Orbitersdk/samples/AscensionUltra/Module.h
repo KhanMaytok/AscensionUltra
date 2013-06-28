@@ -44,4 +44,4 @@ void ReadBeaconEndPoints(std::vector<char *> &endPoints, const char *ini, const 
 void ReadBeaconRoutes(Routes &routes, std::vector<BeaconPath *> &paths, std::vector<char *> &endPoints, const char *ini, const char *section);
 void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *ini, const char *section);
 void ReadATCChecklist(Checklist *checklist, const char *ini, const char *section);
-void ReadATCParameters(std::vector<LPCWSTR> &talkerSection, const char *ini, const char *section);
+void ReadATCParameters(BaseVessel::Talker::Voice &voice, const char *ini, const char *section);
