@@ -329,9 +329,15 @@ void ReadATCParameters(BaseVessel::Talker::Voice &voice, const char *ini, const 
 	for(std::vector<LPCWSTR>::iterator i=voice.Acknowledgement.begin();i!=voice.Acknowledgement.end();i++) delete [] *i;
 	voice.Acknowledgement.clear();
 	
-	//Voice conversion from ANSI to UTF-16
+	//Voice conversion from ANSI to UTF-16 - default is empty string
 	GetPrivateProfileString(section, "Voice", "", line, LINESIZE, ini);
 	mbstowcs((WCHAR *)(voice.Definition=new WCHAR[strlen(line)+1]), line, LINESIZE);
+
+	//Read font data - default is black text with size 10
+	GetPrivateProfileString(section, "Size", "10", line, LINESIZE, ini);
+	sscanf(line, "%lf", &voice.Size);
+	GetPrivateProfileString(section, "Color", "0,0,0", line, LINESIZE, ini);
+	sscanf(line, "%lf,%lf,%lf", &voice.Color.x, &voice.Color.y, &voice.Color.z);
 
 	//Acknowledgments (with ANSI->UTF-16)
 	for(int i=0;;i++)
