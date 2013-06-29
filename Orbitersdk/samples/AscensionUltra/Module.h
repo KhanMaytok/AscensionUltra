@@ -30,7 +30,7 @@ namespace BaseVessel
 		{
 			LPCWSTR Definition;
 			std::vector<LPCWSTR> Acknowledgement;
-			double FontSize;
+			double Size;
 			VECTOR3 Color;
 		};
 	}

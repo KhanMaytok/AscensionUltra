@@ -1218,8 +1218,8 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 	TalkerEntry entry;
 	entry.message=text;
 	entry.display=NULL; //TODO: do proper display text setting
-	entry.size=8;
-	entry.color=_V(0,0,0);
+	entry.size=voice->Size;
+	entry.color=voice->Color;
 	entry.flags=NULL;
 	talker(entry, GetHandle(), subject);
 	
