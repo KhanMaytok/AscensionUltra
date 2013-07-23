@@ -24,9 +24,10 @@ int Checklist::GetType(void){return -1;}
 int Checklist::GetState(void){return state;}
 void Checklist::SetState(int state)
 {
+	//Call arbitrary ATC slot of state transition, if available
 	if (atc.find(this->state)!=atc.end())
 		if (atc[this->state].find(state)!=atc[this->state].end())
-			Talk(atc[this->state][state]);
+			Talk(atc[this->state][state][rand()%atc[this->state][state].size()]);
 	this->state=state;
 }
 Hangar *Checklist::GetHangar(void){return hangar;}
@@ -45,9 +46,10 @@ void Checklist::Init(VESSEL *owner, Hangar *hangar, const char *event_prefix, in
 Checklist::~Checklist(void)
 {
 	delete [] event_prefix;
-	for(std::map<int, std::map<int, LPCWSTR>>::iterator i=atc.begin();i!=atc.end();i++)
-		for(std::map<int, LPCWSTR>::iterator j=i->second.begin();j!=i->second.end();j++)
-			delete [] j->second;
+	for(std::map<int, std::map<int, std::vector<LPCWSTR>>>::iterator i=atc.begin();i!=atc.end();i++)
+		for(std::map<int, std::vector<LPCWSTR>>::iterator j=i->second.begin();j!=i->second.end();j++)
+			for(std::vector<LPCWSTR>::iterator k=j->second.begin();k!=j->second.end();k++)
+				delete [] *k;
 	atc.clear();
 }
 
@@ -111,25 +113,17 @@ VECTOR3 Checklist::GetNosePoint()
 
 void Checklist::SetATCText(int fromState, int toState, LPCWSTR text)
 {
-	//Check for collision and delete old text
-	if (atc.find(fromState)!=atc.end())
-		if (atc[fromState].find(toState)!=atc[fromState].end())
-			delete [] atc[fromState][toState];
+	//Check for ":O,N" text
+	if (text[0]!=L':') return atc[fromState][toState].push_back(text);
 
-	//Check for ":O,N" text and replace
-	if (text[0]!=0x0 && text[0]==L':')
-	{
-		int from=0,to=0;
-		swscanf(text+1, L"%d,%d", &from, &to);
-		//Delete text and return if no reference was found
-		delete [] text;
-		LPCWSTR ref=(LPCWSTR)"";
-		if (atc.find(from)!=atc.end())
-			if (atc[from].find(to)!=atc[from].end())
-				ref=atc[from][to];
-		//Create copy from reference		
-		wcscpy((WCHAR *)(text=new WCHAR[wcslen(ref)+1]), ref);
-	}
-	
-	atc[fromState][toState]=text;
+	//Replace ":O,N" text(s)
+	int from=0,to=0;
+	swscanf(text+1, L"%d,%d", &from, &to);
+	//Delete text and return if no reference was found
+	delete [] text;
+	if (atc.find(from)==atc.end()) return;
+	if (atc[from].find(to)==atc[from].end()) return;
+	//Create copy from reference
+	for(std::vector<LPCWSTR>::iterator i=atc[from][to].begin();i!=atc[from][to].end();i++)
+		atc[fromState][toState].push_back(wcscpy((WCHAR *)new WCHAR[wcslen(*i)+1], *i));
 }
