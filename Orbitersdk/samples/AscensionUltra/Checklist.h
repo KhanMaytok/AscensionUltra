@@ -11,6 +11,7 @@
 #pragma once
 #include "orbitersdk.h"
 #include <map>
+#include <vector>
 
 class Hangar;
 class AscensionUltra;
@@ -36,7 +37,7 @@ public:
 private:	
 	char *event_prefix;
 	int state;
-	std::map<int, std::map<int, LPCWSTR>> atc;
+	std::map<int, std::map<int, std::vector<LPCWSTR>>> atc;
 
 protected:
 	virtual void Talk(LPCWSTR text); //Override this for custom parameter calls
