@@ -1146,46 +1146,74 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 			else
 			{
 				int arg=0; //Wrong formated tags will default to argument 0
-				swscanf(message+replacement.start+2, L"%d}", &arg);
 				char *name=NULL;
-				if (arg<0/* || arg>argc*/)
+				switch((message+replacement.start)[2])
 				{
-					//Create an empty string to replace the wrong argument reference
-					replacement.text=new WCHAR[(replacement.length=0)+1];
-					replacement.text[0]=0x00;
-				}
-				else switch(arg)
-				{
-				case 0:
+				case L'v':
+				case L'V': //[vV] is the name of the subject (v)essel
 					name=oapiGetVesselInterface(subject)->GetName();
 					voice=&voiceVessel;
 					goto convert;
-				case 1:
+				case L'a':
+				case L'A': //[aA] is the name of the (A)U vessel
 					name=GetName();
 					voice=&voiceATC;
-		 convert:	replacement.length=strlen(name);
+				convert:
+					replacement.length=strlen(name);
 					replacement.text=new WCHAR[replacement.length+1];
 					mbstowcs(replacement.text, name, replacement.length+1);
 					replacement.length=wcslen(replacement.text);
 					break;
-				case 2:
+				case L's':
+				case L'S': //[sS] is the talker definition for the (s)ubject vessel
 					voice=&voiceVessel;
 					goto select;
-				case 3:
+				case L'b':
+				case L'B': //[bB] is the talker definition for the AU vessel (the (b)ase)
 					voice=&voiceATC;
-			select:	replacement.length=wcslen(voice->Definition);
+				select:
+					replacement.length=wcslen(voice->Definition);
 					replacement.text=new WCHAR[replacement.length+1];
 					wcscpy(replacement.text, voice->Definition);
 					break;
-				case 4:
+				case L'r':
+				case L'R': //[rR] is an arbitrary acknowledgment ((r)eply) string, taken from talker definition
 					p=&voice->Acknowledgement;
 					arg=rand()%p->size(); //Random number between 0 and amount of defined acknowledgments minus 1
 					goto copy;
-				default: //Get argument from argument list
-					p=&arguments;					
-			copy:   replacement.length=wcslen((*p)[arg]);
-					replacement.text=new WCHAR[replacement.length+1];
-					wcscpy(replacement.text, (*p)[arg]);					
+				case L'w':
+				case L'W': //[wW] is "speaking" a sound (aka (w)ave) file given in the tag's remaining characters as relative path to Orbiter's root
+					goto empty;
+					break;
+				case L't':
+				case L'T': //[tT] switches to (t)ext-to-speech only mode - text will only be spoken
+					goto empty;
+					break;
+				case L'd':
+				case L'D': //[dD] switches to (d)isplay only mode - text will only be displayed, possible XML-tags will NOT be filtered
+					goto empty;
+					break;
+				case L'c':
+				case L'C': //[cC] switches to (c)ombined mode - text will be both spoken and displayed as is, just XML-tags will be filtered for display
+					goto empty;
+					break;
+				default:   //number is assumed
+					       //[0-9] together with the tag's remaining characters defines a custom argument by number
+					
+					swscanf(message+replacement.start+2, L"%d}", &arg);					
+					if (arg<0 || arg>argc-1)
+					{
+						//Create an empty string to replace the wrong argument reference
+				empty:	replacement.text=new WCHAR[(replacement.length=0)+1];
+						replacement.text[0]=0x00;
+					}
+					else
+					{
+						p=&arguments;					
+				copy:   replacement.length=wcslen((*p)[arg]);
+						replacement.text=new WCHAR[replacement.length+1];
+						wcscpy(replacement.text, (*p)[arg]);					
+					}					
 					break;
 				}
 				replacement.width+=2; //add the "${" header to width				
@@ -1193,7 +1221,7 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 				replacements.push_back(replacement);
 				replacement.start=0;
 				replacement.width=-2;
-			}
+			}				
 			break;
 		}
 	}
