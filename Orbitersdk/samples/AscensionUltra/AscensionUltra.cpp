@@ -1084,6 +1084,40 @@ void AscensionUltra::DockVessel(Room *room, VESSEL *vessel)
 	}
 }
 
+int Filter(WCHAR *input, char *output, int length, bool filter)
+{
+	int len=0;
+	char mb[10];
+
+	if (filter)
+	{
+		bool tag=false;
+		for(int j=0;j<length;j++) switch(input[j])
+		{
+			case L'<':
+				tag=true;
+				break;
+			case L'>':
+				if (tag)
+				{
+					tag=false;
+					continue;
+				}
+				//fall-through for using '>' outside tag
+			default:
+				if (tag) continue;
+				for(int k=wctomb(mb, input[j]),i=0;i<k;i++) output[len++]=mb[i];
+				break;
+		}
+		return len;
+	}
+	
+	for(int j=0;j<length;j++)
+		for(int k=wctomb(mb, input[j]),i=0;i<k;i++)
+			output[len++]=mb[i];
+	return len;
+}
+
 // Formats and talks a message.
 // ${x..} tags reference parameters. The first character defines the parameter typ as follows:
 //   [vV] is the name of the subject vessel
@@ -1107,6 +1141,7 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 		int width;
 		int length;
 		WCHAR *text;
+		BaseVessel::Talker::Voice *voice;
 	} replacement;
 	std::vector<ReplaceItem> replacements;
 
@@ -1147,17 +1182,18 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 			{
 				int arg=0; //Wrong formated tags will default to argument 0
 				char *name=NULL;
+				replacement.voice=NULL;
+				replacement.text=NULL;
+				replacement.length=0;
 				switch((message+replacement.start)[2])
 				{
 				case L'v':
 				case L'V': //[vV] is the name of the subject (v)essel
 					name=oapiGetVesselInterface(subject)->GetName();
-					voice=&voiceVessel;
 					goto convert;
 				case L'a':
 				case L'A': //[aA] is the name of the (A)U vessel
 					name=GetName();
-					voice=&voiceATC;
 				convert:
 					replacement.length=strlen(name);
 					replacement.text=new WCHAR[replacement.length+1];
@@ -1166,11 +1202,11 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 					break;
 				case L's':
 				case L'S': //[sS] is the talker definition for the (s)ubject vessel
-					voice=&voiceVessel;
+					replacement.voice=voice=&voiceVessel;
 					goto select;
 				case L'b':
 				case L'B': //[bB] is the talker definition for the AU vessel (the (b)ase)
-					voice=&voiceATC;
+					replacement.voice=voice=&voiceATC;
 				select:
 					replacement.length=wcslen(voice->Definition);
 					replacement.text=new WCHAR[replacement.length+1];
@@ -1183,31 +1219,28 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 					goto copy;
 				case L'w':
 				case L'W': //[wW] is "speaking" a sound (aka (w)ave) file given in the tag's remaining characters as relative path to Orbiter's root
-					goto empty;
+					replacement.length=-4;
+					replacement.text=new WCHAR[replacement.width-1];
+					wcsncpy(replacement.text, message+replacement.start+3, replacement.width-2);
+					replacement.text[replacement.width-2]=0x0000;
 					break;
 				case L't':
 				case L'T': //[tT] switches to (t)ext-to-speech only mode - text will only be spoken
-					goto empty;
+					replacement.length=-3;
 					break;
 				case L'd':
 				case L'D': //[dD] switches to (d)isplay only mode - text will only be displayed, possible XML-tags will NOT be filtered
-					goto empty;
+					replacement.length=-2;
 					break;
 				case L'c':
 				case L'C': //[cC] switches to (c)ombined mode - text will be both spoken and displayed as is, just XML-tags will be filtered for display
-					goto empty;
+					replacement.length=-1;
 					break;
 				default:   //number is assumed
 					       //[0-9] together with the tag's remaining characters defines a custom argument by number
 					
 					swscanf(message+replacement.start+2, L"%d}", &arg);					
-					if (arg<0 || arg>argc-1)
-					{
-						//Create an empty string to replace the wrong argument reference
-				empty:	replacement.text=new WCHAR[(replacement.length=0)+1];
-						replacement.text[0]=0x00;
-					}
-					else
+					if (arg>=0 && arg<argc)
 					{
 						p=&arguments;					
 				copy:   replacement.length=wcslen((*p)[arg]);
@@ -1217,7 +1250,7 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 					break;
 				}
 				replacement.width+=2; //add the "${" header to width				
-				change+=replacement.length-replacement.width; //Calculate how the length of the expanded string will change
+				change+=min(replacement.length,0)-replacement.width; //Calculate how the length of the expanded string will change
 				replacements.push_back(replacement);
 				replacement.start=0;
 				replacement.width=-2;
@@ -1228,30 +1261,105 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 	//We don't care for unclosed tags, so last replacement is ignored.
 
 	//Do the replacing
-	WCHAR *text=new WCHAR[k+change+1];
-	k=change=0;
+	WCHAR *tts=new WCHAR[k+change+1];
+	char *display=new char[k+change+1];
+	int state=-1; //-1..combined mode, -2..display only, -3..TTS only
+	int messagepos=0, ttspos=0, displaypos=0, ttsbreak=0, displaybreak=0;
+	TalkerEntry entry;
+	voice=&voiceATC;
+
 	for(int i=0;i<(int)replacements.size();i++)
 	{
-		ReplaceItem r=replacements[i];
-		int l=r.start-change;				//Remaining original text length up to the tag begin
-		wcsncpy(text+k, message+change, l);	//Copy original text
-		wcscpy(text+k+l, r.text);			//Copy replacement text
-		k+=r.length+l;						//Advance destination pointer beyond replacement text
-		change=r.start+r.width;				//Advance source pointer beyond tag end
-		delete [] r.text;
-	}
-	wcscpy(text+k, message+change);		//Copy the remaining source text
-	replacements.clear();
+		replacement=replacements[i];
 
-	TalkerEntry entry;
-	entry.message=text;
-	entry.display=NULL; //TODO: do proper display text setting
-	entry.size=voice->Size;
-	entry.color=voice->Color;
-	entry.flags=NULL;
-	talker(entry, GetHandle(), subject);
-	
-	delete [] text;
+		//Copy message text up to tag start
+		int messagelen=replacement.start-messagepos;
+		if (state!=-2)
+		{
+			wcsncpy(tts+ttspos, message+messagepos, messagelen);
+			ttspos+=messagelen;
+		}
+		if (state>-3) displaypos+=Filter((WCHAR *)(message+messagepos), display+displaypos, messagelen, state>-2);
+		messagepos=replacement.start+replacement.width;		//Advance source pointer beyond tag end
+
+		//Check for voice break
+		if (replacement.voice && (ttspos-ttsbreak>0 || displaypos-displaybreak>0)) //only if there is data to send
+		{
+			//Set breaks
+			tts[ttspos]=0x0000;
+			display[displaypos]=0x00;
+
+			//Send talker entry
+			entry.message=tts+ttsbreak;
+			entry.display=display+displaybreak;
+			entry.size=voice->Size;
+			entry.color=voice->Color;
+			entry.flags=NULL;
+			talker(entry, GetHandle(), subject);
+
+			//Set new start points
+			voice=replacement.voice;
+			ttsbreak=ttspos;
+			displaybreak=displaypos;
+		}
+
+		//Copy replacement text according to tag type
+		switch(replacement.length)
+		{
+		case 0:
+			break;
+		case -1:			
+		case -2:
+		case -3:
+			state=replacement.length;
+			break;
+		case -4:
+			//Set breaks
+			wcscpy(tts+ttspos, replacement.text);	//Copy replacement text to TTS
+			ttspos+=replacement.length;
+			tts[ttspos]=0x0000;
+			
+			//Send wave talker entry
+			entry.message=tts+ttsbreak;
+			entry.display=NULL;
+			entry.size=voice->Size;
+			entry.color=voice->Color;
+			entry.flags=TALKERWAVE;
+			talker(entry, GetHandle(), subject);
+
+			//Set new start points			
+			ttsbreak=ttspos;
+			break;
+		default:
+			if (state!=-2)
+			{
+				wcscpy(tts+ttspos, replacement.text);	//Copy replacement text to TTS
+				ttspos+=replacement.length;
+			}
+			if (state>-3) displaypos+=Filter(replacement.text, display+displaypos, replacement.length, state>-2);
+			break;
+		}				
+		delete [] replacement.text;
+	}
+
+	//Copy remaining message text
+	if (state!=-2) wcscpy(tts+ttspos, message+messagepos);
+	if (state>-3) Filter((WCHAR *)(message+messagepos), display+displaypos, k-messagepos+1, state>-2);
+
+	if (ttspos-ttsbreak>0 || displaypos-displaybreak>0) //only if there is data to send
+	{
+		//Send last talker entry
+		entry.message=tts+ttsbreak;
+		entry.display=display+displaybreak;
+		entry.size=voice->Size;
+		entry.color=voice->Color;
+		entry.flags=NULL;
+		talker(entry, GetHandle(), subject);
+	}
+		
+	replacements.clear();
+	delete [] tts;
+	delete [] display;
 }
 
 void AscensionUltra::SetTalker(void (*talker)(const TalkerEntry &, const OBJHANDLE, const OBJHANDLE)){this->talker=talker;}
