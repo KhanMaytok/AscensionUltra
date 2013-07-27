@@ -1250,7 +1250,7 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 					break;
 				}
 				replacement.width+=2; //add the "${" header to width				
-				change+=min(replacement.length,0)-replacement.width; //Calculate how the length of the expanded string will change
+				change+=max(replacement.length,0)-replacement.width; //Calculate how the length of the expanded string will change
 				replacements.push_back(replacement);
 				replacement.start=0;
 				replacement.width=-2;
