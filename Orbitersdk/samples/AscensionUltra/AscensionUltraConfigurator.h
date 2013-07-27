@@ -4,10 +4,12 @@
 #include "sapi.h"
 #include <map>
 #include <queue>
+#include <vector>
 #define SPAWN		"BaseAutoSpawn"
 #define RESET		"BaseFastReset"
 #define SCNSAVE		"BaseScenarioSave"
 #define RECSAVE		"BaseRecorderSave"
+#define ATCSLOT		"ATCAnnotationSlot" //ATCAnnotationSlot0 = 0.1, 0.1, 0.9, 0.2
 #define ORBITERCONFIG "Orbiter.cfg"
 #define CLASSNAME	"AscensionUltra"
 #define AUNAME		"Wideawake_Int(AU)"
@@ -18,11 +20,22 @@
 class AscensionUltraConfig;
 class RootConfig;
 
+struct Annotation {
+	double x1;
+	double x2;
+	double y1;
+	double y2;
+	NOTEHANDLE handle;
+};
+
 struct gParamsType {
 	HINSTANCE hInst;
 	AscensionUltraConfig *Item;
 	RootConfig *Root;
 	bool SCNSave, RecSave, Spawn, Reset;
+
+	std::vector<Annotation> slots;
+	std::map<OBJHANDLE, std::vector<char *>> displays;
 
 	/* Main message queue structure.
 	   One queue per object in order to only talk out text for focussed vessels. Pusher must create new entries and

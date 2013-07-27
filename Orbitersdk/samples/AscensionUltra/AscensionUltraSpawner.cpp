@@ -77,6 +77,18 @@ AscensionUltraSpawner::AscensionUltraSpawner(HINSTANCE hDLL) : oapi::Module(hDLL
 	if (!oapiReadItem_bool(f, RECSAVE, gParams.RecSave)) gParams.RecSave=true; //Recorder saving default is true
 	if (!oapiReadItem_bool(f, SPAWN, gParams.Spawn)) gParams.Spawn=true; //Spawning default is true
 	if (!oapiReadItem_bool(f, RESET, gParams.Reset)) gParams.Reset=true; //Reseting default is true
+	int k=strlen(ATCSLOT);
+	char item[80], buf[256];
+	strcpy(item, ATCSLOT);
+	for(int i=0;;i++)
+	{
+		_itoa(i, item+k, 10);
+		if (!oapiReadItem_string(f, item, buf)) break;
+		Annotation slot;
+		slot.handle=NULL;
+		sscanf(buf, "%lf,%lf,%lf,%lf", &slot.x1, &slot.y1, &slot.x2, &slot.y2);				
+		gParams.slots.push_back(slot);
+	}
 	oapiCloseFile(f, FILE_IN);
 
 	//Activate talker thread
@@ -97,7 +109,6 @@ AscensionUltraSpawner::~AscensionUltraSpawner()
 	DeleteCriticalSection(&gParams.lock);
 	CloseHandle(gParams.stopped);
 	CloseHandle(gParams.event);
-
 	Save();
 }
 
@@ -112,6 +123,15 @@ void AscensionUltraSpawner::clbkFocusChanged(OBJHANDLE new_focus, OBJHANDLE old_
 void AscensionUltraSpawner::clbkSimulationStart(oapi::Module::RenderMode mode)
 {
 	Save();
+
+	//Create annotation slots for ATC display
+	EnterCriticalSection(&gParams.lock);
+		for(std::vector<Annotation>::iterator i=gParams.slots.begin();i!=gParams.slots.end();i++)
+		{
+			i->handle=oapiCreateAnnotation(true, 1, _V(1,1,1));
+			oapiAnnotationSetPos(i->handle, i->x1, i->y1, i->x2, i->y2);
+		}
+	LeaveCriticalSection(&gParams.lock);
 
 	bool create = gParams.Spawn;
 	
@@ -159,6 +179,18 @@ void AscensionUltraSpawner::clbkSimulationStart(oapi::Module::RenderMode mode)
 	oapiCreateVesselEx(AUNAME, CLASSNAME, &stat);
 }
 
+void AscensionUltraSpawner::clbkSimulationEnd()
+{
+	//Remove annotation slots
+	EnterCriticalSection(&gParams.lock);
+		for(std::vector<Annotation>::iterator i=gParams.slots.begin();i!=gParams.slots.end();i++)
+		{
+			oapiDelAnnotation(i->handle);
+			i->handle=NULL;
+		}
+	LeaveCriticalSection(&gParams.lock);
+}
+
 void AscensionUltraSpawner::Save()
 {
 	FILEHANDLE f=oapiOpenFile(ORBITERCONFIG, FILE_APP);
@@ -167,5 +199,16 @@ void AscensionUltraSpawner::Save()
 	oapiWriteItem_bool(f, RECSAVE, gParams.RecSave);
 	oapiWriteItem_bool(f, SPAWN, gParams.Spawn);
 	oapiWriteItem_bool(f, RESET, gParams.Reset);
+	//Save should never be called while slots are re-defined, so no lock is necessary here
+	int j=0;
+	int k=strlen(ATCSLOT);
+	char item[80], buf[256];
+	strcpy(item, ATCSLOT);
+	for(std::vector<Annotation>::iterator i=gParams.slots.begin();i!=gParams.slots.end();i++)
+	{
+		sprintf(item+k, "%d", j);
+		sprintf(buf, "%lf, %lf, %lf, %lf", i->x1, i->y1, i->x2, i->y2);
+		oapiWriteItem_string(f, item, buf);
+	}
 	oapiCloseFile(f, FILE_APP);
 }
