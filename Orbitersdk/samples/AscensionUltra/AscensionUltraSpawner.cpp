@@ -206,7 +206,7 @@ void AscensionUltraSpawner::Save()
 	strcpy(item, ATCSLOT);
 	for(std::vector<Annotation>::iterator i=gParams.slots.begin();i!=gParams.slots.end();i++)
 	{
-		sprintf(item+k, "%d", j);
+		sprintf(item+k, "%d", j++);
 		sprintf(buf, "%lf, %lf, %lf, %lf", i->x1, i->y1, i->x2, i->y2);
 		oapiWriteItem_string(f, item, buf);
 	}
