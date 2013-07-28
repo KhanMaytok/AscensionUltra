@@ -1283,24 +1283,27 @@ void AscensionUltra::Talk(LPCWSTR message, OBJHANDLE subject, int argc, ...)
 		messagepos=replacement.start+replacement.width;		//Advance source pointer beyond tag end
 
 		//Check for voice break
-		if (replacement.voice && (ttspos-ttsbreak>0 || displaypos-displaybreak>0)) //only if there is data to send
+		if (replacement.voice)
 		{
-			//Set breaks
-			tts[ttspos]=0x0000;
-			display[displaypos]=0x00;
+			if (ttspos-ttsbreak>0 || displaypos-displaybreak>0) //only if there is data to send
+			{
+				//Set breaks
+				tts[ttspos]=0x0000;
+				display[displaypos]=0x00;
 
-			//Send talker entry
-			entry.message=tts+ttsbreak;
-			entry.display=display+displaybreak;
-			entry.size=voice->Size;
-			entry.color=voice->Color;
-			entry.flags=NULL;
-			talker(entry, GetHandle(), subject);
+				//Send talker entry
+				entry.message=tts+ttsbreak;
+				entry.display=display+displaybreak;
+				entry.size=voice->Size;
+				entry.color=voice->Color;
+				entry.flags=NULL;
+				talker(entry, GetHandle(), subject);
 
-			//Set new start points
+				//Set new start points				
+				ttsbreak=ttspos;
+				displaybreak=displaypos;
+			}
 			voice=replacement.voice;
-			ttsbreak=ttspos;
-			displaybreak=displaypos;
 		}
 
 		//Copy replacement text according to tag type
