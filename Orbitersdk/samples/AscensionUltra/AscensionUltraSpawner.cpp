@@ -29,12 +29,32 @@ DWORD WINAPI TalkerThread(LPVOID params)
 					TalkerEntry *entry=gParams.messages[focus].front();
 					gParams.messages[focus].pop();					
 					if (entry->valid)
-					{
+					{						
+						int k=gParams.slots.size();
+						if (k>0 && gParams.slots[0].handle)
+						{
+							//Delete last slot text
+							if (gParams.slots[--k].text) delete [] gParams.slots[k].text;
+							gParams.slots[k].text=NULL;
+							//Shift slots
+							for(int i=k;i>0;i--)
+							{
+								NOTEHANDLE h=gParams.slots[i].handle;
+								oapiAnnotationSetSize(h, gParams.slots[i].size=gParams.slots[i-1].size);
+								oapiAnnotationSetColour(h, gParams.slots[i].color=gParams.slots[i-1].color);
+								oapiAnnotationSetText(h, gParams.slots[i].text=gParams.slots[i-1].text);
+							}
+							NOTEHANDLE h=gParams.slots[0].handle;							
+							oapiAnnotationSetSize(h, gParams.slots[0].size=entry->size);
+							oapiAnnotationSetColour(h, gParams.slots[0].color=entry->color);
+							oapiAnnotationSetText(h, gParams.slots[0].text=entry->display);
+							entry->display=NULL;
+						}
 						entry->valid=false; //Setting this before releasing the lock, so queue manipulators only delete valid entries.
 				LeaveCriticalSection(&gParams.lock);
 						ATC->Speak(entry->message, NULL, NULL);
-						delete [] entry->message;
-						delete [] entry->display;
+						if (entry->message) delete [] entry->message;
+						if (entry->display) delete [] entry->display;
 				EnterCriticalSection(&gParams.lock);
 					}
 					else delete entry; //Here is the only place where entries get deleted in simulation.
@@ -55,11 +75,11 @@ void Talk(const TalkerEntry &input, const OBJHANDLE sender, const OBJHANDLE rece
 {
 	//Copy the input across DLL boundaries
 	TalkerEntry *entry=new TalkerEntry(input);
-	if (entry->message) wcscpy((WCHAR *)(entry->message=new WCHAR[wcslen(input.message)+1]), input.message);
-	else *((WCHAR *)(entry->message=new WCHAR[1]))=0x0000;
-	if (entry->display) strcpy(entry->display=new char[strlen(input.display)+1], input.display);
-	else *(entry->display=new char[1])=0x00;
 	entry->valid=true;
+	entry->message=NULL;
+	entry->display=NULL;
+	if (input.message) wcscpy((WCHAR *)(entry->message=new WCHAR[wcslen(input.message)+1]), input.message);
+	if (input.display) strcpy(entry->display=new char[strlen(input.display)+1], input.display);
 
 	//TODO: clear queues with override flag set
 	EnterCriticalSection(&gParams.lock);
@@ -129,6 +149,7 @@ void AscensionUltraSpawner::clbkSimulationStart(oapi::Module::RenderMode mode)
 		for(std::vector<Annotation>::iterator i=gParams.slots.begin();i!=gParams.slots.end();i++)
 		{
 			i->handle=oapiCreateAnnotation(true, 1, _V(1,1,1));
+			i->text=NULL;
 			oapiAnnotationSetPos(i->handle, i->x1, i->y1, i->x2, i->y2);
 		}
 	LeaveCriticalSection(&gParams.lock);
@@ -185,8 +206,10 @@ void AscensionUltraSpawner::clbkSimulationEnd()
 	EnterCriticalSection(&gParams.lock);
 		for(std::vector<Annotation>::iterator i=gParams.slots.begin();i!=gParams.slots.end();i++)
 		{
-			oapiDelAnnotation(i->handle);
+			if (i->handle) oapiDelAnnotation(i->handle);
 			i->handle=NULL;
+			if (i->text) delete [] i->text;
+			i->text=NULL;
 		}
 	LeaveCriticalSection(&gParams.lock);
 }

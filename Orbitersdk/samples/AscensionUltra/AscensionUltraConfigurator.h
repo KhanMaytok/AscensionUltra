@@ -22,10 +22,13 @@ class RootConfig;
 
 struct Annotation {
 	double x1;
-	double x2;
 	double y1;
+	double x2;
 	double y2;
 	NOTEHANDLE handle;
+	double size;
+	VECTOR3 color;
+	char *text;
 };
 
 struct gParamsType {
@@ -35,7 +38,6 @@ struct gParamsType {
 	bool SCNSave, RecSave, Spawn, Reset;
 
 	std::vector<Annotation> slots;
-	std::map<OBJHANDLE, std::vector<char *>> displays;
 
 	/* Main message queue structure.
 	   One queue per object in order to only talk out text for focussed vessels. Pusher must create new entries and
