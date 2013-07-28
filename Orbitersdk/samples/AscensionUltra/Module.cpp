@@ -333,10 +333,10 @@ void ReadATCParameters(BaseVessel::Talker::Voice &voice, const char *ini, const 
 	GetPrivateProfileString(section, "Voice", "", line, LINESIZE, ini);
 	mbstowcs((WCHAR *)(voice.Definition=new WCHAR[strlen(line)+1]), line, LINESIZE);
 
-	//Read font data - default is black text with size 10
-	GetPrivateProfileString(section, "Size", "10", line, LINESIZE, ini);
+	//Read font data - default is white text with size 1
+	GetPrivateProfileString(section, "Size", "1", line, LINESIZE, ini);
 	sscanf(line, "%lf", &voice.Size);
-	GetPrivateProfileString(section, "Color", "0,0,0", line, LINESIZE, ini);
+	GetPrivateProfileString(section, "Color", "1,1,1", line, LINESIZE, ini);
 	sscanf(line, "%lf,%lf,%lf", &voice.Color.x, &voice.Color.y, &voice.Color.z);
 
 	//Acknowledgments (with ANSI->UTF-16)
