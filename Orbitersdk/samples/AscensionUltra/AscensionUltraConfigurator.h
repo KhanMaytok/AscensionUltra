@@ -9,6 +9,7 @@
 #define RESET		"BaseFastReset"
 #define SCNSAVE		"BaseScenarioSave"
 #define RECSAVE		"BaseRecorderSave"
+#define IDLEROTATE	"ATCRotationTime"
 #define ATCSLOT		"ATCAnnotationSlot" //ATCAnnotationSlot0 = 0.1, 0.1, 0.9, 0.2
 #define ORBITERCONFIG "Orbiter.cfg"
 #define CLASSNAME	"AscensionUltra"
@@ -36,6 +37,7 @@ struct gParamsType {
 	AscensionUltraConfig *Item;
 	RootConfig *Root;
 	bool SCNSave, RecSave, Spawn, Reset;
+	double IdleRotate;
 
 	std::vector<Annotation> slots;
 

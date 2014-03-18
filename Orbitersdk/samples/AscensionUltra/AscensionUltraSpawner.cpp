@@ -5,6 +5,25 @@
 
 extern gParamsType gParams;
 
+void ShiftSlots(int slots, TalkerEntry *entry)
+{
+	//Delete last slot text
+	if (gParams.slots[--slots].text) delete [] gParams.slots[slots].text;
+	gParams.slots[slots].text=NULL;
+	//Shift slots
+	for(int i=slots;i>0;i--)
+	{
+		NOTEHANDLE h=gParams.slots[i].handle;
+		oapiAnnotationSetSize(h, gParams.slots[i].size=gParams.slots[i-1].size);
+		oapiAnnotationSetColour(h, gParams.slots[i].color=gParams.slots[i-1].color);
+		oapiAnnotationSetText(h, gParams.slots[i].text=gParams.slots[i-1].text);
+	}
+	NOTEHANDLE h=gParams.slots[0].handle;							
+	oapiAnnotationSetSize(h, gParams.slots[0].size=entry->size);
+	oapiAnnotationSetColour(h, gParams.slots[0].color=entry->color);
+	oapiAnnotationSetText(h, gParams.slots[0].text=entry->display);
+}
+
 DWORD WINAPI TalkerThread(LPVOID params)
 {
 	ISpVoice *ATC;
@@ -14,40 +33,36 @@ DWORD WINAPI TalkerThread(LPVOID params)
 		ResetEvent(gParams.stopped);
 		while(gParams.active)
 		{
-			WaitForSingleObject(gParams.event, INFINITE);
+			DWORD wait=WaitForSingleObject(gParams.event, gParams.IdleRotate<=0?INFINITE:(DWORD)(gParams.IdleRotate*1000));
 			bool go=gParams.active;
 			while(go && gParams.active)
 			{
 				OBJHANDLE focus=oapiGetFocusObject();
 
 				EnterCriticalSection(&gParams.lock);
+					TalkerEntry *entry;
+					int slots=gParams.slots.size();
 					if (gParams.messages.find(focus)==gParams.messages.end())
 					{
+						if (wait==WAIT_TIMEOUT && slots>0 && gParams.slots[0].handle)
+						{
+							entry=new TalkerEntry;
+							entry->display=NULL;
+							entry->color=_V(0,0,0);
+							entry->size=1;
+							ShiftSlots(slots, entry);
+							delete entry;
+						}
 				LeaveCriticalSection(&gParams.lock);
 						break; //Note: this means we need a signaling if queue OR focus object is changing.
 					}
-					TalkerEntry *entry=gParams.messages[focus].front();
+					entry=gParams.messages[focus].front();
 					gParams.messages[focus].pop();					
 					if (entry->valid)
 					{						
-						int k=gParams.slots.size();
-						if (k>0 && gParams.slots[0].handle)
+						if (slots>0 && gParams.slots[0].handle)
 						{
-							//Delete last slot text
-							if (gParams.slots[--k].text) delete [] gParams.slots[k].text;
-							gParams.slots[k].text=NULL;
-							//Shift slots
-							for(int i=k;i>0;i--)
-							{
-								NOTEHANDLE h=gParams.slots[i].handle;
-								oapiAnnotationSetSize(h, gParams.slots[i].size=gParams.slots[i-1].size);
-								oapiAnnotationSetColour(h, gParams.slots[i].color=gParams.slots[i-1].color);
-								oapiAnnotationSetText(h, gParams.slots[i].text=gParams.slots[i-1].text);
-							}
-							NOTEHANDLE h=gParams.slots[0].handle;							
-							oapiAnnotationSetSize(h, gParams.slots[0].size=entry->size);
-							oapiAnnotationSetColour(h, gParams.slots[0].color=entry->color);
-							oapiAnnotationSetText(h, gParams.slots[0].text=entry->display);
+							ShiftSlots(slots, entry);							
 							entry->display=NULL;
 						}
 						entry->valid=false; //Setting this before releasing the lock, so queue manipulators only delete valid entries.
@@ -97,6 +112,7 @@ AscensionUltraSpawner::AscensionUltraSpawner(HINSTANCE hDLL) : oapi::Module(hDLL
 	if (!oapiReadItem_bool(f, RECSAVE, gParams.RecSave)) gParams.RecSave=true; //Recorder saving default is true
 	if (!oapiReadItem_bool(f, SPAWN, gParams.Spawn)) gParams.Spawn=true; //Spawning default is true
 	if (!oapiReadItem_bool(f, RESET, gParams.Reset)) gParams.Reset=true; //Reseting default is true
+	if (!oapiReadItem_float(f, IDLEROTATE, gParams.IdleRotate)) gParams.IdleRotate=-1; //Idle rotation time default to off
 	int k=strlen(ATCSLOT);
 	char item[80], buf[256];
 	strcpy(item, ATCSLOT);
@@ -222,6 +238,7 @@ void AscensionUltraSpawner::Save()
 	oapiWriteItem_bool(f, RECSAVE, gParams.RecSave);
 	oapiWriteItem_bool(f, SPAWN, gParams.Spawn);
 	oapiWriteItem_bool(f, RESET, gParams.Reset);
+	oapiWriteItem_float(f, IDLEROTATE, gParams.IdleRotate);
 	//Save should never be called while slots are re-defined, so no lock is necessary here
 	int j=0;
 	int k=strlen(ATCSLOT);
