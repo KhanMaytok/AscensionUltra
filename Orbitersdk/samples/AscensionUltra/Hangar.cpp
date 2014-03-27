@@ -12,9 +12,6 @@
 
 Hangar::Hangar(void)
 {
-	int k=GetDoors();
-	for(int i=0;i<k;i++) GetDoor(i)->SetSpeed(0.1);
-
 	classname=NULL;
 	event_prefix=NULL;
 	name=NULL;
@@ -38,20 +35,25 @@ int Hangar::GetType(){throw "GetType() not allowed on abstract hangar class!";}
 
 void Hangar::DefineAnimations ()
 {	
-	int k=GetDoors();
-	for (int i=0;i<k;i++) GetDoor(i)->DefineAnimations();
 	ReadBeaconDefinition(beacons, ini, classname, position, owner);
 	ReadBeaconGroups(beaconGroup, beacons, ini, classname);
-	k=GetChecklists();
-	for (int i=0;i<k;i++) ReadATCChecklist(GetChecklist(i), ini, classname);
+	for (int i=0, k=GetChecklists(); i<k; i++) ReadATCChecklist(GetChecklist(i), ini, classname);
 	if (instance>=0)
 	{
 		char *line=new char[strlen(classname)+40];
 		sprintf(line, "%s%d", classname, instance);
 		ReadBeaconDefinition(beacons, ini, line, position, owner);
 		ReadBeaconGroups(beaconGroup, beacons, ini, line);
-		for (int i=0;i<k;i++) ReadATCChecklist(GetChecklist(i), ini, line);
+		for (int i=0, k=GetChecklists(); i<k; i++) ReadATCChecklist(GetChecklist(i), ini, line);
 		delete [] line;
+	}
+	for (int i=0, k=GetDoors(); i<k; i++)
+	{
+		char gn[20]; //Should be enough for 32-bit integer decimal representation
+		sprintf(gn, "door%dwarn", i);
+		Door *d=GetDoor(i);
+		d->DefineAnimations();
+		d->SetWarningGroup((Group *)beaconGroup[gn]);
 	}
 }
 
