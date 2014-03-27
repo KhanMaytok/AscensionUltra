@@ -9,6 +9,7 @@
 // ==============================================================
 
 #include "Door.h"
+#include "BeaconArray.h"
 
 void Door::Init(VESSEL *owner, const char *name, const char *event_prefix, int transforms, ... )
 {
@@ -39,6 +40,7 @@ Door::Door(void)
 	crew=NULL;
 	action=0;
 	anim=0;
+	warn=NULL;
 }
 
 Door::~Door(void)
@@ -84,6 +86,18 @@ void Door::PostStep (double simt, double simdt, double mjd)
 	{
 		if (position<=0 && actionText[0]!='O') crew->SetActionAreaText(action, (char *)memcpy(actionText, "Open", 4));
 		if (position>0 && actionText[0]!='C') crew->SetActionAreaText(action, (char *)memcpy(actionText, "Clos", 4));
+	}
+	if (warn)
+	{
+		BeaconArray *b=(BeaconArray *)(*warn)[0];
+		if (position>0 && position<1)
+		{
+			if (!b->On()) for(int i=0; (b=(BeaconArray *)(*warn)[i])!=NULL ; i++) b->Switch(true);
+		}
+		else
+		{
+			if (b->On()) for(int i=0; (b=(BeaconArray *)(*warn)[i])!=NULL ; i++) b->Switch(false);
+		}
 	}
 	owner->SetAnimation (anim, position);
 }
@@ -148,3 +162,5 @@ void Door::LinkActionArea(UMMUCREWMANAGMENT *crew, int action, VECTOR3 position,
 	this->action=action;
 	crew->DeclareActionArea(action, position, radius, true,	NULL, NULL);
 }
+
+void Door::SetWarningGroup(Group *warn){this->warn=warn;}
