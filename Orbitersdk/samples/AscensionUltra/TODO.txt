@@ -16,4 +16,3 @@
 					   exhaust size area, exhaust simulation is disabled and screen shows "Clear launch area", showing "cleared" button. Pressing
 					   the button returns the MLP animation (rolling cover out, rolling all in, deploy gangways again). After MLP is in place again,
 					   launch in progress is cleared.
-* Define "screen transition slots" for ATC chatter texts, read out by text2speech engine
