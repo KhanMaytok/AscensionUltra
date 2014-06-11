@@ -174,3 +174,17 @@ int Hangar::InitActionAreas(UMMUCREWMANAGMENT *crew, int index){return index;}
 bool Hangar::ActionAreaActivated(int action){return false;}
 
 bool Hangar::CheckVincinity(VECTOR3 *pos, int index){return false;}
+
+void Hangar::SetIllumination(bool night)
+{
+	BeaconArray *b;
+	Group *illumination;
+	char *keys[10]=
+	{
+		"roof",
+		"sign"
+	};
+	for(int key=0;key<2;key++)
+		if ((illumination=(Group *)beaconGroup[keys[key]])!=NULL)
+			for(int i=0;(b=(BeaconArray *)(*illumination)[i])!=NULL;i++) b->Switch(night);
+}
