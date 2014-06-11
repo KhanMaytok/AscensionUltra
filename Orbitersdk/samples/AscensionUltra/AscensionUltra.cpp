@@ -79,6 +79,8 @@ AscensionUltra::AscensionUltra (OBJHANDLE hObj, int fmodel)
 
 	voiceVessel.Definition=NULL;
 	voiceATC.Definition=NULL;
+
+	illumination = 0;
 }
 
 // --------------------------------------------------------------
@@ -574,6 +576,43 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	if (action>-1) vertical.ActionAreaActivated(action);
 	if (action>-1) verticalSmall.ActionAreaActivated(action);
 
+	//Check illumination status
+	bool night=false;
+	bool setIllumination=false;
+	if ((illumination & ILLUMINATION_MODE)==0)
+	{
+		VECTOR3 light;
+		GetRelativePos(oapiGetGbodyByIndex(0), light);
+		VESSELSTATUS2 status;
+		status.version=2;
+		status.flag=0;
+		GetStatusEx(&status);
+		normalise(light);
+		normalise(status.rpos);
+		//Dot product of light and gbody core direction is cosine of the angle between those vectors
+		//Since we are on the radius of the gbody, if the angle is <90° (cosine >0), the light source
+		//is behind the gbody, thus we have night.
+		night=dotp(light, status.rpos)>0;
+	}
+	else if ((illumination & ILLUMINATION_NIGHT)>0) night=true;
+	if ((illumination & ILLUMINATION_WAS_DAY)>0)
+	{
+		if (setIllumination=night) illumination=(illumination & ILLUMINATION_MODE);
+	}
+	else if (setIllumination=!night) illumination=(illumination & ILLUMINATION_MODE) | ILLUMINATION_WAS_DAY;
+	if (setIllumination)
+	{
+		for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].SetIllumination(night);
+		for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].SetIllumination(night);
+		for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].SetIllumination(night);
+		launchTunnel.SetIllumination(night);
+		for(int i=0;i<DRADARS;i++) dradar[i].SetIllumination(night);
+		vertical.SetIllumination(night);
+		verticalSmall.SetIllumination(night);
+		docks.SetIllumination(night);
+		airport.SetIllumination(night);
+	}
+	
 	//DEBUG relative position
 	if (coords)
 	{
