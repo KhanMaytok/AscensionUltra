@@ -55,6 +55,11 @@ const double EMPTY_MASS    = 11000.0;  // standard configuration
 #define PERSON_FILTER   0x80
 #define ERROR_CHANGE_FAIL	-7
 
+#define ILLUMINATION_MODE		0x03
+#define ILLUMINATION_DAY		0x01
+#define ILLUMINATION_NIGHT		0x02
+#define ILLUMINATION_WAS_DAY	0x04
+
 class AscensionUltra: public VESSEL2 {
 public:
 	AscensionUltra (OBJHANDLE hObj, int fmodel);
@@ -139,6 +144,8 @@ private:
 	char *ini;
 	bool scnsave, recsave;
 	BaseVessel::Talker::Voice voiceVessel, voiceATC;
+
+	char illumination;
 	
 	//DEBUG
 
