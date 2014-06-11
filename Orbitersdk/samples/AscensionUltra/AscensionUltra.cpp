@@ -31,7 +31,6 @@
 #define VLC2OFFSET _V(-2086,-0.28,2560.5)
 #define DRADAROFFSET _V(-895,0,970)
 #define DRADARMATRIXOFFSET _V(-4495,0,0)
-#define DRADARPIVOT 10
 #define DOCKSOFFSET _V(-130.5,0,645)
 #define AIRPORTOFFSET _V(-4653,0,605)
 #define SPAWN		"BaseAutoSpawn"
@@ -134,18 +133,13 @@ void AscensionUltra::InitSubObjects()
 	strcpy(name, "Vertical Launch Facility 2");
 	verticalSmall.Init(this, ini, name, STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+1, "VERTICALLAUNCH", 1);
 
-	/* Tracker definition */
-	//0-1,7-10 groups are dishes, 4 is static plate, 2-3/5-6 is rotation stand
-	static UINT RotGrp[10] = {2,3,5,6,0,1,7,8,9,10};
 	strcpy(name, "Doppler Radar #x");
 	k=strlen(name)-1;
 	for(i=0;i<DRADARS;i++)
 	{
 		name[k]=0x31+i;
-		dradar[i].Init(this, ini, name,
-			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+0, 4, _V(0,0,0), _V(0,1,0), (float)(-360*RAD)),
-			new MGROUP_ROTATE(i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES, RotGrp+4, 6, _V(0,DRADARPIVOT,0), _V(1,0,0), (float)(90*RAD)),
-			90*RAD, "DRADAR", i);
+		dradar[i].Init(this, ini, name, i+STATICMESHES+TURNAROUNDHANGARS+LEASELIGHTHANGARS+LEASEHEAVYHANGARS+LAUNCHTUNNELS+VERTICALLAUNCHES,
+			"DRADAR", i);
 	}
 
 	strcpy(name, "Dockyard");
@@ -294,7 +288,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	{
 		VECTOR3 off=OFFSET+DRADAROFFSET+DRADARMATRIXOFFSET*i;
 		SetMeshVisibilityMode (AddMesh (meshDRadar, &off), MESHVIS_ALWAYS);
-		dradar[i].SetPosition(off+_V(0,DRADARPIVOT,0)); //Dish position
+		dradar[i].SetPosition(off);
 	}
 	SetMeshVisibilityMode (AddMesh (meshDocks = oapiLoadMeshGlobal ("AscensionUltra\\AU_Docks"), &(OFFSET+DOCKSOFFSET)), MESHVIS_ALWAYS);
 	SetMeshVisibilityMode (AddMesh (meshAirport = oapiLoadMeshGlobal ("AscensionUltra\\AU_Airport_NW"), &(OFFSET+AIRPORTOFFSET)), MESHVIS_ALWAYS);	
