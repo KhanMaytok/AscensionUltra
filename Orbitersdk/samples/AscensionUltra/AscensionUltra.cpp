@@ -375,7 +375,12 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	char cbuf[256];
 	int i;
 
-	// Write custom parameters
+	// Write global parameters
+	sprintf(cbuf, "%s/%s", controlRoom->GetHangar()->GetName(), controlRoom->GetName());
+	oapiWriteScenario_string(scn, "CONTROLROOM", cbuf);
+
+
+	// Write Turnaround Hangars
 	for(i=0;i<TURNAROUNDHANGARS;i++)
 	{
 		sprintf (cbuf, "%d", i);
@@ -385,6 +390,7 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	sprintf (cbuf, "%d", i);
 	oapiWriteScenario_string (scn, "HANGAR", cbuf);
 
+	// Write Lease Hangars
 	for(i=0;i<LEASEHEAVYHANGARS+LEASELIGHTHANGARS;i++)
 	{
 		sprintf (cbuf, "%X", i);
@@ -395,10 +401,12 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	sprintf (cbuf, "%X", i);
 	oapiWriteScenario_string (scn, "LEASE", cbuf);
 
+	// Write Launch Tunnel
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "0");
 	launchTunnel.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "LAUNCHTUNNEL", "1");
 
+	// Write Radars
 	for(i=0;i<DRADARS;i++)
 	{
 		sprintf (cbuf, "%X", i);
@@ -408,19 +416,19 @@ void AscensionUltra::clbkSaveState (FILEHANDLE scn)
 	sprintf (cbuf, "%X", i);
 	oapiWriteScenario_string (scn, "DRADAR", cbuf);
 
+	// Write Vertical Launch Facilities
 	oapiWriteScenario_string (scn, "VERTICALLAUNCH", "0");
 	vertical.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "VERTICALLAUNCH", "1");
 	verticalSmall.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "VERTICALLAUNCH", "2");
-		
-	sprintf (cbuf, "%X", i);
-	oapiWriteScenario_string (scn, "VERTICALLAUNCH", cbuf);
-
+	
+	// Write Airport
 	oapiWriteScenario_string (scn, "AIRPORT", "0");
 	airport.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "AIRPORT", "1");	
 
+	// Write Dockyard
 	oapiWriteScenario_string (scn, "DOCKYARD", "0");
 	docks.clbkSaveState(scn);
 	oapiWriteScenario_string (scn, "DOCKYARD", "1");
@@ -467,7 +475,7 @@ bool AscensionUltra::clbkPlaybackEvent (double simt, double event_t, const char 
 	{
 		//Tunnel event
 		int radar=(int)(event_type+6)[0]-0x30;
-		if (radar>=0 && radar<DRADARS) return dradar[radar].clbkPlaybackEvent(simt, event_t, event_type+6, event);
+		if (radar>=0 && radar<DRADARS) return dradar[radar].clbkPlaybackEvent(simt, event_t, event_type+7, event);
 	}
 	if (!_strnicmp (event_type, "VERTICALLAUNCH", 14))
 	{
