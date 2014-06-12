@@ -25,6 +25,7 @@ public:
 	GroupElement * operator [](char **name);
 	virtual GroupElementType GetType() {return TypeGroup;}
 	virtual void Displace(VECTOR3 offset);
+	virtual void Switch(bool on);
 private:
 	std::vector<GroupElement *> byIndex;
 	stdext::hash_map<std::string, GroupElement *> byName;

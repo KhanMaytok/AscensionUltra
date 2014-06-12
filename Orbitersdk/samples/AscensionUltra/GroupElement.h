@@ -27,6 +27,7 @@ public:
 	char *GetName() {return name;}
 	virtual GroupElementType GetType() {return TypeGroupElement;}
 	virtual void Displace(VECTOR3 offset) {}
+	virtual void Switch(bool on) {}
 protected:
 	void SetName(char *name)
 	{
