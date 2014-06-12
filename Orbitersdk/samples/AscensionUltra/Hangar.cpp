@@ -37,6 +37,7 @@ void Hangar::DefineAnimations ()
 {	
 	ReadBeaconDefinition(beacons, ini, classname, position, owner);
 	ReadBeaconGroups(beaconGroup, beacons, ini, classname);
+	ReadGroupGroups(beaconGroup, ini, classname);
 	for (int i=0, k=GetChecklists(); i<k; i++) ReadATCChecklist(GetChecklist(i), ini, classname);
 	if (instance>=0)
 	{
@@ -44,6 +45,7 @@ void Hangar::DefineAnimations ()
 		sprintf(line, "%s%d", classname, instance);
 		ReadBeaconDefinition(beacons, ini, line, position, owner);
 		ReadBeaconGroups(beaconGroup, beacons, ini, line);
+		ReadGroupGroups(beaconGroup, ini, line);
 		for (int i=0, k=GetChecklists(); i<k; i++) ReadATCChecklist(GetChecklist(i), ini, line);
 		delete [] line;
 	}
