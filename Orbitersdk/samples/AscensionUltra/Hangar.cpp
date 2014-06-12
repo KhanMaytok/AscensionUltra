@@ -52,10 +52,13 @@ void Hangar::DefineAnimations ()
 	for (int i=0, k=GetDoors(); i<k; i++)
 	{
 		char gn[20]; //Should be enough for 32-bit integer decimal representation
-		sprintf(gn, "door%dwarn", i);
 		Door *d=GetDoor(i);
 		d->DefineAnimations();
-		d->SetWarningGroup((Group *)beaconGroup[gn]);
+		sprintf(gn, "door%dwarn", i);
+		Group *warn=(Group *)beaconGroup[gn];
+		strcpy(gn+strlen(gn)-4, "open");
+		Group *open=(Group *)beaconGroup[gn];
+		d->SetStatusBeaconGroups(warn, open);
 	}
 }
 

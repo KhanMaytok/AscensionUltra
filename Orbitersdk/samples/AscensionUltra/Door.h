@@ -35,7 +35,7 @@ public:
 	bool clbkPlaybackEvent (double simt, double event_t, const char *event_type, const char *event);
 	void LinkActionArea(UMMUCREWMANAGMENT *crew, int action, VECTOR3 position, double radius);
 	virtual char *GetName();
-	void SetWarningGroup(Group *warn);
+	void SetStatusBeaconGroups(Group *warn, Group *open);
 
 private:
 	void RecordEvent(double command);
@@ -44,7 +44,7 @@ private:
 	double command;
 	char *event_prefix, *name, *actionText;
 	UMMUCREWMANAGMENT *crew;
-	Group *warn;
+	Group *warn, *open;
 protected:
 	VESSEL* owner;
 	int anim, transforms;
