@@ -226,14 +226,36 @@ void OverwriteBeaconParamsDefinition(std::vector<BeaconArray *> &beacons, const 
 	}
 }
 
-void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *ini, const char *section)
+void CommitGroup(Group *group, char *line, int s, int j, Group &groups, std::vector<BeaconArray *> &beacons, bool beacon)
+{
+	line[j]=0x00;
+	GroupElement *element=NULL;
+	if (beacon)
+	{
+		int val=atoi(line+s);
+		element=beacons[val];
+	}
+	else
+	{
+		//Scan backwards to convert trailing whitespace into terminators
+		for (int l=j-1;l>s;l--)
+			if (line[s]!=' ' && line[s]!='\t') break;
+			else line[l]=0x00;
+		//Scan forward to skip leading whitespace
+		for (;s<j;s++) if (line[s]!=' ' && line[s]!='\t') break;
+		element=groups[line+s];
+	}
+	if (element) group->Add(element);
+}
+
+void ReadGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *ini, const char *section, bool beacon)
 {
 	char pf[PREFIXSIZE]="";
 	char line[LINESIZE]="";
 	int i=0;
 	while(true)
 	{
-		sprintf(pf, "BeaconGroup%d", i++);
+		sprintf(pf, "%sGroup%d", beacon?"Beacon":"", i++);
 		GetPrivateProfileString(section, pf, "", line, LINESIZE, ini);
 		if (line[0]==0x00) break;
 		int k=strlen(line);
@@ -269,31 +291,31 @@ void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const 
 		for(;j<k;j++) switch(line[j])
 		{
 		case ';':
-			line[j]=0x00;
 			j=k;
 			break;
 		case ',':
-			if (valid)
-			{
-				line[j]=0x00;
-				int val=atoi(line+s);
-				group->Add(beacons[val]);
-			}
+			if (valid) CommitGroup(group, line, s, j, groups, beacons, beacon);
 			s=j+1;
 			valid=false;
 			break;
 		default:
-			if (line[j]<'0' || line[j]>'9') break;
+			if ((line[j]<'0' || line[j]>'9') && beacon) break;
 			valid=true;
 			break;
 		}		
-		if (valid)
-		{
-			int val=atoi(line+s);
-			group->Add(beacons[val]);
-		}
+		if (valid) CommitGroup(group, line, s, j, groups, beacons, beacon);
 		groups.Add(group);
 	}
+}
+
+void ReadBeaconGroups(Group &groups, std::vector<BeaconArray *> &beacons, const char *ini, const char *section)
+{
+	ReadGroups(groups, beacons, ini, section, true);
+}
+
+void ReadGroupGroups(Group &groups, const char *ini, const char *section)
+{
+	ReadGroups(groups, (std::vector<BeaconArray *>)NULL, ini, section, false);
 }
 
 void ReadATCChecklist(Checklist *checklist, const char *ini, const char *section)
