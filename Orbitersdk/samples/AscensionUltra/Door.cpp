@@ -89,14 +89,26 @@ void Door::PostStep (double simt, double simdt, double mjd)
 	}
 	if (warn)
 	{
-		BeaconArray *b=(BeaconArray *)(*warn)[0];
+		bool on=((BeaconArray *)(*warn)[0])->On();
 		if (position>0 && position<1)
 		{
-			if (!b->On()) for(int i=0; (b=(BeaconArray *)(*warn)[i])!=NULL ; i++) b->Switch(true);
+			if (!on) warn->Switch(true);
 		}
 		else
 		{
-			if (b->On()) for(int i=0; (b=(BeaconArray *)(*warn)[i])!=NULL ; i++) b->Switch(false);
+			if (on) warn->Switch(false);
+		}
+	}
+	if (open)
+	{
+		bool on=((BeaconArray *)(*open)[0])->On();
+		if (position<1)
+		{
+			if (on) warn->Switch(false);
+		}
+		else
+		{
+			if (!on) warn->Switch(true);
 		}
 	}
 	owner->SetAnimation (anim, position);
@@ -163,4 +175,8 @@ void Door::LinkActionArea(UMMUCREWMANAGMENT *crew, int action, VECTOR3 position,
 	crew->DeclareActionArea(action, position, radius, true,	NULL, NULL);
 }
 
-void Door::SetWarningGroup(Group *warn){this->warn=warn;}
+void Door::SetStatusBeaconGroups(Group *warn, Group *open)
+{
+	this->warn=warn;
+	this->open=open;
+}
