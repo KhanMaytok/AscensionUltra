@@ -104,11 +104,11 @@ void Door::PostStep (double simt, double simdt, double mjd)
 		bool on=((BeaconArray *)(*open)[0])->On();
 		if (position<1)
 		{
-			if (on) warn->Switch(false);
+			if (on) open->Switch(false);
 		}
 		else
 		{
-			if (!on) warn->Switch(true);
+			if (!on) open->Switch(true);
 		}
 	}
 	owner->SetAnimation (anim, position);
