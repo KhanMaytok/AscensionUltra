@@ -71,7 +71,7 @@ void BeaconArray::SetPositions(VECTOR3 &start, VECTOR3 &end)
 	for (int i=1;i<beacons;i++)	*(spec[i].pos)=start+step*i;
 }
 
-void BeaconArray::SetColor(VECTOR3 &color){ this->color=color; }
+void BeaconArray::SetColor(VECTOR3 &color){ this->color=color; } //NOTE: Beacons already use a pointer to this member here!
 
 void BeaconArray::SetBeacons(int beacons)
 {
