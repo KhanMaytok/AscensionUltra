@@ -610,15 +610,16 @@ void AscensionUltra::clbkPostStep (double simt, double simdt, double mjd)
 	else if (setIllumination=!night) illumination=(illumination & ILLUMINATION_MODE) | ILLUMINATION_WAS_DAY;
 	if (setIllumination)
 	{
-		for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].SetIllumination(night);
-		for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].SetIllumination(night);
-		for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].SetIllumination(night);
-		launchTunnel.SetIllumination(night);
-		for(int i=0;i<DRADARS;i++) dradar[i].SetIllumination(night);
-		vertical.SetIllumination(night);
-		verticalSmall.SetIllumination(night);
-		docks.SetIllumination(night);
-		airport.SetIllumination(night);
+		char *label="illumination";
+		for(int i=0;i<TURNAROUNDHANGARS;i++) turnAround[i].SetIllumination(label, night);
+		for(int i=0;i<LEASELIGHTHANGARS;i++) leaseLight[i].SetIllumination(label, night);
+		for(int i=0;i<LEASEHEAVYHANGARS;i++) leaseHeavy[i].SetIllumination(label, night);
+		launchTunnel.SetIllumination(label, night);
+		for(int i=0;i<DRADARS;i++) dradar[i].SetIllumination(label, night);
+		vertical.SetIllumination(label, night);
+		verticalSmall.SetIllumination(label, night);
+		docks.SetIllumination(label, night);
+		airport.SetIllumination(label, night);
 	}
 	
 	//DEBUG relative position

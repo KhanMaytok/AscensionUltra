@@ -49,7 +49,7 @@ public:
 	virtual bool CheckVincinity(VECTOR3 *pos, int index=0);
 	virtual int GetChecklists();
 	virtual Checklist *GetChecklist(int index);
-	virtual void SetIllumination(bool night);
+	virtual void SetIllumination(char *label, bool on);
 protected:
 	VESSEL* owner;
 	UINT meshIndex;
