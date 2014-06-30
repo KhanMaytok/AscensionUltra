@@ -180,8 +180,8 @@ bool Hangar::ActionAreaActivated(int action){return false;}
 
 bool Hangar::CheckVincinity(VECTOR3 *pos, int index){return false;}
 
-void Hangar::SetIllumination(bool night)
+void Hangar::SetIllumination(char *label, bool on)
 {
-	Group *illumination=(Group *)beaconGroup["illumination"];
-	if (illumination!=NULL) illumination->Switch(night);
+	Group *illumination=(Group *)beaconGroup[label];
+	if (illumination!=NULL) illumination->Switch(on);
 }
