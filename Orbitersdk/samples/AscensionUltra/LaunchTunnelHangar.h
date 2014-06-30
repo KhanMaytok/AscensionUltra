@@ -107,6 +107,7 @@ class LaunchTunnelHangar:public Hangar
 public:
 	int GetType();
 	void DefineAnimations ();
+	void clbkPostStep (double simt, double simdt, double mjd);
 	int GetDoors();
 	Door *GetDoor(int index);	
 	int GetRooms();
