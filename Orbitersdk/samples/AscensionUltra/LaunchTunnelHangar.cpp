@@ -17,6 +17,7 @@ bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 	if (event!=Abort) return false;
 	if (GetState()==Empty) return false;
 	RecordEvent(event);
+	hangar->SetIllumination("requesthold",false);
 	SetState(Empty);
 	subject=NULL;
 	return true;
@@ -39,11 +40,13 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
+		hangar->SetIllumination("requesthold",true);
 		if (vincinity)
 		{
 			next->SetSubject(subject);
 			if (next->GetSubject()==subject)
 			{
+				hangar->SetIllumination("requesthold",false);
 				SetState(Roll);
 				return;
 			}
@@ -57,6 +60,7 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 		next->SetSubject(subject);
 		if (next->GetSubject()==subject)
 		{
+			hangar->SetIllumination("requesthold",false);
 			SetState(Roll);
 			owner->SendEvent(args);
 			return;
@@ -67,6 +71,7 @@ void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, 
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
+		hangar->SetIllumination("requesthold",false);
 		SetState(Roll);
 		owner->SendEvent(args);
 		return;
@@ -93,6 +98,7 @@ bool LaunchTunnel::PreflightChecklist::List::SetEvent(int event)
 				SetState(Wait);
 				return true;
 			}
+			hangar->SetIllumination("preflighthold",false);
 			SetState(Roll);
 			return true;
 		}
@@ -104,6 +110,7 @@ bool LaunchTunnel::PreflightChecklist::List::SetEvent(int event)
 	case Roll:
 		if (event!=Abort) return false;
 		RecordEvent(event);
+		hangar->SetIllumination("preflighthold",false);
 		SetState(AbortOpen);
 		hangar->GetDoor(0)->Open();
 		return true;
@@ -133,6 +140,7 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
+		hangar->SetIllumination("preflighthold",true);
 		SetState(OpenEntry);
 		entry->Open();
 		return;
@@ -153,6 +161,7 @@ void LaunchTunnel::PreflightChecklist::List::PostStep (double simt, double simdt
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
+		hangar->SetIllumination("preflighthold",false);
 		SetState(Roll);
 		owner->SendEvent(args);
 		return;
@@ -187,6 +196,7 @@ bool LaunchTunnel::BoardingChecklist::List::SetEvent(int event)
 				SetState(Wait);
 				return true;
 			}
+			hangar->SetIllumination("paxhold",false);
 			SetState(Roll);
 			return true;
 		}
@@ -197,6 +207,7 @@ bool LaunchTunnel::BoardingChecklist::List::SetEvent(int event)
 	case Roll:
 		if (event!=Abort) return false;
 		RecordEvent(event);
+		hangar->SetIllumination("paxhold",false);
 		SetState(AbortWait);
 		owner->DockVessel(hangar->GetRoom(0), NULL);
 		return true;
@@ -223,6 +234,7 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
+		hangar->SetIllumination("paxhold",true);
 		SetState(Taxi);
 		return;
 	case Taxi:
@@ -237,6 +249,7 @@ void LaunchTunnel::BoardingChecklist::List::PostStep (double simt, double simdt,
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
+		hangar->SetIllumination("paxhold",false);
 		SetState(Roll);
 		owner->SendEvent(args);
 		return;
@@ -272,6 +285,7 @@ bool LaunchTunnel::FuelingChecklist::List::SetEvent(int event)
 				SetState(Wait);
 				return true;
 			}
+			hangar->SetIllumination("fuelhold",false);
 			SetState(Roll);
 			return true;
 		}
@@ -282,6 +296,7 @@ bool LaunchTunnel::FuelingChecklist::List::SetEvent(int event)
 	case Roll:
 		if (event!=Abort) return false;
 		RecordEvent(event);
+		hangar->SetIllumination("fuelhold",false);
 		SetState(AbortWait);
 		return true;
 	default:
@@ -307,6 +322,7 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	{
 	case Empty:
 		//If the overall condition of a valid subject is met, the next state is activated immediately
+		hangar->SetIllumination("fuelhold",true);
 		SetState(Taxi);
 		return;
 	case Taxi:
@@ -320,6 +336,7 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 	case Wait:
 		next->SetSubject(subject);
 		if (next->GetSubject()!=subject) return;
+		hangar->SetIllumination("fuelhold",false);
 		SetState(Roll);
 		owner->SendEvent(args);
 		return;
@@ -348,8 +365,9 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 	case LaunchHold:
 		if (event==Proceed)
 		{
+			hangar->SetIllumination("launchhold",false);
+			hangar->SetIllumination("launch",true);
 			SetState(Beacons);
-			//TODO: Beacons on
 			//TODO: Exhaust on
 			return true;
 		}
@@ -370,10 +388,13 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 	case Empty:
 		if (event!=Abort) return false;
 		RecordEvent(event);
+		hangar->SetIllumination("tolaunch",false);
+		hangar->SetIllumination("launchhold",false);
+		hangar->SetIllumination("launch",false);
+		hangar->SetIllumination("exitline",true);
 		SetState(AbortOpen);
 		hangar->GetDoor(1)->Open(); //Open exit door
 		hangar->GetDoor(4)->Open(); //Open escape door
-		//TODO: Beacons error
 		return true;	
 	default:
 		return false;
@@ -408,7 +429,7 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 	{
 	case AbortOpen:
 		if (inTakeoffArea && !inAbortHold) return;
-		//TODO: Beacons off
+		hangar->SetIllumination("exitline",false);
 		args.Event=Aborted;
 		//The order before clearing the subject here is important! The event handler needs the subject in order to determine if it is a valid checklist event.
 		owner->SendEvent(args);
@@ -423,11 +444,13 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		return;
 	case OpenExit:
 		if (exit->GetPosition()<1) return;
+		hangar->SetIllumination("tolaunch",true);
 		SetState(Exit);
 		owner->SendEvent(args);
 		return;
 	case Exit:
 		if (!vincinity) return;
+		hangar->SetIllumination("tolaunch",false);
 		exit->Close();
 		shield->Close();
 		door->Close();
@@ -435,8 +458,9 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		owner->SendEvent(args);
 		return;
 	case Blast:
-		if (exit->GetPosition()>0) return;
 		if (shield->GetPosition()>0) return;
+		hangar->SetIllumination("launchhold",true); //Note: small inefficiency here: while shield is closed but rest is still in transit, beacons will repeatedly lit up
+		if (exit->GetPosition()>0) return;		
 		if (door->GetPosition()>0) return;
 		SetState(LaunchHold);
 		owner->SendEvent(args);
@@ -459,13 +483,61 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		return;
 	case TakeOff:
 		if (inTakeoffArea) return;
-		//TODO: Beacons off
+		hangar->SetIllumination("launch",false);
 		args.Event=Left;
 		//The order before clearing the subject here is important! The event handler needs the subject in order to determine if it is a valid checklist event.
 		owner->SendEvent(args);
 		SetState(Empty);
 		subject=NULL;
 		return;
+	}
+}
+
+void LaunchTunnelHangar::clbkPostStep (double simt, double simdt, double mjd)
+{
+	Hangar::clbkPostStep(simt,simdt,mjd);
+	//Check and update guidance beacon strobing/color according to checklist states
+	int p=preflight.GetState();
+	int b=boarding.GetState();
+	int f=fueling.GetState();
+	int l=launch.GetState();
+	bool abort =
+		p==LaunchTunnel::PreflightChecklist::AbortOpen ||
+		b==LaunchTunnel::BoardingChecklist::AbortWait ||
+		f==LaunchTunnel::FuelingChecklist::AbortWait;
+	bool tofueling =
+		p!=LaunchTunnel::PreflightChecklist::Empty ||
+		b!=LaunchTunnel::BoardingChecklist::Empty ||
+		f!=LaunchTunnel::FuelingChecklist::Empty;
+	Group *beacons = (Group *)beaconGroup["tofueling"];
+	if (beacons && (*beacons)[0]->GetType()==TypeBeaconArray)
+	{
+		BeaconArray *beacon=(BeaconArray *)((*beacons)[0]);
+		if (beacon->On())
+		{
+			if (!tofueling) beacons->Switch(false);
+		}
+		else if (tofueling) beacons->Switch(true);
+		VECTOR3 color;
+		beacon->GetColor(color);
+		if (color.y!=0)
+		{
+			if (abort) beacon->SetColor(_V(1,0,0));
+		}
+		else if (!abort) beacon->SetColor(_V(0,1,0));
+	}
+	abort = l==LaunchTunnel::LaunchChecklist::AbortOpen;
+	beacons = (Group *)beaconGroup["exitline"];
+	if (beacons && (*beacons)[0]->GetType()==TypeBeaconArray)
+	{
+		BeaconArray *beacon=(BeaconArray *)((*beacons)[0]);
+		VECTOR3 color;
+		beacon->GetColor(color);
+		if (color.y!=0)
+		{
+			if (abort) for(int i=0;(beacon=(BeaconArray *)((*beacons)[i]))!=NULL;i++) beacon->SetColor(_V(1,0,0));
+		}
+		else if (!abort) for(int i=0;(beacon=(BeaconArray *)((*beacons)[i]))!=NULL;i++) beacon->SetColor(_V(0,1,0));
 	}
 }
 	
@@ -516,6 +588,15 @@ void LaunchTunnelHangar::DefineAnimations ()
 	lists[i++]=&launch;
 
 	Hangar::DefineAnimations();
+
+	//Switch some beacons off by default
+	SetIllumination("requesthold",false);
+	SetIllumination("preflighthold",false);
+	SetIllumination("paxhold",false);
+	SetIllumination("fuelhold",false);
+	SetIllumination("launchhold",false);
+	SetIllumination("tolaunch",false);
+	SetIllumination("launch",false);
 }
 
 int LaunchTunnelHangar::GetDoors(){return LFMCDOORS+LFMCFDOORS;}
