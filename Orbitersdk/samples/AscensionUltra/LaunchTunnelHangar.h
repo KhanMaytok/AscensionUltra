@@ -98,6 +98,10 @@ namespace LaunchTunnel
 			int GetType(void){return Launch;}
 			bool SetEvent(int event);
 			void PostStep (double simt, double simdt, double mjd);
+		private:
+			std::vector<THRUSTER_HANDLE> oldThrusters,newThrusters;
+			void SuppressStreams();
+			void ResetStreams();
 		};
 	}
 }

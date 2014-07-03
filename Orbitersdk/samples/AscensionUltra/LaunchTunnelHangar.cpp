@@ -355,6 +355,56 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 		return;
 	}
 }
+
+void LaunchTunnel::LaunchChecklist::List::SuppressStreams()
+{
+	VESSEL *vessel=oapiGetVesselInterface(subject);
+	THGROUP_HANDLE group=vessel->GetThrusterGroupHandle(THGROUP_MAIN);
+	double level=vessel->GetThrusterGroupLevel(group);
+	THRUSTER_HANDLE thruster;
+	for(int i=0;(thruster=vessel->GetGroupThruster(group, i))!=NULL;i++)
+	{
+		VECTOR3 pos,dir;
+		vessel->GetThrusterRef(thruster, pos);
+		vessel->GetThrusterDir(thruster, dir);
+		THRUSTER_HANDLE newThruster =
+			vessel->CreateThruster(	pos, dir,
+									vessel->GetThrusterMax0(thruster),
+									vessel->GetThrusterResource(thruster),
+									vessel->GetThrusterIsp0(thruster));
+		oldThrusters.push_back(thruster);
+		newThrusters.push_back(newThruster);
+	}
+	int k=newThrusters.size();
+	if (k==0) return;
+	vessel->SetThrusterGroupLevel(group, 0);
+	THRUSTER_HANDLE *thrusters=new THRUSTER_HANDLE[k];
+	for(int i=0;i<k;i++) thrusters[i]=newThrusters[i];
+	group=vessel->CreateThrusterGroup(thrusters, k, THGROUP_MAIN);
+	vessel->SetThrusterGroupLevel(group, level);
+	delete [] thrusters;
+}
+
+void LaunchTunnel::LaunchChecklist::List::ResetStreams()
+{
+	VESSEL *vessel=oapiGetVesselInterface(subject);
+	THGROUP_HANDLE group=vessel->GetThrusterGroupHandle(THGROUP_MAIN);
+	double level=vessel->GetThrusterGroupLevel(group);
+	int k=oldThrusters.size();
+	if (k==0) return;
+	vessel->SetThrusterGroupLevel(group, 0);
+	THRUSTER_HANDLE *thrusters=new THRUSTER_HANDLE[k];
+	for(int i=0;i<k;i++)
+	{
+		thrusters[i]=oldThrusters[i];
+		vessel->DelThruster(newThrusters[i]);
+	}
+	group=vessel->CreateThrusterGroup(thrusters, k, THGROUP_MAIN);
+	vessel->SetThrusterGroupLevel(group, level);
+	delete [] thrusters;
+	oldThrusters.clear();
+	newThrusters.clear();
+}
 	
 bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 {
@@ -368,14 +418,14 @@ bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)
 			hangar->SetIllumination("launchhold",false);
 			hangar->SetIllumination("launch",true);
 			SetState(Beacons);
-			//TODO: Exhaust on
+			SuppressStreams();			
 			return true;
 		}
 		goto blast; //Skipping exhaust toggle, not on yet.
 	case Beacons:
 	case Speeding:	
 		if (event!=Abort) return false;		
-		//TODO: Exhaust off
+		ResetStreams();
 		//fall-through
 	case Blast:
  blast: if (event!=Abort) return false;
@@ -470,7 +520,7 @@ void LaunchTunnel::LaunchChecklist::List::PostStep (double simt, double simdt, d
 		break;
 	case Beacons:
 		if (inExhaustArea) return;
-		//TODO: Exhaust simulation off
+		ResetStreams();
 		SetState(Speeding);
 		owner->SendEvent(args);
 		return;
