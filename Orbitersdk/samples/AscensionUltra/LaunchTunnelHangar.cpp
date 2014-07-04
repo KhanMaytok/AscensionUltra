@@ -358,6 +358,9 @@ void LaunchTunnel::FuelingChecklist::List::PostStep (double simt, double simdt, 
 
 void LaunchTunnel::LaunchChecklist::List::SuppressStreams()
 {
+	oldThrusters.clear();
+	newThrusters.clear();
+	exhausts.clear();
 	VESSEL *vessel=oapiGetVesselInterface(subject);
 	THGROUP_HANDLE group=vessel->GetThrusterGroupHandle(THGROUP_MAIN);
 	double level=vessel->GetThrusterGroupLevel(group);
@@ -374,6 +377,16 @@ void LaunchTunnel::LaunchChecklist::List::SuppressStreams()
 									vessel->GetThrusterIsp0(thruster));
 		oldThrusters.push_back(thruster);
 		newThrusters.push_back(newThruster);
+		EXHAUSTSPEC exhaust, *newExhaust;
+		for(int j=0;vessel->GetExhaustSpec(j, &exhaust);j++)
+			if (exhaust.th==thruster)
+			{
+				newExhaust=new EXHAUSTSPEC(exhaust);
+				newExhaust->th=newThruster;
+				newExhaust->level=NULL;
+				exhausts[vessel->AddExhaust(newExhaust)]=newExhaust;
+				break;
+			}
 	}
 	int k=newThrusters.size();
 	if (k==0) return;
@@ -399,11 +412,14 @@ void LaunchTunnel::LaunchChecklist::List::ResetStreams()
 		thrusters[i]=oldThrusters[i];
 		vessel->DelThruster(newThrusters[i]);
 	}
+	for(std::map<UINT, EXHAUSTSPEC *>::iterator i=exhausts.begin();i!=exhausts.end();i++)
+	{
+		vessel->DelExhaust(i->first);
+		delete i->second;
+	}
 	group=vessel->CreateThrusterGroup(thrusters, k, THGROUP_MAIN);
 	vessel->SetThrusterGroupLevel(group, level);
-	delete [] thrusters;
-	oldThrusters.clear();
-	newThrusters.clear();
+	delete [] thrusters;	
 }
 	
 bool LaunchTunnel::LaunchChecklist::List::SetEvent(int event)

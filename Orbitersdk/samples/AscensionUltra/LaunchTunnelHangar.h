@@ -14,6 +14,7 @@
 #include "Room.h"
 #include "BeaconArray.h"
 #include <vector>
+#include <map>
 #include "Checklist.h"
 #include "LFMCChecklistStates.h"
 
@@ -100,6 +101,7 @@ namespace LaunchTunnel
 			void PostStep (double simt, double simdt, double mjd);
 		private:
 			std::vector<THRUSTER_HANDLE> oldThrusters,newThrusters;
+			std::map<UINT, EXHAUSTSPEC *> exhausts;
 			void SuppressStreams();
 			void ResetStreams();
 		};
