@@ -67,7 +67,11 @@ DWORD WINAPI TalkerThread(LPVOID params)
 						}
 						entry->valid=false; //Setting this before releasing the lock, so queue manipulators only delete valid entries.
 				LeaveCriticalSection(&gParams.lock);
-						ATC->Speak(entry->message, NULL, NULL);
+						if ((entry->flags & TALKERWAVE)>0)
+						{
+							//"Talk" the wave file
+						}
+						else ATC->Speak(entry->message, NULL, NULL);
 						if (entry->message) delete [] entry->message;
 						if (entry->display) delete [] entry->display;
 				EnterCriticalSection(&gParams.lock);

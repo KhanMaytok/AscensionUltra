@@ -24,14 +24,13 @@ bool LaunchTunnel::RequestChecklist::List::SetEvent(int event)
 }
 
 void LaunchTunnel::RequestChecklist::List::PostStep (double simt, double simdt, double mjd)
-{
+{	
 	if (subject==NULL)
 	{
-		//fail-safe
+		//fail-safe		
 		SetState(Empty);
 		return;
-	}
-	
+	}	
 	VECTOR3 local=GetNosePoint();	
 	bool vincinity=hangar->CheckVincinity(&local, VINCINITYLFHOLD);
 	Checklist *next=hangar->GetChecklist(1);
