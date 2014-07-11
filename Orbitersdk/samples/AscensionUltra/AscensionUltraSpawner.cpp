@@ -129,7 +129,7 @@ void Talk(const TalkerEntry &input, const OBJHANDLE sender, const OBJHANDLE rece
 
 AscensionUltraSpawner::AscensionUltraSpawner(HINSTANCE hDLL) : oapi::Module(hDLL)
 {
-	FILEHANDLE f=oapiOpenFile(ORBITERCONFIG, FILE_IN);
+	FILEHANDLE f=oapiOpenFile(IsInlineClient()?ORBITERCONFIG:ORBITERNGCONFIG, FILE_IN);
 	if (!oapiReadItem_bool(f, SCNSAVE, gParams.SCNSave)) gParams.SCNSave=true; //Scenario saving default is true
 	if (!oapiReadItem_bool(f, RECSAVE, gParams.RecSave)) gParams.RecSave=true; //Recorder saving default is true
 	if (!oapiReadItem_bool(f, SPAWN, gParams.Spawn)) gParams.Spawn=true; //Spawning default is true
@@ -254,7 +254,7 @@ void AscensionUltraSpawner::clbkSimulationEnd()
 
 void AscensionUltraSpawner::Save()
 {
-	FILEHANDLE f=oapiOpenFile(ORBITERCONFIG, FILE_APP);
+	FILEHANDLE f=oapiOpenFile(IsInlineClient()?ORBITERCONFIG:ORBITERNGCONFIG, FILE_APP);
 	oapiWriteLine(f, "\n; === Base Vessel Configuration ===");
 	oapiWriteItem_bool(f, SCNSAVE, gParams.SCNSave);
 	oapiWriteItem_bool(f, RECSAVE, gParams.RecSave);

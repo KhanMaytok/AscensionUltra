@@ -40,6 +40,17 @@
 
 const double EMPTY_MASS    = 11000.0;  // standard configuration
 
+inline bool IsInlineClient()
+{
+	union
+	{
+		OBJHANDLE (__thiscall VESSEL::* function )(DOCKHANDLE) const;
+		DWORD address;
+	} pointer;
+	pointer.function=&VESSEL::GetDockStatus;
+	return pointer.address==0x00476210;
+}
+
 #define TURNAROUNDHANGARS 3
 #define LEASELIGHTHANGARS 6
 #define LEASEHEAVYHANGARS 3

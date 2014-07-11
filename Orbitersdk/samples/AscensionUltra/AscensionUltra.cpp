@@ -50,6 +50,7 @@
 #define CONFIGPATH    "%s%s.cfg"
 #define CONFIG2PATH   "%sVessels\\%s.cfg"
 #define ORBITERCONFIG "Orbiter.cfg"
+#define ORBITERNGCONFIG "Orbiter_NG.cfg"
 #define CONFIGEXCEPTION "abort: neither vessel configuration \"%s%s.cfg\" nor \"%sVessels\\%s.cfg\" was found!"  
 
 // Static methods
@@ -210,7 +211,7 @@ void AscensionUltra::clbkSetClassCaps (FILEHANDLE cfg)
 	_strlwr(cn);
 	
 	//configuration file is also INI file, read orbiter.cfg first to get custom config paths
-	FILEHANDLE f=oapiOpenFile(ORBITERCONFIG, FILE_IN);
+	FILEHANDLE f=oapiOpenFile(IsInlineClient()?ORBITERCONFIG:ORBITERNGCONFIG, FILE_IN);
 	if (!oapiReadItem_string(f, CONFIGDIRTAG, configDir)) strcpy(configDir, CONFIGDIRDEFAULT);
 	if (!oapiReadItem_bool(f, SCNSAVE, scnsave)) scnsave=true; //Scenario saving default is true
 	oapiCloseFile(f, FILE_IN);

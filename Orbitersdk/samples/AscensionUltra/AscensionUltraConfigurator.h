@@ -30,6 +30,7 @@
 #define IDLEROTATE	"ATCRotationTime"
 #define ATCSLOT		"ATCAnnotationSlot" //ATCAnnotationSlot0 = 0.1, 0.1, 0.9, 0.2
 #define ORBITERCONFIG "Orbiter.cfg"
+#define ORBITERNGCONFIG "Orbiter_NG.cfg"
 #define CLASSNAME	"AscensionUltra"
 #define AUNAME		"Wideawake_Int(AU)"
 #define LONGITUDE	(-14.405L*RAD)
