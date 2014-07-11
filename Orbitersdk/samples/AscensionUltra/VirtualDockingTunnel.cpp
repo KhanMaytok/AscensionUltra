@@ -9,7 +9,6 @@
 // ==============================================================
 
 #define DOCKSTRUCTOFFSET_CURRENTDOCKOBJECT 0x48
-#define ADDRESS_GETDOCKSTATUS 0x00476210
 
 // ==============================================================
 // Global variables
@@ -100,12 +99,19 @@ __declspec(dllexport) int __cdecl Init(VESSEL *handle)
 	g_Hook=(DWORD)(void *)GetDockStatus;
 	p.pointer=(void *)&g_Hook;	
 	for(int i=0;i<4;i++) g_code[5+i] = p.bytes[i];
-	if (memcmp((void *)g_original, (void *)ADDRESS_GETDOCKSTATUS, 10)!=0)
+
+	union
+	{
+		OBJHANDLE (__thiscall VESSEL::* function )(DOCKHANDLE) const;
+		void *address;
+	} pointer;
+	pointer.function=&VESSEL::GetDockStatus;
+	if (memcmp((void *)g_original, pointer.address, 10)!=0)
 	{
 		if (g_Handles.size()==1) return -2;
 		return 1;
 	}
-	WriteCode((void *)ADDRESS_GETDOCKSTATUS, (void *)g_code, 10);
+	WriteCode(pointer.address, (void *)g_code, 10);
 	return 0;
 }
 
@@ -119,8 +125,14 @@ __declspec(dllexport) int __cdecl Exit(VESSEL *handle)
 	if (g_Handles.find(handle)==g_Handles.end()) return -1;
 	g_Handles.erase(handle);
 	if (g_Handles.size()>0) return 1;
-	if (memcmp((void *)g_code, (void *)ADDRESS_GETDOCKSTATUS, 10)!=0) return -2;
-	WriteCode((void *)ADDRESS_GETDOCKSTATUS, (void *)g_original, 10);
+	union
+	{
+		OBJHANDLE (__thiscall VESSEL::* function )(DOCKHANDLE) const;
+		void *address;
+	} pointer;
+	pointer.function=&VESSEL::GetDockStatus;
+	if (memcmp((void *)g_code, pointer.address, 10)!=0) return -2;
+	WriteCode(pointer.address, (void *)g_original, 10);
 	return 0;
 }
 
