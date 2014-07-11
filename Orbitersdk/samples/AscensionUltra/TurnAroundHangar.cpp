@@ -95,18 +95,24 @@ void TurnAroundHangar::clbkPostCreation ()
 
 void TurnAroundHangar::clbkVisualCreated (VISHANDLE vis, int refcount)
 {
-	//Texture handling for TA	
+	//Texture handling for TA
 	DEVMESHHANDLE mesh=owner->GetDevMesh(vis, meshIndex);
+	MESHHANDLE meshTemplate=owner->GetMeshTemplate(meshIndex);
 	for(int k=8;k<10;k++)
 	{
-		MESHGROUPEX *group=oapiMeshGroupEx(mesh, k); //Get original vertices
-		for(int i=0;i<(int)group->nVtx;i++) group->Vtx[i].tu+=(float)(TEXTURE_OFFSET*instance); //Offset the U coordinate
+		MESHGROUPEX *group=oapiMeshGroupEx(meshTemplate, k); //Get original vertices
 		GROUPEDITSPEC change;
 		change.flags=GRPEDIT_VTXTEXU; //Change only U coordinates
 		change.nVtx=group->nVtx;
 		change.vIdx=NULL; //Just use the mesh order
-		change.Vtx=group->Vtx;
+		change.Vtx=new NTVERTEX[group->nVtx];
+		for(int i=0;i<(int)group->nVtx;i++)
+		{
+			change.Vtx[i]=group->Vtx[i];
+			change.Vtx[i].tu+=(float)(TEXTURE_OFFSET*instance); //Offset the U coordinate		
+		}
 		oapiEditMeshGroup(mesh, k, &change);
+		delete [] change.Vtx;
 	}
 }
 
