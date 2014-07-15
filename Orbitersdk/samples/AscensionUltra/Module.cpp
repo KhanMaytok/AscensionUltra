@@ -113,6 +113,7 @@ void ReadBeaconDefinition(std::vector<BeaconArray *> &beacons, const char *ini, 
 	char defaults[LINESIZE]="";
 	int i=0;
 	GetPrivateProfileString(section, "BeaconParams", "1,1,1,1,0", defaults, LINESIZE, ini);
+	bool isInline=IsInlineClient();
 	while(true)
 	{
 		sprintf(pf, "BeaconArray%d", i);
@@ -131,6 +132,8 @@ void ReadBeaconDefinition(std::vector<BeaconArray *> &beacons, const char *ini, 
 		end.x=-end.x;
 		end+=position;
 		color/=255;
+		if (!isInline && start.y<=0) start.y+=size;
+		if (!isInline && end.y<=0) end.y+=size;
 		BeaconArray *beacon=new BeaconArray();
 		beacon->Init(owner, start, end, color, length);
 		beacon->SetSize(size);
