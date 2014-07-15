@@ -161,7 +161,7 @@ private:
 	bool oldCameraMode;
 
 	char *ini;
-	bool scnsave, recsave;
+	bool scnsave, recsave, isInline;
 	BaseVessel::Talker::Voice voiceVessel, voiceATC;
 
 	char illumination;
