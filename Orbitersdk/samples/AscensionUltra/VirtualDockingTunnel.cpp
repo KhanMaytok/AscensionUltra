@@ -9,10 +9,8 @@
 // ==============================================================
 
 #define DOCKSTRUCTOFFSET_CURRENTDOCKOBJECT 0x48
-#define ADDRESS_GETDOCKSTATUS 0x00476210
 #define VESSELSTRUCTOFFSET_RECORDING 0x0D32
-#define ADDRESS_RECORDEVENT 0x00476FA0
-#define ADDRESS_INTERNALRECORDEVENT 0x00465FB0
+#define CODEOFFSET_INTERNALRECORDEVENTADDRESS 0xC
 #define HOOKS 2
 
 // ==============================================================
@@ -43,15 +41,9 @@ std::map<VESSEL *, OBJHANDLE> g_DockLink;
 std::map<VESSEL *, EventQueue> g_Events;
 std::map<int, std::map<VESSEL *, int> > g_Handles;
 CRITICAL_SECTION g_EventsAccess;
+void *g_InternalRecordEvent;
 
 DWORD g_Hook;
-
-void *g_Addresses[HOOKS]=
-{
-	(void *)ADDRESS_GETDOCKSTATUS,
-	(void *)ADDRESS_RECORDEVENT
-};
-
 byte g_Original[HOOKS][9]=
 {
 	{0x8b,0x44,0x24,0x04,0x8b,0x40,0x48,0xc2,0x04},
@@ -111,7 +103,7 @@ void _stdcall RecordEvent(VESSEL *vessel, const char *event_type, const char *ev
 		push event_type
 		mov eax, vessel
 		mov ecx,dword ptr ds:[eax]
-		mov eax,ADDRESS_INTERNALRECORDEVENT
+		mov eax,g_InternalRecordEvent
 		call eax
 	}
 }
@@ -159,6 +151,10 @@ extern "C"
 //        -1 if already initialized by handle
 //        -2 if already hooked by some other system
 //        -3 if hook is unknown
+//        -10 if no permission to write process memory
+//        -20 if unable to get memory page
+//        -30 if no permission to write memory page
+//        -40 if no permission to write memory stride page
 __declspec(dllexport) int __cdecl InitHook(VESSEL *handle, int hook)
 {
 	if (hook>=HOOKS || hook<0) return -3;
@@ -179,21 +175,46 @@ __declspec(dllexport) int __cdecl InitHook(VESSEL *handle, int hook)
 		byte bytes[4];
 		DWORD value;
 	} p;
+	void *address;
 
 	switch(hook)
 	{
-	case 0: g_Hook=(DWORD)(void *)GetDockStatus; break;
+	case 0:
+		{
+			g_Hook=(DWORD)(void *)GetDockStatus;
+			union
+			{
+				OBJHANDLE (__thiscall VESSEL::* function )(DOCKHANDLE) const;
+				void *address;
+			} pointer;
+			pointer.function=&VESSEL::GetDockStatus;
+			address=pointer.address;
+		}
+        break;
 	case 1:
-		InitializeCriticalSection(&g_EventsAccess);
-		g_Hook=(DWORD)(void *)RecordEvent;
+		{
+			InitializeCriticalSection(&g_EventsAccess);
+			g_Hook=(DWORD)(void *)RecordEvent;
+			union
+			{
+				void (__thiscall VESSEL::* function )(const char *, const char*) const;
+				void *address;
+			} pointer;
+			pointer.function=&VESSEL::RecordEvent;
+			address=pointer.address;
+			//One the code offset, there is the offset for the relative jump
+			unsigned long offset=*(unsigned long*)((byte *)pointer.address+CODEOFFSET_INTERNALRECORDEVENTADDRESS);
+			//Calculate internal record function address from offset and jump position (4 bytes behind jump offset)
+			g_InternalRecordEvent=(void *)((byte *)pointer.address+offset+CODEOFFSET_INTERNALRECORDEVENTADDRESS+4);
+		}
 		break;	
 	}
 	p.pointer=(void *)&g_Hook;
 
-	if (memcmp((void *)g_Original[hook], g_Addresses[hook], 9)!=0) return -2;
+	if (memcmp((void *)g_Original[hook], address, 9)!=0) return -2;
 	for(int i=0;i<4;i++) g_Code[hook][5+i] = p.bytes[i];	
 
-	return WriteCode(g_Addresses[hook], (void *)g_Code[hook], 9)*10;
+	return WriteCode(address, (void *)g_Code[hook], 9)*10;
 }
 __declspec(dllexport) int __cdecl Init(VESSEL *handle){return InitHook(handle, 0);}
 
@@ -211,8 +232,36 @@ __declspec(dllexport) int __cdecl ExitHook(VESSEL *handle, int hook)
 	if (list->second.find(handle)==list->second.end()) return -1;
 	list->second.erase(handle);	
 	if (list->second.size()>0) return 1;
-	if (memcmp((void *)g_Code[hook], g_Addresses[hook], 9)!=0) return -2;
-	WriteCode(g_Addresses[hook], (void *)g_Original[hook], 9);
+	
+	void *address;
+	switch(hook)
+	{
+	case 0:
+		{
+			union
+			{
+				OBJHANDLE (__thiscall VESSEL::* function )(DOCKHANDLE) const;
+				void *address;
+			} pointer;
+			pointer.function=&VESSEL::GetDockStatus;
+			address=pointer.address;
+		}
+        break;
+	case 1:
+		{
+			union
+			{
+				void (__thiscall VESSEL::* function )(const char *, const char*) const;
+				void *address;
+			} pointer;
+			pointer.function=&VESSEL::RecordEvent;
+			address=pointer.address;
+		}
+		break;	
+	}
+	if (memcmp((void *)g_Code[hook], address, 9)!=0) return -2;
+	WriteCode(address, (void *)g_Original[hook], 9);
+
 	switch(hook)
 	{
 	case 1:
