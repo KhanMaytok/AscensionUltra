@@ -12,6 +12,8 @@
 #define VESSELSTRUCTOFFSET_RECORDING 0x0D32
 #define CODEOFFSET_INTERNALRECORDEVENTADDRESS 0xC
 #define HOOKS 2
+#define VERSIONS 2 // 0..2010, 1..2016
+#define ORBITER2016 160828 // 28th August 2016
 
 // ==============================================================
 // Global variables
@@ -44,10 +46,16 @@ CRITICAL_SECTION g_EventsAccess;
 void *g_InternalRecordEvent;
 
 DWORD g_Hook;
-byte g_Original[HOOKS][9]=
+byte g_Original[VERSIONS][HOOKS][9]=
 {
-	{0x8b,0x44,0x24,0x04,0x8b,0x40,0x48,0xc2,0x04},
-	{0x8B,0x09,0x80,0xB9,0x32,0x0D,0x00,0x00,0x00}
+	{
+		{0x8b,0x44,0x24,0x04,0x8b,0x40,0x48,0xc2,0x04},
+		{0x8B,0x09,0x80,0xB9,0x32,0x0D,0x00,0x00,0x00}
+	},
+	{
+		{0x8b,0x44,0x24,0x04,0x8b,0x40,0x48,0xc2,0x04},
+		{0x8B,0x09,0x80,0xB9,0x22,0x0E,0x00,0x00,0x00}
+	}
 };
 
 //The following arrays are:
@@ -211,7 +219,8 @@ __declspec(dllexport) int __cdecl InitHook(VESSEL *handle, int hook)
 	}
 	p.pointer=(void *)&g_Hook;
 
-	if (memcmp((void *)g_Original[hook], address, 9)!=0) return -2;
+	int version = oapiGetOrbiterVersion()<ORBITER2016?0:1;
+	if (memcmp((void *)g_Original[version][hook], address, 9)!=0) return -2;
 	for(int i=0;i<4;i++) g_Code[hook][5+i] = p.bytes[i];	
 
 	return WriteCode(address, (void *)g_Code[hook], 9)*10;
@@ -259,8 +268,9 @@ __declspec(dllexport) int __cdecl ExitHook(VESSEL *handle, int hook)
 		}
 		break;	
 	}
+	int version = oapiGetOrbiterVersion()<ORBITER2016?0:1;
 	if (memcmp((void *)g_Code[hook], address, 9)!=0) return -2;
-	WriteCode(address, (void *)g_Original[hook], 9);
+	WriteCode(address, (void *)g_Original[version][hook], 9);
 
 	switch(hook)
 	{
